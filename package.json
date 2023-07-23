@@ -2,7 +2,9 @@
   "name": "artemis",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "npm-run-all -p start-expo build-injected-js",
+    "start-expo": "expo start",
+    "build-injected-js": "npx webpack",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -12,9 +14,12 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/react-native-action-sheet": "^4.0.1",
     "@expo/vector-icons": "^13.0.0",
+    "@react-navigation/drawer": "^6.6.3",
     "@react-navigation/native": "^6.0.2",
     "expo": "~48.0.18",
+    "expo-av": "~13.2.1",
     "expo-font": "~11.1.1",
     "expo-linking": "~4.0.1",
     "expo-router": "^1.5.2",
@@ -25,6 +30,9 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.8",
+    "react-native-gesture-handler": "~2.9.0",
+    "react-native-image-viewing": "^0.2.2",
+    "react-native-reanimated": "~2.14.4",
     "react-native-safe-area-context": "4.5.0",
     "react-native-screens": "~3.20.0",
     "react-native-web": "~0.18.10",
@@ -33,11 +41,14 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.0.14",
-    "babel-plugin-show-source": "^0.2.1",
     "jest": "^29.2.1",
     "jest-expo": "~48.0.0",
+    "npm-run-all": "^4.1.5",
     "react-test-renderer": "18.2.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "wrapper-webpack-plugin": "^2.2.2"
   },
   "private": true
 }

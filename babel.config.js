@@ -5,16 +5,12 @@ module.exports = function (api) {
       'babel-preset-expo',
       'module:metro-react-native-babel-preset'
     ],
+    ignore: [
+      'components/RedditView/injectedjs/**/*'
+    ],
     plugins: [
-      require.resolve("expo-router/babel"),
-      [
-        'babel-plugin-show-source', // fix for this: https://github.com/facebook/hermes/issues/612
-        {
-          removeDirective: true,
-          removeFunction: true,
-          directive: 'do not compile',
-        }
-      ],
+      require.resolve('expo-router/babel'),
+      'react-native-reanimated/plugin',
     ],
   };
 };
