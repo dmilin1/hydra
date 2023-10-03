@@ -2,10 +2,10 @@ import React, { useContext, useCallback, useRef } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, RefreshControl, Dimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
-import { Post, RedditViewContext } from '../../contexts/RedditViewContext';
+import { RedditViewContext } from '../../contexts/RedditViewContext';
 import { ThemeContext, t } from '../../contexts/ThemeContext';
-import VideoPlayer from './VideoPlayer';
-import ImageViewer from './ImageViewer';
+import VideoPlayer from './postParts/VideoPlayer';
+import ImageViewer from './postParts/ImageViewer';
 import { ScrollView } from 'react-native-gesture-handler';
 import { HistoryContext } from '../../contexts/HistoryContext';
 
@@ -48,10 +48,12 @@ export default function Posts() {
       .filter(post => !post.isAd)
       .map((post, index) => (
         <View key={index}>
-          <View
+          <TouchableOpacity
+            activeOpacity={0.8}
             style={t(styles.postContainer, {
               backgroundColor: theme.background,
             })}
+            onPress={() => history.pushPath(post.postLink)}
           >
             <Text
               numberOfLines={2}
@@ -72,15 +74,15 @@ export default function Posts() {
                   <ImageViewer images={post.images}/>
                 </View>
               }
-              {post.bodyText &&
-                <View style={styles.bodyTextContainer}>
+              {post.bodyHTML &&
+                <View style={styles.bodyHTMLContainer}>
                   <Text
                     numberOfLines={3}
-                    style={t(styles.bodyText, {
+                    style={t(styles.bodyHTML, {
                       color: theme.subtleText,
                     })}
                   >
-                    {post.bodyText}
+                    {post.bodyHTML}
                   </Text>
                 </View>
               }
@@ -153,7 +155,7 @@ export default function Posts() {
 
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
           <View
             style={t(styles.spacer, {
               backgroundColor: theme.tint,
@@ -209,11 +211,11 @@ const styles = StyleSheet.create({
   spacer: {
     height: 10,
   },
-  bodyTextContainer: {
+  bodyHTMLContainer: {
     marginHorizontal: 10,
     marginVertical: 10,
   },
-  bodyText: {
+  bodyHTML: {
     fontSize: 15,
   },
   imgContainer: {

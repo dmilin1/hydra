@@ -1,3 +1,4 @@
+import debounce from "../helpers/debounce";
 import emitMessage from "../messaging/emitMessage";
 import { RemoteFn } from "../messaging/remoteFunction";
 import Watcher from "./Watcher";
@@ -23,14 +24,14 @@ export default async function posts() {
             
             return {
                 title: post.querySelector('h3')?.innerText,
-                postLink: [...post.querySelectorAll('a')].find(a => a.href.includes('/comments/'))?.href,
+                postLink: [...post.querySelectorAll('a')].find(a => a.href.includes('/comments/'))?.href?.split('.com')?.[1],
                 subredditImg: post.querySelector('a > img')?.src,
                 subreddit: [...post.querySelectorAll('a')].find(a => a.href.includes('/r/'))?.href?.split('/r/')?.[1]?.split('/')?.[0],
                 images: [
-                    post.querySelector('img[alt="Post image"]')?.src,
-                    ...[...post.querySelectorAll('figure > div > img')].map(p => p.src),
-                ].filter(src => src),
-                bodyText: [...post.querySelectorAll('p')].map(e => e?.innerText)?.join('\\n'),
+                    ...[...post.querySelectorAll('img.media-element')].map(p => p.src),
+                    ...[...post.querySelectorAll('figure img')].map(p => p.src),
+                ].filter(src => src).map(src => src.replace('https://preview.redd.it', 'https://i.redd.it')),
+                bodyHTML: [...post.querySelectorAll('p')].map(e => e?.innerText)?.join('\\n'),
                 video,
                 externalLink,
                 author: post.querySelector('[data-testid="post_author_link"]')?.innerText?.split('u/')?.[1],
@@ -50,7 +51,8 @@ export default async function posts() {
                 contextMenu: () => post.querySelector('.PostHeader__overflowMenu')?.click(),
             }
         });
-
-        emitMessage('posts', { posts: postData });
+        debounce('posts', 500, 1500, () => {
+            emitMessage('posts', { posts: postData });
+        });
     });
 }

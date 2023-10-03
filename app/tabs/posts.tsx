@@ -14,7 +14,7 @@ export default function Posts() {
           elem: <Subreddits/>,
           name: 'Subreddits',
         }, {
-          elem: <RedditView path=''/>,
+          elem: <RedditView path='/r/CryptoCurrency/comments/16us3un/the_road_to_1m_tvl_on_the_mooneth_sushi_pool_part/'/>,
           name: 'Home',
         }]}
       />

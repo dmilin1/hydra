@@ -17,7 +17,7 @@ function History() {
       style={styles.historyContainer}
       onStartShouldSetResponderCapture={(e) => {
         const screenWidth = Dimensions.get('window').width
-        const boundarySize = 10;
+        const boundarySize = 20;
         touchX.setValue(e.nativeEvent.pageX);
         if (e.nativeEvent.pageX < boundarySize && history.past.length > 1) {
           setSelected(history.past.slice(-1)[0]);

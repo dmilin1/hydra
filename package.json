@@ -1,5 +1,5 @@
 {
-  "name": "artemis",
+  "name": "hydra",
   "version": "1.0.0",
   "scripts": {
     "start": "npm-run-all -p start-expo build-injected-js",
@@ -27,6 +27,7 @@
     "expo-status-bar": "~1.4.4",
     "expo-system-ui": "~2.2.1",
     "expo-web-browser": "~12.1.1",
+    "htmlparser2": "^9.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.8",

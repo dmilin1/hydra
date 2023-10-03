@@ -19,6 +19,7 @@ export default function DataHandler(
     }
     return value;
   });
+  
   if (msg === 'log') {
     console.log(arbitraryData);
   } else if (msg === 'posts') {
@@ -27,5 +28,11 @@ export default function DataHandler(
   } else if (msg === 'subscriptionList') {
     const data = arbitraryData as Partial<RedditGlobalContextType>;
     redditGlobalContext.setSubscriptionList(data?.subscriptionList ?? {});
+  } else if (msg === 'comments') {
+    const data = arbitraryData as Partial<RedditViewContextType>;
+    redditViewContext.setComments(data?.comments ?? []);
+  } else if (msg === 'postDetails') {
+    const data = arbitraryData as Partial<RedditViewContextType>;
+    redditViewContext.setPostDetails(data?.postDetails ?? null);
   }
 }

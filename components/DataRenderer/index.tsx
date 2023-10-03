@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import { ThemeContext, t } from '../../contexts/ThemeContext';
 import Posts from './Posts';
 import { RedditViewContext } from '../../contexts/RedditViewContext';
-import { RedditViewProps } from '../RedditView';
+import PostDetails from './PostDetails';
 
 
 export default function DataRenderer() {
@@ -14,6 +14,8 @@ export default function DataRenderer() {
 
   if (redditViewContext.posts.length > 0) {
     componentsToRender.push(<Posts/>);
+  } else if (redditViewContext.comments.length > 0) {
+    componentsToRender.push(<PostDetails/>);
   } else {
     componentsToRender.push(<ActivityIndicator size={'small'}/>);
   }
