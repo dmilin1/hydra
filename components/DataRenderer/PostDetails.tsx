@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   bodyHTMLContainer: {
-    
+    marginHorizontal: 15,
   },
   bodyHTML: {
     fontSize: 15,

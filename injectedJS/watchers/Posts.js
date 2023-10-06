@@ -31,7 +31,7 @@ export default async function posts() {
                     ...[...post.querySelectorAll('img.media-element')].map(p => p.src),
                     ...[...post.querySelectorAll('figure img')].map(p => p.src),
                 ].filter(src => src).map(src => src.replace('https://preview.redd.it', 'https://i.redd.it')),
-                bodyHTML: [...post.querySelectorAll('p')].map(e => e?.innerText)?.join('\\n'),
+                bodyText: [...post.querySelectorAll('p')].map(e => e?.innerText)?.join('\\n'),
                 video,
                 externalLink,
                 author: post.querySelector('[data-testid="post_author_link"]')?.innerText?.split('u/')?.[1],

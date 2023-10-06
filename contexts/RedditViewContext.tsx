@@ -8,6 +8,7 @@ export type Post = {
     subreddit: string,
     images: string[],
     bodyHTML: string,
+    bodyText: string,
     video: string,
     externalLink: string,
     author: string,
@@ -24,7 +25,7 @@ export type Post = {
 export type Comment = {
     id: string,
     depth: number,
-    text: string,
+    html: string,
     author: string,
     timeSinceComment: string,
     voteCount: string,

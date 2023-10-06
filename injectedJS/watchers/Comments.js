@@ -39,6 +39,17 @@ export default async function comments() {
         // Click to open all collapsed elements
         [...document.querySelectorAll('.Comment .icon-expand')].filter(icn => getComputedStyle(icn.parentNode).opacity === '1').forEach(icn => icn.click());
 
+        // Adds attributes to all spoilers and headers for detection in HTML renderer
+        document.querySelectorAll('span, div').forEach(span => {
+            let style = window.getComputedStyle(span);
+            if (style.opacity === '0' && style.transition === 'opacity 1s ease-out 0s') {
+                span.setAttribute('spoiler', true);
+            }
+            if (style.marginBottom === '8px' && style.fontSize === '22px') {
+                span.setAttribute('header', true);
+            }
+        })
+
         commentData = [];
 
         let currentPath = [];
@@ -82,7 +93,7 @@ export default async function comments() {
                 addComment(currentPath, {
                     id: currentPath.join('-'),
                     depth,
-                    text: [...commentElem.querySelectorAll('[data-testid="comment"] p')]?.map(p => p.innerText)?.join('\\n\\n'),
+                    html: commentElem.querySelector('[data-testid="comment"]')?.innerHTML,
                     author: commentElem.querySelector('[data-testid="comment_author_link"]')?.innerText,
                     timeSinceComment: commentElem.querySelector('[data-testid="comment_timestamp"]')?.innerText,
                     voteCount: commentElem.querySelector('[data-click-id="upvote"]')?.nextSibling?.innerText,

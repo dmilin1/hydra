@@ -4,6 +4,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Comment, RedditViewContext } from '../../../contexts/RedditViewContext';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
 import { set } from 'react-native-reanimated';
+import RenderHtml from '../RenderHTML';
 
 interface CommentProps {
   comment: Comment,
@@ -20,7 +21,7 @@ function CommentElem({ comment, index, scrollChange }: CommentProps) {
   return useMemo(() => (
     <View key={comment.id}>
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={1}
         onPress={e => {
           const target = e.target as unknown as View;
           target?.measure((fx, fy, width, height, px, py) => {
@@ -66,9 +67,7 @@ function CommentElem({ comment, index, scrollChange }: CommentProps) {
           </View>
           { !collapsed ? (
             <View style={styles.textContainer}>
-              <Text style={t(styles.text, {
-                color: theme.text,
-              })}>{comment.text}</Text>
+              <RenderHtml html={comment.html} />
             </View>
           ) : null }
         </View>
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   textContainer: {
-    
+    marginVertical: -10,
   },
   text: {
     fontSize: 15,

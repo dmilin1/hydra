@@ -36,17 +36,23 @@ export default async function postDetails() {
             video = externalLink.replace('.gifv', '.mp4');
         }
 
+        let images = [];
+        let mediaContainer = postContainer.querySelector('[data-adclicklocation="title"]').nextElementSibling;
+        if (mediaContainer?.attributes['data-click-id']?.value !== 'text') {
+            // Only grab the images if it isn't a text post. Otherwise, the images will already be 
+            // handled by the text renderer.
+            [...mediaContainer.querySelectorAll('img.media-element')].forEach(p => images.push(p.src));
+            [...mediaContainer.querySelectorAll('figure img')].forEach(p => images.push(p.src));
+            images = images.filter(src => src).map(src => src.replace('https://preview.redd.it', 'https://i.redd.it'));
+        }
         
         const postDetails = {
             title,
             subreddit: window.location.href.split('/r/')[1]?.split('/')?.[0],
-            images: [
-                ...[...postContainer.querySelectorAll('img.media-element')].map(p => p.src),
-                ...[...postContainer.querySelectorAll('figure img')].map(p => p.src),
-            ].filter(src => src).map(src => src.replace('https://preview.redd.it', 'https://i.redd.it')),
+            images,
             video,
             externalLink,
-            bodyHTML: postContainer.querySelector('[data-test-id="post-content"]').lastChild.previousSibling.innerHTML,
+            bodyHTML: postContainer.querySelector('[data-click-id="text"]')?.innerHTML,
             author: postContainer.querySelector('[data-testid="post_author_link"]')?.innerText?.split('u/')?.[1],
             voteCount: postContainer.querySelector('button[aria-label="upvote"]')?.nextSibling?.innerText,
             commentCount: postContainer.querySelector('.icon-comment')?.nextSibling?.innerText?.split(' ')?.[0],

@@ -74,15 +74,15 @@ export default function Posts() {
                   <ImageViewer images={post.images}/>
                 </View>
               }
-              {post.bodyHTML &&
-                <View style={styles.bodyHTMLContainer}>
+              {post.bodyText &&
+                <View style={styles.bodyTextContainer}>
                   <Text
                     numberOfLines={3}
-                    style={t(styles.bodyHTML, {
+                    style={t(styles.bodyText, {
                       color: theme.subtleText,
                     })}
                   >
-                    {post.bodyHTML}
+                    {post.bodyText}
                   </Text>
                 </View>
               }
@@ -211,11 +211,11 @@ const styles = StyleSheet.create({
   spacer: {
     height: 10,
   },
-  bodyHTMLContainer: {
+  bodyTextContainer: {
     marginHorizontal: 10,
     marginVertical: 10,
   },
-  bodyHTML: {
+  bodyText: {
     fontSize: 15,
   },
   imgContainer: {

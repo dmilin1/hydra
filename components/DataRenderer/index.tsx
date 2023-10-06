@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   componentContainer: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
   }
 });

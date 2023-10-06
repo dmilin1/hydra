@@ -14,7 +14,8 @@ export default function Posts() {
           elem: <Subreddits/>,
           name: 'Subreddits',
         }, {
-          elem: <RedditView path='/r/CryptoCurrency/comments/16us3un/the_road_to_1m_tvl_on_the_mooneth_sushi_pool_part/'/>,
+          elem: <RedditView path='/r/test/comments/170ser2/test/'/>,
+          // elem: <RedditView path='/r/shacomains/comments/170zybr/saw_this_on_fb_and_thought_as_like_wait_a_fken/'/>,
           name: 'Home',
         }]}
       />
