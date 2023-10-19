@@ -8,11 +8,13 @@ import VideoPlayer from './postParts/VideoPlayer';
 import ImageViewer from './postParts/ImageViewer';
 import { ScrollView } from 'react-native-gesture-handler';
 import { HistoryContext } from '../../contexts/HistoryContext';
+import { WebviewersContext } from '../../contexts/WebViewContext';
 
 
 export default function Posts() {
   const history = useContext(HistoryContext);
   const redditViewContext = useContext(RedditViewContext);
+  const { webviewers, getCurrentWebview } = useContext(WebviewersContext);
   const theme = useContext(ThemeContext);
 
   const lastPostCountWhenLoadingMore = useRef(0);
@@ -38,9 +40,14 @@ export default function Posts() {
           && redditViewContext.posts.length > lastPostCountWhenLoadingMore.current
         ) {
           lastPostCountWhenLoadingMore.current = redditViewContext.posts.length;
-          redditViewContext.webview?.injectJavaScript(`
-            window.scrollTo(0, document.body.scrollHeight);
-          `);
+          try {
+            getCurrentWebview()?.injectJavaScript(`
+              window.scrollTo(0, document.body.scrollHeight);
+            `);
+          } catch (e) {
+            console.log(e);
+          }
+          
         }
       }}
     >
@@ -53,7 +60,11 @@ export default function Posts() {
             style={t(styles.postContainer, {
               backgroundColor: theme.background,
             })}
-            onPress={() => history.pushPath(post.postLink)}
+            onPress={() => {
+              redditViewContext.setPostDetails(null);
+              post.open();
+              history.pushPath(post.postLink, true);
+            }}
           >
             <Text
               numberOfLines={2}
@@ -202,11 +213,12 @@ const styles = StyleSheet.create({
   metadataContainer: {
     flexDirection: 'row',
     marginTop: 7,
+    alignItems: 'center',
   },
   metadataText: {
     fontSize: 14,
-    marginLeft: 5,
-    marginRight: 10,
+    marginLeft: 3,
+    marginRight: 12,
   },
   spacer: {
     height: 10,

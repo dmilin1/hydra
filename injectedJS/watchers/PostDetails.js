@@ -7,8 +7,14 @@ let lastPlayButtonPressed = null;
 
 export default async function postDetails() {
     Watcher.watch('div[data-testid="post-container"]', () => {
-        const postContainer = document.querySelector('div[data-testid="post-container"]');
-        const title = postContainer.querySelector('h1')?.innerText;
+        let postContainer = null;
+        if (document.querySelector('#overlayScrollContainer')) {
+            postContainer = document.querySelector('#overlayScrollContainer div[data-testid="post-container"]');
+        } else {
+            postContainer = document.querySelector('div[data-testid="post-container"]');
+        }
+        
+        const title = postContainer?.querySelector('h1')?.innerText;
 
         if (!title) return;
 

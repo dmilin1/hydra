@@ -14,7 +14,8 @@ export default function Posts() {
           elem: <Subreddits/>,
           name: 'Subreddits',
         }, {
-          elem: <RedditView path='/r/test/comments/170ser2/test/'/>,
+          // elem: <RedditView path='/r/test/comments/170ser2/test/' historyIndex={1}/>,
+          elem: <RedditView path='/' webviewerKey={'start'}/>,
           // elem: <RedditView path='/r/shacomains/comments/170zybr/saw_this_on_fb_and_thought_as_like_wait_a_fken/'/>,
           name: 'Home',
         }]}

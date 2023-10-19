@@ -4,23 +4,26 @@ import { useRef } from 'react';
 import { WebView } from 'react-native-webview';
 
 import injectedJSBundle from './injected';
-import { RedditViewContext } from '../../contexts/RedditViewContext';
 import DataHandler from './DataHandler';
 import { RedditGlobalContext } from '../../contexts/RedditGlobalContext';
-import { RedditViewProps } from '../RedditView';
+import { WebviewersContext } from '../../contexts/WebViewContext';
 
+type WebViewerProps = {
+  id: string,
+  path: string,
+  webviewRef: { elem: WebView|null },
+}
 
-export default function WebViewer({ path }: RedditViewProps) {
-  const webview = useRef<WebView|null>();
+export default function WebViewer({ id, path, webviewRef }: WebViewerProps) {
+  const webview = useRef<WebView|null>(null);
   const redditGlobalContext = useContext(RedditGlobalContext);
-  const redditViewContext = useContext(RedditViewContext);
+  const { webviewers } = useContext(WebviewersContext);
 
-  useEffect(() => {
-    redditViewContext.setWebview(webview.current!);
-  }, []);
+  webviewRef.elem = webview.current;
 
   return (
     <WebView
+      id={`webview-${id}`}
       ref={(ref) => webview.current = ref}
       style={styles.webview}
       source={{ uri: `https://reddit.com${path ?? '/'}` }}
@@ -37,17 +40,17 @@ export default function WebViewer({ path }: RedditViewProps) {
         }
       }}
       onMessage={(e) => DataHandler(
-        redditGlobalContext,
-        redditViewContext,
+        [redditGlobalContext, ...webviewers[id].contextSubscribers],
         webview.current!,
         e
       )}
+      onError={(e) => console.log(e)}
     />
   );
 }
 
 const styles = StyleSheet.create({
   webview: {
-    flex: 1,
+    
   }
 });

@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEv
 import { AntDesign } from '@expo/vector-icons';
 import { Comment, RedditViewContext } from '../../../contexts/RedditViewContext';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
-import { set } from 'react-native-reanimated';
 import RenderHtml from '../RenderHTML';
 
 interface CommentProps {
@@ -14,6 +13,7 @@ interface CommentProps {
 
 function CommentElem({ comment, index, scrollChange }: CommentProps) {
   const theme = useContext(ThemeContext);
+  const commentRef = React.useRef<TouchableOpacity>(null);
 
   const [collapsed, setCollapsed] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -21,10 +21,10 @@ function CommentElem({ comment, index, scrollChange }: CommentProps) {
   return useMemo(() => (
     <View key={comment.id}>
       <TouchableOpacity
+        ref={commentRef}
         activeOpacity={1}
         onPress={e => {
-          const target = e.target as unknown as View;
-          target?.measure((fx, fy, width, height, px, py) => {
+          commentRef.current?.measure((fx, fy, width, height, px, py) => {
             const change = py - 150;
             if (change < 0 && !collapsed) {
               scrollChange(py - 150);

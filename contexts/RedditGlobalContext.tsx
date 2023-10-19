@@ -8,6 +8,7 @@ export type SubscriptionList = {
 }
 
 const initialContext = {
+    type: 'globalContext',
     subscriptionList: {} as SubscriptionList,
     setSubscriptionList: (subscriptionList: SubscriptionList) => {},
 };
@@ -21,6 +22,7 @@ export function RedditGlobalProvider({ children }: React.PropsWithChildren) {
 
     return (
         <RedditGlobalContext.Provider value={{
+            type: 'globalContext',
             subscriptionList,
             setSubscriptionList,
         }}>

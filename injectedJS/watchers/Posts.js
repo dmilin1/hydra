@@ -5,7 +5,7 @@ import Watcher from "./Watcher";
 
 export default async function posts() {
     Watcher.watch('[data-scroller-first]', () => {
-        const postList = [...document.querySelectorAll('[data-scroller-first]')]
+        const postList = [...document.querySelectorAll('#AppRouter-main-content [data-scroller-first]')]
             .slice(-1)[0]
             .parentElement;
 
@@ -49,6 +49,9 @@ export default async function posts() {
                 upvote: () => post.querySelector('.VotingBox__upvote')?.click(),
                 downvote: () => post.querySelector('.VotingBox__downvote')?.click(),
                 contextMenu: () => post.querySelector('.PostHeader__overflowMenu')?.click(),
+                open: new RemoteFn('postOpen-' + i, () => {
+                    post.click();
+                }),
             }
         });
         debounce('posts', 500, 1500, () => {

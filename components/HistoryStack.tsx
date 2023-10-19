@@ -3,10 +3,12 @@ import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import { HistoryContext, HistoryLayer, HistoryProvider, HistoryProviderProps } from '../contexts/HistoryContext';
 import { t } from '../contexts/ThemeContext';
 import Navbar from './Navbar';
+import { WebviewersContext, WebviewersProvider } from '../contexts/WebViewContext';
 
 
 function History() {
   const history = useContext(HistoryContext);
+  const { webviewers } = useContext(WebviewersContext);
   const touchX = useRef(new Animated.Value(0)).current;
   const physics = useRef({ momentum: 0, lastX: 0, lastTime: 0 });
   const gestureDirection = useRef('forward');
@@ -64,14 +66,14 @@ function History() {
         });
       }}
     >
-      {[...history.past, ...history.future].map((layer, i) => {
+      {[...history.past, ...(history.future.slice().reverse())].map((layer, i) => {
         let left : string|number|Animated.Value = i < history.past.length ? 0 : '100%';
         if (layer === selected) {
           left = touchX;
         }
         return (
           <Animated.View
-            key={`${i}`}
+            key={i}
             style={t(styles.historyLayerContainer, {
               left: left,
             })}
@@ -80,6 +82,9 @@ function History() {
           </Animated.View>
         )
       })}
+      <View style={{ height: 1000, width: 1000, zIndex: -1000 }}>
+        {Object.values(webviewers).map((webviewer) => webviewer.elem)}
+      </View>
     </View>
   )
 }
@@ -89,11 +94,13 @@ export default function HistoryStack(params: HistoryProviderProps) {
     <HistoryProvider
       initialFuture={params.initialFuture}
       initialPast={params.initialPast}
-    > 
-      <>
-        <Navbar/>
-        <History/>
-      </>
+    >
+      <WebviewersProvider>
+        <>
+          <Navbar/>
+          <History/>
+        </>
+      </WebviewersProvider>
     </HistoryProvider>
   )
 }

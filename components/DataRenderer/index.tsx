@@ -5,14 +5,19 @@ import Posts from './Posts';
 import { RedditViewContext } from '../../contexts/RedditViewContext';
 import PostDetails from './PostDetails';
 
+type DataRendererProps = {
+  reuseWebviewer?: boolean,
+}
 
-export default function DataRenderer() {
+export default function DataRenderer({ reuseWebviewer }: DataRendererProps) {
   const redditViewContext = useContext(RedditViewContext);
   const theme = useContext(ThemeContext);
   
   const componentsToRender = [];
 
-  if (redditViewContext.posts.length > 0) {
+  if (reuseWebviewer && redditViewContext.comments.length > 0) {
+    componentsToRender.push(<PostDetails/>);
+  } else if (redditViewContext.posts.length > 0) {
     componentsToRender.push(<Posts/>);
   } else if (redditViewContext.comments.length > 0) {
     componentsToRender.push(<PostDetails/>);

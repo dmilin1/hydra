@@ -10,21 +10,27 @@ export type HistoryLayer = {
 const initialHistory : {
     past: HistoryLayer[],
     future: HistoryLayer[],
+    setPast: (past: HistoryLayer[]) => void,
+    setFuture: (future: HistoryLayer[]) => void,
     pushLayer: (route: HistoryLayer) => void,
-    pushPath: (path: string) => void,
+    pushPath: (path: string, reuseWebviewer?: boolean) => void,
     reload: () => void,
     replace: (path: string) => void,
     forward: () => HistoryLayer | void,
     backward: () => HistoryLayer | void,
+    getCurrentWebviewerKey: () => string | undefined,
 } = {
     past: [],
     future: [],
+    setPast: () => {},
+    setFuture: () => {},
     pushLayer: () => {},
     pushPath: () => {},
     reload: () => {},
     replace: () => {},
     forward: () => {},
     backward: () => {},
+    getCurrentWebviewerKey: () => undefined,
 };
 
 export type HistoryProviderProps = {
@@ -44,7 +50,7 @@ export function HistoryProvider({
     const [past, setPast] = useState<typeof initialHistory.past>(initialPast);
     const [future, setFuture] = useState<typeof initialHistory.future>(initialFuture);
 
-    const pushPath = (path: string) => {
+    const pushPath = (path: string, reuseWebviewer = false) => {
         let name = '';
         if (path === '' || path === '/') {
             name = 'Home';
@@ -54,11 +60,17 @@ export function HistoryProvider({
             name = path.slice(3).split(/\/|\?/)[0];
         }
         name = name.charAt(0).toUpperCase() + name.slice(1);
+        let webviewerKey = Math.random().toString();
+        if (reuseWebviewer) {
+            webviewerKey = past.slice(-1)[0]?.elem.props.webviewerKey;
+        }
         setPast([...past, {
             elem: (
                 <RedditView
                     path={path}
                     key={Math.random()} // Need key or element won't be treated as new
+                    webviewerKey={webviewerKey}
+                    reuseWebviewer={reuseWebviewer}
                 />
             ),
             name,
@@ -98,16 +110,23 @@ export function HistoryProvider({
         }
     }
 
+    const getCurrentWebviewerKey = () => {
+        return past.slice(-1)[0]?.elem.props.webviewerKey;
+    }
+
     return (
         <HistoryContext.Provider value={{
             past,
             future,
+            setPast,
+            setFuture,
             pushLayer,
             pushPath,
             reload,
             replace,
             forward,
             backward,
+            getCurrentWebviewerKey,
         }}>
             {children}
         </HistoryContext.Provider>

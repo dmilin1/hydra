@@ -1,24 +1,36 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import WebViewer from './WebViewer';
 import DataRenderer from './DataRenderer';
-import { RedditViewProvider } from '../contexts/RedditViewContext';
+import { RedditViewContext, RedditViewProvider } from '../contexts/RedditViewContext';
+import { WebviewersContext } from '../contexts/WebViewContext';
 
 export type RedditViewProps = {
   path: string,
+  webviewerKey: string,
+  reuseWebviewer?: boolean,
+}
+
+function RedditViewWithContext({ path, webviewerKey, reuseWebviewer }: RedditViewProps) {
+  const redditViewContext = useContext(RedditViewContext);
+  const { webviewers, addWebviewer, subscribeToWebviewer } = useContext(WebviewersContext);
+
+  useEffect(() => {
+    addWebviewer(webviewerKey, path);
+    subscribeToWebviewer(webviewerKey, redditViewContext);
+  }, []);
+
+  return (
+    <View style={styles.redditViewContainer}>
+      <DataRenderer reuseWebviewer={reuseWebviewer}/>
+    </View>
+  );
 }
 
 export default function RedditView(props: RedditViewProps) {
-
   return (
     <RedditViewProvider>
-      <View style={styles.redditViewContainer}>
-        <DataRenderer/>
-        <View /*style={{ display: 'flex', flex: 1, }}*/>
-          <WebViewer {...props}/>
-        </View>
-      </View>
+      <RedditViewWithContext {...props}/>
     </RedditViewProvider>
   );
 }

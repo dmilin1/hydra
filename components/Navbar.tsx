@@ -6,16 +6,25 @@ import { Entypo } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import RedditURL from '../utils/RedditURL';
+import { WebviewersContext } from '../contexts/WebViewContext';
 
 
 export default function Navbar() {
   const history = useContext(HistoryContext);
+  const { getCurrentWebview } = useContext(WebviewersContext);
   const theme = useContext(ThemeContext);
 
   const { showActionSheetWithOptions } = useActionSheet();
 
   const histLayer = history.past.slice(-1)[0];
   const currentPath = histLayer.elem.props.path;
+
+  const changeSort = (sort: string) => {
+    console.log(new RedditURL(currentPath).changeSort(sort).getRelativePath());
+    history.replace(new RedditURL(currentPath).changeSort(sort).getRelativePath());
+    // console.log(new RedditURL(currentPath).changeSort(sort));
+  }
 
   return (
     <View
@@ -67,11 +76,16 @@ export default function Navbar() {
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => {
+                const sortOptions = ['Hot', 'New', 'Top', 'Rising', 'Cancel'];
+                if (!currentPath.includes('/r/') && !currentPath.includes('/u/')) {
+                  sortOptions.unshift('Best');
+                }
                 showActionSheetWithOptions({
-                  options: ['Hot', 'New', 'Top', 'Rising', 'Cancel'],
+                  options: sortOptions,
                   cancelButtonIndex: 4,
                 }, (buttonIndex) => {
-                  console.log(buttonIndex);
+                  if (buttonIndex === undefined || buttonIndex === 4) return;
+                  changeSort(sortOptions[buttonIndex]);
                 });
               }}
             >

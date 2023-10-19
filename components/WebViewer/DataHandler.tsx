@@ -4,8 +4,7 @@ import { RedditGlobalContextType } from '../../contexts/RedditGlobalContext';
 
 
 export default function DataHandler(
-  redditGlobalContext: RedditGlobalContextType,
-  redditViewContext: RedditViewContextType,
+  contexts: (RedditGlobalContextType|RedditViewContextType)[],
   webview: WebView,
   e: WebViewMessageEvent
 ) {
@@ -19,20 +18,30 @@ export default function DataHandler(
     }
     return value;
   });
-  
-  if (msg === 'log') {
-    console.log(arbitraryData);
-  } else if (msg === 'posts') {
-    const data = arbitraryData as Partial<RedditViewContextType>;
-    redditViewContext.setPosts(data?.posts ?? []);
-  } else if (msg === 'subscriptionList') {
-    const data = arbitraryData as Partial<RedditGlobalContextType>;
-    redditGlobalContext.setSubscriptionList(data?.subscriptionList ?? {});
-  } else if (msg === 'comments') {
-    const data = arbitraryData as Partial<RedditViewContextType>;
-    redditViewContext.setComments(data?.comments ?? []);
-  } else if (msg === 'postDetails') {
-    const data = arbitraryData as Partial<RedditViewContextType>;
-    redditViewContext.setPostDetails(data?.postDetails ?? null);
-  }
+
+  contexts.forEach(context => {
+    if (msg === 'log') {
+      console.log(arbitraryData);
+    }
+    if (context.type === 'globalContext') {
+      context = context as RedditGlobalContextType;
+      if (msg === 'subscriptionList') {
+        const data = arbitraryData as Partial<RedditGlobalContextType>;
+        context.setSubscriptionList(data?.subscriptionList ?? {});
+      }
+    }
+    if (context.type === 'viewContext') {
+      context = context as RedditViewContextType;
+      if (msg === 'posts') {
+        const data = arbitraryData as Partial<RedditViewContextType>;
+        context.setPosts(data?.posts ?? []);
+      } else if (msg === 'comments') {
+        const data = arbitraryData as Partial<RedditViewContextType>;
+        context.setComments(data?.comments ?? []);
+      } else if (msg === 'postDetails') {
+        const data = arbitraryData as Partial<RedditViewContextType>;
+        context.setPostDetails(data?.postDetails ?? null);
+      }
+    }
+  });
 }

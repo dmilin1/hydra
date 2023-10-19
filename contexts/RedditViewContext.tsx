@@ -20,6 +20,7 @@ export type Post = {
     upvote: () => void,
     downvote: () => void,
     contextMenu: () => void,
+    open: () => void,
 }
 
 export type Comment = {
@@ -38,14 +39,13 @@ export type Comment = {
 }
 
 const initialContext = {
+    type: 'viewContext',
     posts: [] as Post[],
     setPosts: (posts: Post[]) => {},
     postDetails: null as Post|null,
     setPostDetails: (postDetails: Post|null) => {},
     comments: [] as Comment[],
     setComments: (comments: Comment[]) => {},
-    webview: null as WebView|null,
-    setWebview: (webview: WebView|null) => {},
 };
 
 export type RedditViewContextType = typeof initialContext;
@@ -56,18 +56,16 @@ export function RedditViewProvider({ children }: React.PropsWithChildren) {
     const [posts, setPosts] = useState(initialContext.posts);
     const [postDetails, setPostDetails] = useState(initialContext.postDetails);
     const [comments, setComments] = useState(initialContext.comments);
-    const [webview, setWebview] = useState(initialContext.webview);
 
     return (
         <RedditViewContext.Provider value={{
+            type: 'viewContext',
             posts,
             setPosts,
             postDetails,
             setPostDetails,
             comments,
             setComments,
-            webview,
-            setWebview,
         }}>
             {children}
         </RedditViewContext.Provider>
