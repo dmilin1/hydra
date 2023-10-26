@@ -1,11 +1,15 @@
 import { Platform, ScrollView, ScrollViewProps, StyleSheet, Text, TextProps, TextStyle, View, ViewProps, ViewStyle } from 'react-native';
 import { parseDocument, ElementType } from 'htmlparser2';
 import React, { useContext } from 'react';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
+import { ThemeContext, t } from '../contexts/ThemeContext';
 import { AnyNode, Text as TextNode, Element as ElementNode } from 'domhandler';
-import ImageViewer from './postParts/ImageViewer';
+import ImageViewer from './PostParts/ImageViewer';
 
 type InheritedStyles = ViewStyle & TextStyle;
+
+function lineHeight(fontSize: number) {
+    return Math.floor(fontSize * 1.3);
+}
 
 export default function RenderHtml({ html }: {html: string}) {
     const theme = useContext(ThemeContext);
@@ -13,14 +17,13 @@ export default function RenderHtml({ html }: {html: string}) {
     const renderTextNode = (textNode: TextNode, index: number, inheritedStyles: InheritedStyles) => {
         const parent = textNode.parent as ElementNode;
         const grandParent = parent?.parent as ElementNode;
-        const greatGrandParent = grandParent?.parent as ElementNode;
         let text = textNode.data;
-        if (grandParent.name === 'li') {
-            if (greatGrandParent.name === 'ol') {
+        if (parent.name === 'li') {
+            if (grandParent.name === 'ol') {
                 // @ts-ignore comment
-                text = `${grandParent.index + 1}. ${text}`;
+                text = `${parent.index + 1}. ${text}`;
             }
-            if (greatGrandParent.name === 'ul') {
+            if (grandParent.name === 'ul') {
                 text = `• ${text}`;
             }
         }
@@ -44,7 +47,7 @@ export default function RenderHtml({ html }: {html: string}) {
         let wrapperStyles: ViewStyle & TextStyle = {};
         // @ts-ignore comment
         element.index = index;
-        if (element.attribs.spoiler) {
+        if (element.attribs.class === 'md-spoiler-text') {
             Wrapper = Text;
             inheritedStyles.color = showSpoiler ? theme.subtleText : theme.tint;
             wrapperStyles.paddingVertical = 2;
@@ -77,6 +80,10 @@ export default function RenderHtml({ html }: {html: string}) {
             wrapperStyles.borderBottomColor = theme.tint;
             wrapperStyles.borderBottomWidth = 1;
             wrapperStyles.marginVertical = 8;
+        } else if (element.name === 'h1') {
+            Wrapper = View;
+            inheritedStyles.fontSize = 32;
+            inheritedStyles.lineHeight = lineHeight(32);
         } else if (element.name === 'blockquote') {
             Wrapper = View;
             wrapperStyles.backgroundColor = theme.tint;
@@ -136,7 +143,6 @@ export default function RenderHtml({ html }: {html: string}) {
             inheritedStyles.fontStyle = 'italic';
         } else if (['ol', 'ul'].includes(element.name)) {
             Wrapper = View;
-            wrapperStyles.marginHorizontal = 10;
         } else if (element.name === 'img') {
             Wrapper = (props) => (
                 <View {...{ ...props, children: null }}>
@@ -162,7 +168,11 @@ export default function RenderHtml({ html }: {html: string}) {
                 }}
                 {...wrapperProps}
             >
-                {element.children.map((c, i) => renderNode(c, i, inheritedStyles))}
+                {
+                    element.children
+                    .filter((c: any) => !(typeof c.data === 'string' && c.data.trim() === ''))
+                    .map((c, i) => renderNode(c, i, inheritedStyles))
+                }
             </Wrapper>
         ) : null
     }
@@ -170,6 +180,9 @@ export default function RenderHtml({ html }: {html: string}) {
     const renderNode = (node: AnyNode, index: number, inheritedStyles: InheritedStyles = {}) => {
         switch (node.type) {
             case ElementType.Text:
+                if (node.data.trim() === '') {
+                    return null;
+                }
                 return renderTextNode(node, index, {...inheritedStyles});
             case ElementType.Tag:
                 return renderElement(node, index, {...inheritedStyles});
@@ -188,9 +201,9 @@ export default function RenderHtml({ html }: {html: string}) {
 
 const styles = StyleSheet.create({
     basicText: {
-      fontSize: 15,
-      marginVertical: 10,
-      paddingHorizontal: 15,
+      fontSize: 15.5,
+      lineHeight: lineHeight(15.5),
+      marginVertical: 5,
     },
     imageContainer: {
         height: 200,

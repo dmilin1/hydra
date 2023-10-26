@@ -1,6 +1,10 @@
 import React, { createContext, useState } from 'react';
-import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import RedditView from '../components/RedditView';
+import { ImageStyle, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import Posts from '../pages/Posts';
+import RedditURL, { PageType } from '../utils/RedditURL';
+import ErrorPage from '../pages/ErrorPage';
+import Page from '../pages';
+import PostDetails from '../pages/PostDetails';
 
 export type HistoryLayer = {
     elem: JSX.Element,
@@ -13,12 +17,11 @@ const initialHistory : {
     setPast: (past: HistoryLayer[]) => void,
     setFuture: (future: HistoryLayer[]) => void,
     pushLayer: (route: HistoryLayer) => void,
-    pushPath: (path: string, reuseWebviewer?: boolean) => void,
+    pushPath: (path: string) => void,
     reload: () => void,
     replace: (path: string) => void,
     forward: () => HistoryLayer | void,
     backward: () => HistoryLayer | void,
-    getCurrentWebviewerKey: () => string | undefined,
 } = {
     past: [],
     future: [],
@@ -30,7 +33,6 @@ const initialHistory : {
     replace: () => {},
     forward: () => {},
     backward: () => {},
-    getCurrentWebviewerKey: () => undefined,
 };
 
 export type HistoryProviderProps = {
@@ -50,27 +52,22 @@ export function HistoryProvider({
     const [past, setPast] = useState<typeof initialHistory.past>(initialPast);
     const [future, setFuture] = useState<typeof initialHistory.future>(initialFuture);
 
-    const pushPath = (path: string, reuseWebviewer = false) => {
-        let name = '';
-        if (path === '' || path === '/') {
-            name = 'Home';
-        } else if (path.startsWith('/r/')) {
-            name = path.slice(3).split(/\/|\?/)[0];
-        } else if (path.startsWith('/u/')) {
-            name = path.slice(3).split(/\/|\?/)[0];
-        }
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-        let webviewerKey = Math.random().toString();
-        if (reuseWebviewer) {
-            webviewerKey = past.slice(-1)[0]?.elem.props.webviewerKey;
+    const pushPath = (path: string) => {
+        let name = (new RedditURL(path)).getPageName();
+        let Page: Page = ErrorPage;
+        const pageType = (new RedditURL(path)).getPageType();
+        if (pageType === PageType.HOME) {
+            Page = Posts;
+        } else if (pageType === PageType.SUBREDDIT) {
+            Page = Posts;
+        } else if (pageType === PageType.POST_DETAILS) {
+            Page = PostDetails;
         }
         setPast([...past, {
             elem: (
-                <RedditView
-                    path={path}
+                <Page
+                    url={path}
                     key={Math.random()} // Need key or element won't be treated as new
-                    webviewerKey={webviewerKey}
-                    reuseWebviewer={reuseWebviewer}
                 />
             ),
             name,
@@ -110,10 +107,6 @@ export function HistoryProvider({
         }
     }
 
-    const getCurrentWebviewerKey = () => {
-        return past.slice(-1)[0]?.elem.props.webviewerKey;
-    }
-
     return (
         <HistoryContext.Provider value={{
             past,
@@ -126,7 +119,6 @@ export function HistoryProvider({
             replace,
             forward,
             backward,
-            getCurrentWebviewerKey,
         }}>
             {children}
         </HistoryContext.Provider>

@@ -1,17 +1,24 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { RedditGlobalContext } from '../contexts/RedditGlobalContext';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';
-
+import { Subreddit, Subreddits as SubredditsObj, getSubreddits } from '../api/Subreddits';
 
 export default function Subreddits() {
   const theme = useContext(ThemeContext);
-  const redditGlobalContext = useContext(RedditGlobalContext);
   const history = useContext(HistoryContext);
+
+  const [subreddits, setSubreddits] = useState<SubredditsObj>({ moderator: [], subscriber: []});
+
+  const loadSubreddits = async () => {
+    const newSubreddits = await getSubreddits();
+    setSubreddits(newSubreddits);
+  };
+
+  useEffect(() => { loadSubreddits() }, []);
 
   return (
     <View style={styles.subredditsContainer}>
@@ -20,19 +27,19 @@ export default function Subreddits() {
       })}>
         {[{
           title: 'Home',
-          path: '',
+          path: 'https://www.reddit.com/',
           description: 'Posts from subscriptions',
           icon: <FontAwesome5 name="home" size={24} color={theme.text} />,
           color: '#fa045e',
         }, {
           title: 'Popular',
-          path: '/r/popular',
+          path: 'https://www.reddit.com/r/popular',
           description: 'Most popular posts across Reddit',
           icon: <Feather name="trending-up" size={24} color={theme.text} />,
           color: '#008ffe',
         }, {
           title: 'All',
-          path: '/r/all',
+          path: 'https://www.reddit.com/r/all',
           description: 'Posts across all subreddits',
           icon: <FontAwesome5 name="sort-amount-up-alt" size={24} color={theme.text} />,
           color: '#02d82b',
@@ -71,22 +78,21 @@ export default function Subreddits() {
             </View>
           </TouchableOpacity>
         ))}
-        {Object.entries(redditGlobalContext.subscriptionList)
-        .filter(([category, _]) =>
-          ['moderating', 'your communities', 'Custom feeds'].includes(category)
-        ).map(([category, subreddits]) => (
-          <View key={category}>
-            {subreddits.length > 0 && <View style={styles.categoryContainer}>
-              <View style={t(styles.categoryTitleContainer, {
-                backgroundColor: theme.tint,
+        {(Object.keys(subreddits) as (keyof SubredditsObj)[]).map(key =>
+          <View style={styles.categoryContainer} key={key}>
+            <View style={t(styles.categoryTitleContainer, {
+              backgroundColor: theme.tint,
+            })}>
+              <Text style={t(styles.categoryTitle, {
+                color: theme.text,
               })}>
-                <Text style={t(styles.categoryTitle, {
-                  color: theme.text,
-                })}>{category.toUpperCase()}</Text>
-              </View>
-              {subreddits.map((subreddit) => (
+                {key === 'moderator' ? 'Moderator' : 'Subscriber'}
+              </Text>
+            </View>
+            {subreddits[key].map(subreddit => (
+              <View key={subreddit.name}>
                 <TouchableHighlight
-                  key={subreddit.subreddit}
+                  key={subreddit.name}
                   onPress={() => history.pushPath(subreddit.url)}
                   activeOpacity={0.5}
                   style={t(styles.subredditContainer, {
@@ -96,13 +102,13 @@ export default function Subreddits() {
                   <Text style={t(styles.subredditText, {
                     color: theme.text,
                   })}>
-                    {subreddit.subreddit}
+                    {subreddit.name}
                   </Text>
                 </TouchableHighlight>
-              ))}
-            </View>}
+              </View>
+            ))}
           </View>
-        ))}
+        )}
       </ScrollView>
     </View>
   );

@@ -6,24 +6,32 @@ import { Entypo } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import RedditURL from '../utils/RedditURL';
-import { WebviewersContext } from '../contexts/WebViewContext';
+import RedditURL, { PageType } from '../utils/RedditURL';
 
 
 export default function Navbar() {
   const history = useContext(HistoryContext);
-  const { getCurrentWebview } = useContext(WebviewersContext);
   const theme = useContext(ThemeContext);
 
   const { showActionSheetWithOptions } = useActionSheet();
 
   const histLayer = history.past.slice(-1)[0];
-  const currentPath = histLayer.elem.props.path;
+  const currentPath = histLayer.elem.props.url;
+  
+  let pageType = PageType.UNKNOWN;
+  try {
+    pageType = new RedditURL(currentPath).getPageType();
+  } catch {}
+
+  let sortOptionsPages = [
+    PageType.HOME,
+    PageType.POST_DETAILS,
+    PageType.SUBREDDIT,
+    PageType.USER,
+  ];
 
   const changeSort = (sort: string) => {
-    console.log(new RedditURL(currentPath).changeSort(sort).getRelativePath());
     history.replace(new RedditURL(currentPath).changeSort(sort).getRelativePath());
-    // console.log(new RedditURL(currentPath).changeSort(sort));
   }
 
   return (
@@ -71,7 +79,7 @@ export default function Navbar() {
         </Text>
       </View>
       <View style={t(styles.sectionContainer, { justifyContent: 'flex-end' })}>
-        { histLayer.elem.type.name === 'RedditView' &&
+        { sortOptionsPages.includes(pageType) &&
           <>
             <TouchableOpacity
               activeOpacity={0.5}

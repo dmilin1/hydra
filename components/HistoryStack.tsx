@@ -3,13 +3,12 @@ import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import { HistoryContext, HistoryLayer, HistoryProvider, HistoryProviderProps } from '../contexts/HistoryContext';
 import { t } from '../contexts/ThemeContext';
 import Navbar from './Navbar';
-import { WebviewersContext, WebviewersProvider } from '../contexts/WebViewContext';
 
 
 function History() {
   const history = useContext(HistoryContext);
-  const { webviewers } = useContext(WebviewersContext);
   const touchX = useRef(new Animated.Value(0)).current;
+  const touchStart = useRef<{ x: number, y: number}>();
   const physics = useRef({ momentum: 0, lastX: 0, lastTime: 0 });
   const gestureDirection = useRef('forward');
   const [selected, setSelected] = React.useState<HistoryLayer|null>(null);
@@ -19,14 +18,39 @@ function History() {
       style={styles.historyContainer}
       onStartShouldSetResponderCapture={(e) => {
         const screenWidth = Dimensions.get('window').width
-        const boundarySize = 20;
+        const boundarySize = 5;
         touchX.setValue(e.nativeEvent.pageX);
+        touchStart.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY};
         if (e.nativeEvent.pageX < boundarySize && history.past.length > 1) {
           setSelected(history.past.slice(-1)[0]);
           gestureDirection.current = 'backward';
           return true;
         }
         if (e.nativeEvent.pageX > screenWidth - boundarySize && history.future.length > 0) {
+          setSelected(history.future.slice(-1)[0]);
+          gestureDirection.current = 'forward';
+          return true;
+        }
+        return false;
+      }}
+      onMoveShouldSetResponderCapture={e => {
+        if (!touchStart.current) return false;
+        const boundarySize = 40;
+        const screenWidth = Dimensions.get('window').width;
+        if (
+          e.nativeEvent.pageX - touchStart.current.x > 15
+          && touchStart.current.x < boundarySize
+          && history.past.length > 1
+        ) {
+          setSelected(history.past.slice(-1)[0]);
+          gestureDirection.current = 'backward';
+          return true;
+        }
+        if (
+          touchStart.current.x - e.nativeEvent.pageX > 15
+          && touchStart.current.x > screenWidth - boundarySize
+          && history.future.length > 0
+        ) {
           setSelected(history.future.slice(-1)[0]);
           gestureDirection.current = 'forward';
           return true;
@@ -51,10 +75,10 @@ function History() {
         } else {
           swipeDirection = physics.current.lastX > Dimensions.get('window').width / 2 ? 'forward' : 'backward';
         }
-        Animated.timing(touchX, {
-          toValue: swipeDirection === 'forward' ? Dimensions.get('window').width : 0,
-          duration: 200,
+        Animated.spring(touchX, {
+          toValue: swipeDirection === 'forward' ? Dimensions.get('window').width + 10 : -5,
           useNativeDriver: false,
+          overshootClamping: true,
         }).start(() => {
           setSelected(null);
           if (gestureDirection.current === swipeDirection) return;
@@ -82,9 +106,6 @@ function History() {
           </Animated.View>
         )
       })}
-      <View style={{ height: 1000, width: 1000, zIndex: -1000 }}>
-        {Object.values(webviewers).map((webviewer) => webviewer.elem)}
-      </View>
     </View>
   )
 }
@@ -95,12 +116,10 @@ export default function HistoryStack(params: HistoryProviderProps) {
       initialFuture={params.initialFuture}
       initialPast={params.initialPast}
     >
-      <WebviewersProvider>
-        <>
-          <Navbar/>
-          <History/>
-        </>
-      </WebviewersProvider>
+      <>
+        <Navbar/>
+        <History/>
+      </>
     </HistoryProvider>
   )
 }

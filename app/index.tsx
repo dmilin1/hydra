@@ -6,7 +6,6 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
 import Tabs from './tabs';
-import { RedditGlobalProvider } from '../contexts/RedditGlobalContext';
 
 import {LogBox} from 'react-native';
 
@@ -31,11 +30,11 @@ export default function RootLayout() {
 	return (
 		<ThemeProvider>
 			<ActionSheetProvider>
-				<RedditGlobalProvider>
+				<>
 					{/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
 					{!loaded && <SplashScreen />}
 					{loaded && <Tabs />}
-				</RedditGlobalProvider>
+				</>
 			</ActionSheetProvider>
 		</ThemeProvider>
 	);
