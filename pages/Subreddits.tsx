@@ -89,7 +89,9 @@ export default function Subreddits() {
                 {key === 'moderator' ? 'Moderator' : 'Subscriber'}
               </Text>
             </View>
-            {subreddits[key].map(subreddit => (
+            {subreddits[key]
+            .sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)
+            .map(subreddit => (
               <View key={subreddit.name}>
                 <TouchableHighlight
                   key={subreddit.name}

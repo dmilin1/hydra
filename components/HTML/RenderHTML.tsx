@@ -1,9 +1,12 @@
 import { Platform, ScrollView, ScrollViewProps, StyleSheet, Text, TextProps, TextStyle, View, ViewProps, ViewStyle } from 'react-native';
 import { parseDocument, ElementType } from 'htmlparser2';
 import React, { useContext } from 'react';
-import { ThemeContext, t } from '../contexts/ThemeContext';
+import { ThemeContext, t } from '../../contexts/ThemeContext';
 import { AnyNode, Text as TextNode, Element as ElementNode } from 'domhandler';
-import ImageViewer from './PostParts/ImageViewer';
+import * as WebBrowser from 'expo-web-browser';
+import ImageViewer from '../RedditDataRepresentations/Post/PostParts/ImageViewer';
+import RedditURL from '../../utils/RedditURL';
+import { HistoryContext } from '../../contexts/HistoryContext';
 
 type InheritedStyles = ViewStyle & TextStyle;
 
@@ -13,6 +16,7 @@ function lineHeight(fontSize: number) {
 
 export default function RenderHtml({ html }: {html: string}) {
     const theme = useContext(ThemeContext);
+    const history = useContext(HistoryContext);
 
     const renderTextNode = (textNode: TextNode, index: number, inheritedStyles: InheritedStyles) => {
         const parent = textNode.parent as ElementNode;
@@ -136,7 +140,12 @@ export default function RenderHtml({ html }: {html: string}) {
             Wrapper = Text;
             inheritedStyles.color = theme.buttonText;
             wrapperProps.onPress = () => {
-                console.log('pressed link:', element.attribs.href);
+                const url = element.attribs.href;
+                try {
+                    history.pushPath(new RedditURL(url).toString());
+                } catch {
+                    WebBrowser.openBrowserAsync(element.attribs.href);
+                }
             }
         } else if (element.name === 'em') {
             Wrapper = Text;

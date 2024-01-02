@@ -1,3 +1,5 @@
+import URL from "./URL";
+
 export enum PageType {
     HOME,
     POST_DETAILS,
@@ -7,68 +9,85 @@ export enum PageType {
     UNKNOWN,
 }
 
-export default class RedditURL {
+export default class RedditURL extends URL {
     url: string;
   
     constructor(url: string) {
+        super(url);
         if (url.startsWith('https://')) {
             this.url = url;
         } else if (url.startsWith('www')) {
             this.url = `https://${url}`;
         } else if (url.startsWith('reddit.com')) {
             this.url = `https://www.${url}`;
-        } else if (url.startsWith('/')) {
+        } else if (
+            url.startsWith('/r')
+            || url.startsWith('/u')
+            || url.startsWith('/search')
+        ) {
             this.url = `https://www.reddit.com${url}`;
         } else {
             throw new Error(`Weird URL being passed ${url}`);
         }
+        if (
+            !this.url.startsWith('https://www.reddit.com')
+            && !this.url.startsWith('https://i.redd.it')
+            && !this.url.startsWith('https://v.redd.it')
+        ) {
+            throw new Error('Not a reddit URL');
+        }
     }
 
-    toString(): string {
-        return this.url;
+    getSort(): string|null {
+        const pageType = this.getPageType();
+        if ([PageType.HOME, PageType.SUBREDDIT].includes(pageType)) {
+            const sort = this.url.split(/\/r\/|\/|\?/).slice(3, 5) ?? [];
+            for (let check of ['best', 'hot', 'new', 'top', 'rising']) {
+                if (sort.includes(check)) {
+                    return check;
+                }
+            }
+        } else if (pageType === PageType.POST_DETAILS) {
+            return this.getQueryParam('sort') ?? 'best';
+        }
+        return null;
     }
 
     changeSort(sort: string): RedditURL {
         const subreddit = this.getSubreddit();
         const urlParams = this.getURLParams();
-        if (this.getPageType() === PageType.HOME) {
-            this.url = `https://www.reddit.com${subreddit ? `/r/${subreddit}` : ''}/${sort.toLowerCase()}/?${urlParams}`;
-        } else {
-            this.changeQueryParam('sort', sort);
+        const pageType = this.getPageType();
+        if (pageType === PageType.HOME) {
+            this.url = `https://www.reddit.com/${sort.toLowerCase()}/?${urlParams}`;
+        } else if (pageType === PageType.SUBREDDIT) {
+            this.url = `https://www.reddit.com/r/${subreddit}/${sort.toLowerCase()}/?${urlParams}`;
+        } else if (pageType === PageType.POST_DETAILS) {
+            this.changeQueryParam('sort', sort.toLowerCase());
         }
         return this;
     }
 
     getSubreddit(): string {
-        return this.url.split('r/')[1]?.split(/\/|\?/)[0] ?? '';
+        return this.url.split('/r/')[1]?.split(/\/|\?/)[0] ?? '';
     }
 
-    getURLParams(): string {
-        return this.url.split('?')[1] ?? '';
-    }
-
-    getRelativePath(): string {
-        return this.url.split(/\.com|\?/)[1] ?? '';
-    }
-
-    changeQueryParam(key: string, value: string): RedditURL {
+    jsonify(): RedditURL {
+        const base = this.getBasePath();
         const urlParams = this.getURLParams();
-        const urlParamsObject = new URLSearchParams(urlParams);
-        urlParamsObject.set(key, value);
-        this.url = this.url.split('?')[0] + '?' + urlParamsObject.toString();
+        this.url = `${base}.json?${urlParams}`;
         return this;
     }
-
+    
     getPageType(): PageType {
         const relativePath = this.getRelativePath();
         if (
             relativePath === ''
             || relativePath === '/'
-            || relativePath === '/best'
-            || relativePath === '/hot'
-            || relativePath === '/new'
-            || relativePath === '/top'
-            || relativePath === '/rising'
+            || relativePath.startsWith('/best')
+            || relativePath.startsWith('/hot')
+            || relativePath.startsWith('/new')
+            || relativePath.startsWith('/top')
+            || relativePath.startsWith('/rising')
         ) {
             return PageType.HOME;
         } else if (relativePath.includes('/comments/')) {
@@ -89,7 +108,8 @@ export default class RedditURL {
         const pageType = this.getPageType();
         if (pageType === PageType.HOME) {
             const relativePath = this.getRelativePath();
-            name = relativePath.split('/')[1] ?? 'Home';
+            name = relativePath.split('/')[1];
+            name = name ? name : 'Home';
             name = name.charAt(0).toUpperCase() + name.slice(1);
         } else if (pageType === PageType.POST_DETAILS) {
             name = this.getSubreddit();

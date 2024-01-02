@@ -16,6 +16,7 @@ export default {
         tint: '#222',
         iconPrimary: '#2282fe',
         iconSecondary: '#ccc',
+        divider: '#333',
         postColorTint: rainbow,
     },
     light: {
@@ -26,6 +27,7 @@ export default {
         tint: '#222',
         iconPrimary: '#2282fe',
         iconSecondary: '#ccc',
+        divider: '#333',
         postColorTint: rainbow,
     },
 };

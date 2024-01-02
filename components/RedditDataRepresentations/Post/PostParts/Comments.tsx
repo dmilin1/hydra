@@ -1,10 +1,10 @@
-import React, { useContext, useState, useMemo, RefObject } from 'react';
+import React, { useContext, useState, useMemo, RefObject, Suspense } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEvent, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
-import RenderHtml from '../RenderHTML';
-import { Comment, PostDetail } from '../../api/PostDetail';
-import { LoadMoreCommentsFunc } from '../../pages/PostDetails';
+import { ThemeContext, t } from '../../../../contexts/ThemeContext';
+import RenderHtml from '../../../HTML/RenderHTML';
+import { Comment, PostDetail } from '../../../../api/PostDetail';
+import { LoadMoreCommentsFunc } from '../../../../pages/PostDetails';
 
 interface CommentProps {
   loadMoreComments: LoadMoreCommentsFunc,
@@ -51,7 +51,7 @@ function CommentElem({ loadMoreComments, comment, index, scrollChange }: Comment
               marginBottom: collapsed ? 0 : 8,
             })}>
               <Text style={t(styles.author, {
-                color: theme.text,
+                color: comment.isOP ? theme.buttonText : theme.text,
               })}>
                 {comment.author}
               </Text>
@@ -137,13 +137,15 @@ interface CommentsProps {
 export default function Comments({ loadMoreComments, postDetail, scrollChange }: CommentsProps) {
   return (
     <View>
-      <CommentElem
-        key={postDetail.id}
-        loadMoreComments={loadMoreComments}
-        comment={postDetail}
-        index={0}
-        scrollChange={scrollChange}
-      />
+      <Suspense fallback={<View><Text>Derp</Text></View>}>
+        <CommentElem
+          key={postDetail.id}
+          loadMoreComments={loadMoreComments}
+          comment={postDetail}
+          index={0}
+          scrollChange={scrollChange}
+        />
+      </Suspense>
     </View>
   );
 }

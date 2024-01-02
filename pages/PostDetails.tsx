@@ -2,13 +2,13 @@ import React, { useContext, useCallback, useRef, useEffect, useState } from 'rea
 import { StyleSheet, View, Text, RefreshControl, ActivityIndicator } from 'react-native';
 import { AntDesign, Feather, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
-import VideoPlayer from '../components/PostParts/VideoPlayer';
-import ImageViewer from '../components/PostParts/ImageViewer';
+import VideoPlayer from '../components/RedditDataRepresentations/Post/PostParts/VideoPlayer';
+import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/ImageViewer';
 import { ScrollView } from 'react-native-gesture-handler';
-import Comments from '../components/PostParts/Comments';
-import RenderHtml from '../components/RenderHTML';
+import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';
+import RenderHtml from '../components/HTML/RenderHTML';
 import { getPostsDetail, loadMoreComments, PostDetail, Comment } from '../api/PostDetail';
-import PollViewer from '../components/PostParts/PollViewer';
+import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PollViewer';
 
 type PostDetailsProps = {
   url: string,
@@ -50,7 +50,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
 
   const loadMoreCommentsFunc: LoadMoreCommentsFunc = async (commentIds, commentPath, childStartIndex) => {
     if (!postDetail) return;
-    const newComments = await loadMoreComments(postDetail?.id, commentIds, commentPath, childStartIndex);
+    const newComments = await loadMoreComments(postDetail.subreddit, postDetail?.id, commentIds, commentPath, childStartIndex);
     setPostDetail(oldPostDetail => {
       if (oldPostDetail) {
         const parent = getCommentFromPath(oldPostDetail, commentPath);

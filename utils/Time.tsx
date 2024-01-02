@@ -15,17 +15,17 @@ export default class Time {
         const diffMonths = Math.floor(diffDays / 30);
         const diffYears = Math.floor(diffDays / 365);
         if (diffSeconds < 60) {
-            return `${diffSeconds} second${diffSeconds === 1 ? '' : 's'} ago`;
+            return `${diffSeconds} second${diffSeconds === 1 ? '' : 's'}`;
         } else if (diffMinutes < 60) {
-            return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
+            return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'}`;
         } else if (diffHours < 24) {
-            return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+            return `${diffHours} hour${diffHours === 1 ? '' : 's'}`;
         } else if (diffDays < 30) {
-            return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+            return `${diffDays} day${diffDays === 1 ? '' : 's'}`;
         } else if (diffMonths < 12) {
-            return `${diffMonths} month${diffMonths === 1 ? '' : 's'} ago`;
+            return `${diffMonths} month${diffMonths === 1 ? '' : 's'}`;
         } else {
-            return `${diffYears} year${diffYears === 1 ? '' : 's'} ago`;
+            return `${diffYears} year${diffYears === 1 ? '' : 's'}`;
         }
     }
 }

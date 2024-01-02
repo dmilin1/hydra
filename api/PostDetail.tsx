@@ -3,12 +3,14 @@ import { decode } from 'html-entities';
 import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import { Poll } from './Posts';
+import RedditURL from '../utils/RedditURL';
 
 export type Comment = {
     id: string,
     depth: number,
     path: number[],
     author: string,
+    isOP: boolean,
     upvotes: number,
     html: string,
     comments: Comment[],
@@ -48,6 +50,7 @@ function formatComments(comments: any, commentPath: number[] = [], childStartInd
             depth: commentPath.length,
             path: childCommentPath,
             author: comment.data.author,
+            isOP: comment.data.is_submitter,
             upvotes: comment.data.ups,
             html: decode(comment.data.body_html),
             comments: comment.data.replies ? formatComments(comment.data.replies.data.children, childCommentPath) : [],
@@ -56,14 +59,14 @@ function formatComments(comments: any, commentPath: number[] = [], childStartInd
                 childIds: loadMoreChild.data.children,
             } : undefined,
             createdAt: comment.data.created,
-            timeSince: new Time(comment.data.created * 1000).prettyTimeSince(),
+            timeSince: new Time(comment.data.created * 1000).prettyTimeSince() + ' ago',
         });
     };
     return formattedComments;
 }
 
 export async function getPostsDetail(url: string, options: GetPostOptions = {}): Promise<PostDetail> {
-    const response = await api(`${url}.json`);
+    const response = await api(new RedditURL(url).jsonify().toString());
     const post = response[0].data.children[0].data;
     const comments = response[1].data.children;
     let externalLink = undefined;
@@ -74,6 +77,9 @@ export async function getPostsDetail(url: string, options: GetPostOptions = {}):
     let images = Object.values(post.media_metadata ?? {}).map((data : any) => 
         data.s.u.replace(/&amp;/g, '&')
     );
+    if (images.length === 0 && post.post_hint === 'image') {
+        images = [post.url];
+    }
     let poll = undefined;
     if (post.poll_data) {
         poll = {
@@ -89,12 +95,13 @@ export async function getPostsDetail(url: string, options: GetPostOptions = {}):
         path: [],
         title: post.title,
         author: post.author,
+        isOP: post.is_submitter,
         upvotes: post.ups,
         subreddit: post.subreddit,
         html: decode(post.selftext_html) ?? '',
         commentCount: post.num_comments,
         link: post.permalink,
-        images: images,
+        images,
         video: post.media?.reddit_video?.fallback_url,
         poll: poll,
         comments: formattedComments,
@@ -104,23 +111,24 @@ export async function getPostsDetail(url: string, options: GetPostOptions = {}):
         } : undefined,
         externalLink,
         createdAt: post.created,
-        timeSince: new Time(post.created * 1000).prettyTimeSince(),
+        timeSince: new Time(post.created * 1000).prettyTimeSince() + ' ago',
         after: post.name,
     }
 }
 
 
 export async function loadMoreComments(
+    subreddit: string,
     postId: string, 
     commentIds: string[],
     commentPath: number[],
     childStartIndex: number
 ): Promise<Comment[]> {
     const responses = await Promise.all(commentIds.map(commentId =>
-        api(`https://www.reddit.com/r/AskReddit/comments/${postId}/comment/${commentId}/.json`
+        api(`https://www.reddit.com/r/${subreddit}/comments/${postId}/comment/${commentId}/.json`
     )));
     const formattedComments = formatComments(
-        responses.map(response => response[1].data.children[0]).filter(comment => comment !== undefined),
+        responses.map(response => response[1]?.data?.children?.[0]).filter(comment => comment !== undefined),
         commentPath,
         childStartIndex,
     );

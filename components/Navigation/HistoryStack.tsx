@@ -1,7 +1,7 @@
-import React, { useContext, useRef } from 'react';
+import React, { Fragment, useContext, useRef } from 'react';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
-import { HistoryContext, HistoryLayer, HistoryProvider, HistoryProviderProps } from '../contexts/HistoryContext';
-import { t } from '../contexts/ThemeContext';
+import { HistoryContext, HistoryLayer, HistoryProvider, HistoryProviderProps } from '../../contexts/HistoryContext';
+import { t } from '../../contexts/ThemeContext';
 import Navbar from './Navbar';
 
 
@@ -17,9 +17,9 @@ function History() {
     <View
       style={styles.historyContainer}
       onStartShouldSetResponderCapture={(e) => {
+        if (e.nativeEvent.identifier as unknown !== 1) return false;
         const screenWidth = Dimensions.get('window').width
         const boundarySize = 5;
-        touchX.setValue(e.nativeEvent.pageX);
         touchStart.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY};
         if (e.nativeEvent.pageX < boundarySize && history.past.length > 1) {
           setSelected(history.past.slice(-1)[0]);
@@ -34,6 +34,7 @@ function History() {
         return false;
       }}
       onMoveShouldSetResponderCapture={e => {
+        if (e.nativeEvent.identifier as unknown !== 1) return false;
         if (!touchStart.current) return false;
         const boundarySize = 40;
         const screenWidth = Dimensions.get('window').width;
@@ -58,6 +59,7 @@ function History() {
         return false;
       }}
       onResponderMove={(e) => {
+        if (e.nativeEvent.identifier as unknown !== 1) return false;
         const timeDelta = e.timeStamp - physics.current.lastTime;
         physics.current = {
           momentum: (e.nativeEvent.pageX - physics.current.lastX) / timeDelta,
@@ -67,7 +69,8 @@ function History() {
         physics.current.lastX = e.nativeEvent.pageX;
         touchX.setValue(e.nativeEvent.pageX);
       }}
-      onResponderEnd={() => {
+      onResponderEnd={(e) => {
+        if (e.nativeEvent.identifier as unknown !== 1) return false;
         if (!selected) return;
         let swipeDirection = 'forward';
         if (Math.abs(physics.current.momentum) > 0.2) {
@@ -76,8 +79,8 @@ function History() {
           swipeDirection = physics.current.lastX > Dimensions.get('window').width / 2 ? 'forward' : 'backward';
         }
         Animated.spring(touchX, {
-          toValue: swipeDirection === 'forward' ? Dimensions.get('window').width + 10 : -5,
-          useNativeDriver: false,
+          toValue: swipeDirection === 'forward' ? Dimensions.get('window').width : 0,
+          useNativeDriver: true,
           overshootClamping: true,
         }).start(() => {
           setSelected(null);
@@ -91,19 +94,34 @@ function History() {
       }}
     >
       {[...history.past, ...(history.future.slice().reverse())].map((layer, i) => {
-        let left : string|number|Animated.Value = i < history.past.length ? 0 : '100%';
+        let left : string|number|Animated.Value = i < history.past.length ? 0 : Dimensions.get('window').width;
         if (layer === selected) {
           left = touchX;
         }
         return (
-          <Animated.View
-            key={i}
-            style={t(styles.historyLayerContainer, {
-              left: left,
-            })}
-          >
-            {layer.elem}
-          </Animated.View>
+          <Fragment key={i}>
+            <Animated.View
+              style={t(styles.historyLayerContainer, {
+                zIndex: 2*i + 2,
+                transform: [{
+                  translateX: left,
+                }],
+              })}
+            >
+              {layer.elem}
+            </Animated.View>
+            {layer === selected &&
+              /**
+               * Adds an invisible screen between layers to prevent touch events
+               * from passing through to the layer below. Makes it feel less buggy.
+               */
+              <View
+                style={t(styles.historyLayerContainer, {
+                  zIndex: 2*i + 1,
+                })}
+              />
+            }
+          </Fragment>
         )
       })}
     </View>
