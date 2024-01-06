@@ -5,16 +5,20 @@ import { ThemeContext, t } from '../../../../contexts/ThemeContext';
 import RenderHtml from '../../../HTML/RenderHTML';
 import { Comment, PostDetail } from '../../../../api/PostDetail';
 import { LoadMoreCommentsFunc } from '../../../../pages/PostDetails';
+import { HistoryContext } from '../../../../contexts/HistoryContext';
 
 interface CommentProps {
-  loadMoreComments: LoadMoreCommentsFunc,
-  comment: Comment,
+  loadMoreComments?: LoadMoreCommentsFunc,
+  comment: PostDetail|Comment,
   index: number,
-  scrollChange: (y: number) => void,
+  scrollChange?: (y: number) => void,
+  displayInList?: boolean, // Changes render style for use in something like a list of user comments
 }
 
-function CommentElem({ loadMoreComments, comment, index, scrollChange }: CommentProps) {
+export function CommentComponent({ loadMoreComments, comment, index, scrollChange, displayInList }: CommentProps) {
   const theme = useContext(ThemeContext);
+  const history = useContext(HistoryContext);
+
   const commentRef = React.useRef<TouchableOpacity>(null);
 
   const [collapsed, setCollapsed] = useState(false);
@@ -27,22 +31,28 @@ function CommentElem({ loadMoreComments, comment, index, scrollChange }: Comment
           ref={commentRef}
           activeOpacity={1}
           onPress={e => {
-            commentRef.current?.measure((fx, fy, width, height, px, py) => {
-              const change = py - 150;
-              if (change < 0 && !collapsed) {
-                scrollChange(py - 150);
+            if (displayInList) {
+              if (comment.type === 'comment') {
+                history.pushPath(comment.link);
               }
-            });
-            setCollapsed(!collapsed)
+            } else {
+              commentRef.current?.measure((fx, fy, width, height, px, py) => {
+                const change = py - 150;
+                if (change < 0 && !collapsed && scrollChange) {
+                  scrollChange(py - 150);
+                }
+              });
+              setCollapsed(!collapsed)
+            }
           }}
-          style={t(styles.outerCommentContainer, {
+          style={t(styles.outerCommentContainer, displayInList ? styles.outerCommentContainerDisplayInList : {}, {
             marginLeft: 10 * comment.depth,
             borderTopColor: theme.tint,
           })}
         >
           <View
             key={index}
-            style={t(styles.commentContainer, {
+            style={t(styles.commentContainer, displayInList ? styles.commentContainerDisplayInList : {}, {
               borderLeftWidth: comment.depth === 0 ? 0 : 1,
               borderLeftColor: theme.postColorTint[(comment.depth - 1) % theme.postColorTint.length],
             })}
@@ -73,6 +83,28 @@ function CommentElem({ loadMoreComments, comment, index, scrollChange }: Comment
                 <RenderHtml html={comment.html} />
               </View>
             ) : null }
+            {displayInList && (
+              <TouchableOpacity
+                style={t(styles.sourceContainer, {
+                  backgroundColor: theme.tint,
+                })}
+                activeOpacity={0.8}
+                onPress={() => {
+                  history.pushPath(comment.postLink);
+                }}
+              >
+                <Text style={t(styles.sourcePostTitle, {
+                  color: theme.subtleText,
+                })}>
+                  {comment.postTitle}
+                </Text>
+                <Text style={t(styles.sourceSubreddit, {
+                  color: theme.verySubtleText,
+                })}>
+                  {comment.subreddit}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </TouchableOpacity>
       )}
@@ -80,7 +112,7 @@ function CommentElem({ loadMoreComments, comment, index, scrollChange }: Comment
         <>
           { comment.comments.length > 0 &&
             comment.comments.map((childComment, childIndex) => (
-              <CommentElem
+              <CommentComponent
                 key={childComment.id}
                 loadMoreComments={loadMoreComments}
                 comment={childComment}
@@ -94,7 +126,7 @@ function CommentElem({ loadMoreComments, comment, index, scrollChange }: Comment
               activeOpacity={0.5}
               onPress={async () => {
                 setLoadingMore(true);
-                if (comment.loadMore) {
+                if (comment.loadMore && loadMoreComments) {
                   await loadMoreComments(
                     comment.loadMore.childIds.slice(0, 5),
                     comment.path,
@@ -124,6 +156,13 @@ function CommentElem({ loadMoreComments, comment, index, scrollChange }: Comment
           }
         </>
       ) : null}
+      {displayInList && (
+        <View
+          style={t(styles.spacer, {
+            backgroundColor: theme.tint,
+          })}
+        />
+      )}
     </View>
   ), [loadingMore, collapsed, comment, theme]);
 }
@@ -138,7 +177,7 @@ export default function Comments({ loadMoreComments, postDetail, scrollChange }:
   return (
     <View>
       <Suspense fallback={<View><Text>Derp</Text></View>}>
-        <CommentElem
+        <CommentComponent
           key={postDetail.id}
           loadMoreComments={loadMoreComments}
           comment={postDetail}
@@ -155,10 +194,16 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     paddingVertical: 10,
   },
+  outerCommentContainerDisplayInList: {
+    borderTopWidth: 0,
+  },
   commentContainer: {
     flex: 1,
     paddingLeft: 15,
     paddingRight: 10,
+  },
+  commentContainerDisplayInList: {
+    paddingLeft: 10,
   },
   topBar: {
     flexDirection: 'row',
@@ -175,8 +220,23 @@ const styles = StyleSheet.create({
   textContainer: {
     marginVertical: -10,
   },
+  sourceContainer: {
+    marginTop: 15,
+    marginBottom: 5,
+    padding: 10,
+    borderRadius: 5,
+  },
+  sourcePostTitle: {
+    marginBottom: 10,
+  },
+  sourceSubreddit: {
+
+  },
   text: {
     fontSize: 15,
     lineHeight: 18,
+  },
+  spacer: {
+      height: 10,
   },
 });

@@ -19,6 +19,6 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
     );
 }
 
-export function t(style1: ViewStyle | TextStyle | ImageStyle, style2: any) {
-    return { ...style1, ...style2 };
+export function t(...styles: (ViewStyle | TextStyle | ImageStyle)[]) {
+    return Object.assign({}, ...styles);
 }

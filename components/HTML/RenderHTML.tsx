@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { ThemeContext, t } from '../../contexts/ThemeContext';
 import { AnyNode, Text as TextNode, Element as ElementNode } from 'domhandler';
 import * as WebBrowser from 'expo-web-browser';
-import ImageViewer from '../RedditDataRepresentations/Post/PostParts/ImageViewer';
+import ImageViewer from '../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer';
 import RedditURL from '../../utils/RedditURL';
 import { HistoryContext } from '../../contexts/HistoryContext';
 

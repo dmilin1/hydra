@@ -2,33 +2,47 @@ import 'react-native-url-polyfill/auto'
 import { api } from "./RedditApi";
 import { Subreddit, formatSubredditData } from './Subreddits';
 import { Post, formatPostData } from './Posts';
+import RedditURL from '../utils/RedditURL';
+import { User, formatUserData } from './User';
 
 export const SearchTypes = ['posts', 'subreddits', 'users'] as const;
 export type SearchType = typeof SearchTypes[number];
 
 type SearchOptions = {
     sort?: string,
+    limit?: string,
+    after?: string,
     time?: 'all' | 'year' | 'month' | 'week' | 'day' | 'hour',
 }
 
-async function search(type: SearchType, text: string, options: SearchOptions = {}) {
-    const searchParams = new URLSearchParams(options);
+export type SearchResult = Post|Subreddit|User;
+
+export async function getSearchResults(type: SearchType, text: string, options: SearchOptions = {}): Promise<SearchResult[]> {
     const typeMap = {
         'posts': 'link',
         'subreddits': 'sr',
         'users': 'user',
     };
-    return await api(`https://www.reddit.com/search/.json?type=${typeMap[type]}&q=${text}&${searchParams.toString()}`, {});
-}
-
-export async function searchPosts(text: string, options: SearchOptions = {}): Promise<Post[]> {
-    const results = await search('posts', text, options);
-    const posts = results.data.children.map((child: any) => formatPostData(child));
-    return posts;
-}
-
-export async function searchSubreddits(text: string, options: SearchOptions = {}): Promise<Subreddit[]> {
-    const results = await search('subreddits', text, options);
-    const subreddits = results.data.children.map((child: any) => formatSubredditData(child));
-    return subreddits;
+    const redditURL = new RedditURL(`https://www.reddit.com/search/`);
+    redditURL.setQueryParams({
+        ...options,
+        type: typeMap[type],
+        q: text,
+    });
+    redditURL.jsonify();
+    const res = await api(redditURL.toString());
+    if (!res.data) return [];
+    const results = res.data.children.map((child: any) => {
+        if (child.kind === 't3') {
+            return formatPostData(child);
+        }
+        if (child.kind === 't5') {
+            return formatSubredditData(child);
+        }
+        if (child.kind === 't2') {
+            if (!child.data.id) return;
+            return formatUserData(child.data);
+        }
+    }).filter((result: any) => result !== undefined);
+    return results;
 }

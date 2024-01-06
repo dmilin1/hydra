@@ -1,4 +1,5 @@
 import 'react-native-url-polyfill/auto'
+import { decode } from 'html-entities';
 import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import RedditURL from '../utils/RedditURL';
@@ -13,11 +14,13 @@ export type Poll = {
 
 export type Post = {
     id: string,
+    type: 'post',
     title: string,
     author: string,
     upvotes: number,
     subreddit: string,
     text: string,
+    html: string,
     commentCount: number,
     link: string,
     images: string[],
@@ -58,11 +61,13 @@ export function formatPostData(child: any): Post {
     }
     return {
         id: child.data.id,
+        type: 'post',
         title: child.data.title,
         author: child.data.author,
         upvotes: child.data.ups,
         subreddit: child.data.subreddit,
         text: child.data.selftext,
+        html: decode(child.data.body_html),
         commentCount: child.data.num_comments,
         link: `https://www.reddit.com${child.data.permalink}`,
         images: images,

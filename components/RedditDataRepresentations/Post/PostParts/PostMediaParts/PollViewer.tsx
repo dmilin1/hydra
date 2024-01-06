@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { ThemeContext, t } from '../../../../contexts/ThemeContext';
-import { Poll } from '../../../../api/Posts';
+import { ThemeContext, t } from '../../../../../contexts/ThemeContext';
+import { Poll } from '../../../../../api/Posts';
 
 
 export default function PollViewer({ poll }: { poll: Poll }) {

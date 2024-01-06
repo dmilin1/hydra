@@ -7,38 +7,44 @@ import RedditURL from '../utils/RedditURL';
 
 export type Comment = {
     id: string,
+    type: 'comment',
     depth: number,
     path: number[],
     author: string,
     isOP: boolean,
     upvotes: number,
+    link: string,
+    postTitle: string,
+    postLink: string,
+    subreddit: string,
     html: string,
     comments: Comment[],
     loadMore: undefined|{
         depth: number,
         childIds: string[],
     }
+    after: string,
     createdAt: number,
     timeSince: string,
 }
 
-export type PostDetail = Comment & {
+export type PostDetail = Omit<Comment, 'type'> & {
+    type: 'postDetail',
     title: string,
-    subreddit: string,
     commentCount: number,
-    link: string,
     images: string[],
+    imageThumbnail: string,
     video: string|undefined,
     poll: Poll|undefined,
+    text: string,
     externalLink: string|undefined,
-    after: string,
 }
 
 type GetPostOptions = {
     
 }
 
-function formatComments(comments: any, commentPath: number[] = [], childStartIndex = 0): Comment[] {
+export function formatComments(comments: any, commentPath: number[] = [], childStartIndex = 0): Comment[] {
     let formattedComments: Comment[] = [];
     for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
@@ -47,17 +53,23 @@ function formatComments(comments: any, commentPath: number[] = [], childStartInd
         const loadMoreChild = comment.data.replies?.data?.children.find((child: any) => child.kind === 'more');
         formattedComments.push({
             id: comment.data.id,
+            type: 'comment',
             depth: commentPath.length,
             path: childCommentPath,
             author: comment.data.author,
             isOP: comment.data.is_submitter,
             upvotes: comment.data.ups,
+            link: comment.data.permalink,
+            postTitle: comment.data.link_title,
+            postLink: comment.data.link_permalink,
+            subreddit: comment.data.subreddit,
             html: decode(comment.data.body_html),
             comments: comment.data.replies ? formatComments(comment.data.replies.data.children, childCommentPath) : [],
             loadMore: loadMoreChild ? {
                 depth: loadMoreChild.data.depth,
                 childIds: loadMoreChild.data.children,
             } : undefined,
+            after: comment.data.name,
             createdAt: comment.data.created,
             timeSince: new Time(comment.data.created * 1000).prettyTimeSince() + ' ago',
         });
@@ -91,17 +103,22 @@ export async function getPostsDetail(url: string, options: GetPostOptions = {}):
     const loadMoreChild = comments.find((child: any) => child.kind === 'more');
     return {
         id: post.id,
+        type: 'postDetail',
         depth: -1,
         path: [],
         title: post.title,
         author: post.author,
         isOP: post.is_submitter,
         upvotes: post.ups,
+        postTitle: post.link_title,
+        postLink: post.link_permalink,
         subreddit: post.subreddit,
+        text: post.selftext,
         html: decode(post.selftext_html) ?? '',
         commentCount: post.num_comments,
         link: post.permalink,
         images,
+        imageThumbnail: post.thumbnail,
         video: post.media?.reddit_video?.fallback_url,
         poll: poll,
         comments: formattedComments,

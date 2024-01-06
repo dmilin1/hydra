@@ -28,7 +28,6 @@ export default function Navbar() {
     PageType.HOME,
     PageType.POST_DETAILS,
     PageType.SUBREDDIT,
-    PageType.USER,
   ];
 
   const changeSort = (sort: string) => {
@@ -56,6 +55,7 @@ export default function Navbar() {
     <View
       style={t(styles.navbarContainer, {
         backgroundColor: theme.background,
+        borderBottomColor: theme.tint,
       })}
     >
       <TouchableOpacity
@@ -102,7 +102,6 @@ export default function Navbar() {
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => {
-                const pageType = new RedditURL(currentPath).getPageType();
                 let sortOptions : string[] = [];
                 if (pageType === PageType.HOME) {
                   sortOptions = ['Best', 'Hot', 'New', 'Top', 'Rising', 'Cancel'];
@@ -200,6 +199,7 @@ const styles = StyleSheet.create({
     minHeight: 50,
     flexDirection: 'row',
     alignItems: 'center',
+    borderBottomWidth: 1,
   },
   sectionContainer: {
     flex: 1,

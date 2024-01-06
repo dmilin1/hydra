@@ -1,14 +1,16 @@
 import React, { useContext, useCallback, useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, RefreshControl, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { AntDesign, Feather, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
-import VideoPlayer from '../components/RedditDataRepresentations/Post/PostParts/VideoPlayer';
-import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/ImageViewer';
+import VideoPlayer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/VideoPlayer';
+import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer';
 import { ScrollView } from 'react-native-gesture-handler';
 import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';
 import RenderHtml from '../components/HTML/RenderHTML';
 import { getPostsDetail, loadMoreComments, PostDetail, Comment } from '../api/PostDetail';
-import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PollViewer';
+import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/PollViewer';
+import { HistoryContext } from '../contexts/HistoryContext';
+import PostMedia from '../components/RedditDataRepresentations/Post/PostParts/PostMedia';
 
 type PostDetailsProps = {
   url: string,
@@ -22,6 +24,7 @@ export type LoadMoreCommentsFunc = (
 
 export default function PostDetails({ url }: PostDetailsProps) {
   const theme = useContext(ThemeContext);
+  const history = useContext(HistoryContext);
 
   const scrollHeight = useRef(0);
   const scrollView = useRef<ScrollView>(null);
@@ -95,40 +98,41 @@ export default function PostDetails({ url }: PostDetailsProps) {
               })}>
                 {postDetail.title}
               </Text>
-              {postDetail.video &&
-                <View style={styles.videoContainer}>
-                  <VideoPlayer source={postDetail.video}/>
-                </View>
-              }
-              {postDetail.images.length > 0 &&
-                <View style={styles.imgContainer}>
-                  <ImageViewer images={postDetail.images}/>
-                </View>
-              }
-              {postDetail.poll &&
-                <View style={styles.pollContainer}>
-                  <PollViewer poll={postDetail.poll}/>
-                </View>
-              }
-              {postDetail.html &&
-                <View style={styles.bodyHTMLContainer}>
-                  <RenderHtml html={postDetail.html}/>
-                </View>
-              }
+              <PostMedia
+                post={postDetail}
+              />
               <View style={styles.metadataContainer}>
                 <View style={styles.metadataRow}>
                   <Text style={t(styles.smallText, {
                     color: theme.subtleText,
                   })}>
                     {'in '}
-                    <Text style={styles.boldedSmallText}>
+                  </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => history.pushPath(`/r/${postDetail.subreddit}`)}
+                  >
+                    <Text style={t(styles.boldedSmallText, {
+                      color: theme.subtleText,
+                    })}>
                       {`r/${postDetail.subreddit}`}
                     </Text>
+                  </TouchableOpacity>
+                  <Text style={t(styles.smallText, {
+                    color: theme.subtleText,
+                  })}>
                     {' by '}
-                    <Text style={styles.boldedSmallText}>
+                  </Text>
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => history.pushPath(`/u/${postDetail.author}`)}
+                  >
+                    <Text style={t(styles.boldedSmallText, {
+                      color: theme.subtleText,
+                    })}>
                       {`u/${postDetail.author}`}
                     </Text>
-                  </Text>
+                  </TouchableOpacity>
                 </View>
                 <View style={[styles.metadataRow, { marginTop: 5 }]}>
                   <AntDesign name="arrowup" size={15} color={theme.subtleText} />
@@ -155,11 +159,21 @@ export default function PostDetails({ url }: PostDetailsProps) {
               <Octicons name="reply" size={28} color={theme.iconPrimary} />
               <Feather name="share" size={28} color={theme.iconPrimary} />
             </View>
-            <Comments
-              loadMoreComments={loadMoreCommentsFunc}
-              postDetail={postDetail}
-              scrollChange={scrollChange}
-            />
+            {postDetail.comments.length > 0 ? (
+              <Comments
+                loadMoreComments={loadMoreCommentsFunc}
+                postDetail={postDetail}
+                scrollChange={scrollChange}
+              />
+            ) : (
+              <View style={styles.noCommentsContainer}>
+                <Text style={t(styles.noCommentsText, {
+                  color: theme.text,
+                })}>
+                  No comments
+                </Text>
+              </View>
+            )}
           </>}
         </ScrollView>
       ) : (
@@ -183,26 +197,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 15,
   },
-  bodyHTMLContainer: {
-    marginHorizontal: 15,
-  },
-  bodyHTML: {
-    fontSize: 15,
-    marginVertical: 10,
-    paddingHorizontal: 15,
-  },
-  imgContainer: {
-    marginVertical: 10,
-    height: 200,
-  },
-  videoContainer: {
-    marginVertical: 10,
-    height: 200,
-  },
-  pollContainer: {
-    marginVertical: 10,
-    marginHorizontal: 10,
-  },
   metadataContainer: {
     marginTop: 5,
     paddingHorizontal: 15,
@@ -223,5 +217,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 15,
     paddingVertical: 10,
+  },
+  noCommentsContainer: {
+    marginTop: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noCommentsText: {
+    fontSize: 15,
   }
 });

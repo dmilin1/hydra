@@ -1,7 +1,7 @@
 import React from 'react';
 import HistoryStack from '../../components/Navigation/HistoryStack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SearchPage from '../../pages/SearchPage';
+import AccountPage from '../../pages/AccountPage';
 
 
 export default function Account() {
@@ -9,8 +9,8 @@ export default function Account() {
     <SafeAreaView edges={['top']} style={{ flex: 1 }}>
       <HistoryStack
         initialPast={[{
-          elem: <SearchPage/>,
-          name: 'Search',
+          elem: <AccountPage url='https://www.reddit.com/user/dmilin'/>,
+          name: 'dmilin',
         }]}
       />
     </SafeAreaView>

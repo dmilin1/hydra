@@ -4,6 +4,7 @@ import Time from '../utils/Time';
 
 export type Subreddit = {
     id: string,
+    type: 'subreddit',
     name: string,
     url: string,
     moderating: boolean,
@@ -12,6 +13,7 @@ export type Subreddit = {
     iconURL?: string,
     subscribers: number,
     timeSinceCreation: string,
+    after: string,
 }
 
 export type Subreddits = {
@@ -27,6 +29,7 @@ type GetSubredditsOptions = {
 export function formatSubredditData(child: any): Subreddit {
     return {
         id: child.data.id,
+        type: 'subreddit',
         name: child.data.display_name,
         url: `https://www.reddit.com${child.data.url}`,
         moderating: child.data.user_is_moderator,
@@ -35,6 +38,7 @@ export function formatSubredditData(child: any): Subreddit {
         iconURL: child.data.community_icon,
         subscribers: child.data.subscribers,
         timeSinceCreation: new Time(child.data.created_utc * 1000).prettyTimeSince() + ' old',
+        after: child.data.name,
     };
 }
 

@@ -1,14 +1,15 @@
-import React, { useContext, useCallback, useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, RefreshControl, Dimensions, ActivityIndicator } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
-import VideoPlayer from './PostParts/VideoPlayer';
-import ImageViewer from './PostParts/ImageViewer';
-import PollViewer from './PostParts/PollViewer';
-import { ScrollView } from 'react-native-gesture-handler';
+import VideoPlayer from './PostParts/PostMediaParts/VideoPlayer';
+import ImageViewer from './PostParts/PostMediaParts/ImageViewer';
+import PollViewer from './PostParts/PostMediaParts/PollViewer';
 import { HistoryContext } from '../../../contexts/HistoryContext';
-import { getPosts, Post } from '../../../api/Posts';
+import { Post } from '../../../api/Posts';
+import Link from './PostParts/PostMediaParts/Link';
+import PostMedia from './PostParts/PostMedia';
 
 
 export default function PostComponent({ post } : { post: Post }) {
@@ -35,58 +36,11 @@ export default function PostComponent({ post } : { post: Post }) {
                     {post.title}
                 </Text>
                 <View style={styles.postBody}>
-                    {post.video &&
-                        <View style={styles.videoContainer}>
-                            <VideoPlayer source={post.video}/>
-                        </View>
-                    }
-                    {post.images.length > 0 &&
-                        <View style={styles.imgContainer}>
-                            <ImageViewer
-                                images={post.images}
-                                thumbnail={post.imageThumbnail}
-                            />
-                        </View>
-                    }
-                    {post.text && !post.poll &&
-                    <View style={styles.bodyTextContainer}>
-                        <Text
-                            numberOfLines={3}
-                            style={t(styles.bodyText, {
-                                color: theme.subtleText,
-                            })}
-                        >
-                            {post.text.trim()}
-                        </Text>
-                    </View>
-                    }
-                    {post.externalLink &&
-                    <TouchableOpacity
-                        style={t(styles.externalLinkContainer, {
-                            borderColor: theme.tint,
-                        })}
-                        activeOpacity={0.5}
-                        onPress={() => {
-                            if (post.externalLink) {
-                                WebBrowser.openBrowserAsync(post.externalLink);
-                            }
-                        }}
-                    >
-                        <Text
-                            numberOfLines={1}
-                            style={t(styles.externalLinkText, {
-                                color: theme.subtleText,
-                            })}
-                        >
-                            {post.externalLink}
-                        </Text>
-                    </TouchableOpacity>
-                    }
-                    {post.poll &&
-                        <View style={styles.pollContainer}>
-                            <PollViewer poll={post.poll}/>
-                        </View>
-                    }
+                    <PostMedia
+                        post={post}
+                        maxLines={3}
+                        renderHTML={false}
+                    />
                 </View>
                 <View style={styles.postFooter}>
                     <View style={styles.footerLeft}>
@@ -107,11 +61,16 @@ export default function PostComponent({ post } : { post: Post }) {
                             <Text style={t(styles.smallText, {
                                 color: theme.subtleText,
                             })}> by </Text>
-                            <Text style={t(styles.boldedSmallText, {
-                                color: theme.subtleText,
-                            })}>
-                                {post.author}
-                            </Text>
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={() => history.pushPath(`https://www.reddit.com/user/${post.author}`)}
+                            >
+                                <Text style={t(styles.boldedSmallText, {
+                                    color: theme.subtleText,
+                                })}>
+                                    {post.author}
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.metadataContainer}>
                             <Feather name="arrow-up" size={18} color={theme.subtleText} />
@@ -193,37 +152,5 @@ const styles = StyleSheet.create({
     },
     spacer: {
         height: 10,
-    },
-    bodyTextContainer: {
-        marginHorizontal: 10,
-        marginVertical: 10,
-    },
-    bodyText: {
-        fontSize: 15,
-    },
-    imgContainer: {
-        marginVertical: 10,
-        height: 200,
-    },
-    videoContainer: {
-        marginVertical: 10,
-        height: 200,
-    },
-    video: {
-        flex: 1,
-    },
-    pollContainer: {
-        marginVertical: 10,
-        marginHorizontal: 10,
-    },
-    externalLinkContainer: {
-        marginVertical: 10,
-        marginHorizontal: 10,
-        padding: 10,
-        borderRadius: 10,
-        borderWidth: 3,
-    },
-    externalLinkText: {
-        
     },
 });

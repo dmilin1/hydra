@@ -1,7 +1,7 @@
 import React, { useRef, useState, useContext, useEffect } from 'react';
 import { Animated, Easing, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Video, ResizeMode, VideoFullscreenUpdate, AVPlaybackStatus, AVPlaybackStatusSuccess } from 'expo-av';
-import { ThemeContext, t } from '../../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../../../contexts/ThemeContext';
 import { Sound, SoundObject } from 'expo-av/build/Audio';
 
 

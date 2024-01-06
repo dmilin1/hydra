@@ -94,7 +94,7 @@ export default class RedditURL extends URL {
             return PageType.POST_DETAILS;
         } else if (relativePath.startsWith('/r/')) {
             return PageType.SUBREDDIT;
-        } else if (relativePath.startsWith('/u/')) {
+        } else if (relativePath.startsWith('/u/') || relativePath.startsWith('/user/')) {
             return PageType.USER;
         } else if (relativePath.startsWith('/search')) {
             return PageType.SEARCH;
