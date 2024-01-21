@@ -157,7 +157,7 @@ export default function Navbar() {
                 }, (buttonIndex) => {
                   if (buttonIndex === undefined || buttonIndex === cancelButtonIndex) return;
                   if (sortOptions[buttonIndex] === 'Share') {
-                    Share.share({ url: currentPath, message: 'derpity derp dorp' })
+                    Share.share({ url: currentPath });
                   }
                 });
               }}

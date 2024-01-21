@@ -4,7 +4,7 @@ import { AntDesign, Feather, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import VideoPlayer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/VideoPlayer';
 import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native';
 import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';
 import RenderHtml from '../components/HTML/RenderHTML';
 import { getPostsDetail, loadMoreComments, PostDetail, Comment } from '../api/PostDetail';

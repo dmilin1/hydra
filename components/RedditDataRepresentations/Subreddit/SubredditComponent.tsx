@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, FlatList, TouchableOpacity, RefreshControl, Dim
 import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
-import { ScrollView } from 'react-native-gesture-handler';
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import { getPosts, Post } from '../../../api/Posts';
 import { Subreddit } from '../../../api/Subreddits';

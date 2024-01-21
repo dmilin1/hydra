@@ -58,6 +58,9 @@ function History() {
         }
         return false;
       }}
+      onResponderReject={() => {
+        setSelected(null);
+      }}
       onResponderMove={(e) => {
         if (e.nativeEvent.identifier as unknown !== 1) return false;
         const timeDelta = e.timeStamp - physics.current.lastTime;
@@ -94,7 +97,7 @@ function History() {
       }}
     >
       {[...history.past, ...(history.future.slice().reverse())].map((layer, i) => {
-        let left : string|number|Animated.Value = i < history.past.length ? 0 : Dimensions.get('window').width;
+        let left = new Animated.Value(i < history.past.length ? 0 : Dimensions.get('window').width);
         if (layer === selected) {
           left = touchX;
         }
@@ -104,7 +107,7 @@ function History() {
               style={t(styles.historyLayerContainer, {
                 zIndex: 2*i + 2,
                 transform: [{
-                  translateX: left,
+                  translateX: left as any, // expects a number, but Animated.Value definitely works
                 }],
               })}
             >

@@ -9,7 +9,7 @@ import PostDetails from '../../pages/PostDetails';
 
 export default function Posts() {
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1 }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, top: 0 }}>
       <HistoryStack
         initialPast={[{
           elem: <Subreddits/>,

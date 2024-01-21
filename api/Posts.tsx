@@ -47,8 +47,8 @@ export function formatPostData(child: any): Post {
     }
     
     let images = Object.values(child.data.media_metadata ?? {}).map((data : any) => 
-        data.s.u.replace(/&amp;/g, '&')
-    );
+        data.s?.u?.replace(/&amp;/g, '&')
+    ).filter(img => img !== undefined);
     if (images.length === 0 && child.data.post_hint === 'image') {
         images = [child.data.url];
     }

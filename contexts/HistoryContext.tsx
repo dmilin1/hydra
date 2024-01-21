@@ -5,7 +5,7 @@ import RedditURL, { PageType } from '../utils/RedditURL';
 import ErrorPage from '../pages/ErrorPage';
 import Page from '../pages';
 import PostDetails from '../pages/PostDetails';
-import AccountPage from '../pages/AccountPage';
+import UserPage from '../pages/UserPage';
 
 export type HistoryLayer = {
     elem: JSX.Element,
@@ -64,7 +64,7 @@ export function HistoryProvider({
         } else if (pageType === PageType.POST_DETAILS) {
             Page = PostDetails;
         } else if (pageType === PageType.USER) {
-            Page = AccountPage;
+            Page = UserPage;
         }
         setPast([...past, {
             elem: (

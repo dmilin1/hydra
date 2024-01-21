@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import { Feather, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';

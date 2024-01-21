@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import { Feather, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';
@@ -14,12 +13,14 @@ import { CommentComponent } from '../components/RedditDataRepresentations/Post/P
 import SectionTitle from '../components/UI/SectionTitle';
 import URL from '../utils/URL';
 import Scroller from '../components/UI/Scroller';
+import WebView from 'react-native-webview';
+import { api, login, logout } from '../api/RedditApi';
 
-type AccountPageProps = {
+type UserPageProps = {
   url: string,
 }
 
-export default function AccountPage({ url } : AccountPageProps) {
+export default function UserPage({ url } : UserPageProps) {
   const theme = useContext(ThemeContext);
   const history = useContext(HistoryContext);
 
@@ -59,6 +60,24 @@ export default function AccountPage({ url } : AccountPageProps) {
     <View style={t(styles.userContainer, {
       backgroundColor: theme.background,
     })}>
+      <View
+        style={{ backgroundColor: theme.tint, padding: 10, margin: 10, }}
+        onTouchEnd={async () => {
+          await login();
+          alert('logged in');
+        }}
+      >
+        <Text style={{ color: theme.text }}>Login</Text>
+      </View>
+      <View
+        style={{ backgroundColor: theme.tint, padding: 10, margin: 10, }}
+        onTouchEnd={async () => {
+          await logout();
+          alert('logged out');
+        }}
+      >
+        <Text style={{ color: theme.text }}>Logout</Text>
+      </View>
       <Scroller
         loadMore={loadUserContent}
       >

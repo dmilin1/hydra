@@ -34,6 +34,9 @@
         "projectId": "7e403d7f-7747-4daa-a3c9-4acb948f7a60"
       }
     },
-    "owner": "dmilin"
+    "owner": "dmilin",
+    "plugins": [
+      "expo-router"
+    ]
   }
 }

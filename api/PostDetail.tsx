@@ -87,8 +87,8 @@ export async function getPostsDetail(url: string, options: GetPostOptions = {}):
         externalLink = post.url;
     }
     let images = Object.values(post.media_metadata ?? {}).map((data : any) => 
-        data.s.u.replace(/&amp;/g, '&')
-    );
+        data.s?.u?.replace(/&amp;/g, '&')
+    ).filter(img => img !== undefined);
     if (images.length === 0 && post.post_hint === 'image') {
         images = [post.url];
     }
