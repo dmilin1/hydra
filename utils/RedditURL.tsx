@@ -6,6 +6,9 @@ export enum PageType {
     SUBREDDIT,
     USER,
     SEARCH,
+
+    ACCOUNTS,
+
     UNKNOWN,
 }
 
@@ -14,7 +17,9 @@ export default class RedditURL extends URL {
   
     constructor(url: string) {
         super(url);
-        if (url.startsWith('https://')) {
+        if (url.startsWith('hydra://')) {
+            this.url = url;
+        } else if (url.startsWith('https://')) {
             this.url = url;
         } else if (url.startsWith('www')) {
             this.url = `https://${url}`;
@@ -30,7 +35,8 @@ export default class RedditURL extends URL {
             throw new Error(`Weird URL being passed ${url}`);
         }
         if (
-            !this.url.startsWith('https://www.reddit.com')
+            !this.url.startsWith('hydra://')
+            && !this.url.startsWith('https://www.reddit.com')
             && !this.url.startsWith('https://i.redd.it')
             && !this.url.startsWith('https://v.redd.it')
         ) {
@@ -80,7 +86,9 @@ export default class RedditURL extends URL {
     
     getPageType(): PageType {
         const relativePath = this.getRelativePath();
-        if (
+        if (this.url.startsWith('hydra://accounts')) {
+            return PageType.ACCOUNTS;
+        } else if (
             relativePath === ''
             || relativePath === '/'
             || relativePath.startsWith('/best')
@@ -119,6 +127,8 @@ export default class RedditURL extends URL {
             name = this.getRelativePath().split('/')[2] ?? 'User';   
         } else if (pageType === PageType.SEARCH) {
             name = 'Search';
+        } else if (pageType === PageType.ACCOUNTS) {
+            name = 'Accounts';
         } else if (pageType === PageType.UNKNOWN) {
             name = 'Error';
         }

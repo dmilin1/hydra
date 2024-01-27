@@ -6,6 +6,7 @@ import ErrorPage from '../pages/ErrorPage';
 import Page from '../pages';
 import PostDetails from '../pages/PostDetails';
 import UserPage from '../pages/UserPage';
+import AccountsPage from '../pages/AccountsPage';
 
 export type HistoryLayer = {
     elem: JSX.Element,
@@ -65,6 +66,8 @@ export function HistoryProvider({
             Page = PostDetails;
         } else if (pageType === PageType.USER) {
             Page = UserPage;
+        } else if (pageType === PageType.ACCOUNTS) {
+            Page = AccountsPage;
         }
         setPast([...past, {
             elem: (

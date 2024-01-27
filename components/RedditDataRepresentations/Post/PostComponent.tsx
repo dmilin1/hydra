@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
 import VideoPlayer from './PostParts/PostMediaParts/VideoPlayer';
@@ -10,6 +10,7 @@ import { HistoryContext } from '../../../contexts/HistoryContext';
 import { Post } from '../../../api/Posts';
 import Link from './PostParts/PostMediaParts/Link';
 import PostMedia from './PostParts/PostMedia';
+import Slideable from '../../UI/Slideable';
 
 
 export default function PostComponent({ post } : { post: Post }) {
@@ -17,7 +18,17 @@ export default function PostComponent({ post } : { post: Post }) {
     const theme = useContext(ThemeContext);
 
     return (
-        <View>
+        <Slideable
+            left={[{
+                icon: <AntDesign name="arrowup"/>,
+                color: theme.upvote,
+                action: () => {},
+            }, {
+                icon: <AntDesign name="arrowdown"/>,
+                color: theme.downvote,
+                action: () => {},
+            }]}
+        >
             <TouchableOpacity
                 activeOpacity={0.8}
                 style={t(styles.postContainer, {
@@ -103,7 +114,7 @@ export default function PostComponent({ post } : { post: Post }) {
                     backgroundColor: theme.tint,
                 })}
             />
-        </View>
+        </Slideable>
     )
 }
 

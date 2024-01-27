@@ -1,17 +1,20 @@
-import React, { useContext } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import { Share, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../contexts/ThemeContext';
-import { HistoryContext } from '../../contexts/HistoryContext';
+import { HistoryContext, HistoryLayer } from '../../contexts/HistoryContext';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import RedditURL, { PageType } from '../../utils/RedditURL';
+import BackButton from './BackButton';
+import { AccountContext } from '../../contexts/AccountContext';
 
 
 export default function Navbar() {
   const history = useContext(HistoryContext);
   const theme = useContext(ThemeContext);
+  const { setShowLoginModal } = useContext(AccountContext);
 
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -58,34 +61,7 @@ export default function Navbar() {
         borderBottomColor: theme.tint,
       })}
     >
-      <TouchableOpacity
-        style={t(styles.sectionContainer, {
-          justifyContent: 'flex-start',
-          marginLeft: 10,
-        })}
-        activeOpacity={0.5}
-        onPress={() => {
-          if (history.past.length > 1) {
-            history.backward()
-          }
-        }}
-      >
-        {history.past.length > 1 && <>
-          <MaterialIcons
-            name='keyboard-arrow-left'
-            size={32}
-            color={theme.buttonText}
-            style={{ marginLeft: -10, marginRight: -5 }}
-          />
-          <Text
-            style={t(styles.sideText, {
-              color: theme.buttonText,
-            })}
-          >
-            {history.past.slice(-2)[0]?.name}
-          </Text>
-        </>}
-      </TouchableOpacity>
+      <BackButton/>
       <View style={styles.sectionContainer}>
         <Text
           numberOfLines={1}
@@ -186,6 +162,28 @@ export default function Navbar() {
               size={32}
               color={theme.buttonText}
               style={{ marginLeft: -5 }}
+            />
+          </TouchableOpacity>
+        }
+        { histLayer.elem.type.name === 'AccountsPage' &&
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => {
+              setShowLoginModal(true);
+            }}
+            style={styles.subredditForwardContainer}
+          >
+            <Text
+              style={t(styles.sideText, {
+                color: theme.buttonText,
+              })}
+            >
+              Add
+            </Text>
+            <Entypo
+              name='plus'
+              size={24}
+              color={theme.buttonText}
             />
           </TouchableOpacity>
         }

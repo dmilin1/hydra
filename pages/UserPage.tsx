@@ -14,7 +14,7 @@ import SectionTitle from '../components/UI/SectionTitle';
 import URL from '../utils/URL';
 import Scroller from '../components/UI/Scroller';
 import WebView from 'react-native-webview';
-import { api, login, logout } from '../api/RedditApi';
+import { login, logout } from "../api/Authentication";
 
 type UserPageProps = {
   url: string,
@@ -60,24 +60,6 @@ export default function UserPage({ url } : UserPageProps) {
     <View style={t(styles.userContainer, {
       backgroundColor: theme.background,
     })}>
-      <View
-        style={{ backgroundColor: theme.tint, padding: 10, margin: 10, }}
-        onTouchEnd={async () => {
-          await login();
-          alert('logged in');
-        }}
-      >
-        <Text style={{ color: theme.text }}>Login</Text>
-      </View>
-      <View
-        style={{ backgroundColor: theme.tint, padding: 10, margin: 10, }}
-        onTouchEnd={async () => {
-          await logout();
-          alert('logged out');
-        }}
-      >
-        <Text style={{ color: theme.text }}>Logout</Text>
-      </View>
       <Scroller
         loadMore={loadUserContent}
       >

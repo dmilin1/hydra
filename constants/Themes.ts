@@ -19,6 +19,9 @@ export default {
         iconSecondary: '#ccc',
         divider: '#333',
         postColorTint: rainbow,
+        upvote: '#ff6c00',
+        downvote: '#565fe3',
+        delete: '#ff0000',
     },
     light: {
         text: '#fff',
@@ -31,5 +34,8 @@ export default {
         iconSecondary: '#ccc',
         divider: '#333',
         postColorTint: rainbow,
+        upvote: '#ff6c00',
+        downvote: '#565fe3',
+        delete: '#ff0000',
     },
 };

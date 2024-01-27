@@ -15,6 +15,7 @@ import Tabs from './tabs';
 import {LogBox, View} from 'react-native';
 
 import { renderRootComponent } from "expo-router/src/renderRootComponent";
+import { AccountProvider } from "../contexts/AccountContext";
 
 
 LogBox.ignoreLogs([
@@ -45,11 +46,13 @@ export default function RootLayout() {
 	return (
 		<NavigationContainer>
 			<ThemeProvider>
-				<ActionSheetProvider>
-					<>
-						{loaded && <Tabs />}
-					</>
-				</ActionSheetProvider>
+				<AccountProvider>
+					<ActionSheetProvider>
+						<>
+							{loaded && <Tabs />}
+						</>
+					</ActionSheetProvider>
+				</AccountProvider>
 			</ThemeProvider>
 		</NavigationContainer>
 	);

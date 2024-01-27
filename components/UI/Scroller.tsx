@@ -29,14 +29,14 @@ export default function Scroller({ beforeLoad, children, loadMore } : ScrollerPr
     return (
         <ScrollView
             refreshControl={
-            <RefreshControl
-                tintColor={theme.text}
-                refreshing={refreshing}
-                onRefresh={() => {
-                    setRefreshing(true);
-                    loadMoreData(true);
-                }}
-            />
+                <RefreshControl
+                    tintColor={theme.text}
+                    refreshing={refreshing}
+                    onRefresh={() => {
+                        setRefreshing(true);
+                        loadMoreData(true);
+                    }}
+                />
             }
             scrollEventThrottle={100}
             onScroll={(e) => {
