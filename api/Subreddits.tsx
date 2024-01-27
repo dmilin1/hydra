@@ -19,9 +19,15 @@ export type Subreddit = {
 export type Subreddits = {
     moderator: Subreddit[],
     subscriber: Subreddit[],
+    trending: Subreddit[],
 }
 
 type GetSubredditsOptions = {
+    limit?: string,
+    after?: string,
+}
+
+type GetTrendingOptions = {
     limit?: string,
     after?: string,
 }
@@ -50,11 +56,13 @@ export async function getSubreddits(options: GetSubredditsOptions = {}): Promise
     const subreddits = {
         moderator: moderatorsData.map((child: any) => formatSubredditData(child)),
         subscriber: subredditsData.map((child: any) => formatSubredditData(child)),
+        trending: [],
     };
     return subreddits;
 }
 
-export async function getTrending(): Promise<Subreddit[]> {
-    const data = await api('https://www.reddit.com/subreddits.json?limit=10');
+export async function getTrending(options: GetTrendingOptions = { limit: '10' }): Promise<Subreddit[]> {
+    const searchParams = new URLSearchParams(options);
+    const data = await api(`https://www.reddit.com/subreddits.json?${searchParams.toString()}`);
     return data.data.children.map((child: any) => formatSubredditData(child));
 }

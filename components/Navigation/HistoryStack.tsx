@@ -85,6 +85,7 @@ function History() {
           toValue: swipeDirection === 'forward' ? Dimensions.get('window').width : 0,
           useNativeDriver: true,
           overshootClamping: true,
+          tension: 100,
         }).start(() => {
           setSelected(null);
           if (gestureDirection.current === swipeDirection) return;

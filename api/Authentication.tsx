@@ -18,8 +18,6 @@ export async function logout() : Promise<any> {
         redirect: 'follow',
     }).then(response => response.json());
 
-    console.log(user);
-
     var formdata = new FormData();
     formdata.append("uh", user.data.modhash);
 

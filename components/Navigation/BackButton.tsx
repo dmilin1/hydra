@@ -29,7 +29,7 @@ export default function BackButton() {
     buttonText = prevPageName;
   }
 
-  return buttonText ?
+  return (
     <TouchableOpacity
       style={t(styles.sectionContainer, {
         justifyContent: 'flex-start',
@@ -47,24 +47,28 @@ export default function BackButton() {
         }
       }}
     >
-      {showBackButton ?
-        <MaterialIcons
-          name='keyboard-arrow-left'
-          size={32}
-          color={theme.buttonText}
-          style={{ marginLeft: -10, marginRight: -5 }}
-        />
-      : null}
-      <Text
-        style={t(styles.sideText, {
-          color: theme.buttonText,
-          marginLeft: showBackButton ? 0 : 10,
-        })}
-      >
-        {buttonText}
-      </Text>
+      {buttonText && 
+        <>
+          {showBackButton ?
+            <MaterialIcons
+              name='keyboard-arrow-left'
+              size={32}
+              color={theme.buttonText}
+              style={{ marginLeft: -10, marginRight: -5 }}
+            />
+          : null}
+          <Text
+            style={t(styles.sideText, {
+              color: theme.buttonText,
+              marginLeft: showBackButton ? 0 : 10,
+            })}
+          >
+            {buttonText}
+          </Text>
+        </>
+      }
     </TouchableOpacity>
-  : null
+  );
 }
 
 const styles = StyleSheet.create({

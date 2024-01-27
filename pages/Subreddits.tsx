@@ -5,17 +5,30 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';
-import { Subreddit, Subreddits as SubredditsObj, getSubreddits } from '../api/Subreddits';
+import { Subreddit, Subreddits as SubredditsObj, getSubreddits, getTrending } from '../api/Subreddits';
+import { AccountContext } from '../contexts/AccountContext';
 
 export default function Subreddits() {
   const theme = useContext(ThemeContext);
   const history = useContext(HistoryContext);
+  const { currentUser } = useContext(AccountContext);
 
-  const [subreddits, setSubreddits] = useState<SubredditsObj>({ moderator: [], subscriber: []});
+  const [subreddits, setSubreddits] = useState<SubredditsObj>({
+    moderator: [],
+    subscriber: [],
+    trending: []
+  });
 
   const loadSubreddits = async () => {
-    const newSubreddits = await getSubreddits();
-    setSubreddits(newSubreddits);
+    if (currentUser) {
+      setSubreddits(await getSubreddits());
+    } else {
+      setSubreddits({
+        moderator: [],
+        subscriber: [],
+        trending: await getTrending({ limit: '30' })
+      });
+    }
   };
 
   useEffect(() => { loadSubreddits() }, []);
@@ -78,7 +91,9 @@ export default function Subreddits() {
             </View>
           </TouchableOpacity>
         ))}
-        {(Object.keys(subreddits) as (keyof SubredditsObj)[]).map(key =>
+        {(Object.keys(subreddits) as (keyof SubredditsObj)[])
+        .filter(key => subreddits[key].length > 0)
+        .map(key =>
           <View style={styles.categoryContainer} key={key}>
             <View style={t(styles.categoryTitleContainer, {
               backgroundColor: theme.tint,
@@ -86,7 +101,7 @@ export default function Subreddits() {
               <Text style={t(styles.categoryTitle, {
                 color: theme.text,
               })}>
-                {key === 'moderator' ? 'Moderator' : 'Subscriber'}
+                {key.charAt(0).toUpperCase() + key.slice(1)}
               </Text>
             </View>
             {subreddits[key]

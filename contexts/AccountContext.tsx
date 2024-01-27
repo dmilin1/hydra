@@ -49,13 +49,14 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
             setCurrentUser(user);
             return true;
         } catch (e) {
-            alert('incorrect username or password');
+            alert('Incorrect username or password');
             return false;
         }
     }
 
     const logOutContext = async () => {
         await logout();
+        await AsyncStorage.removeItem('currentUser');
         setCurrentAcc(null);
         setCurrentUser(null);
     }

@@ -9,6 +9,7 @@ import Inbox from './inbox';
 import Search from './search';
 import Account from './account';
 import { SafeAreaView } from 'react-native';
+import { AccountContext } from '../../contexts/AccountContext';
 
 
 
@@ -16,6 +17,7 @@ const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
   const theme = useContext(ThemeContext);
+  const { currentUser } = useContext(AccountContext);
 
   const tabBarStyle = {
     backgroundColor: theme.background,
@@ -51,7 +53,7 @@ export default function Tabs() {
         <Tab.Screen
           name="Account"
           options={{
-            title: 'Account',
+            title: currentUser?.userName ?? 'Accounts',
             headerShown: false,
             tabBarStyle,
             tabBarIcon: ({ color, size }) => <MaterialIcons name="account-circle" size={size} color={color} />,
