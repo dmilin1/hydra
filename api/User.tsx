@@ -16,6 +16,7 @@ export type User = {
     friends: boolean,
     isLoggedInUser: boolean,
     after: string,
+    modhash?: string,
     createdAt: number,
     timeSinceCreated: string,
 }
@@ -39,6 +40,7 @@ export function formatUserData(child: any): User {
         friends: child.is_friend,
         isLoggedInUser: child.inbox_count !== undefined,
         after: child.id,
+        modhash: child.modhash,
         createdAt: child.created_utc,
         timeSinceCreated: new Time(child.created_utc * 1000).prettyTimeSince() + ' old',
     }

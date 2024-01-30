@@ -17,7 +17,7 @@ const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
   const theme = useContext(ThemeContext);
-  const { currentUser } = useContext(AccountContext);
+  const { loginInitialized, currentUser } = useContext(AccountContext);
 
   const tabBarStyle = {
     backgroundColor: theme.background,
@@ -26,51 +26,53 @@ export default function Tabs() {
   
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      <Tab.Navigator
-        initialRouteName="Posts"
-        sceneContainerStyle={{ backgroundColor: theme.background }}
-      >
-        <Tab.Screen
-          name="Posts"
-          options={{
-            title: 'Posts',
-            headerShown: false,
-            tabBarStyle,
-            tabBarIcon: ({ color, size }) => <MaterialCommunityIcons name="post" size={size} color={color} />,
-          }}
-          component={Posts}
-        />
-        <Tab.Screen
-          name="Inbox"
-          options={{
-            title: 'Inbox',
-            headerShown: false,
-            tabBarStyle,
-            tabBarIcon: ({ color, size }) => <Entypo name="mail" size={size} color={color} />,
-          }}
-          component={Inbox}
-        />
-        <Tab.Screen
-          name="Account"
-          options={{
-            title: currentUser?.userName ?? 'Accounts',
-            headerShown: false,
-            tabBarStyle,
-            tabBarIcon: ({ color, size }) => <MaterialIcons name="account-circle" size={size} color={color} />,
-          }}
-          component={Account}
-        />
-        <Tab.Screen
-          name="Search"
-          options={{
-            title: 'Search',
-            headerShown: false,
-            tabBarStyle,
-            tabBarIcon: ({ color, size }) => <AntDesign name="search1" size={size} color={color} />,
-          }}
-          component={Search}
-        />
-      </Tab.Navigator>
+      { loginInitialized &&
+        <Tab.Navigator
+          initialRouteName="Posts"
+          sceneContainerStyle={{ backgroundColor: theme.background }}
+        >
+          <Tab.Screen
+            name="Posts"
+            options={{
+              title: 'Posts',
+              headerShown: false,
+              tabBarStyle,
+              tabBarIcon: ({ color, size }) => <MaterialCommunityIcons name="post" size={size} color={color} />,
+            }}
+            component={Posts}
+          />
+          <Tab.Screen
+            name="Inbox"
+            options={{
+              title: 'Inbox',
+              headerShown: false,
+              tabBarStyle,
+              tabBarIcon: ({ color, size }) => <Entypo name="mail" size={size} color={color} />,
+            }}
+            component={Inbox}
+          />
+          <Tab.Screen
+            name="Account"
+            options={{
+              title: currentUser?.userName ?? 'Accounts',
+              headerShown: false,
+              tabBarStyle,
+              tabBarIcon: ({ color, size }) => <MaterialIcons name="account-circle" size={size} color={color} />,
+            }}
+            component={Account}
+          />
+          <Tab.Screen
+            name="Search"
+            options={{
+              title: 'Search',
+              headerShown: false,
+              tabBarStyle,
+              tabBarIcon: ({ color, size }) => <AntDesign name="search1" size={size} color={color} />,
+            }}
+            component={Search}
+          />
+        </Tab.Navigator>
+      }
     </SafeAreaView>
   );
 }

@@ -11,6 +11,7 @@ export type Account = {
 }
 
 type AccountContextType =  {
+    loginInitialized: boolean,
     currentAcc: Account|null,
     currentUser: User|null,
     accounts: Account[],
@@ -22,6 +23,7 @@ type AccountContextType =  {
 }
 
 const initialAccountContext: AccountContextType = {
+    loginInitialized: false,
     currentAcc: null,
     currentUser: null,
     accounts: [],
@@ -35,6 +37,7 @@ const initialAccountContext: AccountContextType = {
 export const AccountContext = createContext(initialAccountContext);
 
 export function AccountProvider({ children }: React.PropsWithChildren) {
+    const [loginInitialized, setLoginInitialized] = useState(false);
     const [currentAcc, setCurrentAcc] = useState<AccountContextType['currentAcc']>(null);
     const [currentUser, setCurrentUser] = useState<AccountContextType['currentUser']>(null);
     const [accounts, setAccounts] = useState<AccountContextType['accounts']>([]);
@@ -112,6 +115,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
             }
             setAccounts(accs);
         }
+        setLoginInitialized(true);
     }
 
     useEffect(() => {
@@ -120,6 +124,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
     return (
         <AccountContext.Provider value={{
+            loginInitialized,
             currentAcc,
             currentUser,
             accounts,

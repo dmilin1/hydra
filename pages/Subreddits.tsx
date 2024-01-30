@@ -31,7 +31,7 @@ export default function Subreddits() {
     }
   };
 
-  useEffect(() => { loadSubreddits() }, []);
+  useEffect(() => { loadSubreddits() }, [ currentUser ]);
 
   return (
     <View style={styles.subredditsContainer}>
