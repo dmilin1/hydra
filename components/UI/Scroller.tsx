@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView, RefreshControl, ActivityIndicator, Text, View } from "react-native"
+import { StyleSheet, ScrollView, RefreshControl, ActivityIndicator, Text, View, VirtualizedList, Dimensions } from "react-native"
 import { t, ThemeContext } from "../../contexts/ThemeContext"
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 
@@ -27,7 +27,7 @@ export default function Scroller({ beforeLoad, children, loadMore } : ScrollerPr
     useEffect(() => { loadMoreData() }, []);
 
     return (
-        <ScrollView
+        <VirtualizedList
             refreshControl={
                 <RefreshControl
                     tintColor={theme.text}
@@ -52,24 +52,49 @@ export default function Scroller({ beforeLoad, children, loadMore } : ScrollerPr
                     loadMoreData();
                 }
             }}
-        >
-            {isLoadingMore && !children && !refreshing &&
-                <ActivityIndicator size={'small'}/>
+            /* Can't get this to work reliably but it's probably the proper way to do things */
+            // onEndReachedThreshold={Dimensions.get('window').height * 1.5}
+            // onEndReached={(e) => {
+            //     if (e.distanceFromEnd < Dimensions.get('window').height * 1.5) {
+            //         console.log(e.distanceFromEnd, Dimensions.get('window').height * 1.5)
+            //         loadMoreData();
+            //     }
+            // }}
+            data={Array.isArray(children) ? [...children, null] : [children]}
+            renderItem={({ item }) => item as any}
+            getItem={(data, index) => data[index]}
+            getItemCount={(data) => data.length}
+            keyExtractor={(item, index) => {
+                if (item) {
+                    return JSON.stringify((item as any).props, (key, value) => {
+                        return key !== 'children' ? value : undefined;
+                    });
+                }
+                return index.toString();
+            }}
+            windowSize={4}
+            ListHeaderComponent={
+                <>
+                    {isLoadingMore && !children && !refreshing &&
+                        <ActivityIndicator size={'small'}/>
+                    }
+                    {beforeLoad}
+                </>
             }
-            {beforeLoad}
-            {children}
-            <View style={styles.endOfListContainer}>
-                {isLoadingMore ? (
-                    <ActivityIndicator size={'small'}/>
-                ) : (
-                    <Text style={t(styles.endOfListText, {
-                        color: theme.text,
-                    })}>
-                        {children && `Wow. You've reached the bottom.`}
-                    </Text>
-                )}
-            </View>
-        </ScrollView>
+            ListFooterComponent={
+                <View style={styles.endOfListContainer}>
+                    {isLoadingMore ? (
+                        <ActivityIndicator size={'small'}/>
+                    ) : (
+                        <Text style={t(styles.endOfListText, {
+                            color: theme.text,
+                        })}>
+                            {children && `Wow. You've reached the bottom.`}
+                        </Text>
+                    )}
+                </View>
+            }
+        />
     );
 }
 

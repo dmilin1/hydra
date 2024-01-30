@@ -15,6 +15,7 @@ import URL from '../utils/URL';
 import Scroller from '../components/UI/Scroller';
 import WebView from 'react-native-webview';
 import { login, logout } from "../api/Authentication";
+import Time from '../utils/Time';
 
 type UserPageProps = {
   url: string,
@@ -72,10 +73,10 @@ export default function UserPage({ url } : UserPageProps) {
                   statValue: new Numbers(user.commentKarma).prettyNum(),
                 }, {
                   statName: 'Post\nKarma',
-                  statValue: new Numbers(user.commentKarma).prettyNum(),
+                  statValue: new Numbers(user.postKarma).prettyNum(),
                 }, {
                   statName: 'Account\nAge',
-                  statValue: new Numbers(user.commentKarma).prettyNum(),
+                  statValue: new Time(user.createdAt * 1000).prettyTimeSince(),
                 }].map(stat => (
                   <View style={styles.statContainer} key={stat.statName}>
                     <Text style={t(styles.statsNum, {
@@ -174,6 +175,7 @@ const styles = StyleSheet.create({
     marginVertical: 25,
   },
   statContainer: {
+    flex: 1,
     alignItems: 'center',
   },
   statsNum: {

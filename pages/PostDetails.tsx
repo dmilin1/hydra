@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   noCommentsContainer: {
-    marginTop: 25,
+    marginVertical: 25,
     justifyContent: 'center',
     alignItems: 'center',
   },
