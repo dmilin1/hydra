@@ -59,13 +59,13 @@ export async function getUserContent(url: string, options: GetUserContentOptions
     redditURL.setQueryParams(options);
     redditURL.jsonify();
     const response = await api(redditURL.toString());
-    const overview = response.data.children.map((child: any) => {
+    const overview = await Promise.all(response.data.children.map(async (child: any) => {
         if (child.kind === 't3') {
-            return formatPostData(child);
+            return await formatPostData(child);
         }
         if (child.kind === 't1') {
             return formatComments([child])[0];
         }
-    });
+    }));
     return overview;
 }

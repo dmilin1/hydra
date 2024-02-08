@@ -1,5 +1,5 @@
 import React, { useRef, useState, useContext, useEffect } from 'react';
-import { Animated, Easing, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, Easing, StyleSheet, TouchableWithoutFeedback, View, Text } from 'react-native';
 import { Video, ResizeMode, VideoFullscreenUpdate, AVPlaybackStatus, AVPlaybackStatusSuccess } from 'expo-av';
 import { ThemeContext, t } from '../../../../../contexts/ThemeContext';
 import { Sound, SoundObject } from 'expo-av/build/Audio';
@@ -9,6 +9,7 @@ export default function VideoPlayer({ source }: { source: string }) {
   const theme = useContext(ThemeContext);
   
   const [fullscreen, setFullscreen] = useState(false);
+  const [failedToLoad, setFailedToLoad] = useState(false);
   
   const video = useRef<Video>(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -38,14 +39,32 @@ export default function VideoPlayer({ source }: { source: string }) {
 
   return (
     <View style={styles.videoPlayerContainer}>
-        <TouchableWithoutFeedback
-          onPress={() => video.current?.presentFullscreenPlayer()}
-        >
+      <TouchableWithoutFeedback
+        onPress={() => video.current?.presentFullscreenPlayer()}
+      >
+        {failedToLoad ? (
+          <View style={t(styles.video, {
+            backgroundColor: theme.background,
+            justifyContent: 'center',
+            alignItems: 'center',
+          })}>
+            <Text style={{
+              color: theme.subtleText,
+            }}>
+              Failed to load video
+            </Text>
+          </View>
+        ) : (
           <Video
             ref={video}
             style={styles.video}
             resizeMode={ResizeMode.CONTAIN}
-            source={{ uri: source }}
+            source={{
+              uri: source,
+              headers: {
+                'User-Agent': 'Hydra',
+              }
+            }}
             isLooping={true}
             shouldPlay={true}
             useNativeControls={fullscreen}
@@ -98,7 +117,12 @@ export default function VideoPlayer({ source }: { source: string }) {
               }
             }}
             progressUpdateIntervalMillis={500}
+            onError={(e) => {
+              console.log(e)
+              setFailedToLoad(true);
+            }}
           />
+        )}
       </TouchableWithoutFeedback>
       <View style={t(styles.progressContainer, {
         backgroundColor: theme.background,

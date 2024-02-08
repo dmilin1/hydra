@@ -72,7 +72,7 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
 export async function getPostsDetail(url: string, options: GetPostOptions = {}): Promise<PostDetail> {
     const response = await api(new RedditURL(url).jsonify().toString());
     const postData = response[0].data.children[0];
-    const post = formatPostData(postData);
+    const post = await formatPostData(postData);
     const comments = response[1].data.children;
     const formattedComments = formatComments(comments);
     const loadMoreChild = comments.find((child: any) => child.kind === 'more');

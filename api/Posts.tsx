@@ -3,6 +3,7 @@ import { decode } from 'html-entities';
 import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import RedditURL from '../utils/RedditURL';
+import Redgifs from '../utils/RedGifs';
 
 export type Poll = {
     voteCount: number,
@@ -38,20 +39,33 @@ type GetPostOptions = {
     after?: string,
 }
 
-export function formatPostData(child: any): Post {
-    let externalLink = undefined;
-    try {
-        new RedditURL(child.data.url);
-    } catch (e) {
-        externalLink = child.data.url;
-    }
-    
+export async function formatPostData(child: any): Promise<Post> {
     let images = Object.values(child.data.media_metadata ?? {}).map((data : any) => 
         data.s?.u?.replace(/&amp;/g, '&')
     ).filter(img => img !== undefined);
     if (images.length === 0 && child.data.post_hint === 'image') {
         images = [child.data.url];
     }
+
+    let video = child.data.media?.reddit_video?.fallback_url;
+
+    let externalLink = undefined;
+    try {
+        new RedditURL(child.data.url);
+    } catch (e) {
+        externalLink = child.data.url;
+        if (externalLink.includes('imgur.com') && externalLink.endsWith('.gifv')) {
+            video = externalLink.replace('.gifv', '.mp4');
+        }
+        if (externalLink.includes('gfycat.com')) {
+            video = `https://web.archive.org/web/0if_/thumbs.${externalLink.split('https://')[1]}-mobile.mp4`
+        }
+        if (externalLink.includes('redgifs.com')) {
+            video = await Redgifs.getMediaURL(externalLink);
+            console.log(video)
+        }
+    }
+
     let poll = undefined;
     if (child.data.poll_data) {
         poll = {
@@ -59,6 +73,7 @@ export function formatPostData(child: any): Post {
             options: child.data.poll_data.options,
         }
     }
+
     return {
         id: child.data.id,
         type: 'post',
@@ -67,12 +82,12 @@ export function formatPostData(child: any): Post {
         upvotes: child.data.ups,
         subreddit: child.data.subreddit,
         text: child.data.selftext,
-        html: decode(child.data.body_html),
+        html: decode(child.data.selftext_html),
         commentCount: child.data.num_comments,
         link: `https://www.reddit.com${child.data.permalink}`,
         images: images,
         imageThumbnail: child.data.thumbnail,
-        video: child.data.media?.reddit_video?.fallback_url,
+        video,
         poll: poll,
         externalLink,
         createdAt: child.data.created,
@@ -87,6 +102,8 @@ export async function getPosts(url: string, options: GetPostOptions = {}): Promi
     redditURL.changeQueryParam('after', options?.after ?? '');
     redditURL.jsonify();
     const response = await api(redditURL.toString());
-    const posts : Post[] = response.data.children.map((child : any) => formatPostData(child));
+    const posts : Post[] = await Promise.all(response.data.children.map(async (child : any) =>
+        await formatPostData(child)
+    ));
     return posts;
 }

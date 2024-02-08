@@ -56,7 +56,6 @@ export default function Scroller({ beforeLoad, children, loadMore } : ScrollerPr
             // onEndReachedThreshold={Dimensions.get('window').height * 1.5}
             // onEndReached={(e) => {
             //     if (e.distanceFromEnd < Dimensions.get('window').height * 1.5) {
-            //         console.log(e.distanceFromEnd, Dimensions.get('window').height * 1.5)
             //         loadMoreData();
             //     }
             // }}

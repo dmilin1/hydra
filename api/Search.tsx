@@ -32,9 +32,9 @@ export async function getSearchResults(type: SearchType, text: string, options: 
     redditURL.jsonify();
     const res = await api(redditURL.toString());
     if (!res.data) return [];
-    const results = res.data.children.map((child: any) => {
+    const results = (await Promise.all(res.data.children.map(async (child: any) => {
         if (child.kind === 't3') {
-            return formatPostData(child);
+            return await formatPostData(child);
         }
         if (child.kind === 't5') {
             return formatSubredditData(child);
@@ -43,6 +43,6 @@ export async function getSearchResults(type: SearchType, text: string, options: 
             if (!child.data.id) return;
             return formatUserData(child.data);
         }
-    }).filter((result: any) => result !== undefined);
+    }))).filter((result: any) => result !== undefined);
     return results;
 }
