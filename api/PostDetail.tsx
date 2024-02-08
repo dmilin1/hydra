@@ -2,7 +2,7 @@ import 'react-native-url-polyfill/auto'
 import { decode } from 'html-entities';
 import { api } from "./RedditApi";
 import Time from '../utils/Time';
-import { Poll } from './Posts';
+import { Poll, Post, formatPostData } from './Posts';
 import RedditURL from '../utils/RedditURL';
 
 export type Comment = {
@@ -28,16 +28,8 @@ export type Comment = {
     timeSince: string,
 }
 
-export type PostDetail = Omit<Comment, 'type'> & {
+export type PostDetail = Omit<Comment, 'type'> & Omit<Post, 'type'> & {
     type: 'postDetail',
-    title: string,
-    commentCount: number,
-    images: string[],
-    imageThumbnail: string,
-    video: string|undefined,
-    poll: Poll|undefined,
-    text: string,
-    externalLink: string|undefined,
 }
 
 type GetPostOptions = {
@@ -79,57 +71,24 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
 
 export async function getPostsDetail(url: string, options: GetPostOptions = {}): Promise<PostDetail> {
     const response = await api(new RedditURL(url).jsonify().toString());
-    const post = response[0].data.children[0].data;
+    const postData = response[0].data.children[0];
+    const post = formatPostData(postData);
     const comments = response[1].data.children;
-    let externalLink = undefined;
-    const hostname = (new URL(post.url)).host;
-    if (!hostname.includes('reddit.com') && !hostname.includes('redd.it')) {
-        externalLink = post.url;
-    }
-    let images = Object.values(post.media_metadata ?? {}).map((data : any) => 
-        data.s?.u?.replace(/&amp;/g, '&')
-    ).filter(img => img !== undefined);
-    if (images.length === 0 && post.post_hint === 'image') {
-        images = [post.url];
-    }
-    let poll = undefined;
-    if (post.poll_data) {
-        poll = {
-            voteCount: post.poll_data.total_vote_count,
-            options: post.poll_data.options,
-        }
-    }
     const formattedComments = formatComments(comments);
     const loadMoreChild = comments.find((child: any) => child.kind === 'more');
     return {
-        id: post.id,
+        ...post,
         type: 'postDetail',
         depth: -1,
         path: [],
-        title: post.title,
-        author: post.author,
-        isOP: post.is_submitter,
-        upvotes: post.ups,
-        postTitle: post.link_title,
-        postLink: post.link_permalink,
-        subreddit: post.subreddit,
-        text: post.selftext,
-        html: decode(post.selftext_html) ?? '',
-        commentCount: post.num_comments,
-        link: post.permalink,
-        images,
-        imageThumbnail: post.thumbnail,
-        video: post.media?.reddit_video?.fallback_url,
-        poll: poll,
+        isOP: postData.data.is_submitter,
+        postTitle: postData.data.link_title,
+        postLink: postData.data.link_permalink,
         comments: formattedComments,
         loadMore: loadMoreChild ? {
             depth: loadMoreChild.data.depth,
             childIds: loadMoreChild.data.children,
         } : undefined,
-        externalLink,
-        createdAt: post.created,
-        timeSince: new Time(post.created * 1000).prettyTimeSince() + ' ago',
-        after: post.name,
     }
 }
 

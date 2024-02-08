@@ -100,7 +100,7 @@ export default function PostComponent({ post } : { post: Post }) {
                             <Text style={t(styles.metadataText, {
                                 color: theme.subtleText,
                             })}>
-                                {post.timeSincePost}
+                                {post.timeSince}
                             </Text>
                         </View>
                     </View>

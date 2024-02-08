@@ -29,7 +29,7 @@ export type Post = {
     poll: Poll|undefined,
     externalLink: string|undefined,
     createdAt: number,
-    timeSincePost: string,
+    timeSince: string,
     after: string,
 }
 
@@ -76,7 +76,7 @@ export function formatPostData(child: any): Post {
         poll: poll,
         externalLink,
         createdAt: child.data.created,
-        timeSincePost: new Time(child.data.created * 1000).prettyTimeSince() + ' ago',
+        timeSince: new Time(child.data.created * 1000).prettyTimeSince() + ' ago',
         after: child.data.name,
     }
 }
