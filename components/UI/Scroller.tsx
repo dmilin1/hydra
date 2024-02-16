@@ -1,6 +1,7 @@
 import { StyleSheet, ScrollView, RefreshControl, ActivityIndicator, Text, View, VirtualizedList, Dimensions } from "react-native"
 import { t, ThemeContext } from "../../contexts/ThemeContext"
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { ScrollerContext, ScrollerProvider } from "../../contexts/ScrollerContext";
 
 type ScrollerProps = {
     beforeLoad?: ReactNode|ReactNode[],
@@ -8,8 +9,9 @@ type ScrollerProps = {
     loadMore: (refresh: boolean) => Promise<void>,
 }
 
-export default function Scroller({ beforeLoad, children, loadMore } : ScrollerProps) {
+function Scroller({ beforeLoad, children, loadMore } : ScrollerProps) {
     const { theme } = useContext(ThemeContext);
+    const { scrollDisabled } = useContext(ScrollerContext);
 
     const [refreshing, setRefreshing] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(true);
@@ -28,6 +30,7 @@ export default function Scroller({ beforeLoad, children, loadMore } : ScrollerPr
 
     return (
         <VirtualizedList
+            scrollEnabled={!scrollDisabled}
             refreshControl={
                 <RefreshControl
                     tintColor={theme.text}
@@ -94,6 +97,14 @@ export default function Scroller({ beforeLoad, children, loadMore } : ScrollerPr
                 </View>
             }
         />
+    );
+}
+
+export default function WrappedScroller(props : ScrollerProps) {
+    return (
+        <ScrollerProvider>
+            <Scroller {...props}/>
+        </ScrollerProvider>
     );
 }
 

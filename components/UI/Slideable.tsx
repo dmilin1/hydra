@@ -3,6 +3,7 @@ import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import { ThemeContext, t } from "../../contexts/ThemeContext";
 import { Fragment, ReactNode, cloneElement, useContext, useRef, useState } from "react";
 import * as Haptics from 'expo-haptics';
+import { ScrollerContext } from "../../contexts/ScrollerContext";
 
 type SlideItem = {
     icon: ReactNode,
@@ -17,6 +18,7 @@ type SlideableProps = {
 
 export default function Slideable({ children, left, right } : React.PropsWithChildren<SlideableProps>) {
     const { theme } = useContext(ThemeContext);
+    const { setScrollDisabled } = useContext(ScrollerContext);
     
     const touchStart = useRef<{ x: number, y: number}>();
     const touchX = useRef(new Animated.Value(0)).current;
@@ -49,8 +51,10 @@ export default function Slideable({ children, left, right } : React.PropsWithChi
                 if (
                     touchStart.current
                     && Math.abs(e.nativeEvent.pageX - touchStart.current?.x) > 20
+                    && Math.abs(e.nativeEvent.pageY - touchStart.current?.y) < 10
                 ) {
                     touchStart.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY};
+                    setScrollDisabled(true);
                     return true;
                 }
                 return false;
@@ -101,6 +105,7 @@ export default function Slideable({ children, left, right } : React.PropsWithChi
                         setSlideItem(undefined);
                     });
                 }
+                setScrollDisabled(false);
             }}
             onResponderTerminationRequest={() => false}
         >
