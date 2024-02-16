@@ -19,7 +19,7 @@ type SortAndContextProps = {
 
 export default function SortAndContext({ sortOptions, contextOptions }: SortAndContextProps) {
   const history = useContext(HistoryContext);
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   const { showActionSheetWithOptions } = useActionSheet();
 

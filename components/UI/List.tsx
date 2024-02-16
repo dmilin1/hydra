@@ -18,7 +18,7 @@ type ListProps = {
 }
 
 export default function List({ items, title }: ListProps) {
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
 
     return (
         <>

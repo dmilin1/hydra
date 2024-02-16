@@ -5,7 +5,7 @@ import { Fragment, ReactNode, useContext } from "react";
 
 
 export default function SectionTitle({ text } : { text: string }) {
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
 
     return (
         <Text style={t(styles.title, {

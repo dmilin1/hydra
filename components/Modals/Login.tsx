@@ -10,7 +10,7 @@ type LoginProps = {
 }
 
 export default function Login({ visible, setVisible }: LoginProps) {
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
     const { addUser } = useContext(AccountContext);
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');

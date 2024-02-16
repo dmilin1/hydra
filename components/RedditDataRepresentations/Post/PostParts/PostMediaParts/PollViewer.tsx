@@ -5,7 +5,7 @@ import { Poll } from '../../../../../api/Posts';
 
 
 export default function PollViewer({ poll }: { poll: Poll }) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const [selectedOption, setSelectedOption] = React.useState<number|undefined>(undefined);
 
   return (

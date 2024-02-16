@@ -23,7 +23,7 @@ export type LoadMoreCommentsFunc = (
 ) => Promise<void>;
 
 export default function PostDetails({ url }: PostDetailsProps) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
 
   const scrollHeight = useRef(0);

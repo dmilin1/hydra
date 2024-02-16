@@ -3,16 +3,22 @@ import { ImageStyle, StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-n
 import Themes from '../constants/Themes';
 
 
-const initialTheme: keyof typeof Themes = 'dark';
+const initialThemeContext = {
+    currentTheme: 'dark' as keyof typeof Themes,
+    setCurrentTheme: (theme: keyof typeof Themes) => {},    
+    theme: Themes['dark'] as typeof Themes[keyof typeof Themes],
+};
 
-export const ThemeContext = createContext(Themes[initialTheme]);
+export const ThemeContext = createContext(initialThemeContext);
 
 export function ThemeProvider({ children }: React.PropsWithChildren) {
-    const [theme, setTheme] = useState<typeof initialTheme>(initialTheme);
+    const [currentTheme, setCurrentTheme] = useState(initialThemeContext.currentTheme);
 
     return (
         <ThemeContext.Provider value={{
-            ...Themes[theme],
+            currentTheme,
+            setCurrentTheme,
+            theme: Themes[currentTheme],
         }}>
             {children}
         </ThemeContext.Provider>

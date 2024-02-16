@@ -22,7 +22,7 @@ type UserPageProps = {
 }
 
 export default function UserPage({ url } : UserPageProps) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
 
   const [user, setUser] = useState<User>();

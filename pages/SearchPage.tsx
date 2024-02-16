@@ -13,7 +13,7 @@ import Scroller from '../components/UI/Scroller';
 import UserComponent from '../components/RedditDataRepresentations/User/UserComponent';
 
 export default function SearchPage() {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
 
   const [trending, setTrending] = useState<Subreddit[]>([]);

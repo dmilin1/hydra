@@ -9,7 +9,7 @@ type ScrollerProps = {
 }
 
 export default function Scroller({ beforeLoad, children, loadMore } : ScrollerProps) {
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
 
     const [refreshing, setRefreshing] = useState(false);
     const [isLoadingMore, setIsLoadingMore] = useState(true);

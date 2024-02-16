@@ -15,7 +15,7 @@ import Slideable from '../../UI/Slideable';
 
 export default function PostComponent({ post } : { post: Post }) {
     const history = useContext(HistoryContext);
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
 
     return (
         <Slideable

@@ -12,7 +12,7 @@ import Numbers from '../../../utils/Numbers';
 
 export default function SubredditComponent({ subreddit } : { subreddit: Subreddit }) {
     const history = useContext(HistoryContext);
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
 
     return (
         <View>

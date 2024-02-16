@@ -15,7 +15,7 @@ function lineHeight(fontSize: number) {
 }
 
 export default function RenderHtml({ html }: {html: string}) {
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
     const history = useContext(HistoryContext);
 
     const renderTextNode = (textNode: TextNode, index: number, inheritedStyles: InheritedStyles) => {

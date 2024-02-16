@@ -7,7 +7,7 @@ type ErrorProps = {
 }
 
 export default function ErrorPage({ url } : ErrorProps) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   return (
     <View style={t(styles.errorContainer, {

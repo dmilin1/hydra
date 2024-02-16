@@ -1,5 +1,5 @@
 import React, { useContext, useState, useMemo, RefObject, Suspense } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEvent, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEvent, ScrollView, TouchableHighlight } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../../../contexts/ThemeContext';
 import RenderHtml from '../../../HTML/RenderHTML';
@@ -16,7 +16,7 @@ interface CommentProps {
 }
 
 export function CommentComponent({ loadMoreComments, comment, index, scrollChange, displayInList }: CommentProps) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
 
   const commentRef = React.useRef<TouchableOpacity>(null);
@@ -27,9 +27,10 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
   return useMemo(() => (
     <View key={comment.id}>
       { comment.depth >= 0 && (
-        <TouchableOpacity
+        <TouchableHighlight
           ref={commentRef}
           activeOpacity={1}
+          underlayColor={theme.tint}
           onPress={e => {
             if (displayInList) {
               if (comment.type === 'comment') {
@@ -47,7 +48,7 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
           }}
           style={t(styles.outerCommentContainer, displayInList ? styles.outerCommentContainerDisplayInList : {}, {
             marginLeft: 10 * comment.depth,
-            borderTopColor: theme.tint,
+            borderTopColor: theme.divider,
           })}
         >
           <View
@@ -106,7 +107,7 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
               </TouchableOpacity>
             )}
           </View>
-        </TouchableOpacity>
+        </TouchableHighlight>
       )}
       { !collapsed ? (
         <>
@@ -137,7 +138,7 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
               }}
               style={t(styles.outerCommentContainer, {
                 marginLeft: 10 * (comment.depth + 1),
-                borderTopColor: theme.tint,
+                borderTopColor: theme.divider,
               })}
             >
               <View

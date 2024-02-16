@@ -9,7 +9,7 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
   const [visible, setVisible] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   const isGif = new URL(images[0]).getRelativePath().endsWith('.gif');
 

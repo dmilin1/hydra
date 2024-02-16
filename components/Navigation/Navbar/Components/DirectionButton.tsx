@@ -15,7 +15,7 @@ type DirectionButtonProps = {
 
 export default function DirectionButton({ direction }: DirectionButtonProps) {
   const history = useContext(HistoryContext);
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   let btnText = null;
   let btnAction = () => {};

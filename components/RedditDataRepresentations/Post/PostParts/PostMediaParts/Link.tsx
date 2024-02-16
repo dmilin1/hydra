@@ -5,7 +5,7 @@ import { ThemeContext, t } from '../../../../../contexts/ThemeContext';
 
 
 export default function Link({ link }: { link: string }) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   return (
     <TouchableOpacity

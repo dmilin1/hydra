@@ -6,7 +6,7 @@ import { Sound, SoundObject } from 'expo-av/build/Audio';
 
 
 export default function VideoPlayer({ source }: { source: string }) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   
   const [fullscreen, setFullscreen] = useState(false);
   const [failedToLoad, setFailedToLoad] = useState(false);

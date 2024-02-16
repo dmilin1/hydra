@@ -10,7 +10,7 @@ type PostsProps = {
 }
 
 export default function Posts({ url } : PostsProps) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   const [posts, setPosts] = useState<Post[]>([]);
 

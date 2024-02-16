@@ -16,7 +16,7 @@ type SlideableProps = {
 }
 
 export default function Slideable({ children, left, right } : React.PropsWithChildren<SlideableProps>) {
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
     
     const touchStart = useRef<{ x: number, y: number}>();
     const touchX = useRef(new Animated.Value(0)).current;

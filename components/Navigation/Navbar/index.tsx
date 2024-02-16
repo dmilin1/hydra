@@ -8,11 +8,13 @@ import Home from './Pages/Home';
 import Subreddit from './Pages/Subreddit';
 import PostDetails from './Pages/PostDetails';
 import User from './Pages/User';
+import Settings from './Pages/Settings';
+import Accounts from './Pages/Accounts';
 
 
 export default function Navbar() {
   const history = useContext(HistoryContext);
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   const histLayer = history.past.slice(-1)[0];
   const currentPath = histLayer.elem.props.url;
@@ -22,20 +24,24 @@ export default function Navbar() {
     pageType = new RedditURL(currentPath).getPageType();
   } catch {}
 
-  let ContentComponent = null;
+  let PageComponent = null;
 
   if (pageType === PageType.UNKNOWN) {
-    ContentComponent = Default;
+    PageComponent = Default;
   } else if (pageType === PageType.HOME) {
-    ContentComponent = Home;
+    PageComponent = Home;
   } else if (pageType === PageType.SUBREDDIT) {
-    ContentComponent = Subreddit;
+    PageComponent = Subreddit;
   } else if (pageType === PageType.POST_DETAILS) {
-    ContentComponent = PostDetails;
+    PageComponent = PostDetails;
   } else if (pageType === PageType.USER) {
-    ContentComponent = User;
+    PageComponent = User;
+  } else if (pageType === PageType.SETTINGS) {
+    PageComponent = Settings;
+  } else if (pageType === PageType.ACCOUNTS) {
+    PageComponent = Accounts;
   } else {
-    ContentComponent = Default;
+    PageComponent = Default;
   }
 
   return (
@@ -45,7 +51,7 @@ export default function Navbar() {
         borderBottomColor: theme.tint,
       })}
     >
-      <ContentComponent />
+      <PageComponent />
     </View>
   );
 }

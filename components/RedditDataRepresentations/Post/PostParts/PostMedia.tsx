@@ -22,7 +22,7 @@ export default function PostMedia({
   renderHTML = true,
   maxLines,
 }: PostMediaProps) {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
   return (
     <>

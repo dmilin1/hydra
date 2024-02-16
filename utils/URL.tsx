@@ -27,7 +27,7 @@ export default class URL {
     }
 
     getRelativePath(): string {
-        return this.url.split(/\.it|\.com|\?/)[1] ?? '';
+        return this.url.split(/\.it|\.com|hydra:\/\/|\?/)[1] ?? '';
     }
 
     getQueryParam(key: string): string|null {

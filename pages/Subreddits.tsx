@@ -9,7 +9,7 @@ import { Subreddit, Subreddits as SubredditsObj, getSubreddits, getTrending } fr
 import { AccountContext } from '../contexts/AccountContext';
 
 export default function Subreddits() {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
   const { currentUser } = useContext(AccountContext);
 

@@ -8,33 +8,31 @@ import { HistoryContext, HistoryLayer } from '../../../../contexts/HistoryContex
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import RedditURL, { PageType } from '../../../../utils/RedditURL';
 
-type TextButtonProps = {
-  text: string,
+type IconButtonProps = {
+  icon: ReactNode,
   justifyContent?: 'flex-start' | 'flex-end' | 'center',
   onPress?: () => void,
 }
 
-export default function TextButton({ text, justifyContent, onPress }: TextButtonProps) {
-  const history = useContext(HistoryContext);
+export default function IconButton({ icon, justifyContent, onPress }: IconButtonProps) {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <TouchableOpacity
+    <View
       style={t(styles.sectionContainer, {
         justifyContent: justifyContent ?? 'center',
       })}
-      activeOpacity={0.5}
-      onPress={() => onPress?.()}
     >
-      <Text
-        numberOfLines={1}
-        style={t(styles.centerText, {
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => onPress?.()}
+        style={t(styles.touchableContainer, {
           color: onPress ? theme.buttonText : theme.text,
         })}
       >
-        {text ?? history.past.slice(-1)[0]?.name}
-      </Text>
-    </TouchableOpacity>
+        {icon}
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -46,9 +44,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 10,
   },
-  centerText: {
+  touchableContainer: {
     paddingHorizontal: 5,
-    fontSize: 17,
-    fontWeight: '600',
   },
 });

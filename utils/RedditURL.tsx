@@ -8,6 +8,7 @@ export enum PageType {
     SEARCH,
 
     ACCOUNTS,
+    SETTINGS,
 
     UNKNOWN,
 }
@@ -95,6 +96,8 @@ export default class RedditURL extends URL {
         const relativePath = this.getRelativePath();
         if (this.url.startsWith('hydra://accounts')) {
             return PageType.ACCOUNTS;
+        } else if (this.url.startsWith('hydra://settings')) {
+            return PageType.SETTINGS;
         } else if (
             relativePath === ''
             || relativePath === '/'
@@ -136,6 +139,9 @@ export default class RedditURL extends URL {
             name = 'Search';
         } else if (pageType === PageType.ACCOUNTS) {
             name = 'Accounts';
+        } else if (pageType === PageType.SETTINGS) {
+            const route = this.getRelativePath().split('/').slice(-1)[0];
+            name = route.charAt(0).toUpperCase() + route.slice(1);
         } else if (pageType === PageType.UNKNOWN) {
             name = 'Error';
         }

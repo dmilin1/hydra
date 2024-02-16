@@ -9,7 +9,7 @@ import { User } from '../../../api/User';
 
 export default function UserComponent({ user } : { user: User }) {
     const history = useContext(HistoryContext);
-    const theme = useContext(ThemeContext);
+    const { theme } = useContext(ThemeContext);
 
     return (
         <View>

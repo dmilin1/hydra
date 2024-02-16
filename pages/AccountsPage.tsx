@@ -7,7 +7,7 @@ import Slideable from '../components/UI/Slideable';
 
 
 export default function AccountsPage() {
-  const theme = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, addUser, logIn, logOut, removeUser } = useContext(AccountContext);
   const [loading, setLoading] = useState(false);
 
