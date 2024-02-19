@@ -1,8 +1,10 @@
-{
+import packageJson from './package.json';
+
+module.exports = {
   "expo": {
-    "name": "hydra",
+    "name": "Hydra for Reddit",
     "slug": "hydra",
-    "version": "1.0.0",
+    "version": packageJson.version,
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "hydra",
