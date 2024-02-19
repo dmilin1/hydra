@@ -1,4 +1,5 @@
 import RedditURL from "../utils/RedditURL";
+import { UserAuth } from "./Authentication";
 
 type ApiOptions = {
     depaginate?: boolean,
@@ -9,11 +10,11 @@ export async function api(
     fetchOptions: RequestInit = {},
     apiOptions : ApiOptions = {}
 ) : Promise<any> {
-    // const authorizedHeaders: HeadersInit = new Headers(fetchOptions?.headers);
-    // const session = '31202562%2C2024-01-11T04%3A33%3A58%2C05175d8079769e84701ae0d54affd0329a12dde7';
-    // authorizedHeaders.set('cookie', `reddit_session=${session};`);
-    // fetchOptions.headers = authorizedHeaders;
-    fetchOptions.cache = 'no-store';
+    const authorizedHeaders: HeadersInit = new Headers(fetchOptions?.headers);
+    authorizedHeaders.set('X-Modhash', UserAuth.modhash ?? '');
+    fetchOptions.headers = authorizedHeaders;
+
+    // fetchOptions.cache = 'no-store';
     const res = await fetch(url, fetchOptions);
     const json = await res.json();
     if (apiOptions.depaginate) {
