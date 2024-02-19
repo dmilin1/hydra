@@ -62,7 +62,6 @@ export async function formatPostData(child: any): Promise<Post> {
         }
         if (externalLink.includes('redgifs.com')) {
             video = await Redgifs.getMediaURL(externalLink);
-            console.log(video)
         }
     }
 

@@ -18,9 +18,6 @@ const isValidColor = (color: any) => {
 
 export default function Theme() {
   const { theme, currentTheme, setCurrentTheme } = useContext(ThemeContext);
-  const history = useContext(HistoryContext);
-
-  console.log(theme);
 
   return <>
     <SectionTitle text='Colors' />
@@ -82,6 +79,7 @@ const styles = StyleSheet.create({
   },
   checkboxContainer: {
     width: 30,
+    height: 24,
     marginLeft: 25,
     alignItems: 'flex-end',
   }

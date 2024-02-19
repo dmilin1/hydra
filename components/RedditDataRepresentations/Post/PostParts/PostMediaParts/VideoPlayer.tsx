@@ -118,7 +118,6 @@ export default function VideoPlayer({ source }: { source: string }) {
             }}
             progressUpdateIntervalMillis={500}
             onError={(e) => {
-              console.log(e)
               setFailedToLoad(true);
             }}
           />

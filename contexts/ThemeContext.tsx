@@ -1,6 +1,7 @@
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { ImageStyle, StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import Themes from '../constants/Themes';
+import { setStatusBarStyle } from 'expo-status-bar';
 
 
 const initialThemeContext = {
@@ -13,6 +14,10 @@ export const ThemeContext = createContext(initialThemeContext);
 
 export function ThemeProvider({ children }: React.PropsWithChildren) {
     const [currentTheme, setCurrentTheme] = useState(initialThemeContext.currentTheme);
+
+    useEffect(() => {
+        setStatusBarStyle(Themes[currentTheme].statusBar);
+    }, [currentTheme]);
 
     return (
         <ThemeContext.Provider value={{

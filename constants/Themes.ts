@@ -1,3 +1,4 @@
+import { StatusBarStyle } from 'expo-status-bar';
 import { ColorValue } from 'react-native';
 
 const rainbow = [
@@ -11,6 +12,7 @@ const rainbow = [
 
 type Theme = {
     name: string,
+    statusBar: StatusBarStyle,
     text: ColorValue,
     buttonText: ColorValue,
     subtleText: ColorValue,
@@ -34,6 +36,7 @@ type Themes = {
 export default {
     dark: {
         name: 'Dark',
+        statusBar: 'light',
         text: '#fff',
         buttonText: '#2282fe',
         subtleText: '#ccc',
@@ -50,6 +53,7 @@ export default {
     },
     light: {
         name: 'Light',
+        statusBar: 'dark',
         text: '#000',
         buttonText: '#2282fe',
         subtleText: '#222',
@@ -66,6 +70,7 @@ export default {
     },
     midnight: {
         name: 'Midnight',
+        statusBar: 'light',
         text: '#fff',
         buttonText: '#2282fe',
         subtleText: '#e4e9ec',
@@ -82,6 +87,7 @@ export default {
     },
     discord: {
         name: 'Discord',
+        statusBar: 'light',
         text: '#fff',
         buttonText: '#00a8fc',
         subtleText: '#e4e9ec',
@@ -98,6 +104,7 @@ export default {
     },
     spotify: {
         name: 'Spotify',
+        statusBar: 'light',
         text: '#fff',
         buttonText: '#1fdf64',
         subtleText: '#dcdcdc',
