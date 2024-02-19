@@ -1,16 +1,12 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
-import VideoPlayer from './PostParts/PostMediaParts/VideoPlayer';
-import ImageViewer from './PostParts/PostMediaParts/ImageViewer';
-import PollViewer from './PostParts/PostMediaParts/PollViewer';
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import { Post } from '../../../api/Posts';
-import Link from './PostParts/PostMediaParts/Link';
 import PostMedia from './PostParts/PostMedia';
 import Slideable from '../../UI/Slideable';
+import { vote, VoteOption } from '../../../api/PostDetail';
 
 
 export default function PostComponent({ post } : { post: Post }) {
@@ -22,7 +18,9 @@ export default function PostComponent({ post } : { post: Post }) {
             left={[{
                 icon: <AntDesign name="arrowup"/>,
                 color: theme.upvote,
-                action: () => {},
+                action: () => {
+                    vote(post, VoteOption.UpVote);
+                },
             }, {
                 icon: <AntDesign name="arrowdown"/>,
                 color: theme.downvote,

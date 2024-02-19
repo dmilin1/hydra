@@ -7,6 +7,7 @@ import RedditURL from '../utils/RedditURL';
 
 export type Comment = {
     id: string,
+    name: string,
     type: 'comment',
     depth: number,
     path: number[],
@@ -32,8 +33,10 @@ export type PostDetail = Omit<Comment, 'type'> & Omit<Post, 'type'> & {
     type: 'postDetail',
 }
 
-type GetPostOptions = {
-    
+export enum VoteOption {
+    UpVote = 1,
+    NoVote = 0,
+    DownVote = -1,
 }
 
 export function formatComments(comments: any, commentPath: number[] = [], childStartIndex = 0): Comment[] {
@@ -45,6 +48,7 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
         const loadMoreChild = comment.data.replies?.data?.children.find((child: any) => child.kind === 'more');
         formattedComments.push({
             id: comment.data.id,
+            name: comment.data.name,
             type: 'comment',
             depth: commentPath.length,
             path: childCommentPath,
@@ -69,7 +73,7 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
     return formattedComments;
 }
 
-export async function getPostsDetail(url: string, options: GetPostOptions = {}): Promise<PostDetail> {
+export async function getPostsDetail(url: string): Promise<PostDetail> {
     const response = await api(new RedditURL(url).jsonify().toString());
     const postData = response[0].data.children[0];
     const post = await formatPostData(postData);
@@ -92,10 +96,9 @@ export async function getPostsDetail(url: string, options: GetPostOptions = {}):
     }
 }
 
-
 export async function loadMoreComments(
     subreddit: string,
-    postId: string, 
+    postId: string,
     commentIds: string[],
     commentPath: number[],
     childStartIndex: number
@@ -109,4 +112,16 @@ export async function loadMoreComments(
         childStartIndex,
     );
     return formattedComments;
+}
+
+export async function vote(item: Post|Comment, voteOption: VoteOption) {
+    return await api('https://www.reddit.com/api/vote', {
+        method: 'POST',
+    }, {
+        requireAuth: true,
+        body: {
+            id: item.name,
+            dir: voteOption,  
+        },
+    });
 }

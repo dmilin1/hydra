@@ -15,7 +15,12 @@ export async function login(account: Account): Promise<void> {
         redirect: 'follow'
     });
 
-    UserAuth.modhash = undefined;
+    const user = await fetch('https://www.reddit.com/user/me/about.json', {
+        method: 'GET',
+        redirect: 'follow',
+    }).then(response => response.json());
+
+    UserAuth.modhash = user.data.modhash;
 }
 
 export async function logout() : Promise<void> {
@@ -23,8 +28,6 @@ export async function logout() : Promise<void> {
         method: 'GET',
         redirect: 'follow',
     }).then(response => response.json());
-
-    UserAuth.modhash = user.data.modhash;
 
     var formdata = new FormData();
     formdata.append("uh", user.data.modhash);
@@ -34,4 +37,6 @@ export async function logout() : Promise<void> {
         body: formdata,
         redirect: 'follow'
     });
+    
+    UserAuth.modhash = undefined;
 }

@@ -4,6 +4,7 @@ import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import RedditURL from '../utils/RedditURL';
 import Redgifs from '../utils/RedGifs';
+import { VoteOption } from './PostDetail';
 
 export type Poll = {
     voteCount: number,
@@ -15,10 +16,12 @@ export type Poll = {
 
 export type Post = {
     id: string,
+    name: string,
     type: 'post',
     title: string,
     author: string,
     upvotes: number,
+    userVote: VoteOption,
     subreddit: string,
     text: string,
     html: string,
@@ -73,12 +76,21 @@ export async function formatPostData(child: any): Promise<Post> {
         }
     }
 
+    let userVote = VoteOption.NoVote;
+    if (child.data.likes === true) {
+        userVote = VoteOption.UpVote;
+    } else if (child.data.likes === false) {
+        userVote = VoteOption.DownVote;
+    }
+
     return {
         id: child.data.id,
+        name: child.data.name,
         type: 'post',
         title: child.data.title,
         author: child.data.author,
         upvotes: child.data.ups,
+        userVote,
         subreddit: child.data.subreddit,
         text: child.data.selftext,
         html: decode(child.data.selftext_html),
