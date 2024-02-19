@@ -5,8 +5,11 @@ import { AccountContext } from '../contexts/AccountContext';
 import { Feather } from '@expo/vector-icons';
 import Slideable from '../components/UI/Slideable';
 
+type AccountsPageProps = {
+  url: string
+}
 
-export default function AccountsPage() {
+export default function AccountsPage({ url }: AccountsPageProps) {
   const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, addUser, logIn, logOut, removeUser } = useContext(AccountContext);
   const [loading, setLoading] = useState(false);

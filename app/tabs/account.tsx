@@ -20,7 +20,7 @@ export default function Account() {
     <HistoryStack
       key={'logged out'}
       initialPast={[{
-        elem: <AccountsPage />,
+        elem: <AccountsPage url='hydra://accounts'/>,
         name: 'Accounts',
       }]}
     />

@@ -1,4 +1,4 @@
-import { TouchableOpacity, View, StyleSheet, Text, Animated } from "react-native";
+import { TouchableOpacity, View, StyleSheet, Text, Animated, ColorValue } from "react-native";
 import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import { ThemeContext, t } from "../../contexts/ThemeContext";
 import { Fragment, ReactNode, cloneElement, useContext, useRef, useState } from "react";
@@ -7,7 +7,7 @@ import { ScrollerContext } from "../../contexts/ScrollerContext";
 
 type SlideItem = {
     icon: ReactNode,
-    color: string,
+    color: ColorValue
     action: () => void,
 }
 

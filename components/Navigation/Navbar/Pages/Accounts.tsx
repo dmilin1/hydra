@@ -8,7 +8,7 @@ import { Entypo } from '@expo/vector-icons';
 import { AccountContext } from '../../../../contexts/AccountContext';
 
 
-export default function Settings() {
+export default function Accounts() {
   const history = useContext(HistoryContext);
   const { theme } = useContext(ThemeContext);
   const { setShowLoginModal } = useContext(AccountContext);
