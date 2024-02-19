@@ -60,7 +60,7 @@ export default function Tabs() {
               headerShown: false,
               tabBarStyle,
               tabBarIcon: ({ focused, size }) => <Entypo name="mail" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Posts', focused),
+              tabBarLabel: ({ focused }) => makeTabBarLabel('Inbox', focused),
             }}
             component={Inbox}
           />
@@ -71,7 +71,7 @@ export default function Tabs() {
               headerShown: false,
               tabBarStyle,
               tabBarIcon: ({ focused, size }) => <MaterialIcons name="account-circle" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Posts', focused),
+              tabBarLabel: ({ focused }) => makeTabBarLabel(currentUser?.userName ?? 'Account', focused),
             }}
             component={Account}
           />
@@ -82,7 +82,7 @@ export default function Tabs() {
               headerShown: false,
               tabBarStyle,
               tabBarIcon: ({ focused, size }) => <AntDesign name="search1" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Posts', focused),
+              tabBarLabel: ({ focused }) => makeTabBarLabel('Search', focused),
             }}
             component={Search}
           />
@@ -93,7 +93,7 @@ export default function Tabs() {
               headerShown: false,
               tabBarStyle,
               tabBarIcon: ({ focused, size }) => <Ionicons name="settings-sharp" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Posts', focused),
+              tabBarLabel: ({ focused }) => makeTabBarLabel('Settings', focused),
             }}
             component={Settings}
           />

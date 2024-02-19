@@ -2,7 +2,7 @@ import packageJson from './package.json';
 
 module.exports = {
   "expo": {
-    "name": "Hydra for Reddit",
+    "name": "Hydra",
     "slug": "hydra",
     "version": packageJson.version,
     "orientation": "portrait",
