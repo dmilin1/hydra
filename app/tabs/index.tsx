@@ -49,7 +49,7 @@ export default function Tabs() {
               headerShown: false,
               tabBarStyle,
               tabBarIcon: ({ focused, size }) => <MaterialCommunityIcons name="post" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('WOOOT', focused),
+              tabBarLabel: ({ focused }) => makeTabBarLabel('Posts', focused),
             }}
             component={Posts}
           />
