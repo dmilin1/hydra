@@ -106,7 +106,7 @@ export default function SearchPage() {
       >
         {searchResults && searchResults.map(result => {
           if (result.type === 'post')
-            return <PostComponent key={result.id} post={result}/>
+            return <PostComponent key={result.id} initialPostState={result}/>
           if (result.type === 'subreddit')
             return <SubredditComponent key={result.id} subreddit={result}/>
             if (result.type === 'user')

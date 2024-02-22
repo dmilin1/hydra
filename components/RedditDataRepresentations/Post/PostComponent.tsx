@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
@@ -8,23 +8,38 @@ import PostMedia from './PostParts/PostMedia';
 import Slideable from '../../UI/Slideable';
 import { vote, VoteOption } from '../../../api/PostDetail';
 
+type PostComponentProps = {
+    initialPostState: Post
+}
 
-export default function PostComponent({ post } : { post: Post }) {
+export default function PostComponent({ initialPostState } : PostComponentProps) {
     const history = useContext(HistoryContext);
     const { theme } = useContext(ThemeContext);
+
+    const [post, setPost] = useState(initialPostState);
 
     return (
         <Slideable
             left={[{
                 icon: <AntDesign name="arrowup"/>,
                 color: theme.upvote,
-                action: () => {
-                    vote(post, VoteOption.UpVote);
+                action: async () => {
+                    const result = await vote(post, VoteOption.UpVote);
+                    setPost({
+                        ...post,
+                        userVote: result,
+                    });
                 },
             }, {
                 icon: <AntDesign name="arrowdown"/>,
                 color: theme.downvote,
-                action: () => {},
+                action: async () => {
+                    const result = await vote(post, VoteOption.DownVote);
+                    setPost({
+                        ...post,
+                        userVote: result,
+                    });
+                },
             }]}
         >
             <TouchableOpacity
@@ -82,11 +97,19 @@ export default function PostComponent({ post } : { post: Post }) {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.metadataContainer}>
-                            <Feather name="arrow-up" size={18} color={theme.subtleText} />
+                            <Feather
+                                name={post.userVote === VoteOption.DownVote ? 'arrow-down' : 'arrow-up'}
+                                size={18}
+                                color={
+                                    post.userVote === VoteOption.UpVote ? theme.upvote
+                                    : post.userVote === VoteOption.DownVote ? theme.downvote
+                                    : theme.subtleText
+                                }
+                            />
                             <Text style={t(styles.metadataText, {
                                 color: theme.subtleText,
                             })}>
-                                {post.upvotes}
+                                {post.upvotes + post.userVote}
                             </Text>
                             <Feather name="message-square" size={18} color={theme.subtleText} />
                             <Text style={t(styles.metadataText, {

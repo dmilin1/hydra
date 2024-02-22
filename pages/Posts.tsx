@@ -35,7 +35,7 @@ export default function Posts({ url } : PostsProps) {
         {posts.map((post, index) => (
           <PostComponent
             key={index}
-            post={post}
+            initialPostState={post}
           />
         ))}
       </Scroller>

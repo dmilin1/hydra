@@ -134,7 +134,7 @@ export default function UserPage({ url } : UserPageProps) {
               return (
                 <PostComponent
                   key={content.id}
-                  post={content}
+                  initialPostState={content}
                 />
               );
             }

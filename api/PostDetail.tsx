@@ -123,14 +123,16 @@ export async function loadMoreComments(
     return formattedComments;
 }
 
-export async function vote(item: UserContent, voteOption: VoteOption) {
-    return await api('https://www.reddit.com/api/vote', {
+export async function vote(item: UserContent, voteOption: VoteOption): Promise<VoteOption> {
+    const dir = item.userVote === voteOption ? VoteOption.NoVote : voteOption;
+    await api('https://www.reddit.com/api/vote', {
         method: 'POST',
     }, {
         requireAuth: true,
         body: {
             id: item.name,
-            dir: item.userVote === voteOption ? VoteOption.NoVote : voteOption,
+            dir,
         },
     });
+    return dir;
 }
