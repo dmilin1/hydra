@@ -4,6 +4,7 @@ import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import { Poll, Post, formatPostData } from './Posts';
 import RedditURL from '../utils/RedditURL';
+import { UserContent } from './User';
 
 export type Comment = {
     id: string,
@@ -14,6 +15,7 @@ export type Comment = {
     author: string,
     isOP: boolean,
     upvotes: number,
+    userVote: VoteOption,
     link: string,
     postTitle: string,
     postLink: string,
@@ -46,6 +48,12 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
         if (comment.kind === 'more') continue;
         const childCommentPath = [...commentPath, i + childStartIndex];
         const loadMoreChild = comment.data.replies?.data?.children.find((child: any) => child.kind === 'more');
+        let userVote = VoteOption.NoVote;
+        if (comment.data.likes === true) {
+            userVote = VoteOption.UpVote;
+        } else if (comment.data.likes === false) {
+            userVote = VoteOption.DownVote;
+        }
         formattedComments.push({
             id: comment.data.id,
             name: comment.data.name,
@@ -55,6 +63,7 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
             author: comment.data.author,
             isOP: comment.data.is_submitter,
             upvotes: comment.data.ups,
+            userVote,
             link: comment.data.permalink,
             postTitle: comment.data.link_title,
             postLink: comment.data.link_permalink,
@@ -114,14 +123,14 @@ export async function loadMoreComments(
     return formattedComments;
 }
 
-export async function vote(item: Post|Comment, voteOption: VoteOption) {
+export async function vote(item: UserContent, voteOption: VoteOption) {
     return await api('https://www.reddit.com/api/vote', {
         method: 'POST',
     }, {
         requireAuth: true,
         body: {
             id: item.name,
-            dir: voteOption,  
+            dir: item.userVote === voteOption ? VoteOption.NoVote : voteOption,
         },
     });
 }
