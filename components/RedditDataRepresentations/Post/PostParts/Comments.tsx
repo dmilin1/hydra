@@ -14,7 +14,7 @@ interface CommentProps {
   index: number,
   scrollChange?: (y: number) => void,
   displayInList?: boolean, // Changes render style for use in something like a list of user comments,
-  changeComment?: (comment: Comment) => void,
+  changeComment: (comment: Comment) => void,
 }
 
 export function CommentComponent({ loadMoreComments, comment, index, scrollChange, displayInList, changeComment }: CommentProps) {
@@ -40,6 +40,7 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
                   changeComment?.({
                     ...comment,
                     userVote: result,
+                    renderCount: comment.renderCount + 1,
                   })
                 }
             },
@@ -52,6 +53,7 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
                   changeComment?.({
                     ...comment,
                     userVote: result,
+                    renderCount: comment.renderCount + 1,
                   })
                 }
               },

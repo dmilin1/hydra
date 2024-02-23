@@ -7,7 +7,7 @@ type ScrollerProps = {
     beforeLoad?: ReactNode|ReactNode[],
     children: ReactNode|ReactNode[],
     loadMore?: (refresh: boolean) => Promise<void>,
-    scrollViewRef: React.RefObject<VirtualizedList<unknown>>,
+    scrollViewRef?: React.RefObject<VirtualizedList<unknown>>,
 }
 
 function Scroller({ beforeLoad, children, loadMore, scrollViewRef } : ScrollerProps) {

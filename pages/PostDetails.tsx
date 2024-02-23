@@ -71,10 +71,9 @@ export default function PostDetails({ url }: PostDetailsProps) {
   const rerenderComment = (comment: Comment|PostDetail) => {
     if (postDetail) {
       let currentComment: Comment|PostDetail = postDetail;
-      postDetail.renderCount++;
       for (let num of comment.path) {
-        currentComment = currentComment.comments[num];
         currentComment.renderCount++;
+        currentComment = currentComment.comments[num];
       }
       setPostDetail({ ...postDetail });
     }

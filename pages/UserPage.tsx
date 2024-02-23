@@ -145,6 +145,9 @@ export default function UserPage({ url } : UserPageProps) {
                   comment={content}
                   index={0}
                   displayInList={true}
+                  changeComment={newComment => {
+                    setUserContent(userContent.map(c => c.id === newComment.id ? newComment : c));
+                  }}
                 />
               );
             }
