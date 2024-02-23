@@ -14,9 +14,10 @@ type SlideItem = {
 type SlideableProps = {
     left?: SlideItem[],
     right?: SlideItem[],
+    xScrollToEngage?: number,
 }
 
-export default function Slideable({ children, left, right } : React.PropsWithChildren<SlideableProps>) {
+export default function Slideable({ children, left, right, xScrollToEngage } : React.PropsWithChildren<SlideableProps>) {
     const { theme } = useContext(ThemeContext);
     const { setScrollDisabled } = useContext(ScrollerContext);
     
@@ -50,7 +51,7 @@ export default function Slideable({ children, left, right } : React.PropsWithChi
             onMoveShouldSetResponder={e => {
                 if (
                     touchStart.current
-                    && Math.abs(e.nativeEvent.pageX - touchStart.current?.x) > 20
+                    && Math.abs(e.nativeEvent.pageX - touchStart.current?.x) > (xScrollToEngage ?? 20)
                     && Math.abs(e.nativeEvent.pageY - touchStart.current?.y) < 10
                 ) {
                     touchStart.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY};

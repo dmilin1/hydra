@@ -1,5 +1,5 @@
 import React, { useContext, useCallback, useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, TouchableOpacity, VirtualizedList } from 'react-native';
 import { AntDesign, Feather, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import VideoPlayer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/VideoPlayer';
@@ -11,6 +11,7 @@ import { getPostsDetail, loadMoreComments, PostDetail, Comment } from '../api/Po
 import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/PollViewer';
 import { HistoryContext } from '../contexts/HistoryContext';
 import PostMedia from '../components/RedditDataRepresentations/Post/PostParts/PostMedia';
+import Scroller from '../components/UI/Scroller';
 
 type PostDetailsProps = {
   url: string,
@@ -27,15 +28,23 @@ export default function PostDetails({ url }: PostDetailsProps) {
   const history = useContext(HistoryContext);
 
   const scrollHeight = useRef(0);
-  const scrollView = useRef<ScrollView>(null);
+  const scrollView = useRef<VirtualizedList<unknown>>(null);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
   const [refreshing, setRefreshing] = useState(false);
 
-  const scrollChange = useCallback((y: number) => {
-    scrollView.current?.scrollTo({
-      y: scrollHeight.current + y,
-      animated: true,
+  const scrollChange = useCallback((changeY: number) => {
+    (scrollView.current?.getScrollRef() as any)?.measure((...args: any) => {
+      const scrollY: number = args[5];
+      if (changeY < scrollY) {
+        (scrollView.current?.getScrollRef() as any)?.getInnerViewRef().measure((...args: any) => {
+          const viewY: number = args[5];
+          scrollView.current?.scrollToOffset({
+            offset: changeY - viewY,
+            animated: true,
+          });
+        });
+      }
     });
   }, [scrollView.current]);
 
@@ -49,6 +58,26 @@ export default function PostDetails({ url }: PostDetailsProps) {
     return commentPath.reduce((path: PostDetail|Comment, num) => {
       return path.comments[num]
     }, parentObject);
+  }
+
+  const changeComment = (newComment: Comment|PostDetail) => {
+    if (postDetail) {
+      const oldComment = getCommentFromPath(postDetail, newComment.path);
+      Object.assign(oldComment, newComment);
+      rerenderComment(oldComment);
+    }
+  }
+
+  const rerenderComment = (comment: Comment|PostDetail) => {
+    if (postDetail) {
+      let currentComment: Comment|PostDetail = postDetail;
+      postDetail.renderCount++;
+      for (let num of comment.path) {
+        currentComment = currentComment.comments[num];
+        currentComment.renderCount++;
+      }
+      setPostDetail({ ...postDetail });
+    }
   }
 
   const loadMoreCommentsFunc: LoadMoreCommentsFunc = async (commentIds, commentPath, childStartIndex) => {
@@ -73,23 +102,8 @@ export default function PostDetails({ url }: PostDetailsProps) {
       backgroundColor: theme.background,
     })}>
       {postDetail || refreshing ? (
-        <ScrollView
-          ref={scrollView}
-          onScrollEndDrag={e => scrollHeight.current = e.nativeEvent.contentOffset.y}
-          onMomentumScrollEnd={e => scrollHeight.current = e.nativeEvent.contentOffset.y}
-          refreshControl={
-            <RefreshControl
-              tintColor={theme.text}
-              refreshing={refreshing}
-              onRefresh={() => {
-                setRefreshing(true);
-                loadPostDetails();
-              }}
-            />
-          }
-          style={{
-            backgroundColor: theme.background,
-          }}
+        <Scroller
+          scrollViewRef={scrollView}
         >
           {postDetail && <>
             <View style={styles.postDetailsContainer}>
@@ -151,7 +165,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
               </View>
             </View>
             <View style={t(styles.buttonsBarContainer, {
-              borderTopColor: theme.tint,
+              borderTopColor: theme.divider,
             })}>
               <AntDesign name="arrowup" size={28} color={theme.iconPrimary} />
               <AntDesign name="arrowdown" size={28} color={theme.iconPrimary} />
@@ -164,6 +178,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
                 loadMoreComments={loadMoreCommentsFunc}
                 postDetail={postDetail}
                 scrollChange={scrollChange}
+                changeComment={(comment: Comment) => changeComment(comment)}
               />
             ) : (
               <View style={styles.noCommentsContainer}>
@@ -175,7 +190,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
               </View>
             )}
           </>}
-        </ScrollView>
+        </Scroller>
       ) : (
         <ActivityIndicator size={'small'}/>
       )}

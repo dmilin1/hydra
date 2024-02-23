@@ -21,6 +21,7 @@ export type Comment = {
     postLink: string,
     subreddit: string,
     html: string,
+    renderCount: number,
     comments: Comment[],
     loadMore: undefined|{
         depth: number,
@@ -70,6 +71,7 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
             subreddit: comment.data.subreddit,
             html: decode(comment.data.body_html),
             comments: comment.data.replies ? formatComments(comment.data.replies.data.children, childCommentPath) : [],
+            renderCount: 0,
             loadMore: loadMoreChild ? {
                 depth: loadMoreChild.data.depth,
                 childIds: loadMoreChild.data.children,
@@ -98,6 +100,7 @@ export async function getPostsDetail(url: string): Promise<PostDetail> {
         postTitle: postData.data.link_title,
         postLink: postData.data.link_permalink,
         comments: formattedComments,
+        renderCount: 0,
         loadMore: loadMoreChild ? {
             depth: loadMoreChild.data.depth,
             childIds: loadMoreChild.data.children,

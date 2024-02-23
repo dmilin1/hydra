@@ -6,18 +6,20 @@ import { ScrollerContext, ScrollerProvider } from "../../contexts/ScrollerContex
 type ScrollerProps = {
     beforeLoad?: ReactNode|ReactNode[],
     children: ReactNode|ReactNode[],
-    loadMore: (refresh: boolean) => Promise<void>,
+    loadMore?: (refresh: boolean) => Promise<void>,
+    scrollViewRef: React.RefObject<VirtualizedList<unknown>>,
 }
 
-function Scroller({ beforeLoad, children, loadMore } : ScrollerProps) {
+function Scroller({ beforeLoad, children, loadMore, scrollViewRef } : ScrollerProps) {
     const { theme } = useContext(ThemeContext);
     const { scrollDisabled } = useContext(ScrollerContext);
 
     const [refreshing, setRefreshing] = useState(false);
-    const [isLoadingMore, setIsLoadingMore] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(!!loadMore);
     const [prevPageHeight, setPrevPageHeight] = useState(0);
 
     const loadMoreData = async (refresh = false) => {
+        if (!loadMore) return;
         setIsLoadingMore(true);
         await loadMore(refresh);
         if (refresh) {
@@ -30,6 +32,7 @@ function Scroller({ beforeLoad, children, loadMore } : ScrollerProps) {
 
     return (
         <VirtualizedList
+            ref={scrollViewRef}
             scrollEnabled={!scrollDisabled}
             refreshControl={
                 <RefreshControl
