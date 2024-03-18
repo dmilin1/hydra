@@ -18,28 +18,25 @@ export default function PostComponent({ initialPostState } : PostComponentProps)
 
     const [post, setPost] = useState(initialPostState);
 
+    const voteOnPost = async (voteOption: VoteOption) => {
+        const result = await vote(post, voteOption);
+        setPost({
+            ...post,
+            upvotes: post.upvotes - post.userVote + result,
+            userVote: result,
+        });
+    };
+
     return (
         <Slideable
             left={[{
                 icon: <AntDesign name="arrowup"/>,
                 color: theme.upvote,
-                action: async () => {
-                    const result = await vote(post, VoteOption.UpVote);
-                    setPost({
-                        ...post,
-                        userVote: result,
-                    });
-                },
+                action: async () => await voteOnPost(VoteOption.UpVote),
             }, {
                 icon: <AntDesign name="arrowdown"/>,
                 color: theme.downvote,
-                action: async () => {
-                    const result = await vote(post, VoteOption.DownVote);
-                    setPost({
-                        ...post,
-                        userVote: result,
-                    });
-                },
+                action: async () => await voteOnPost(VoteOption.DownVote),
             }]}
         >
             <TouchableOpacity
@@ -109,7 +106,7 @@ export default function PostComponent({ initialPostState } : PostComponentProps)
                             <Text style={t(styles.metadataText, {
                                 color: theme.subtleText,
                             })}>
-                                {post.upvotes + post.userVote}
+                                {post.upvotes}
                             </Text>
                             <Feather name="message-square" size={18} color={theme.subtleText} />
                             <Text style={t(styles.metadataText, {

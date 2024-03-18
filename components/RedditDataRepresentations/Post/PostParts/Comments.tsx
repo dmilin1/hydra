@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo, RefObject, Suspense } from 'react';
+import React, { useContext, useState, useMemo, RefObject, Suspense, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEvent, ScrollView, TouchableHighlight } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../../../contexts/ThemeContext';
@@ -26,6 +26,18 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
   const [collapsed, setCollapsed] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
+  const voteOnComment = async (voteOption: VoteOption) => {
+    if (comment.type === 'comment') {
+      const result = await vote(comment, voteOption);
+      changeComment?.({
+        ...comment,
+        userVote: result,
+        upvotes: comment.upvotes - comment.userVote + result,
+        renderCount: comment.renderCount + 1,
+      });
+    }
+  };
+
   return useMemo(() => (
     <View key={comment.id}>
       { comment.depth >= 0 && (
@@ -34,29 +46,11 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
           left={[{
             icon: <AntDesign name="arrowup"/>,
             color: theme.upvote,
-            action: async () => {
-                if (comment.type === 'comment') {
-                  const result = await vote(comment, VoteOption.UpVote);
-                  changeComment?.({
-                    ...comment,
-                    userVote: result,
-                    renderCount: comment.renderCount + 1,
-                  })
-                }
-            },
+            action: async () => await voteOnComment(VoteOption.UpVote),
           }, {
-              icon: <AntDesign name="arrowdown"/>,
-              color: theme.downvote,
-              action: async () => {
-                if (comment.type === 'comment') {
-                  const result = await vote(comment, VoteOption.DownVote);
-                  changeComment?.({
-                    ...comment,
-                    userVote: result,
-                    renderCount: comment.renderCount + 1,
-                  })
-                }
-              },
+            icon: <AntDesign name="arrowdown"/>,
+            color: theme.downvote,
+            action: async () => await voteOnComment(VoteOption.DownVote),
           }]}
         >
           <TouchableHighlight
