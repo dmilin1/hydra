@@ -90,27 +90,36 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
               <View style={t(styles.topBar, {
                 marginBottom: collapsed ? 0 : 8,
               })}>
-                <Text style={t(styles.author, {
-                  color: comment.isOP ? theme.buttonText : theme.text,
-                })}>
-                  {comment.author}
-                </Text>
-                <AntDesign
-                  name={comment.userVote === VoteOption.DownVote ? 'arrowdown' : 'arrowup'}
-                  size={14}
-                  color={
-                    comment.userVote === VoteOption.UpVote ? theme.upvote
+                <TouchableOpacity
+                  onPress={() => history.pushPath(`/u/${comment.author}`)}
+                >
+                  <Text style={t(styles.author, {
+                    color: comment.isOP ? theme.buttonText : theme.text,
+                  })}>
+                    {comment.author}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.upvoteContainer}
+                  onPress={() => voteOnComment(VoteOption.UpVote)}
+                >
+                  <AntDesign
+                    name={comment.userVote === VoteOption.DownVote ? 'arrowdown' : 'arrowup'}
+                    size={14}
+                    color={
+                      comment.userVote === VoteOption.UpVote ? theme.upvote
+                      : comment.userVote === VoteOption.DownVote ? theme.downvote
+                      : theme.subtleText
+                    }
+                  />
+                  <Text style={t(styles.upvoteText, {
+                    color: comment.userVote === VoteOption.UpVote ? theme.upvote
                     : comment.userVote === VoteOption.DownVote ? theme.downvote
-                    : theme.subtleText
-                  }
-                />
-                <Text style={t(styles.upvoteText, {
-                  color: comment.userVote === VoteOption.UpVote ? theme.upvote
-                  : comment.userVote === VoteOption.DownVote ? theme.downvote
-                  : theme.subtleText,
-                })}>
-                  {comment.upvotes}
-                </Text>
+                    : theme.subtleText,
+                  })}>
+                    {comment.upvotes}
+                  </Text>
+                </TouchableOpacity>
                 <Text style={t(styles.upvoteText, {
                   color: theme.subtleText,
                 })}>
@@ -256,6 +265,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     marginRight: 6,
+  },
+  upvoteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   upvoteText: {
     fontSize: 14,

@@ -1,5 +1,5 @@
 import React, { useContext, useCallback, useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, TouchableOpacity, VirtualizedList } from 'react-native';
+import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, TouchableOpacity, VirtualizedList, Share } from 'react-native';
 import { AntDesign, Feather, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import VideoPlayer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/VideoPlayer';
@@ -7,11 +7,12 @@ import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/
 import { ScrollView } from 'react-native';
 import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';
 import RenderHtml from '../components/HTML/RenderHTML';
-import { getPostsDetail, loadMoreComments, PostDetail, Comment } from '../api/PostDetail';
+import { getPostsDetail, loadMoreComments, PostDetail, Comment, vote, VoteOption } from '../api/PostDetail';
 import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/PollViewer';
 import { HistoryContext } from '../contexts/HistoryContext';
 import PostMedia from '../components/RedditDataRepresentations/Post/PostParts/PostMedia';
 import Scroller from '../components/UI/Scroller';
+import RedditURL from '../utils/RedditURL';
 
 type PostDetailsProps = {
   url: string,
@@ -94,6 +95,17 @@ export default function PostDetails({ url }: PostDetailsProps) {
     });
   }
 
+  const voteOnPost = async (voteOption: VoteOption) => {
+    if (postDetail) {
+      const result = await vote(postDetail, voteOption);
+      setPostDetail({
+        ...postDetail,
+        upvotes: postDetail.upvotes - postDetail.userVote + result,
+        userVote: result,
+      });
+    }
+  };
+
   useEffect(() => { loadPostDetails() }, []);
 
   return (
@@ -166,11 +178,62 @@ export default function PostDetails({ url }: PostDetailsProps) {
             <View style={t(styles.buttonsBarContainer, {
               borderTopColor: theme.divider,
             })}>
-              <AntDesign name="arrowup" size={28} color={theme.iconPrimary} />
-              <AntDesign name="arrowdown" size={28} color={theme.iconPrimary} />
-              <Feather name="bookmark" size={28} color={theme.iconPrimary} />
-              <Octicons name="reply" size={28} color={theme.iconPrimary} />
-              <Feather name="share" size={28} color={theme.iconPrimary} />
+              <TouchableOpacity
+                style={t(styles.buttonsContainer, {
+                  backgroundColor: postDetail.userVote === VoteOption.UpVote ? theme.upvote : undefined,
+                })}
+                onPress={() => voteOnPost(VoteOption.UpVote)}
+              >
+                <AntDesign
+                  name="arrowup"
+                  size={28}
+                  color={postDetail.userVote === VoteOption.UpVote ? theme.text : theme.iconPrimary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={t(styles.buttonsContainer, {
+                  backgroundColor: postDetail.userVote === VoteOption.DownVote ? theme.downvote : undefined,
+                })}
+                onPress={() => voteOnPost(VoteOption.DownVote)}
+              >
+                <AntDesign
+                  name="arrowdown"
+                  size={28}
+                  color={postDetail.userVote === VoteOption.DownVote ? theme.text : theme.iconPrimary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={t(styles.buttonsContainer, {
+                  backgroundColor: undefined,
+                })}
+                onPress={() => {}}
+              >
+                <Feather
+                  name="bookmark"
+                  size={28}
+                  color={theme.iconPrimary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonsContainer}
+                onPress={() => {}}
+              >
+                <Octicons
+                  name="reply"
+                  size={28}
+                  color={theme.iconPrimary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonsContainer}
+                onPress={() => Share.share({ url: (new RedditURL(postDetail.link)).url })}
+              >
+                <Feather
+                  name="share"
+                  size={28}
+                  color={theme.iconPrimary}
+                />
+              </TouchableOpacity>
             </View>
             {postDetail.comments.length > 0 ? (
               <Comments
@@ -230,7 +293,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: 5,
+  },
+  buttonsContainer: {
+    padding: 3,
+    borderRadius: 5,
   },
   noCommentsContainer: {
     marginVertical: 25,

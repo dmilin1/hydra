@@ -3,7 +3,7 @@ import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import RedditURL from '../utils/RedditURL';
 import { Post, formatPostData } from './Posts';
-import { Comment, formatComments } from './PostDetail';
+import { Comment, PostDetail, formatComments } from './PostDetail';
 
 export type User = {
     id: string,
@@ -21,7 +21,7 @@ export type User = {
     timeSinceCreated: string,
 }
 
-export type UserContent = Post|Comment;
+export type UserContent = Post|Comment|PostDetail;
 
 type GetUserContentOptions = {
     limit?: string,
