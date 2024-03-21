@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import HistoryStack from '../../components/Navigation/HistoryStack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Subreddits from '../../pages/Subreddits';
-import PostList from '../../pages/Posts';
+import PostsPage from '../../pages/PostsPage';
 import PostDetails from '../../pages/PostDetails';
 
 
@@ -14,7 +14,7 @@ export default function Posts() {
         elem: <Subreddits/>,
         name: 'Subreddits',
       }, {
-        elem: <PostList url='https://www.reddit.com/best'/>,
+        elem: <PostsPage url='https://www.reddit.com/best'/>,
         // elem: <PostDetails url='https://www.reddit.com/r/kpopfap/comments/y7bto5/exdia_somyi_flashing/'/>,
         // elem: <PostList url='https://www.reddit.com/r/kpopfap/top/?t=all'/>,
         // elem: <PostDetails url='https://www.reddit.com/r/shacomains/comments/17hn6h4/shaco_still_sucks/'/>,

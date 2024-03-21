@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 import { ImageStyle, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import Posts from '../pages/Posts';
+import PostsPage from '../pages/PostsPage';
 import RedditURL, { PageType } from '../utils/RedditURL';
 import ErrorPage from '../pages/ErrorPage';
 import Page from '../pages';
@@ -60,9 +60,9 @@ export function HistoryProvider({
         let Page: Page = ErrorPage;
         const pageType = (new RedditURL(path)).getPageType();
         if (pageType === PageType.HOME) {
-            Page = Posts;
+            Page = PostsPage;
         } else if (pageType === PageType.SUBREDDIT) {
-            Page = Posts;
+            Page = PostsPage;
         } else if (pageType === PageType.POST_DETAILS) {
             Page = PostDetails;
         } else if (pageType === PageType.USER) {

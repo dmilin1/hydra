@@ -5,11 +5,11 @@ import { getPosts, Post } from '../api/Posts';
 import PostComponent from '../components/RedditDataRepresentations/Post/PostComponent';
 import Scroller from '../components/UI/Scroller';
 
-type PostsProps = {
+type PostsPageProps = {
   url: string,
 }
 
-export default function Posts({ url } : PostsProps) {
+export default function PostsPage({ url } : PostsPageProps) {
   const { theme } = useContext(ThemeContext);
 
   const [posts, setPosts] = useState<Post[]>([]);
