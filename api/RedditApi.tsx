@@ -22,6 +22,8 @@ export async function api(
         fetchOptions.headers = authorizedHeaders;
     }
 
+    fetchOptions.cache = 'no-store';
+
     if (apiOptions.body) {
         const contentTypeHeaders: HeadersInit = new Headers(fetchOptions?.headers);
         contentTypeHeaders.set('Content-Type', 'application/x-www-form-urlencoded');

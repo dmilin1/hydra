@@ -4,31 +4,32 @@ import { AntDesign, Feather } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../../contexts/ThemeContext';
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import { Post } from '../../../api/Posts';
-import PostMedia from './PostParts/PostMedia';
 import Slideable from '../../UI/Slideable';
 import { vote, VoteOption } from '../../../api/PostDetail';
+import { CommentReply, setReadStatus } from '../../../api/Messages';
+import RenderHtml from '../../HTML/RenderHTML';
 
-type PostComponentProps = {
-    initialPostState: Post
+type MessageComponentProps = {
+    initialMessageState: CommentReply
 }
 
-export default function PostComponent({ initialPostState } : PostComponentProps) {
+export default function MessageComponent({ initialMessageState } : MessageComponentProps) {
     const history = useContext(HistoryContext);
     const { theme } = useContext(ThemeContext);
 
-    const [post, setPost] = useState(initialPostState);
+    const [message, setMessage] = useState(initialMessageState);
 
     const currentVoteColor = (
-        post.userVote === VoteOption.UpVote ? theme.upvote
-        : post.userVote === VoteOption.DownVote ? theme.downvote
+        message.userVote === VoteOption.UpVote ? theme.upvote
+        : message.userVote === VoteOption.DownVote ? theme.downvote
         : theme.subtleText
     );
 
-    const voteOnPost = async (voteOption: VoteOption) => {
-        const result = await vote(post, voteOption);
-        setPost({
-            ...post,
-            upvotes: post.upvotes - post.userVote + result,
+    const voteOnMessage = async (voteOption: VoteOption) => {
+        const result = await vote(message, voteOption);
+        setMessage({
+            ...message,
+            upvotes: message.upvotes - message.userVote + result,
             userVote: result,
         });
     };
@@ -38,38 +39,56 @@ export default function PostComponent({ initialPostState } : PostComponentProps)
             left={[{
                 icon: <AntDesign name="arrowup"/>,
                 color: theme.upvote,
-                action: async () => await voteOnPost(VoteOption.UpVote),
+                action: async () => voteOnMessage(VoteOption.UpVote),
             }, {
                 icon: <AntDesign name="arrowdown"/>,
                 color: theme.downvote,
-                action: async () => await voteOnPost(VoteOption.DownVote),
+                action: async () => voteOnMessage(VoteOption.DownVote),
+            }]}
+            right={[{
+                icon: <Feather name="mail" size={18} color={theme.subtleText} />,
+                color: theme.iconPrimary,
+                action: async () => {
+                    await setReadStatus(message, false);
+                    setMessage({
+                        ...message,
+                        new: true,
+                    });
+                },
             }]}
         >
             <TouchableOpacity
                 activeOpacity={0.8}
-                style={t(styles.postContainer, {
+                style={t(styles.messageContainer, {
                     backgroundColor: theme.background,
                 })}
                 onPress={() => {
-                    history.pushPath(post.link);
+                    setReadStatus(message, true);
+                    setMessage({
+                        ...message,
+                        new: false,
+                    });
+                    history.pushPath(message.contextLink);
                 }}
             >
-                <Text
-                    numberOfLines={2}
-                    style={t(styles.postTitle, {
-                    color: theme.text,
-                    })}
-                >
-                    {post.title}
-                </Text>
-                <View style={styles.postBody}>
-                    <PostMedia
-                        post={post}
-                        maxLines={3}
-                        renderHTML={false}
-                    />
+                <View style={styles.messageTitleContainer}>
+                    <Feather name="message-square" size={18} color={message.new ? theme.iconPrimary : theme.subtleText} />
+                    <View style={styles.messageTitleTextContainer}>
+                    <Text
+                        numberOfLines={2}
+                        style={t(styles.messageTitle, {
+                            color: theme.verySubtleText,
+                        })}
+                    >
+                        <Text style={{ color: theme.text }}>Reply to your comment in </Text>
+                        {message.postTitle}
+                    </Text>
+                    </View>
                 </View>
-                <View style={styles.postFooter}>
+                <View style={styles.messageBody}>
+                    <RenderHtml html={message.html} />
+                </View>
+                <View style={styles.messageFooter}>
                     <View style={styles.footerLeft}>
                         <View style={styles.subAndAuthorContainer}>
                             <Text style={t(styles.smallText, {
@@ -77,12 +96,12 @@ export default function PostComponent({ initialPostState } : PostComponentProps)
                             })}>in </Text>
                             <TouchableOpacity
                                 activeOpacity={0.5}
-                                onPress={() => history.pushPath(`https://www.reddit.com/r/${post.subreddit}`)}
+                                onPress={() => history.pushPath(`https://www.reddit.com/r/${message.subreddit}`)}
                             >
                                 <Text style={t(styles.boldedSmallText, {
                                     color: theme.subtleText,
                                 })}>
-                                    {post.subreddit}
+                                    {message.subreddit}
                                 </Text>
                             </TouchableOpacity>
                             <Text style={t(styles.smallText, {
@@ -90,37 +109,31 @@ export default function PostComponent({ initialPostState } : PostComponentProps)
                             })}> by </Text>
                             <TouchableOpacity
                                 activeOpacity={0.8}
-                                onPress={() => history.pushPath(`https://www.reddit.com/user/${post.author}`)}
+                                onPress={() => history.pushPath(`https://www.reddit.com/user/${message.author}`)}
                             >
                                 <Text style={t(styles.boldedSmallText, {
                                     color: theme.subtleText,
                                 })}>
-                                    {post.author}
+                                    {message.author}
                                 </Text>
                             </TouchableOpacity>
                         </View>
                         <View style={styles.metadataContainer}>
                             <Feather
-                                name={post.userVote === VoteOption.DownVote ? 'arrow-down' : 'arrow-up'}
+                                name={message.userVote === VoteOption.DownVote ? 'arrow-down' : 'arrow-up'}
                                 size={18}
                                 color={currentVoteColor}
                             />
                             <Text style={t(styles.metadataText, {
                                 color: currentVoteColor,
                             })}>
-                                {post.upvotes}
-                            </Text>
-                            <Feather name="message-square" size={18} color={theme.subtleText} />
-                            <Text style={t(styles.metadataText, {
-                                color: theme.subtleText,
-                            })}>
-                                {post.commentCount}
+                                {message.upvotes}
                             </Text>
                             <Feather name="clock" size={18} color={theme.subtleText} />
                             <Text style={t(styles.metadataText, {
                                 color: theme.subtleText,
                             })}>
-                                {post.timeSince}
+                                {message.timeSince}
                             </Text>
                         </View>
                     </View>
@@ -140,19 +153,28 @@ export default function PostComponent({ initialPostState } : PostComponentProps)
 
 
 const styles = StyleSheet.create({
-    postContainer: {
+    messageContainer: {
         flex: 1,
         paddingVertical: 12,
     },
-    postTitle: {
-        fontSize: 17,
-        paddingHorizontal: 10,
+    messageTitleContainer: {
+        flexDirection: 'row',
+        marginHorizontal: 10,
+        alignItems: 'center',
     },
-    postBody: {
+    messageTitleTextContainer: {
+        flex: 1,
+        marginLeft: 10,
+    },
+    messageTitle: {
+        fontSize: 14,
+    },
+    messageBody: {
         flex: 1,
         marginVertical: 5,
+        marginHorizontal: 10,
     },
-    postFooter: {
+    messageFooter: {
         marginHorizontal: 10,
     },
     footerLeft: {

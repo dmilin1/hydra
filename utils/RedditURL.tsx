@@ -6,6 +6,7 @@ export enum PageType {
     SUBREDDIT,
     USER,
     SEARCH,
+    MESSAGE,
 
     ACCOUNTS,
     SETTINGS,
@@ -112,6 +113,8 @@ export default class RedditURL extends URL {
             return PageType.POST_DETAILS;
         } else if (relativePath.startsWith('/r/')) {
             return PageType.SUBREDDIT;
+        } else if (relativePath.startsWith('/message/')) {
+            return PageType.MESSAGE;
         } else if (relativePath.startsWith('/u/') || relativePath.startsWith('/user/')) {
             return PageType.USER;
         } else if (relativePath.startsWith('/search')) {

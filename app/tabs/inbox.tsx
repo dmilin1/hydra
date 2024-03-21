@@ -1,16 +1,14 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import HistoryStack from '../../components/Navigation/HistoryStack';
-import Subreddits from '../../pages/Subreddits';
-import PostsPage from '../../pages/PostsPage';
+import MessagesPage from '../../pages/MessagesPage';
 
 
 export default function Inbox() {
   return (
     <HistoryStack
       initialPast={[{
-        elem: <PostsPage url='https://www.reddit.com/best'/>,
-        name: 'Home',
+        elem: <MessagesPage url='https://www.reddit.com/message/inbox'/>,
+        name: 'Inbox',
       }]}
     />
   );

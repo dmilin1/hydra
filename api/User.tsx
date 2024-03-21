@@ -4,6 +4,7 @@ import Time from '../utils/Time';
 import RedditURL from '../utils/RedditURL';
 import { Post, formatPostData } from './Posts';
 import { Comment, PostDetail, formatComments } from './PostDetail';
+import { CommentReply } from './Messages';
 
 export type User = {
     id: string,
@@ -21,7 +22,7 @@ export type User = {
     timeSinceCreated: string,
 }
 
-export type UserContent = Post|Comment|PostDetail;
+export type UserContent = Post|Comment|PostDetail|CommentReply;
 
 type GetUserContentOptions = {
     limit?: string,

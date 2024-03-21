@@ -6,7 +6,6 @@ import IconButton from '../Components/IconButton';
 import { ThemeContext } from '../../../../contexts/ThemeContext';
 import { Entypo } from '@expo/vector-icons';
 import { AccountContext } from '../../../../contexts/AccountContext';
-import { getInbox } from '../../../../api/Messages';
 
 
 export default function Accounts() {
