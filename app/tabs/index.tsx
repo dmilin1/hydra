@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Text } from 'react-native';
 import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import Account from './account';
 import { SafeAreaView } from 'react-native';
 import { AccountContext } from '../../contexts/AccountContext';
 import Settings from './settings';
+import { getMessages } from '../../api/Messages';
 
 
 
@@ -20,6 +21,8 @@ const Tab = createBottomTabNavigator();
 export default function Tabs() {
   const { theme } = useContext(ThemeContext);
   const { loginInitialized, currentUser } = useContext(AccountContext);
+
+  const [inboxCount, setInboxCount] = React.useState(-1);
 
   const tabBarStyle = {
     backgroundColor: theme.background,
@@ -34,6 +37,19 @@ export default function Tabs() {
       {label}
     </Text>
   );
+
+  // set up an interval to run every 30 seconds to check for new messages if the user is logged in
+  useEffect(() => {
+    if (!currentUser) return;
+    const checkForMessages = async () => {
+      const messages = await getMessages();
+      const newMessages = messages.filter(m => m.new);
+      setInboxCount(newMessages.length);
+    };
+    const interval = setInterval(checkForMessages, 30000);
+    checkForMessages();
+    return () => clearInterval(interval);
+  }, [currentUser]);
   
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
@@ -61,6 +77,7 @@ export default function Tabs() {
               tabBarStyle,
               tabBarIcon: ({ focused, size }) => <Entypo name="mail" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
               tabBarLabel: ({ focused }) => makeTabBarLabel('Inbox', focused),
+              tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
             }}
             component={Inbox}
           />
