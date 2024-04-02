@@ -7,7 +7,6 @@ import { Subreddit, getTrending } from '../../api/Subreddits';
 import { SearchResult, SearchType, SearchTypes, getSearchResults } from '../../api/Search';
 import { Post } from '../../api/Posts';
 import List from '../../components/UI/List';
-import Scroller from '../../components/UI/Scroller';
 import UserComponent from '../../components/RedditDataRepresentations/User/UserComponent';
 import Root from './Root';
 import URL from '../../utils/URL';

@@ -103,7 +103,7 @@ export default function SortAndContext({ sortOptions, contextOptions }: SortAndC
             }, (buttonIndex) => {
               if (buttonIndex === undefined || buttonIndex === cancelButtonIndex) return;
               if (contextOptions[buttonIndex] === 'Share') {
-                Share.share({ url: currentPath });
+                Share.share({ url: new RedditURL(currentPath).toString() });
               }
             });
           }}

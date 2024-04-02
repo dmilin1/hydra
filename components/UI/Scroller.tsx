@@ -3,14 +3,27 @@ import { t, ThemeContext } from "../../contexts/ThemeContext"
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { ScrollerContext, ScrollerProvider } from "../../contexts/ScrollerContext";
 
+/**
+ * Must use either the refresh or loadMore prop but not both. If using loadMore, the refresh
+ * must be handled in the loadMore function.
+*/
+type ScrollerWithRefresh = {
+    loadMore?: never,
+    refresh: () => Promise<void>,
+}
+
+type ScrollerWithLoadMore = {
+    loadMore: (refresh: boolean) => Promise<void>,
+    refresh?: never,
+}
+
 type ScrollerProps = {
     beforeLoad?: ReactNode|ReactNode[],
     children: ReactNode|ReactNode[],
-    loadMore?: (refresh: boolean) => Promise<void>,
     scrollViewRef?: React.RefObject<VirtualizedList<unknown>>,
-}
+} & (ScrollerWithRefresh | ScrollerWithLoadMore);
 
-function Scroller({ beforeLoad, children, loadMore, scrollViewRef } : ScrollerProps) {
+function Scroller({ beforeLoad, children, loadMore, refresh, scrollViewRef } : ScrollerProps) {
     const { theme } = useContext(ThemeContext);
     const { scrollDisabled } = useContext(ScrollerContext);
 
@@ -28,6 +41,13 @@ function Scroller({ beforeLoad, children, loadMore, scrollViewRef } : ScrollerPr
         setIsLoadingMore(false);
     };
 
+    const refreshData = async () => {
+        if (!refresh) return;
+        setRefreshing(true);
+        await refresh();
+        setRefreshing(false);
+    }
+
     useEffect(() => { loadMoreData() }, []);
 
     return (
@@ -40,7 +60,11 @@ function Scroller({ beforeLoad, children, loadMore, scrollViewRef } : ScrollerPr
                     refreshing={refreshing}
                     onRefresh={() => {
                         setRefreshing(true);
-                        loadMoreData(true);
+                        if (loadMore) {
+                            loadMoreData(true);
+                        } else {
+                            refreshData();
+                        }
                     }}
                 />
             }

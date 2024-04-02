@@ -28,11 +28,9 @@ export default function PostDetails({ url }: PostDetailsProps) {
   const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
 
-  const scrollHeight = useRef(0);
   const scrollView = useRef<VirtualizedList<unknown>>(null);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
-  const [refreshing, setRefreshing] = useState(false);
 
   const scrollChange = useCallback((changeY: number) => {
     (scrollView.current?.getScrollRef() as any)?.measure((...args: any) => {
@@ -52,7 +50,6 @@ export default function PostDetails({ url }: PostDetailsProps) {
   const loadPostDetails = async () => {
     const postDetail = await getPostsDetail(url);
     setPostDetail(postDetail);
-    setRefreshing(false);
   };
 
   const getCommentFromPath = (parentObject: PostDetail|Comment, commentPath: number[]) => {
@@ -112,9 +109,10 @@ export default function PostDetails({ url }: PostDetailsProps) {
     <View style={t(styles.postDetailsOuterContainer, {
       backgroundColor: theme.background,
     })}>
-      {postDetail || refreshing ? (
+      {postDetail ? (
         <Scroller
           scrollViewRef={scrollView}
+          refresh={async () => await loadPostDetails()}
         >
           {postDetail && <>
             <View style={styles.postDetailsContainer}>
@@ -226,7 +224,10 @@ export default function PostDetails({ url }: PostDetailsProps) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonsContainer}
-                onPress={() => Share.share({ url: (new RedditURL(postDetail.link)).url })}
+                onPress={() => {
+                  const currentPath = history.past.slice(-1)[0]?.elem.props.url;
+                  Share.share({ url: new RedditURL(currentPath).toString() })
+                }}
               >
                 <Feather
                   name="share"

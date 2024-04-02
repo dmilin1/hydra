@@ -8,7 +8,6 @@ import { SearchResult, SearchType, SearchTypes, getSearchResults } from '../../a
 import { Post } from '../../api/Posts';
 import SubredditComponent from '../../components/RedditDataRepresentations/Subreddit/SubredditComponent';
 import List from '../../components/UI/List';
-import Scroller from '../../components/UI/Scroller';
 import UserComponent from '../../components/RedditDataRepresentations/User/UserComponent';
 
 

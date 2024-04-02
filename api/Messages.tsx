@@ -66,7 +66,7 @@ export async function getMessages(options: MessagesOptions = {}): Promise<Commen
 }
 
 export async function setReadStatus(message: CommentReply, isRead: boolean): Promise<void> {
-    const res = await api(`https://www.reddit.com/api/${isRead ? 'read_message' : 'unread_message'}`, {
+    await api(`https://www.reddit.com/api/${isRead ? 'read_message' : 'unread_message'}`, {
         method: 'POST',
     }, {
         requireAuth: true,
@@ -74,5 +74,4 @@ export async function setReadStatus(message: CommentReply, isRead: boolean): Pro
             id: message.name,
         },
     });
-    console.log(res);
 }
