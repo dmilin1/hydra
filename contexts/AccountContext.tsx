@@ -15,7 +15,6 @@ type AccountContextType =  {
     currentAcc: Account|null,
     currentUser: User|null,
     accounts: Account[],
-    setShowLoginModal: (visible: boolean) => void,
     logIn: (account: Account) => Promise<boolean>,
     logOut: () => Promise<void>,
     addUser: (account: Account) => Promise<boolean>,
@@ -27,7 +26,6 @@ const initialAccountContext: AccountContextType = {
     currentAcc: null,
     currentUser: null,
     accounts: [],
-    setShowLoginModal: () => {},
     logIn: async () => false,
     logOut: async () => {},
     addUser: async () => false,
@@ -41,7 +39,6 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     const [currentAcc, setCurrentAcc] = useState<AccountContextType['currentAcc']>(null);
     const [currentUser, setCurrentUser] = useState<AccountContextType['currentUser']>(null);
     const [accounts, setAccounts] = useState<AccountContextType['accounts']>([]);
-    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const logInContext = async (account: Account): Promise<boolean> => {
         try {
@@ -128,16 +125,11 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
             currentAcc,
             currentUser,
             accounts,
-            setShowLoginModal,
             logIn: logInContext,
             logOut: logOutContext,
             addUser,
             removeUser,
         }}>
-            <Login
-                visible={showLoginModal}
-                setVisible={setShowLoginModal}
-            />
             {children}
         </AccountContext.Provider>
     );

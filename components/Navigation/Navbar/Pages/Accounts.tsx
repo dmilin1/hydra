@@ -5,13 +5,14 @@ import TextButton from '../Components/TextButton';
 import IconButton from '../Components/IconButton';
 import { ThemeContext } from '../../../../contexts/ThemeContext';
 import { Entypo } from '@expo/vector-icons';
-import { AccountContext } from '../../../../contexts/AccountContext';
+import Login from '../../../Modals/Login';
+import { ModalContext } from '../../../../contexts/ModalContext';
 
 
 export default function Accounts() {
   const history = useContext(HistoryContext);
   const { theme } = useContext(ThemeContext);
-  const { setShowLoginModal } = useContext(AccountContext);
+  const { setModal } = useContext(ModalContext);
 
   return (
     <>
@@ -19,7 +20,7 @@ export default function Accounts() {
       <TextButton text={history.past.slice(-1)[0]?.name}/>
       <IconButton
         icon={<Entypo name="plus" size={24} color={theme.buttonText} />}
-        onPress={() => setShowLoginModal(true)}
+        onPress={() => setModal(<Login />)}
         justifyContent='flex-end'
       />
     </>

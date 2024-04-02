@@ -3,19 +3,16 @@ import { Share, StyleSheet, View, Text, TouchableOpacity, Dimensions, TextInput 
 import { ThemeContext, t } from '../../contexts/ThemeContext';
 import { Entypo, Feather } from '@expo/vector-icons';
 import { AccountContext } from '../../contexts/AccountContext';
+import { ModalContext } from '../../contexts/ModalContext';
 
-type LoginProps = {
-    visible: boolean,
-    setVisible: (visible: boolean) => void,
-}
-
-export default function Login({ visible, setVisible }: LoginProps) {
+export default function Login() {
     const { theme } = useContext(ThemeContext);
     const { addUser } = useContext(AccountContext);
+    const { setModal } = useContext(ModalContext);
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
 
-    return visible ? (
+    return (
         <View style={styles.loginContainer}>
             <View style={t(styles.loginSubContainer, {
                 backgroundColor: theme.background,
@@ -69,7 +66,7 @@ export default function Login({ visible, setVisible }: LoginProps) {
                         })}
                         onPress={async () => {
                             if (await addUser({ username, password })) {
-                                setVisible(false);
+                                setModal(null);
                                 setUsername('');
                                 setPassword('');
                             }
@@ -84,12 +81,12 @@ export default function Login({ visible, setVisible }: LoginProps) {
                 </View>
             </View>
             <View style={styles.background} onTouchStart={() => {
-                setVisible(false)
+                setModal(null);
                 setUsername('');
                 setPassword('');
             }}/>
         </View>
-    ) : null;
+    );
 }
 
 const styles = StyleSheet.create({

@@ -225,8 +225,12 @@ interface CommentsProps {
 }
 
 export default function Comments({ loadMoreComments, postDetail, scrollChange, changeComment }: CommentsProps) {
+  const { theme } = useContext(ThemeContext);
+
   return (
-    <View>
+    <View style={t(styles.commentsContainer, {
+      borderBottomColor: theme.divider,
+    })}>
       <Suspense fallback={<View><Text>Loading</Text></View>}>
         <CommentComponent
           key={postDetail.id}
@@ -242,6 +246,9 @@ export default function Comments({ loadMoreComments, postDetail, scrollChange, c
 }
 
 const styles = StyleSheet.create({
+  commentsContainer: {
+    borderBottomWidth: 1,
+  },
   outerCommentContainer: {
     borderTopWidth: 1,
     paddingVertical: 10,
