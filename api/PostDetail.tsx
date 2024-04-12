@@ -42,7 +42,7 @@ export enum VoteOption {
     DownVote = -1,
 }
 
-export function formatComments(comments: any, commentPath: number[] = [], childStartIndex = 0): Comment[] {
+export function formatComments(comments: any, commentPath: number[] = [], childStartIndex = 0, renderCount = 0): Comment[] {
     let formattedComments: Comment[] = [];
     for (let i = 0; i < comments.length; i++) {
         const comment = comments[i];
@@ -71,7 +71,7 @@ export function formatComments(comments: any, commentPath: number[] = [], childS
             subreddit: comment.data.subreddit,
             html: decode(comment.data.body_html),
             comments: comment.data.replies ? formatComments(comment.data.replies.data.children, childCommentPath) : [],
-            renderCount: 0,
+            renderCount,
             loadMore: loadMoreChild ? {
                 depth: loadMoreChild.data.depth,
                 childIds: loadMoreChild.data.children,
@@ -138,4 +138,29 @@ export async function vote(item: UserContent, voteOption: VoteOption): Promise<V
         },
     });
     return dir;
+}
+
+export async function reloadComment(comment: Comment|PostDetail): Promise<Comment> {
+    const response = await api(new RedditURL(comment.link).jsonify().toString());
+    const commentData = response[1].data.children[0];
+    const formattedComment = formatComments(
+        [commentData],
+        comment.path.slice(0, -1),
+        comment.path.slice(-1)[0],
+        comment.renderCount + 1,
+    )[0];
+    return formattedComment;
+}
+
+export async function submitComment(userContent: UserContent, text: string): Promise<Boolean> {
+    const response = await api('https://www.reddit.com/api/comment', {
+        method: 'POST',
+    }, {
+        requireAuth: true,
+        body: {
+            thing_id: userContent.name,
+            text,
+        },
+    });
+    return response?.success ?? false;
 }

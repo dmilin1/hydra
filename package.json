@@ -28,6 +28,7 @@
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
+    "expo-updates": "~0.18.19",
     "expo-web-browser": "~12.3.2",
     "html-entities": "^2.4.0",
     "htmlparser2": "^9.0.0",
@@ -41,8 +42,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.6",
-    "react-native-webview": "13.2.2",
-    "expo-updates": "~0.18.19"
+    "react-native-webview": "13.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

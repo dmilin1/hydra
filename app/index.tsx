@@ -17,6 +17,7 @@ import {LogBox, View} from 'react-native';
 import { renderRootComponent } from "expo-router/src/renderRootComponent";
 import { AccountProvider } from "../contexts/AccountContext";
 import { ModalProvider } from "../contexts/ModalContext";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 
 LogBox.ignoreLogs([
@@ -45,19 +46,21 @@ export default function RootLayout() {
 	}, [loaded])
 
 	return (
-		<NavigationContainer>
-			<ThemeProvider>
-				<AccountProvider>
-					<ActionSheetProvider>
-						<ModalProvider>
-							<>
-								{loaded && <Tabs />}
-							</>
-						</ModalProvider>
-					</ActionSheetProvider>
-				</AccountProvider>
-			</ThemeProvider>
-		</NavigationContainer>
+		<SafeAreaProvider>
+			<NavigationContainer>
+				<ThemeProvider>
+					<AccountProvider>
+						<ActionSheetProvider>
+							<ModalProvider>
+								<>
+									{loaded && <Tabs />}
+								</>
+							</ModalProvider>
+						</ActionSheetProvider>
+					</AccountProvider>
+				</ThemeProvider>
+			</NavigationContainer>
+		</SafeAreaProvider>
 	);
 }
 

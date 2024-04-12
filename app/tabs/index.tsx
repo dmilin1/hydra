@@ -9,7 +9,7 @@ import Posts from './posts';
 import Inbox from './inbox';
 import Search from './search';
 import Account from './account';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AccountContext } from '../../contexts/AccountContext';
 import Settings from './settings';
 import { getMessages } from '../../api/Messages';
@@ -52,7 +52,10 @@ export default function Tabs() {
   }, [currentUser]);
   
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.background }}
+      edges={['right', 'top', 'left']}
+    >
       { loginInitialized &&
         <Tab.Navigator
           initialRouteName="Posts"

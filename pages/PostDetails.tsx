@@ -7,12 +7,14 @@ import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/
 import { ScrollView } from 'react-native';
 import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';
 import RenderHtml from '../components/HTML/RenderHTML';
-import { getPostsDetail, loadMoreComments, PostDetail, Comment, vote, VoteOption } from '../api/PostDetail';
+import { getPostsDetail, loadMoreComments, PostDetail, Comment, vote, VoteOption, reloadComment } from '../api/PostDetail';
 import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/PollViewer';
 import { HistoryContext } from '../contexts/HistoryContext';
 import PostMedia from '../components/RedditDataRepresentations/Post/PostParts/PostMedia';
 import Scroller from '../components/UI/Scroller';
 import RedditURL from '../utils/RedditURL';
+import Reply from '../components/Modals/Reply';
+import { ModalContext } from '../contexts/ModalContext';
 
 type PostDetailsProps = {
   url: string,
@@ -27,6 +29,7 @@ export type LoadMoreCommentsFunc = (
 export default function PostDetails({ url }: PostDetailsProps) {
   const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
+  const { setModal } = useContext(ModalContext);
 
   const scrollView = useRef<VirtualizedList<unknown>>(null);
 
@@ -214,7 +217,12 @@ export default function PostDetails({ url }: PostDetailsProps) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonsContainer}
-                onPress={() => {}}
+                onPress={() => setModal(
+                  <Reply
+                    userContent={postDetail}
+                    replySent={async () => await loadPostDetails()}
+                  />
+                )}
               >
                 <Octicons
                   name="reply"

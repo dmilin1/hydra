@@ -1,12 +1,14 @@
 import React, { useContext, useState, useMemo, RefObject, Suspense, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEvent, ScrollView, TouchableHighlight } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../../../contexts/ThemeContext';
 import RenderHtml from '../../../HTML/RenderHTML';
-import { Comment, PostDetail, VoteOption, vote } from '../../../../api/PostDetail';
+import { Comment, PostDetail, VoteOption, reloadComment, vote } from '../../../../api/PostDetail';
 import { LoadMoreCommentsFunc } from '../../../../pages/PostDetails';
 import { HistoryContext } from '../../../../contexts/HistoryContext';
 import Slideable from '../../../UI/Slideable';
+import { ModalContext } from '../../../../contexts/ModalContext';
+import Reply from '../../../Modals/Reply';
 
 interface CommentProps {
   loadMoreComments?: LoadMoreCommentsFunc,
@@ -20,6 +22,7 @@ interface CommentProps {
 export function CommentComponent({ loadMoreComments, comment, index, scrollChange, displayInList, changeComment }: CommentProps) {
   const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryContext);
+  const { setModal } = useContext(ModalContext);
 
   const commentRef = React.useRef<TouchableOpacity>(null);
 
@@ -51,6 +54,30 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
             icon: <AntDesign name="arrowdown"/>,
             color: theme.downvote,
             action: async () => await voteOnComment(VoteOption.DownVote),
+          }]}
+          right={[{
+            icon: <Octicons name="reply"/>,
+            color: theme.reply,
+            action: () => setModal(
+              <Reply
+                userContent={comment}
+                replySent={async () => {
+                  const reloadedComment = await reloadComment(comment);
+                  console.log(reloadedComment);
+                  changeComment?.(reloadedComment);
+                }}
+              />
+            ),
+          }, {
+            icon: <Octicons name="accessibility"/>,
+            color: theme.reply,
+            action: async () => {
+              if (comment.type === 'comment') {
+                const reloadedComment = await reloadComment(comment);
+                console.log(reloadedComment);
+                changeComment?.(reloadedComment);
+              }
+            },
           }]}
         >
           <TouchableHighlight

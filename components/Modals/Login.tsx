@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext } from 'react';
+import React, { ReactNode, useState, useContext } from 'react';
 import { Share, StyleSheet, View, Text, TouchableOpacity, Dimensions, TextInput } from 'react-native';
 import { ThemeContext, t } from '../../contexts/ThemeContext';
 import { Entypo, Feather } from '@expo/vector-icons';
@@ -9,11 +9,11 @@ export default function Login() {
     const { theme } = useContext(ThemeContext);
     const { addUser } = useContext(AccountContext);
     const { setModal } = useContext(ModalContext);
-    const [username, setUsername] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     return (
-        <View style={styles.loginContainer}>
+        <>
             <View style={t(styles.loginSubContainer, {
                 backgroundColor: theme.background,
                 borderColor: theme.divider,
@@ -85,15 +85,11 @@ export default function Login() {
                 setUsername('');
                 setPassword('');
             }}/>
-        </View>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
-    loginContainer: {
-        position: 'relative',
-        zIndex: 1000,
-    },
     loginSubContainer: {
         position: 'absolute',
         top: 0,
