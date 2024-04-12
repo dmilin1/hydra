@@ -65,8 +65,8 @@ export async function getMessages(options: MessagesOptions = {}): Promise<Commen
         .map((child: any) => formatCommentReply(child.data));
 }
 
-export async function setReadStatus(message: CommentReply, isRead: boolean): Promise<void> {
-    await api(`https://www.reddit.com/api/${isRead ? 'read_message' : 'unread_message'}`, {
+export async function setMessageNewStatus(message: CommentReply, isNew: boolean): Promise<void> {
+    await api(`https://www.reddit.com/api/${isNew ? 'unread_message' : 'read_message'}`, {
         method: 'POST',
     }, {
         requireAuth: true,

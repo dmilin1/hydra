@@ -6,8 +6,9 @@ import { HistoryContext } from '../../../contexts/HistoryContext';
 import { Post } from '../../../api/Posts';
 import Slideable from '../../UI/Slideable';
 import { vote, VoteOption } from '../../../api/PostDetail';
-import { CommentReply, setReadStatus } from '../../../api/Messages';
+import { CommentReply, setMessageNewStatus } from '../../../api/Messages';
 import RenderHtml from '../../HTML/RenderHTML';
+import { InboxContext } from '../../../contexts/InboxContext';
 
 type MessageComponentProps = {
     initialMessageState: CommentReply
@@ -16,6 +17,7 @@ type MessageComponentProps = {
 export default function MessageComponent({ initialMessageState } : MessageComponentProps) {
     const history = useContext(HistoryContext);
     const { theme } = useContext(ThemeContext);
+    const { inboxCount, setInboxCount } = useContext(InboxContext);
 
     const [message, setMessage] = useState(initialMessageState);
 
@@ -49,7 +51,9 @@ export default function MessageComponent({ initialMessageState } : MessageCompon
                 icon: <Feather name="mail" size={18} color={theme.subtleText} />,
                 color: theme.iconPrimary,
                 action: async () => {
-                    await setReadStatus(message, !message.new);
+                    console.log(message, !message.new);
+                    await setMessageNewStatus(message, !message.new);
+                    setInboxCount(inboxCount + (message.new ? -1 : 1));
                     setMessage({
                         ...message,
                         new: !message.new,
@@ -63,7 +67,7 @@ export default function MessageComponent({ initialMessageState } : MessageCompon
                     backgroundColor: theme.background,
                 })}
                 onPress={() => {
-                    setReadStatus(message, true);
+                    setMessageNewStatus(message, false);
                     setMessage({
                         ...message,
                         new: false,

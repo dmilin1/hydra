@@ -2,16 +2,11 @@ import { ReactNode, createContext, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet } from 'react-native';
 import { t } from './ThemeContext';
 
-export type Account = {
-    username: string,
-    password: string,
-}
-
-type AccountContextType =  {
+type ModalContextType =  {
     setModal: (modal?: ReactNode) => void,
 }
 
-const initialModalContext: AccountContextType = {
+const initialModalContext: ModalContextType = {
     setModal: () => {},
 };
 
