@@ -52,9 +52,13 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
         <View style={t(styles.isGifContainer, {
           backgroundColor: theme.background,
         })}>
-          <Text style={t(styles.isGifText, {
-            color: theme.text,
-          })}>VIDEO</Text>
+          <Image
+            style={styles.img}
+            width={300}
+            resizeMode='contain'
+            source={{ uri: images[0] }}
+            alt={'image failed to load'}
+          />
         </View>
       )}
     </View>
@@ -85,13 +89,10 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   isGifContainer: {
-    position: 'absolute',
-    borderRadius: 5,
-    overflow: 'hidden',
+    flex: 1,
     margin: 5,
-    left: 0,
-    bottom: 0,
-    opacity: 0.6,
+    width: 200,
+    height: 200,
   },
   isGifText: {
     padding: 5,

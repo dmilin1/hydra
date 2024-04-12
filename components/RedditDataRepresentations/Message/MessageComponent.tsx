@@ -51,7 +51,6 @@ export default function MessageComponent({ initialMessageState } : MessageCompon
                 icon: <Feather name="mail" size={18} color={theme.subtleText} />,
                 color: theme.iconPrimary,
                 action: async () => {
-                    console.log(message, !message.new);
                     await setMessageNewStatus(message, !message.new);
                     setInboxCount(inboxCount + (message.new ? -1 : 1));
                     setMessage({

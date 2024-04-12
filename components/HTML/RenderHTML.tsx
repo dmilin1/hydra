@@ -275,6 +275,5 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         height: 200,
-        backgroundColor: 'red',
     },
 });
