@@ -20,6 +20,29 @@ type ElementProps = {
     inheritedStyles: InheritedStyles,
 }
 
+function makeChildNodeKey(node: AnyNode, index: number): string {
+    if (node instanceof TextNode) {
+        return (
+            index
+            + node.data
+            + node.nodeValue
+        );
+    }
+    if (node instanceof ElementNode) {
+        return (
+            index
+            + node.type
+            + node.name
+        );
+    }
+    return (
+        index
+        + node.type
+        + (node.sourceCodeLocation?.startOffset?.toString() ?? '')
+        + (node.sourceCodeLocation?.endOffset?.toString() ?? '')
+    );
+}
+
 export function Element({ element, index, inheritedStyles }: ElementProps) {
     const { theme } = useContext(ThemeContext);
     const history = useContext(HistoryContext);
@@ -162,7 +185,12 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
             {
                 element.children
                 .filter((c: any) => !(typeof c.data === 'string' && c.data.trim() === ''))
-                .map((c, i) => <Node key={i + (c.sourceCodeLocation?.startOffset?.toString() ?? '')} node={c} index={i} inheritedStyles={inheritedStyles} />)
+                .map((c, i) =>
+                    <Node
+                        key={makeChildNodeKey(c, i)}
+                        node={c} index={i} inheritedStyles={inheritedStyles}
+                    />
+                )
             }
         </Wrapper>
     ) : null
@@ -228,7 +256,13 @@ export default function RenderHtml({ html }: {html: string}) {
     const document = parseDocument(html);
     return (
         <View>
-            {document.children.map((c, i) => <Node node={c} index={i} inheritedStyles={{}} />)}
+            {document.children.map((c, i) =>
+                <Node
+                    key={makeChildNodeKey(c, i)}
+                    node={c}
+                    index={i}
+                    inheritedStyles={{}}
+                />)}
         </View>
     )
 }

@@ -49,10 +49,10 @@ export default function MessageComponent({ initialMessageState } : MessageCompon
                 icon: <Feather name="mail" size={18} color={theme.subtleText} />,
                 color: theme.iconPrimary,
                 action: async () => {
-                    await setReadStatus(message, false);
+                    await setReadStatus(message, !message.new);
                     setMessage({
                         ...message,
-                        new: true,
+                        new: !message.new,
                     });
                 },
             }]}
