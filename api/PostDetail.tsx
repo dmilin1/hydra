@@ -164,3 +164,14 @@ export async function submitComment(userContent: UserContent, text: string): Pro
     });
     return response?.success ?? false;
 }
+
+export async function savePost(post: PostDetail, saved: boolean): Promise<void> {
+    await api(`https://www.reddit.com/api/${saved ? 'save' : 'unsave'}`, {
+        method: 'POST',
+    }, {
+        requireAuth: true,
+        body: {
+            id: post.name,
+        },
+    });
+}

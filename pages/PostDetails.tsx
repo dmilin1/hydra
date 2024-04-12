@@ -1,13 +1,13 @@
 import React, { useContext, useCallback, useRef, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, TouchableOpacity, VirtualizedList, Share } from 'react-native';
-import { AntDesign, Feather, Octicons } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../contexts/ThemeContext';
 import VideoPlayer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/VideoPlayer';
 import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer';
 import { ScrollView } from 'react-native';
 import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';
 import RenderHtml from '../components/HTML/RenderHTML';
-import { getPostsDetail, loadMoreComments, PostDetail, Comment, vote, VoteOption, reloadComment } from '../api/PostDetail';
+import { getPostsDetail, loadMoreComments, PostDetail, Comment, vote, VoteOption, reloadComment, savePost } from '../api/PostDetail';
 import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/PollViewer';
 import { HistoryContext } from '../contexts/HistoryContext';
 import PostMedia from '../components/RedditDataRepresentations/Post/PostParts/PostMedia';
@@ -207,10 +207,16 @@ export default function PostDetails({ url }: PostDetailsProps) {
                 style={t(styles.buttonsContainer, {
                   backgroundColor: undefined,
                 })}
-                onPress={() => {}}
+                onPress={async () => {
+                  await savePost(postDetail, !postDetail.saved);
+                  setPostDetail({
+                    ...postDetail,
+                    saved: !postDetail.saved,
+                  });
+                }}
               >
-                <Feather
-                  name="bookmark"
+                <FontAwesome
+                  name={postDetail.saved ? 'bookmark' : 'bookmark-o'}
                   size={28}
                   color={theme.iconPrimary}
                 />
