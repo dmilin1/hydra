@@ -99,7 +99,7 @@ export async function formatPostData(child: any): Promise<Post> {
         commentCount: child.data.num_comments,
         link: `https://www.reddit.com${child.data.permalink}`,
         images: images,
-        imageThumbnail: child.data.thumbnail,
+        imageThumbnail: decode(child.data.thumbnail),
         video,
         poll: poll,
         externalLink,
