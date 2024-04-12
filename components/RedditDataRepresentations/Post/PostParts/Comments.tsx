@@ -63,21 +63,10 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
                 userContent={comment}
                 replySent={async () => {
                   const reloadedComment = await reloadComment(comment);
-                  console.log(reloadedComment);
                   changeComment?.(reloadedComment);
                 }}
               />
             ),
-          }, {
-            icon: <Octicons name="accessibility"/>,
-            color: theme.reply,
-            action: async () => {
-              if (comment.type === 'comment') {
-                const reloadedComment = await reloadComment(comment);
-                console.log(reloadedComment);
-                changeComment?.(reloadedComment);
-              }
-            },
           }]}
         >
           <TouchableHighlight
