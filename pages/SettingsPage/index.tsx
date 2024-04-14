@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight, TouchableOpacity, TextInput, ActivityIndicator, ScrollView } from 'react-native';
 import { Feather, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../contexts/HistoryContext';
 import { Subreddit, getTrending } from '../../api/Subreddits';
 import { SearchResult, SearchType, SearchTypes, getSearchResults } from '../../api/Search';
@@ -11,6 +11,7 @@ import UserComponent from '../../components/RedditDataRepresentations/User/UserC
 import Root from './Root';
 import URL from '../../utils/URL';
 import Theme from './Theme';
+import DataUse from './DataUse';
 
 
 export default function SettingsPage({ url }: { url: string }) {
@@ -29,6 +30,9 @@ export default function SettingsPage({ url }: { url: string }) {
         }
         {relativePath === 'settings/theme' &&
           <Theme/>
+        }
+        {relativePath === 'settings/dataUse' &&
+          <DataUse/>
         }
       </ScrollView>
     </View>

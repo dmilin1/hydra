@@ -2,7 +2,7 @@ import React, { useContext, useCallback, useRef, useEffect, useState } from 'rea
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, RefreshControl, Dimensions, ActivityIndicator } from 'react-native';
 import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
-import { ThemeContext, t } from '../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import { getPosts, Post } from '../../../api/Posts';
 import { Subreddit } from '../../../api/Subreddits';

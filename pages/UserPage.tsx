@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { Feather, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext, t } from '../contexts/ThemeContext';
+import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';
 import PostComponent from '../components/RedditDataRepresentations/Post/PostComponent';
 import SubredditComponent from '../components/RedditDataRepresentations/Subreddit/SubredditComponent';

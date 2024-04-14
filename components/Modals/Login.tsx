@@ -1,6 +1,6 @@
 import React, { ReactNode, useState, useContext } from 'react';
 import { Share, StyleSheet, View, Text, TouchableOpacity, Dimensions, TextInput } from 'react-native';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { Entypo, Feather } from '@expo/vector-icons';
 import { AccountContext } from '../../contexts/AccountContext';
 import { ModalContext } from '../../contexts/ModalContext';

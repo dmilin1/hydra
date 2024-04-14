@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Text, StyleSheet, TouchableOpacity, } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import { ThemeContext, t } from '../../../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../../../contexts/SettingsContexts/ThemeContext';
 
 
 export default function Link({ link }: { link: string }) {

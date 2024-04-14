@@ -1,6 +1,6 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
 import { Feather, MaterialIcons } from "@expo/vector-icons"
-import { ThemeContext, t } from "../../contexts/ThemeContext"
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext"
 import { Fragment, ReactNode, useContext } from "react";
 
 

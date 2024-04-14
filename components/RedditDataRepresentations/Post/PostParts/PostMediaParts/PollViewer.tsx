@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import { ThemeContext, t } from '../../../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../../../contexts/SettingsContexts/ThemeContext';
 import { Poll } from '../../../../../api/Posts';
 
 

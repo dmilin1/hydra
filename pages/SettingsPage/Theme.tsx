@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight, TouchableOpacity, TextInput, ActivityIndicator, ScrollView } from 'react-native';
 import { Feather, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../contexts/HistoryContext';
 import Themes from '../../constants/Themes';
 import List from '../../components/UI/List';
@@ -37,8 +37,11 @@ export default function Theme() {
         <View style={t(styles.colorsContainer, {
           borderColor: theme.divider,
         })}>
-          {Object.values(curTheme).filter((val) => isValidColor(val)).map((color: any) => (
+          {Object.entries(curTheme)
+          .filter(([_, val]) => isValidColor(val))
+          .map(([key, color]: [string, any]) => (
             <View
+              key={key}
               style={{
                 backgroundColor: color,
                 flex: 1,

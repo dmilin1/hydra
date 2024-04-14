@@ -3,7 +3,7 @@ import { Share, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext, HistoryLayer } from '../../../../contexts/HistoryContext';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import RedditURL, { PageType } from '../../../../utils/RedditURL';

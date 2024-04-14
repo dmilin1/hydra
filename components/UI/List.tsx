@@ -1,6 +1,6 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native"
 import { Feather, MaterialIcons } from "@expo/vector-icons"
-import { ThemeContext, t } from "../../contexts/ThemeContext"
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext"
 import { Fragment, ReactNode, useContext } from "react";
 import SectionTitle from "./SectionTitle";
 
@@ -8,6 +8,7 @@ import SectionTitle from "./SectionTitle";
 type ListItem = {
     key: string,
     icon: ReactNode,
+    rightIcon?: ReactNode,
     text: string,
     onPress: () => void,
 }
@@ -46,7 +47,9 @@ export default function List({ items, title }: ListProps) {
                             })}>
                                 {item.text}
                             </Text>
-                            <MaterialIcons name='keyboard-arrow-right' size={30} color={theme.verySubtleText} style={styles.iconMargin}/>
+                            {item.rightIcon ??
+                                <MaterialIcons name='keyboard-arrow-right' size={30} color={theme.verySubtleText} style={styles.iconMargin}/>
+                            }
                         </View>
                     </TouchableOpacity>
                 ))}

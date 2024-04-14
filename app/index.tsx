@@ -9,7 +9,7 @@ import { SplashScreen } from 'expo-router';
 import React, { useEffect } from 'react';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
-import { ThemeProvider } from '../contexts/ThemeContext';
+import { ThemeProvider } from '../contexts/SettingsContexts/ThemeContext';
 import Tabs from './tabs';
 
 import {LogBox, View} from 'react-native';
@@ -19,6 +19,7 @@ import { AccountProvider } from "../contexts/AccountContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { InboxProvider } from "../contexts/InboxContext";
+import { SettingsProvider } from "../contexts/SettingsContexts";
 
 
 LogBox.ignoreLogs([
@@ -44,12 +45,12 @@ export default function RootLayout() {
 		if (loaded) {
 			SplashScreen.hideAsync();
 		}
-	}, [loaded])
+	}, [loaded]);
 
 	return (
 		<SafeAreaProvider>
 			<NavigationContainer>
-				<ThemeProvider>
+				<SettingsProvider>
 					<AccountProvider>
 						<ActionSheetProvider>
 							<InboxProvider>
@@ -61,7 +62,7 @@ export default function RootLayout() {
 							</InboxProvider>
 						</ActionSheetProvider>
 					</AccountProvider>
-				</ThemeProvider>
+				</SettingsProvider>
 			</NavigationContainer>
 		</SafeAreaProvider>
 	);

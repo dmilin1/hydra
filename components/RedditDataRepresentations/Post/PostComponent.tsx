@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import { Post } from '../../../api/Posts';
 import PostMedia from './PostParts/PostMedia';

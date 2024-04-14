@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Text, StyleSheet, TouchableOpacity, View, } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import { ThemeContext, t } from '../../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../../contexts/SettingsContexts/ThemeContext';
 import { Post } from '../../../../api/Posts';
 import ImageViewer from './PostMediaParts/ImageViewer';
 import PollViewer from './PostMediaParts/PollViewer';

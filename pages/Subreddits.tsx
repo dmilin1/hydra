@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableHighlight, TouchableOpacity } from 're
 import { ScrollView } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { ThemeContext, t } from '../contexts/ThemeContext';
+import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../contexts/HistoryContext';
 import { Subreddit, Subreddits as SubredditsObj, getSubreddits, getTrending } from '../api/Subreddits';
 import { AccountContext } from '../contexts/AccountContext';

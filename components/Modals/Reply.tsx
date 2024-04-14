@@ -1,6 +1,6 @@
 import React, { ReactNode, useContext, useEffect, useRef } from 'react';
 import { Share, StyleSheet, View, Text, TouchableOpacity, Dimensions, TextInput, ScrollView, KeyboardAvoidingView, Keyboard, TextInputSelectionChangeEventData, Alert, ActivityIndicator } from 'react-native';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { AntDesign, Entypo, Feather, FontAwesome } from '@expo/vector-icons';
 import { AccountContext } from '../../contexts/AccountContext';
 import { ModalContext } from '../../contexts/ModalContext';

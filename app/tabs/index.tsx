@@ -4,7 +4,7 @@ import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@exp
 import { Entypo } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { ThemeContext } from '../../contexts/ThemeContext';
+import { ThemeContext } from '../../contexts/SettingsContexts/ThemeContext';
 import Posts from './posts';
 import Inbox from './inbox';
 import Search from './search';

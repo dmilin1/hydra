@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useRef } from 'react';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import { HistoryContext, HistoryLayer, HistoryProvider, HistoryProviderProps } from '../../contexts/HistoryContext';
-import { t } from '../../contexts/ThemeContext';
+import { t } from '../../contexts/SettingsContexts/ThemeContext';
 import Navbar from './Navbar';
 
 

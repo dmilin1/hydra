@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet } from 'react-native';
-import { t } from './ThemeContext';
+import { t } from './SettingsContexts/ThemeContext';
 
 type ModalContextType =  {
     setModal: (modal?: ReactNode) => void,

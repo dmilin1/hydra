@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, StyleSheet } from 'react-native';
-import { t } from './ThemeContext';
+import { t } from './SettingsContexts/ThemeContext';
 import { AccountContext } from './AccountContext';
 import { getMessages } from '../api/Messages';
 

@@ -1,7 +1,7 @@
 import React, { useContext, useCallback, useRef, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, TouchableOpacity, VirtualizedList, Share } from 'react-native';
 import { AntDesign, Feather, FontAwesome, Octicons } from '@expo/vector-icons';
-import { ThemeContext, t } from '../contexts/ThemeContext';
+import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
 import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer';
 import { ScrollView } from 'react-native';
 import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';

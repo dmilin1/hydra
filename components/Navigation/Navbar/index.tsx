@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ThemeContext, t } from '../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import RedditURL, { PageType } from '../../../utils/RedditURL';
 import Default from './Pages/Default';

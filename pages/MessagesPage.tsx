@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ThemeContext, t } from '../contexts/ThemeContext';
+import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
 import Scroller from '../components/UI/Scroller';
 import { CommentReply, getMessages } from '../api/Messages';
 import MessageComponent from '../components/RedditDataRepresentations/Message/MessageComponent';

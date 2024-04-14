@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, ActivityIndicator, ScrollView } from 'react-native';
-import { ThemeContext, t } from '../contexts/ThemeContext';
+import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
 import { AccountContext } from '../contexts/AccountContext';
 import { Feather } from '@expo/vector-icons';
 import Slideable from '../components/UI/Slideable';

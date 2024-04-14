@@ -1,6 +1,6 @@
 import { TouchableOpacity, View, StyleSheet, Text, Animated, ColorValue } from "react-native";
 import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
-import { ThemeContext, t } from "../../contexts/ThemeContext";
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import { Fragment, ReactNode, cloneElement, useContext, useRef, useState } from "react";
 import * as Haptics from 'expo-haptics';
 import { ScrollerContext } from "../../contexts/ScrollerContext";

@@ -3,7 +3,7 @@ import { HistoryContext, HistoryLayer } from '../../../../contexts/HistoryContex
 import DirectionButton from '../Components/DirectionButton';
 import TextButton from '../Components/TextButton';
 import IconButton from '../Components/IconButton';
-import { ThemeContext } from '../../../../contexts/ThemeContext';
+import { ThemeContext } from '../../../../contexts/SettingsContexts/ThemeContext';
 import { Entypo } from '@expo/vector-icons';
 import Login from '../../../Modals/Login';
 import { ModalContext } from '../../../../contexts/ModalContext';

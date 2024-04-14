@@ -144,7 +144,8 @@ export default class RedditURL extends URL {
             name = 'Accounts';
         } else if (pageType === PageType.SETTINGS) {
             const route = this.getRelativePath().split('/').slice(-1)[0];
-            name = route.charAt(0).toUpperCase() + route.slice(1);
+            name = route.replace(/([A-Z])/g, ' $1').trim();
+            name = name.charAt(0).toUpperCase() + name.slice(1);
         } else if (pageType === PageType.UNKNOWN) {
             name = 'Error';
         }

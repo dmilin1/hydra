@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Text, StyleSheet, Image, View, TouchableHighlight } from 'react-native';
 import { default as ImageView }from 'react-native-image-viewing';
-import { ThemeContext, t } from '../../../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../../../contexts/SettingsContexts/ThemeContext';
 import URL from '../../../../../utils/URL';
 
 

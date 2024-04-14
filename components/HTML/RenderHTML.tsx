@@ -1,7 +1,7 @@
 import { Platform, ScrollView, ScrollViewProps, StyleSheet, Text, TextProps, TextStyle, View, ViewProps, ViewStyle } from 'react-native';
 import { parseDocument, ElementType } from 'htmlparser2';
 import React, { useContext, useState } from 'react';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { AnyNode, Text as TextNode, Element as ElementNode } from 'domhandler';
 import * as WebBrowser from 'expo-web-browser';
 import ImageViewer from '../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer';

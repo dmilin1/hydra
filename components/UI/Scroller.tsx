@@ -1,5 +1,5 @@
 import { StyleSheet, ScrollView, RefreshControl, ActivityIndicator, Text, View, VirtualizedList, Dimensions } from "react-native"
-import { t, ThemeContext } from "../../contexts/ThemeContext"
+import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext"
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { ScrollerContext, ScrollerProvider } from "../../contexts/ScrollerContext";
 

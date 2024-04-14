@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Feather, FontAwesome, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import Numbers from '../../../utils/Numbers';
 import { User } from '../../../api/User';

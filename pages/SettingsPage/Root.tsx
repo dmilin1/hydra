@@ -1,14 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableHighlight, TouchableOpacity, TextInput, ActivityIndicator, ScrollView } from 'react-native';
-import { Feather, AntDesign, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../contexts/ThemeContext';
+import React, { useContext, useEffect } from 'react';
+import { StyleSheet, } from 'react-native';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
+import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../contexts/HistoryContext';
-import { Subreddit, getTrending } from '../../api/Subreddits';
-import { SearchResult, SearchType, SearchTypes, getSearchResults } from '../../api/Search';
-import { Post } from '../../api/Posts';
-import SubredditComponent from '../../components/RedditDataRepresentations/Subreddit/SubredditComponent';
 import List from '../../components/UI/List';
-import UserComponent from '../../components/RedditDataRepresentations/User/UserComponent';
 
 
 export default function Root() {
@@ -30,6 +25,12 @@ export default function Root() {
           icon: <FontAwesome5 name='user' size={24} color={theme.text} />,
           text: 'Account',
           onPress: () => history.pushPath('hydra://accounts'),
+        },
+        {
+          key: 'dataUse',
+          icon: <Feather name='activity' size={24} color={theme.text} />,
+          text: 'Data Use',
+          onPress: () => history.pushPath('hydra://settings/dataUse'),
         },
       ]}
     />

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useMemo, RefObject, Suspense, useCallback } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEvent, ScrollView, TouchableHighlight } from 'react-native';
 import { AntDesign, Octicons } from '@expo/vector-icons';
-import { ThemeContext, t } from '../../../../contexts/ThemeContext';
+import { ThemeContext, t } from '../../../../contexts/SettingsContexts/ThemeContext';
 import RenderHtml from '../../../HTML/RenderHTML';
 import { Comment, PostDetail, VoteOption, reloadComment, vote } from '../../../../api/PostDetail';
 import { LoadMoreCommentsFunc } from '../../../../pages/PostDetails';
