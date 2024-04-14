@@ -31,11 +31,12 @@ export function DataModeProvider({ children }: React.PropsWithChildren) {
     const currentDataMode = dataModeSettings[connectionType === NetInfoStateType.wifi ? 'wifi' : 'cellular'];
 
     const changeDataModeSetting: DataModeContextType['changeDataModeSetting'] = (setting, value) => {
-        setDataModeSettings(prev => ({
-            ...prev,
+        const newSettings = {
+            ...dataModeSettings,
             [setting]: value,
-        }));
-        AsyncStorage.setItem('dataMode', JSON.stringify(dataModeSettings));
+        }
+        setDataModeSettings(newSettings);
+        AsyncStorage.setItem('dataMode', JSON.stringify(newSettings));
     };
 
     useEffect(() => {
