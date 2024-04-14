@@ -3,9 +3,13 @@ import { Text, StyleSheet, Image, View, TouchableHighlight } from 'react-native'
 import { default as ImageView }from 'react-native-image-viewing';
 import { ThemeContext, t } from '../../../../../contexts/SettingsContexts/ThemeContext';
 import URL from '../../../../../utils/URL';
+import { DataModeContext } from '../../../../../contexts/SettingsContexts/DataModeContext';
 
 
 export default function ImageViewer({ images, thumbnail }: { images: string[], thumbnail?: string }) {
+  const { currentDataMode } = useContext(DataModeContext);
+
+  const [loadLowData, setLoadLowData] = useState(currentDataMode === 'lowData');
   const [visible, setVisible] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 
@@ -15,17 +19,20 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
 
   return (
     <View style={styles.imageViewerContainer}>
-      <ImageView
-        images={images.map((image) => ({ uri: image }))}
-        imageIndex={imageIndex}
-        presentationStyle='fullScreen'
-        visible={visible}
-        onRequestClose={() => setVisible(false)}
-      />
-      {images.slice(0, 2).map((image, index) => (
+      {!loadLowData &&
+        <ImageView
+          images={images.map((image) => ({ uri: image }))}
+          imageIndex={imageIndex}
+          presentationStyle='fullScreen'
+          visible={visible}
+          onRequestClose={() => setVisible(false)}
+        />
+      }
+      {images.slice(0, loadLowData ? 1 : 2).map((image, index) => (
         <TouchableHighlight
           key={index}
           onPress={() => {
+            setLoadLowData(false);
             setImageIndex(index);
             setVisible(true);
           }}
@@ -34,7 +41,7 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
           <Image
             style={styles.img}
             resizeMode='contain'
-            source={{ uri: isGif && thumbnail ? thumbnail : image }}
+            source={{ uri: (isGif || loadLowData) && thumbnail ? thumbnail : image }}
             alt={'image failed to load'}
           />
         </TouchableHighlight>

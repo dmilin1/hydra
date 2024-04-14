@@ -28,7 +28,10 @@ export default function PostMedia({
     <>
       {post.video &&
         <View style={styles.videoContainer}>
-          <VideoPlayer source={post.video}/>
+          <VideoPlayer
+            source={post.video}
+            thumbnail={post.imageThumbnail}
+          />
         </View>
       }
       {post.images.length > 0 &&

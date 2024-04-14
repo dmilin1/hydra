@@ -74,6 +74,13 @@ export async function formatPostData(child: any): Promise<Post> {
         }
     }
 
+    let imageThumbnail = decode(child.data.thumbnail);
+
+    let videoThumbnail = child.data.preview?.images[0]?.resolutions?.slice(-1)?.[0].url;
+    if (video && videoThumbnail) {
+        imageThumbnail = decode(videoThumbnail);
+    }
+
     let poll = undefined;
     if (child.data.poll_data) {
         poll = {
@@ -104,7 +111,7 @@ export async function formatPostData(child: any): Promise<Post> {
         commentCount: child.data.num_comments,
         link: `https://www.reddit.com${child.data.permalink}`,
         images: images,
-        imageThumbnail: decode(child.data.thumbnail),
+        imageThumbnail,
         video,
         poll: poll,
         externalLink,
