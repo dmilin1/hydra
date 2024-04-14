@@ -6,7 +6,8 @@ import { HistoryContext } from '../../../contexts/HistoryContext';
 import { Post } from '../../../api/Posts';
 import PostMedia from './PostParts/PostMedia';
 import Slideable from '../../UI/Slideable';
-import { vote, VoteOption } from '../../../api/PostDetail';
+import { vote } from '../../../api/PostDetail';
+import { VoteOption } from '../../../api/Posts';
 
 type PostComponentProps = {
     initialPostState: Post

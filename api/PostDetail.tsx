@@ -5,6 +5,7 @@ import Time from '../utils/Time';
 import { Poll, Post, formatPostData } from './Posts';
 import RedditURL from '../utils/RedditURL';
 import { UserContent } from './User';
+import { VoteOption } from './Posts';
 
 export type Comment = {
     id: string,
@@ -34,12 +35,6 @@ export type Comment = {
 
 export type PostDetail = Omit<Comment, 'type'> & Omit<Post, 'type'> & {
     type: 'postDetail',
-}
-
-export enum VoteOption {
-    UpVote = 1,
-    NoVote = 0,
-    DownVote = -1,
 }
 
 export function formatComments(comments: any, commentPath: number[] = [], childStartIndex = 0, renderCount = 0): Comment[] {

@@ -5,7 +5,8 @@ import { ThemeContext, t } from '../../../contexts/SettingsContexts/ThemeContext
 import { HistoryContext } from '../../../contexts/HistoryContext';
 import { Post } from '../../../api/Posts';
 import Slideable from '../../UI/Slideable';
-import { vote, VoteOption } from '../../../api/PostDetail';
+import { vote } from '../../../api/PostDetail';
+import { VoteOption } from '../../../api/Posts';
 import { CommentReply, setMessageNewStatus } from '../../../api/Messages';
 import RenderHtml from '../../HTML/RenderHTML';
 import { InboxContext } from '../../../contexts/InboxContext';

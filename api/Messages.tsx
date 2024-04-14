@@ -3,7 +3,7 @@ import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import RedditURL from '../utils/RedditURL';
 import { decode } from 'html-entities';
-import { VoteOption } from './PostDetail';
+import { VoteOption } from './Posts';
 
 export type CommentReply = {
     id: string,

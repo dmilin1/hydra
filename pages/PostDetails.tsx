@@ -6,7 +6,8 @@ import ImageViewer from '../components/RedditDataRepresentations/Post/PostParts/
 import { ScrollView } from 'react-native';
 import Comments from '../components/RedditDataRepresentations/Post/PostParts/Comments';
 import RenderHtml from '../components/HTML/RenderHTML';
-import { getPostsDetail, loadMoreComments, PostDetail, Comment, vote, VoteOption, reloadComment, savePost } from '../api/PostDetail';
+import { getPostsDetail, loadMoreComments, PostDetail, Comment, vote, reloadComment, savePost } from '../api/PostDetail';
+import { VoteOption } from '../api/Posts';
 import PollViewer from '../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/PollViewer';
 import { HistoryContext } from '../contexts/HistoryContext';
 import PostMedia from '../components/RedditDataRepresentations/Post/PostParts/PostMedia';

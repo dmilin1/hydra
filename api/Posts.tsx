@@ -4,7 +4,6 @@ import { api } from "./RedditApi";
 import Time from '../utils/Time';
 import RedditURL from '../utils/RedditURL';
 import Redgifs from '../utils/RedGifs';
-import { VoteOption } from './PostDetail';
 
 export type Poll = {
     voteCount: number,
@@ -36,6 +35,12 @@ export type Post = {
     createdAt: number,
     timeSince: string,
     after: string,
+}
+
+export enum VoteOption {
+    UpVote = 1,
+    NoVote = 0,
+    DownVote = -1
 }
 
 type GetPostOptions = {

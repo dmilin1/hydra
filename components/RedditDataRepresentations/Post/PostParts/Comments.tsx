@@ -3,7 +3,8 @@ import { StyleSheet, View, Text, TouchableOpacity, RefreshControl, NativeTouchEv
 import { AntDesign, Octicons } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../../../contexts/SettingsContexts/ThemeContext';
 import RenderHtml from '../../../HTML/RenderHTML';
-import { Comment, PostDetail, VoteOption, reloadComment, vote } from '../../../../api/PostDetail';
+import { Comment, PostDetail, reloadComment, vote } from '../../../../api/PostDetail';
+import { VoteOption } from '../../../../api/Posts';
 import { LoadMoreCommentsFunc } from '../../../../pages/PostDetails';
 import { HistoryContext } from '../../../../contexts/HistoryContext';
 import Slideable from '../../../UI/Slideable';
