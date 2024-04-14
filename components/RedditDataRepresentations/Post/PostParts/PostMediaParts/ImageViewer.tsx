@@ -33,8 +33,8 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
         >
           <Image
             style={styles.img}
-            resizeMode='cover'
-            source={{ uri: isGif ? thumbnail : image }}
+            resizeMode='contain'
+            source={{ uri: isGif && thumbnail ? thumbnail : image }}
             alt={'image failed to load'}
           />
         </TouchableHighlight>
@@ -52,13 +52,9 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
         <View style={t(styles.isGifContainer, {
           backgroundColor: theme.background,
         })}>
-          <Image
-            style={styles.img}
-            width={300}
-            resizeMode='contain'
-            source={{ uri: images[0] }}
-            alt={'image failed to load'}
-          />
+          <Text style={t(styles.isGifText, {
+            color: theme.text,
+          })}>GIF</Text>
         </View>
       )}
     </View>
@@ -88,11 +84,21 @@ const styles = StyleSheet.create({
   imageCountText: {
     padding: 5,
   },
-  isGifContainer: {
+  gifContainer: {
     flex: 1,
     margin: 5,
-    width: 200,
-    height: 200,
+    left: 0,
+    bottom: 0,
+    opacity: 0.6,
+  },
+  isGifContainer: {
+    position: 'absolute',
+    borderRadius: 5,
+    overflow: 'hidden',
+    margin: 5,
+    left: 0,
+    bottom: 0,
+    opacity: 0.6,
   },
   isGifText: {
     padding: 5,

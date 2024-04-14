@@ -151,6 +151,13 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
                 WebBrowser.openBrowserAsync(element.attribs.href);
             }
         }
+    } else if (
+        element.name === 'a'
+        && element.children[0]?.type === ElementType.Tag
+        && element.children[0]?.name === 'img'
+    ) {
+        Wrapper = View;
+        wrapperStyles.minWidth = '100%';
     } else if (element.name === 'em') {
         Wrapper = Text;
         inheritedStyles.fontStyle = 'italic';
@@ -158,14 +165,12 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
         Wrapper = View;
     } else if (element.name === 'img') {
         Wrapper = (props) => (
-            <View {...{ ...props, children: null }}>
-                <View onStartShouldSetResponder={() => true}>
-                    <View style={styles.imageContainer}>
-                        <ImageViewer images={[element.attribs.src]}/>
-                    </View>
-                    <View>
-                        {props.children}
-                    </View>
+            <View onStartShouldSetResponder={() => true}>
+                <View style={styles.imageContainer}>
+                    <ImageViewer images={[element.attribs.src]}/>
+                </View>
+                <View>
+                    {props.children}
                 </View>
             </View>
         );
