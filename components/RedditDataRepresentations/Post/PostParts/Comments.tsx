@@ -226,7 +226,7 @@ export function CommentComponent({ loadMoreComments, comment, index, scrollChang
       {displayInList && (
         <View
           style={t(styles.spacer, {
-            backgroundColor: theme.tint,
+            backgroundColor: theme.divider,
           })}
         />
       )}

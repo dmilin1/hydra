@@ -59,7 +59,7 @@ export default function UserComponent({ user } : { user: User }) {
             </TouchableOpacity>
             <View
                 style={t(styles.spacer, {
-                    backgroundColor: theme.tint,
+                    backgroundColor: theme.divider,
                 })}
             />
         </View>

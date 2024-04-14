@@ -132,7 +132,7 @@ export default function PostComponent({ initialPostState } : PostComponentProps)
             </TouchableOpacity>
             <View
                 style={t(styles.spacer, {
-                    backgroundColor: theme.tint,
+                    backgroundColor: theme.divider,
                 })}
             />
         </Slideable>

@@ -74,7 +74,7 @@ export default function SubredditComponent({ subreddit } : { subreddit: Subreddi
             </TouchableOpacity>
             <View
                 style={t(styles.spacer, {
-                    backgroundColor: theme.tint,
+                    backgroundColor: theme.divider,
                 })}
             />
         </View>
