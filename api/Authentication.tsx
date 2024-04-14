@@ -12,12 +12,13 @@ export async function login(account: Account): Promise<void> {
     await fetch("https://ssl.reddit.com/api/login", {
         method: 'POST',
         body: formdata,
-        redirect: 'follow'
+        redirect: 'follow',
     });
 
     const user = await fetch('https://www.reddit.com/user/me/about.json', {
         method: 'GET',
         redirect: 'follow',
+        cache: 'no-store',
     }).then(response => response.json());
 
     UserAuth.modhash = user.data.modhash;
@@ -27,6 +28,7 @@ export async function logout() : Promise<void> {
     const user = await fetch('https://www.reddit.com/user/me/about.json', {
         method: 'GET',
         redirect: 'follow',
+        cache: 'no-store',
     }).then(response => response.json());
 
     var formdata = new FormData();
@@ -35,7 +37,7 @@ export async function logout() : Promise<void> {
     await fetch("https://www.reddit.com/logout", {
         method: 'POST',
         body: formdata,
-        redirect: 'follow'
+        redirect: 'follow',
     });
     
     UserAuth.modhash = undefined;

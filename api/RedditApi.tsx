@@ -1,3 +1,4 @@
+import { Alert } from "react-native";
 import RedditURL from "../utils/RedditURL";
 import { UserAuth } from "./Authentication";
 
@@ -14,7 +15,7 @@ export async function api(
 ) : Promise<any> {
     if (apiOptions.requireAuth) {
         if (!UserAuth.modhash) {
-            alert('You need to log in first!');
+            Alert.alert('You need to log in first!');
             throw new Error('User is not authenticated');
         }
         const authorizedHeaders: HeadersInit = new Headers(fetchOptions?.headers);

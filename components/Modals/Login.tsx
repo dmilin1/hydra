@@ -1,5 +1,5 @@
 import React, { ReactNode, useState, useContext } from 'react';
-import { Share, StyleSheet, View, Text, TouchableOpacity, Dimensions, TextInput } from 'react-native';
+import { Share, StyleSheet, View, Text, TouchableOpacity, Dimensions, TextInput, ActivityIndicator } from 'react-native';
 import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { Entypo, Feather } from '@expo/vector-icons';
 import { AccountContext } from '../../contexts/AccountContext';
@@ -11,6 +11,7 @@ export default function Login() {
     const { setModal } = useContext(ModalContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
     return (
         <>
@@ -60,24 +61,30 @@ export default function Login() {
                     />
                 </View>
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={t(styles.button, {
-                            borderColor: theme.divider,
-                        })}
-                        onPress={async () => {
-                            if (await addUser({ username, password })) {
-                                setModal(null);
-                                setUsername('');
-                                setPassword('');
-                            }
-                        }}
-                    >
-                        <Text style={t(styles.buttonText, {
-                            color: theme.buttonText,
-                        })}>
-                            Login
-                        </Text>
-                    </TouchableOpacity>
+                    {loading ? (
+                        <ActivityIndicator size='small' color={theme.text} />
+                    ) : (
+                        <TouchableOpacity
+                            style={t(styles.button, {
+                                borderColor: theme.divider,
+                            })}
+                            onPress={async () => {
+                                setLoading(true);
+                                if (await addUser({ username, password })) {
+                                    setModal(null);
+                                    setUsername('');
+                                    setPassword('');
+                                }
+                                setLoading(false);
+                            }}
+                        >
+                            <Text style={t(styles.buttonText, {
+                                color: theme.buttonText,
+                            })}>
+                                Login
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
             <View style={styles.background} onTouchStart={() => {
