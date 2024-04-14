@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AccountContext } from '../../contexts/AccountContext';
 import Settings from './settings';
 import { InboxContext } from '../../contexts/InboxContext';
+import { SplashScreen } from 'expo-router';
 
 
 
@@ -36,6 +37,12 @@ export default function Tabs() {
       {label}
     </Text>
   );
+
+  useEffect(() => {
+		if (loginInitialized) {
+			SplashScreen.hideAsync();
+		}
+	}, [loginInitialized]);
   
   return (
     <SafeAreaView
