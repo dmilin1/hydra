@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
-import { StyleSheet, } from 'react-native';
+import { StyleSheet, Text, View, } from 'react-native';
+import * as Application from 'expo-application';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { ThemeContext, t } from '../../contexts/SettingsContexts/ThemeContext';
 import { HistoryContext } from '../../contexts/HistoryContext';
@@ -34,14 +35,27 @@ export default function Root() {
         },
       ]}
     />
+    <View style={styles.appDetails}>
+      <Text style={t(styles.appDetailsText, {
+        color: theme.text,
+      })}>
+        {Application.applicationName}: {Application.nativeApplicationVersion} - build {Application.nativeBuildVersion}
+      </Text>
+    </View>
   </>;
 }
 
 const styles = StyleSheet.create({
-  settingsContainer: {
+  appDetails: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    textAlign: 'center',
+    marginVertical: 25,
+    marginHorizontal: 15,
   },
-  scrollView: {
+  appDetailsText: {
     flex: 1,
-  }
+    textAlign: 'center',
+  },
 });

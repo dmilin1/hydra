@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     listContainer: {
-        flex: 1,
         marginHorizontal: 10,
         paddingHorizontal: 5,
         borderRadius: 10,

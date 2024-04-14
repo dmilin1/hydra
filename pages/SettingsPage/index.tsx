@@ -24,7 +24,12 @@ export default function SettingsPage({ url }: { url: string }) {
     <View style={t(styles.settingsContainer, {
       backgroundColor: theme.background,
     })}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
+      >
         {relativePath === 'settings' &&
           <Root/>
         }
