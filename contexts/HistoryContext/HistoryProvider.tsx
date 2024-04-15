@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 
 import {
   HistoryProviderProps,
@@ -126,13 +126,16 @@ export function HistoryProvider({
   );
 }
 
-export function HistoryFunctionsProvider({ children }: { children: JSX.Element }) {
-
+export function HistoryFunctionsProvider({
+  children,
+}: {
+  children: JSX.Element;
+}) {
   const historyFunctions: HistoryFunctionsContextType = {
     ...initialHistoryFunctions,
     setHistoryFunctions: (newFunctions) => {
       Object.assign(historyFunctions, newFunctions);
-    }
+    },
   };
 
   return (

@@ -15,12 +15,12 @@ import {
   getTrending,
 } from "../api/Subreddits";
 import { AccountContext } from "../contexts/AccountContext";
-import { HistoryContext } from "../contexts/HistoryContext";
+import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
 export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryContext);
+  const history = useContext(HistoryFunctionsContext);
   const { currentUser } = useContext(AccountContext);
 
   const [subreddits, setSubreddits] = useState<SubredditsObj>({

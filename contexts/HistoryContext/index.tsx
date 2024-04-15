@@ -19,7 +19,9 @@ export type HistoryFunctionsContextType = {
   replace: (path: string) => void;
   forward: () => HistoryLayer | void;
   backward: () => HistoryLayer | void;
-  setHistoryFunctions: (newFunctions: Omit<HistoryFunctionsContextType, 'setHistoryFunctions'>) => void;
+  setHistoryFunctions: (
+    newFunctions: Omit<HistoryFunctionsContextType, "setHistoryFunctions">,
+  ) => void;
 };
 
 export const initialHistoryFunctions: HistoryFunctionsContextType = {

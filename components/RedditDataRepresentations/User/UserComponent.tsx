@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { User } from "../../../api/User";
-import { HistoryContext } from "../../../contexts/HistoryContext";
+import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
 import {
   ThemeContext,
   t,
@@ -11,7 +11,7 @@ import {
 import Numbers from "../../../utils/Numbers";
 
 export default function UserComponent({ user }: { user: User }) {
-  const history = useContext(HistoryContext);
+  const history = useContext(HistoryFunctionsContext);
   const { theme } = useContext(ThemeContext);
 
   return (

@@ -3,13 +3,13 @@ import React, { useContext } from "react";
 import { ColorValue, StyleSheet, Switch, Text } from "react-native";
 
 import List from "../../components/UI/List";
-import { HistoryContext } from "../../contexts/HistoryContext";
+import { HistoryFunctionsContext } from "../../contexts/HistoryContext";
 import { DataModeContext } from "../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 export default function DataUse() {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryContext);
+  const history = useContext(HistoryFunctionsContext);
   const { dataModeSettings, changeDataModeSetting } =
     useContext(DataModeContext);
 

@@ -8,7 +8,10 @@ import {
   HistoryLayer,
   HistoryProviderProps,
 } from "../../contexts/HistoryContext";
-import { HistoryFunctionsProvider, HistoryProvider } from "../../contexts/HistoryContext/HistoryProvider";
+import {
+  HistoryFunctionsProvider,
+  HistoryProvider,
+} from "../../contexts/HistoryContext/HistoryProvider";
 import { t } from "../../contexts/SettingsContexts/ThemeContext";
 
 function History() {

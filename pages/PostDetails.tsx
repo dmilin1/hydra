@@ -29,7 +29,10 @@ import Reply from "../components/Modals/Reply";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import PostMedia from "../components/RedditDataRepresentations/Post/PostParts/PostMedia";
 import Scroller from "../components/UI/Scroller";
-import { HistoryContext, HistoryFunctionsContext } from "../contexts/HistoryContext";
+import {
+  HistoryContext,
+  HistoryFunctionsContext,
+} from "../contexts/HistoryContext";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
