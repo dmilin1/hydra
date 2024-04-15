@@ -15,7 +15,7 @@ import {
   vote,
 } from "../../../../api/PostDetail";
 import { VoteOption } from "../../../../api/Posts";
-import { HistoryContext } from "../../../../contexts/HistoryContext";
+import { HistoryFunctions } from "../../../../contexts/HistoryContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import {
   ThemeContext,
@@ -44,7 +44,7 @@ export function CommentComponent({
   changeComment,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryContext);
+  const history = HistoryFunctions;
   const { setModal } = useContext(ModalContext);
 
   const commentRef = React.useRef<TouchableOpacity>(null);

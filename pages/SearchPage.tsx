@@ -20,12 +20,12 @@ import SubredditComponent from "../components/RedditDataRepresentations/Subreddi
 import UserComponent from "../components/RedditDataRepresentations/User/UserComponent";
 import List from "../components/UI/List";
 import Scroller from "../components/UI/Scroller";
-import { HistoryContext } from "../contexts/HistoryContext";
+import { HistoryFunctions } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
 export default function SearchPage() {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryContext);
+  const history = HistoryFunctions;
 
   const [trending, setTrending] = useState<Subreddit[]>([]);
   const [search, setSearch] = useState<string>("");

@@ -15,7 +15,7 @@ import {
   ViewStyle,
 } from "react-native";
 
-import { HistoryContext } from "../../contexts/HistoryContext";
+import { HistoryFunctions } from "../../contexts/HistoryContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../../utils/RedditURL";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
@@ -49,7 +49,7 @@ function makeChildNodeKey(node: AnyNode, index: number): string {
 
 export function Element({ element, index, inheritedStyles }: ElementProps) {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryContext);
+  const history = HistoryFunctions;
 
   const [showSpoiler, setShowSpoiler] = useState(false);
 

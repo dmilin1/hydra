@@ -2,7 +2,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-import { HistoryContext } from "../../../../contexts/HistoryContext";
+import {
+  HistoryContext,
+  HistoryFunctions,
+} from "../../../../contexts/HistoryContext";
 import {
   ThemeContext,
   t,
@@ -14,7 +17,10 @@ type DirectionButtonProps = {
 };
 
 export default function DirectionButton({ direction }: DirectionButtonProps) {
-  const history = useContext(HistoryContext);
+  const history = {
+    ...useContext(HistoryContext),
+    ...HistoryFunctions,
+  };
   const { theme } = useContext(ThemeContext);
 
   let btnText = null;

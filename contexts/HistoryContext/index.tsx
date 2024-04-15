@@ -1,14 +1,16 @@
 import { createContext } from "react";
-import { ImageStyle, StyleSheet, TextStyle, ViewStyle } from "react-native";
 
 export type HistoryLayer = {
   elem: JSX.Element;
   name: string;
 };
 
-export const initialHistory: {
+export type HistoryContextType = {
   past: HistoryLayer[];
   future: HistoryLayer[];
+};
+
+export type HistoryFunctionsType = {
   setPast: (past: HistoryLayer[]) => void;
   setFuture: (future: HistoryLayer[]) => void;
   pushLayer: (route: HistoryLayer) => void;
@@ -17,9 +19,9 @@ export const initialHistory: {
   replace: (path: string) => void;
   forward: () => HistoryLayer | void;
   backward: () => HistoryLayer | void;
-} = {
-  past: [],
-  future: [],
+};
+
+export const HistoryFunctions: HistoryFunctionsType = {
   setPast: () => {},
   setFuture: () => {},
   pushLayer: () => {},
@@ -30,6 +32,14 @@ export const initialHistory: {
   backward: () => {},
 };
 
+export const initialHistory: {
+  past: HistoryLayer[];
+  future: HistoryLayer[];
+} = {
+  past: [],
+  future: [],
+};
+
 export type HistoryProviderProps = {
   initialPast?: typeof initialHistory.past;
   initialFuture?: typeof initialHistory.future;
@@ -37,7 +47,3 @@ export type HistoryProviderProps = {
 };
 
 export const HistoryContext = createContext(initialHistory);
-
-export function t(style1: ViewStyle | TextStyle | ImageStyle, style2: any) {
-  return StyleSheet.compose(style1, style2);
-}

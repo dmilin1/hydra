@@ -5,6 +5,7 @@ import {
   initialHistory,
   HistoryLayer,
   HistoryContext,
+  HistoryFunctions,
 } from ".";
 import Page from "../../pages";
 import AccountsPage from "../../pages/AccountsPage";
@@ -92,19 +93,26 @@ export function HistoryProvider({
     }
   };
 
+  /**
+   * History functions sit outside the provider and act as global consts
+   * so that when the history is changed, components that only depend on
+   * the functions won't re-render. This massively improves performance.
+   */
+
+  Object.assign(HistoryFunctions, {
+    pushLayer,
+    pushPath,
+    reload,
+    replace,
+    forward,
+    backward,
+  });
+
   return (
     <HistoryContext.Provider
       value={{
         past,
         future,
-        setPast,
-        setFuture,
-        pushLayer,
-        pushPath,
-        reload,
-        replace,
-        forward,
-        backward,
       }}
     >
       {children}

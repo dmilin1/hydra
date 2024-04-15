@@ -5,7 +5,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { CommentReply, setMessageNewStatus } from "../../../api/Messages";
 import { vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
-import { HistoryContext } from "../../../contexts/HistoryContext";
+import { HistoryFunctions } from "../../../contexts/HistoryContext";
 import { InboxContext } from "../../../contexts/InboxContext";
 import {
   ThemeContext,
@@ -21,7 +21,7 @@ type MessageComponentProps = {
 export default function MessageComponent({
   initialMessageState,
 }: MessageComponentProps) {
-  const history = useContext(HistoryContext);
+  const history = HistoryFunctions;
   const { theme } = useContext(ThemeContext);
   const { inboxCount, setInboxCount } = useContext(InboxContext);
 

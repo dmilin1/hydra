@@ -4,6 +4,7 @@ import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import Navbar from "./Navbar";
 import {
   HistoryContext,
+  HistoryFunctions,
   HistoryLayer,
   HistoryProviderProps,
 } from "../../contexts/HistoryContext";
@@ -11,7 +12,10 @@ import { HistoryProvider } from "../../contexts/HistoryContext/HistoryProvider";
 import { t } from "../../contexts/SettingsContexts/ThemeContext";
 
 function History() {
-  const history = useContext(HistoryContext);
+  const history = {
+    ...useContext(HistoryContext),
+    ...HistoryFunctions,
+  };
   const touchX = useRef(new Animated.Value(0)).current;
   const touchStart = useRef<{ x: number; y: number }>();
   const physics = useRef({ momentum: 0, lastX: 0, lastTime: 0 });
@@ -125,7 +129,7 @@ function History() {
                   zIndex: 2 * i + 2,
                   transform: [
                     {
-                      translateX: left as any, // expects a number, but Animated.Value definitely works
+                      translateX: left,
                     },
                   ],
                 })}

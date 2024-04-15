@@ -9,7 +9,10 @@ import {
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
-import { HistoryContext } from "../../../../contexts/HistoryContext";
+import {
+  HistoryContext,
+  HistoryFunctions,
+} from "../../../../contexts/HistoryContext";
 import {
   ThemeContext,
   t,
@@ -37,7 +40,10 @@ export default function SortAndContext({
   sortOptions,
   contextOptions,
 }: SortAndContextProps) {
-  const history = useContext(HistoryContext);
+  const history = {
+    ...useContext(HistoryContext),
+    ...HistoryFunctions,
+  };
   const { theme } = useContext(ThemeContext);
 
   const { showActionSheetWithOptions } = useActionSheet();

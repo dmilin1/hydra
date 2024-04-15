@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { Subreddit } from "../../../api/Subreddits";
-import { HistoryContext } from "../../../contexts/HistoryContext";
+import { HistoryFunctions } from "../../../contexts/HistoryContext";
 import {
   ThemeContext,
   t,
@@ -15,7 +15,7 @@ export default function SubredditComponent({
 }: {
   subreddit: Subreddit;
 }) {
-  const history = useContext(HistoryContext);
+  const history = HistoryFunctions;
   const { theme } = useContext(ThemeContext);
 
   return (
