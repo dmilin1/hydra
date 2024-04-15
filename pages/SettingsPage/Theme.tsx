@@ -2,7 +2,6 @@ import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
-import SectionTitle from "../../components/UI/SectionTitle";
 import Themes from "../../constants/Themes";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
@@ -19,7 +18,6 @@ export default function Theme() {
 
   return (
     <>
-      <SectionTitle text="Colors" />
       {Object.entries(Themes).map(([key, curTheme]) => (
         <TouchableOpacity
           key={key}
@@ -66,7 +64,6 @@ export default function Theme() {
 
 const styles = StyleSheet.create({
   themeItemContainer: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
