@@ -1,21 +1,24 @@
-import React, { useContext, useEffect } from 'react';
-import { Text } from 'react-native';
-import { AntDesign, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  AntDesign,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+  Entypo,
+} from "@expo/vector-icons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { SplashScreen } from "expo-router";
+import React, { useContext, useEffect } from "react";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ThemeContext } from '../../contexts/SettingsContexts/ThemeContext';
-import Posts from './posts';
-import Inbox from './inbox';
-import Search from './search';
-import Account from './account';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { AccountContext } from '../../contexts/AccountContext';
-import Settings from './settings';
-import { InboxContext } from '../../contexts/InboxContext';
-import { SplashScreen } from 'expo-router';
-
-
+import Account from "./account";
+import Inbox from "./inbox";
+import Posts from "./posts";
+import Search from "./search";
+import Settings from "./settings";
+import { AccountContext } from "../../contexts/AccountContext";
+import { InboxContext } from "../../contexts/InboxContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,29 +30,31 @@ export default function Tabs() {
   const tabBarStyle = {
     backgroundColor: theme.background,
     borderTopWidth: 0,
-  }
+  };
 
   const makeTabBarLabel = (label: string, focused: boolean) => (
-    <Text style={{
-      color: focused ? theme.buttonText : theme.subtleText,
-      fontSize: 10,
-    }}>
+    <Text
+      style={{
+        color: focused ? theme.buttonText : theme.subtleText,
+        fontSize: 10,
+      }}
+    >
       {label}
     </Text>
   );
 
   useEffect(() => {
-		if (loginInitialized) {
-			SplashScreen.hideAsync();
-		}
-	}, [loginInitialized]);
-  
+    if (loginInitialized) {
+      SplashScreen.hideAsync();
+    }
+  }, [loginInitialized]);
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: theme.background }}
-      edges={['right', 'top', 'left']}
+      edges={["right", "top", "left"]}
     >
-      { loginInitialized &&
+      {loginInitialized && (
         <Tab.Navigator
           initialRouteName="Posts"
           sceneContainerStyle={{ backgroundColor: theme.background }}
@@ -57,22 +62,34 @@ export default function Tabs() {
           <Tab.Screen
             name="Posts"
             options={{
-              title: 'Posts',
+              title: "Posts",
               headerShown: false,
               tabBarStyle,
-              tabBarIcon: ({ focused, size }) => <MaterialCommunityIcons name="post" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Posts', focused),
+              tabBarIcon: ({ focused, size }) => (
+                <MaterialCommunityIcons
+                  name="post"
+                  size={size}
+                  color={focused ? theme.iconPrimary : theme.subtleText}
+                />
+              ),
+              tabBarLabel: ({ focused }) => makeTabBarLabel("Posts", focused),
             }}
             component={Posts}
           />
           <Tab.Screen
             name="Inbox"
             options={{
-              title: 'Inbox',
+              title: "Inbox",
               headerShown: false,
               tabBarStyle,
-              tabBarIcon: ({ focused, size }) => <Entypo name="mail" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Inbox', focused),
+              tabBarIcon: ({ focused, size }) => (
+                <Entypo
+                  name="mail"
+                  size={size}
+                  color={focused ? theme.iconPrimary : theme.subtleText}
+                />
+              ),
+              tabBarLabel: ({ focused }) => makeTabBarLabel("Inbox", focused),
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
               unmountOnBlur: true,
             }}
@@ -81,38 +98,58 @@ export default function Tabs() {
           <Tab.Screen
             name="Account"
             options={{
-              title: currentUser?.userName ?? 'Accounts',
+              title: currentUser?.userName ?? "Accounts",
               headerShown: false,
               tabBarStyle,
-              tabBarIcon: ({ focused, size }) => <MaterialIcons name="account-circle" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel(currentUser?.userName ?? 'Account', focused),
+              tabBarIcon: ({ focused, size }) => (
+                <MaterialIcons
+                  name="account-circle"
+                  size={size}
+                  color={focused ? theme.iconPrimary : theme.subtleText}
+                />
+              ),
+              tabBarLabel: ({ focused }) =>
+                makeTabBarLabel(currentUser?.userName ?? "Account", focused),
             }}
             component={Account}
           />
           <Tab.Screen
             name="Search"
             options={{
-              title: 'Search',
+              title: "Search",
               headerShown: false,
               tabBarStyle,
-              tabBarIcon: ({ focused, size }) => <AntDesign name="search1" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Search', focused),
+              tabBarIcon: ({ focused, size }) => (
+                <AntDesign
+                  name="search1"
+                  size={size}
+                  color={focused ? theme.iconPrimary : theme.subtleText}
+                />
+              ),
+              tabBarLabel: ({ focused }) => makeTabBarLabel("Search", focused),
             }}
             component={Search}
           />
           <Tab.Screen
             name="Settings"
             options={{
-              title: 'Settings',
+              title: "Settings",
               headerShown: false,
               tabBarStyle,
-              tabBarIcon: ({ focused, size }) => <Ionicons name="settings-sharp" size={size} color={focused ? theme.iconPrimary : theme.subtleText} />,
-              tabBarLabel: ({ focused }) => makeTabBarLabel('Settings', focused),
+              tabBarIcon: ({ focused, size }) => (
+                <Ionicons
+                  name="settings-sharp"
+                  size={size}
+                  color={focused ? theme.iconPrimary : theme.subtleText}
+                />
+              ),
+              tabBarLabel: ({ focused }) =>
+                makeTabBarLabel("Settings", focused),
             }}
             component={Settings}
           />
         </Tab.Navigator>
-      }
+      )}
     </SafeAreaView>
   );
 }

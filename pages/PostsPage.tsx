@@ -1,22 +1,23 @@
-import React, { useContext, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
-import { getPosts, Post } from '../api/Posts';
-import PostComponent from '../components/RedditDataRepresentations/Post/PostComponent';
-import Scroller from '../components/UI/Scroller';
+import React, { useContext, useState } from "react";
+import { StyleSheet, View } from "react-native";
+
+import { getPosts, Post } from "../api/Posts";
+import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
+import Scroller from "../components/UI/Scroller";
+import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
 type PostsPageProps = {
-  url: string,
-}
+  url: string;
+};
 
-export default function PostsPage({ url } : PostsPageProps) {
+export default function PostsPage({ url }: PostsPageProps) {
   const { theme } = useContext(ThemeContext);
 
   const [posts, setPosts] = useState<Post[]>([]);
 
   const loadMorePosts = async (refresh = false) => {
     const newPosts = await getPosts(url, {
-      after: refresh ? undefined : posts.slice(-1)[0]?.after
+      after: refresh ? undefined : posts.slice(-1)[0]?.after,
     });
     if (refresh) {
       setPosts(newPosts);
@@ -26,17 +27,14 @@ export default function PostsPage({ url } : PostsPageProps) {
   };
 
   return (
-    <View style={t(styles.postsContainer, {
-      backgroundColor: theme.background,
-    })}>
-      <Scroller
-        loadMore={loadMorePosts}
-      >
+    <View
+      style={t(styles.postsContainer, {
+        backgroundColor: theme.background,
+      })}
+    >
+      <Scroller loadMore={loadMorePosts}>
         {posts.map((post, index) => (
-          <PostComponent
-            key={index}
-            initialPostState={post}
-          />
+          <PostComponent key={index} initialPostState={post} />
         ))}
       </Scroller>
     </View>
@@ -46,6 +44,6 @@ export default function PostsPage({ url } : PostsPageProps) {
 const styles = StyleSheet.create({
   postsContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 });

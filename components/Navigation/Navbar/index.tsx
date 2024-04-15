@@ -1,16 +1,19 @@
-import React, { useContext } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { ThemeContext, t } from '../../../contexts/SettingsContexts/ThemeContext';
-import { HistoryContext } from '../../../contexts/HistoryContext';
-import RedditURL, { PageType } from '../../../utils/RedditURL';
-import Default from './Pages/Default';
-import Home from './Pages/Home';
-import Subreddit from './Pages/Subreddit';
-import PostDetails from './Pages/PostDetails';
-import User from './Pages/User';
-import Settings from './Pages/Settings';
-import Accounts from './Pages/Accounts';
+import React, { useContext } from "react";
+import { StyleSheet, View } from "react-native";
 
+import Accounts from "./Pages/Accounts";
+import Default from "./Pages/Default";
+import Home from "./Pages/Home";
+import PostDetails from "./Pages/PostDetails";
+import Settings from "./Pages/Settings";
+import Subreddit from "./Pages/Subreddit";
+import User from "./Pages/User";
+import { HistoryContext } from "../../../contexts/HistoryContext";
+import {
+  ThemeContext,
+  t,
+} from "../../../contexts/SettingsContexts/ThemeContext";
+import RedditURL, { PageType } from "../../../utils/RedditURL";
 
 export default function Navbar() {
   const history = useContext(HistoryContext);
@@ -59,8 +62,8 @@ export default function Navbar() {
 const styles = StyleSheet.create({
   navbarContainer: {
     minHeight: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderBottomWidth: 1,
   },
 });

@@ -1,17 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
-import Scroller from '../components/UI/Scroller';
-import { CommentReply, getMessages } from '../api/Messages';
-import MessageComponent from '../components/RedditDataRepresentations/Message/MessageComponent';
-import { InboxContext } from '../contexts/InboxContext';
-import { AccountContext } from '../contexts/AccountContext';
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
-type MessagesPageProps = {
-  url: string,
-}
+import { CommentReply, getMessages } from "../api/Messages";
+import MessageComponent from "../components/RedditDataRepresentations/Message/MessageComponent";
+import Scroller from "../components/UI/Scroller";
+import { AccountContext } from "../contexts/AccountContext";
+import { InboxContext } from "../contexts/InboxContext";
+import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
-export default function MessagesPage({ url } : MessagesPageProps) {
+export default function MessagesPage() {
   const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
   const { inboxCount } = useContext(InboxContext);
@@ -21,7 +18,7 @@ export default function MessagesPage({ url } : MessagesPageProps) {
   const loadMoreMessages = async (refresh = false) => {
     if (!currentUser) return;
     const newMessages = await getMessages({
-      after: refresh ? undefined : messages.slice(-1)[0]?.after
+      after: refresh ? undefined : messages.slice(-1)[0]?.after,
     });
     if (refresh) {
       setMessages(newMessages);
@@ -35,17 +32,14 @@ export default function MessagesPage({ url } : MessagesPageProps) {
   }, [inboxCount]);
 
   return (
-    <View style={t(styles.postsContainer, {
-      backgroundColor: theme.background,
-    })}>
-      <Scroller
-        loadMore={loadMoreMessages}
-      >
-        {messages.map(message => (
-          <MessageComponent
-            key={message.id}
-            initialMessageState={message}
-          />
+    <View
+      style={t(styles.postsContainer, {
+        backgroundColor: theme.background,
+      })}
+    >
+      <Scroller loadMore={loadMoreMessages}>
+        {messages.map((message) => (
+          <MessageComponent key={message.id} initialMessageState={message} />
         ))}
       </Scroller>
     </View>
@@ -55,6 +49,6 @@ export default function MessagesPage({ url } : MessagesPageProps) {
 const styles = StyleSheet.create({
   postsContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 });

@@ -1,8 +1,11 @@
-import React, { useContext } from 'react';
-import { Text, StyleSheet, TouchableOpacity, } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import { ThemeContext, t } from '../../../../../contexts/SettingsContexts/ThemeContext';
+import * as WebBrowser from "expo-web-browser";
+import React, { useContext } from "react";
+import { Text, StyleSheet, TouchableOpacity } from "react-native";
 
+import {
+  ThemeContext,
+  t,
+} from "../../../../../contexts/SettingsContexts/ThemeContext";
 
 export default function Link({ link }: { link: string }) {
   const { theme } = useContext(ThemeContext);

@@ -1,33 +1,48 @@
-import React, { useState, useContext } from 'react';
-import { Text, StyleSheet, Image, View, TouchableHighlight } from 'react-native';
-import { default as ImageView }from 'react-native-image-viewing';
-import { ThemeContext, t } from '../../../../../contexts/SettingsContexts/ThemeContext';
-import URL from '../../../../../utils/URL';
-import { DataModeContext } from '../../../../../contexts/SettingsContexts/DataModeContext';
+import React, { useState, useContext } from "react";
+import {
+  Text,
+  StyleSheet,
+  Image,
+  View,
+  TouchableHighlight,
+} from "react-native";
+import { default as ImageView } from "react-native-image-viewing";
 
+import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
+import {
+  ThemeContext,
+  t,
+} from "../../../../../contexts/SettingsContexts/ThemeContext";
+import URL from "../../../../../utils/URL";
 
-export default function ImageViewer({ images, thumbnail }: { images: string[], thumbnail?: string }) {
+export default function ImageViewer({
+  images,
+  thumbnail,
+}: {
+  images: string[];
+  thumbnail?: string;
+}) {
   const { currentDataMode } = useContext(DataModeContext);
 
-  const [loadLowData, setLoadLowData] = useState(currentDataMode === 'lowData');
+  const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
 
   const { theme } = useContext(ThemeContext);
 
-  const isGif = new URL(images[0]).getRelativePath().endsWith('.gif');
+  const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
 
   return (
     <View style={styles.imageViewerContainer}>
-      {!loadLowData &&
+      {!loadLowData && (
         <ImageView
           images={images.map((image) => ({ uri: image }))}
           imageIndex={imageIndex}
-          presentationStyle='fullScreen'
+          presentationStyle="fullScreen"
           visible={visible}
           onRequestClose={() => setVisible(false)}
         />
-      }
+      )}
       {images.slice(0, loadLowData ? 1 : 2).map((image, index) => (
         <TouchableHighlight
           key={index}
@@ -40,28 +55,42 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
         >
           <Image
             style={styles.img}
-            resizeMode='contain'
-            source={{ uri: (isGif || loadLowData) && thumbnail ? thumbnail : image }}
-            alt={'image failed to load'}
+            resizeMode="contain"
+            source={{
+              uri: (isGif || loadLowData) && thumbnail ? thumbnail : image,
+            }}
+            alt="image failed to load"
           />
         </TouchableHighlight>
       ))}
       {images.length >= 2 && (
-        <View style={t(styles.imageCountContainer, {
-          backgroundColor: theme.background,
-        })}>
-          <Text style={t(styles.imageCountText, {
-            color: theme.text,
-          })}>{images.length} IMAGES</Text>
+        <View
+          style={t(styles.imageCountContainer, {
+            backgroundColor: theme.background,
+          })}
+        >
+          <Text
+            style={t(styles.imageCountText, {
+              color: theme.text,
+            })}
+          >
+            {images.length} IMAGES
+          </Text>
         </View>
       )}
       {isGif && (
-        <View style={t(styles.isGifContainer, {
-          backgroundColor: theme.background,
-        })}>
-          <Text style={t(styles.isGifText, {
-            color: theme.text,
-          })}>GIF</Text>
+        <View
+          style={t(styles.isGifContainer, {
+            backgroundColor: theme.background,
+          })}
+        >
+          <Text
+            style={t(styles.isGifText, {
+              color: theme.text,
+            })}
+          >
+            GIF
+          </Text>
         </View>
       )}
     </View>
@@ -71,7 +100,7 @@ export default function ImageViewer({ images, thumbnail }: { images: string[], t
 const styles = StyleSheet.create({
   imageViewerContainer: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   touchableZone: {
     flex: 1,
@@ -80,9 +109,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageCountContainer: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
     margin: 5,
     right: 0,
     bottom: 0,
@@ -99,9 +128,9 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   isGifContainer: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
     margin: 5,
     left: 0,
     bottom: 0,

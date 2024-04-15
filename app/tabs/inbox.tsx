@@ -1,15 +1,17 @@
-import React from 'react';
-import HistoryStack from '../../components/Navigation/HistoryStack';
-import MessagesPage from '../../pages/MessagesPage';
+import React from "react";
 
+import HistoryStack from "../../components/Navigation/HistoryStack";
+import MessagesPage from "../../pages/MessagesPage";
 
 export default function Inbox() {
   return (
     <HistoryStack
-      initialPast={[{
-        elem: <MessagesPage url='https://www.reddit.com/message/inbox'/>,
-        name: 'Inbox',
-      }]}
+      initialPast={[
+        {
+          elem: <MessagesPage url="https://www.reddit.com/message/inbox" />,
+          name: "Inbox",
+        },
+      ]}
     />
   );
 }

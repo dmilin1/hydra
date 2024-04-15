@@ -1,19 +1,20 @@
-import React, { useContext } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { ThemeContext, t } from '../contexts/SettingsContexts/ThemeContext';
+import React, { useContext } from "react";
+import { StyleSheet, View, Text } from "react-native";
 
-type ErrorProps = {
-  url: string,
-}
+import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
-export default function ErrorPage({ url } : ErrorProps) {
+export default function ErrorPage() {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <View style={t(styles.errorContainer, {
-      backgroundColor: theme.background,
-    })}>
-      <Text style={t(styles.errorText, { color: theme.text })}>Error loading page</Text>
+    <View
+      style={t(styles.errorContainer, {
+        backgroundColor: theme.background,
+      })}
+    >
+      <Text style={t(styles.errorText, { color: theme.text })}>
+        Error loading page
+      </Text>
     </View>
   );
 }
@@ -21,10 +22,10 @@ export default function ErrorPage({ url } : ErrorProps) {
 const styles = StyleSheet.create({
   errorContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   errorText: {
     fontSize: 16,
-  }
+  },
 });
