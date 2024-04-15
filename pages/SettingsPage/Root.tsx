@@ -1,8 +1,8 @@
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import * as Application from "expo-application";
+import * as Updates from "expo-updates";
 import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import * as Updates from "expo-updates";
 
 import List from "../../components/UI/List";
 import { HistoryFunctionsContext } from "../../contexts/HistoryContext";
@@ -43,9 +43,13 @@ export default function Root() {
             color: theme.text,
           })}
         >
-          {Application.applicationName}: {Application.nativeApplicationVersion}{" "}
-          - Build #{Application.nativeBuildVersion}
-          - Update ID: {JSON.stringify(Updates.manifest?.metadata)}
+          {Application.applicationName}: {Application.nativeApplicationVersion}
+          {"\n"}
+          Build #{Application.nativeBuildVersion}
+          {"\n"}
+          Update Group:{" "}
+          {Updates.manifest?.metadata?.updateGroup ?? "development"}
+          {"\n"}
         </Text>
       </View>
     </>
