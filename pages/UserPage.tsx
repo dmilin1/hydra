@@ -7,7 +7,7 @@ import PostComponent from "../components/RedditDataRepresentations/Post/PostComp
 import { CommentComponent } from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import List from "../components/UI/List";
 import Scroller from "../components/UI/Scroller";
-import { HistoryFunctions } from "../contexts/HistoryContext";
+import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../utils/Numbers";
 import Time from "../utils/Time";
@@ -19,7 +19,7 @@ type UserPageProps = {
 
 export default function UserPage({ url }: UserPageProps) {
   const { theme } = useContext(ThemeContext);
-  const history = HistoryFunctions;
+  const history = useContext(HistoryFunctionsContext);
 
   const [user, setUser] = useState<User>();
   const [userContent, setUserContent] = useState<UserContent[]>([]);

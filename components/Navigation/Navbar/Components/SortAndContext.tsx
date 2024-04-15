@@ -11,7 +11,7 @@ import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
 import {
   HistoryContext,
-  HistoryFunctions,
+  HistoryFunctionsContext,
 } from "../../../../contexts/HistoryContext";
 import {
   ThemeContext,
@@ -42,7 +42,7 @@ export default function SortAndContext({
 }: SortAndContextProps) {
   const history = {
     ...useContext(HistoryContext),
-    ...HistoryFunctions,
+    ...useContext(HistoryFunctionsContext),
   };
   const { theme } = useContext(ThemeContext);
 

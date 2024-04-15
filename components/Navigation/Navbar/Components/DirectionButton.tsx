@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import {
   HistoryContext,
-  HistoryFunctions,
+  HistoryFunctionsContext,
 } from "../../../../contexts/HistoryContext";
 import {
   ThemeContext,
@@ -19,7 +19,7 @@ type DirectionButtonProps = {
 export default function DirectionButton({ direction }: DirectionButtonProps) {
   const history = {
     ...useContext(HistoryContext),
-    ...HistoryFunctions,
+    ...useContext(HistoryFunctionsContext),
   };
   const { theme } = useContext(ThemeContext);
 

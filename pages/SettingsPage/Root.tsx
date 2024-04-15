@@ -4,12 +4,12 @@ import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import List from "../../components/UI/List";
-import { HistoryFunctions } from "../../contexts/HistoryContext";
+import { HistoryFunctionsContext } from "../../contexts/HistoryContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 export default function Root() {
   const { theme } = useContext(ThemeContext);
-  const history = HistoryFunctions;
+  const history = useContext(HistoryFunctionsContext);
 
   return (
     <>

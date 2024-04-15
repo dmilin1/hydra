@@ -10,7 +10,7 @@ export type HistoryContextType = {
   future: HistoryLayer[];
 };
 
-export type HistoryFunctionsType = {
+export type HistoryFunctionsContextType = {
   setPast: (past: HistoryLayer[]) => void;
   setFuture: (future: HistoryLayer[]) => void;
   pushLayer: (route: HistoryLayer) => void;
@@ -19,9 +19,10 @@ export type HistoryFunctionsType = {
   replace: (path: string) => void;
   forward: () => HistoryLayer | void;
   backward: () => HistoryLayer | void;
+  setHistoryFunctions: (newFunctions: Omit<HistoryFunctionsContextType, 'setHistoryFunctions'>) => void;
 };
 
-export const HistoryFunctions: HistoryFunctionsType = {
+export const initialHistoryFunctions: HistoryFunctionsContextType = {
   setPast: () => {},
   setFuture: () => {},
   pushLayer: () => {},
@@ -30,6 +31,7 @@ export const HistoryFunctions: HistoryFunctionsType = {
   replace: () => {},
   forward: () => {},
   backward: () => {},
+  setHistoryFunctions: () => {},
 };
 
 export const initialHistory: {
@@ -47,3 +49,4 @@ export type HistoryProviderProps = {
 };
 
 export const HistoryContext = createContext(initialHistory);
+export const HistoryFunctionsContext = createContext(initialHistoryFunctions);

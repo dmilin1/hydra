@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 
 import {
   HistoryProviderProps,
   initialHistory,
   HistoryLayer,
   HistoryContext,
-  HistoryFunctions,
+  HistoryFunctionsContext,
+  initialHistoryFunctions,
+  HistoryFunctionsContextType,
 } from ".";
 import Page from "../../pages";
 import AccountsPage from "../../pages/AccountsPage";
@@ -17,7 +19,7 @@ import UserPage from "../../pages/UserPage";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 
 /**
- * This provider is in its own file in order to avoid circular dependencies.
+ * These providers are in their own file in order to avoid circular dependencies.
  */
 
 export function HistoryProvider({
@@ -25,6 +27,8 @@ export function HistoryProvider({
   initialFuture = [],
   children,
 }: HistoryProviderProps) {
+  const historyFunctions = useContext(HistoryFunctionsContext);
+
   const [past, setPast] = useState<typeof initialHistory.past>(initialPast);
   const [future, setFuture] =
     useState<typeof initialHistory.future>(initialFuture);
@@ -94,12 +98,14 @@ export function HistoryProvider({
   };
 
   /**
-   * History functions sit outside the provider and act as global consts
+   * History functions sit outside the main provider in HistoryFunctionsProvider
    * so that when the history is changed, components that only depend on
    * the functions won't re-render. This massively improves performance.
    */
 
-  Object.assign(HistoryFunctions, {
+  historyFunctions.setHistoryFunctions({
+    setPast,
+    setFuture,
     pushLayer,
     pushPath,
     reload,
@@ -117,5 +123,21 @@ export function HistoryProvider({
     >
       {children}
     </HistoryContext.Provider>
+  );
+}
+
+export function HistoryFunctionsProvider({ children }: { children: JSX.Element }) {
+
+  const historyFunctions: HistoryFunctionsContextType = {
+    ...initialHistoryFunctions,
+    setHistoryFunctions: (newFunctions) => {
+      Object.assign(historyFunctions, newFunctions);
+    }
+  };
+
+  return (
+    <HistoryFunctionsContext.Provider value={historyFunctions}>
+      {children}
+    </HistoryFunctionsContext.Provider>
   );
 }

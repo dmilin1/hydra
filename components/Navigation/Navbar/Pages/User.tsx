@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import {
   HistoryContext,
-  HistoryFunctions,
+  HistoryFunctionsContext,
 } from "../../../../contexts/HistoryContext";
 import URL from "../../../../utils/URL";
 import DirectionButton from "../Components/DirectionButton";
@@ -12,7 +12,7 @@ import TextButton from "../Components/TextButton";
 export default function User() {
   const history = {
     ...useContext(HistoryContext),
-    ...HistoryFunctions,
+    ...useContext(HistoryFunctionsContext),
   };
 
   const path = history.past.slice(-1)[0].elem.props.url;

@@ -4,17 +4,17 @@ import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import Navbar from "./Navbar";
 import {
   HistoryContext,
-  HistoryFunctions,
+  HistoryFunctionsContext,
   HistoryLayer,
   HistoryProviderProps,
 } from "../../contexts/HistoryContext";
-import { HistoryProvider } from "../../contexts/HistoryContext/HistoryProvider";
+import { HistoryFunctionsProvider, HistoryProvider } from "../../contexts/HistoryContext/HistoryProvider";
 import { t } from "../../contexts/SettingsContexts/ThemeContext";
 
 function History() {
   const history = {
     ...useContext(HistoryContext),
-    ...HistoryFunctions,
+    ...useContext(HistoryFunctionsContext),
   };
   const touchX = useRef(new Animated.Value(0)).current;
   const touchStart = useRef<{ x: number; y: number }>();
@@ -157,15 +157,17 @@ function History() {
 
 export default function HistoryStack(params: HistoryProviderProps) {
   return (
-    <HistoryProvider
-      initialFuture={params.initialFuture}
-      initialPast={params.initialPast}
-    >
-      <>
-        <Navbar />
-        <History />
-      </>
-    </HistoryProvider>
+    <HistoryFunctionsProvider>
+      <HistoryProvider
+        initialFuture={params.initialFuture}
+        initialPast={params.initialPast}
+      >
+        <>
+          <Navbar />
+          <History />
+        </>
+      </HistoryProvider>
+    </HistoryFunctionsProvider>
   );
 }
 

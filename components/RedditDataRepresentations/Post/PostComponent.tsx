@@ -5,7 +5,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import PostMedia from "./PostParts/PostMedia";
 import { vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
-import { HistoryFunctions } from "../../../contexts/HistoryContext";
+import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
 import {
   ThemeContext,
   t,
@@ -19,7 +19,7 @@ type PostComponentProps = {
 export default function PostComponent({
   initialPostState,
 }: PostComponentProps) {
-  const history = HistoryFunctions;
+  const history = useContext(HistoryFunctionsContext);
   const { theme } = useContext(ThemeContext);
 
   const [post, setPost] = useState(initialPostState);
