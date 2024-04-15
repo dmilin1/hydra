@@ -1,0 +1,6 @@
+/.expo
+node_modules
+dist
+external
+app.config.ts
+babel.config.js
