@@ -78,7 +78,7 @@ export async function formatPostData(child: any): Promise<Post> {
   let imageThumbnail = decode(child.data.thumbnail);
 
   const videoThumbnail =
-    child.data.preview?.images[0]?.resolutions?.slice(-1)?.[0].url;
+    child.data.preview?.images[0]?.resolutions?.slice(-1)?.[0]?.url;
   if (video && videoThumbnail) {
     imageThumbnail = decode(videoThumbnail);
   }
