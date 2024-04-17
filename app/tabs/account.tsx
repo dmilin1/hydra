@@ -14,7 +14,7 @@ export default function Account() {
       initialPast={[
         {
           elem: <UserPage url="https://www.reddit.com/user/me" />,
-          name: "dmilin",
+          name: currentUser.userName,
         },
       ]}
     />

@@ -13,7 +13,11 @@ import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
-export default function AccountsPage() {
+type AccountsPageProps = {
+  url: string;
+};
+
+export default function AccountsPage(_ : AccountsPageProps) {
   const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);
