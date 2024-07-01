@@ -25,6 +25,14 @@ function History() {
   const gestureDirection = useRef("forward");
   const [selected, setSelected] = React.useState<HistoryLayer | null>(null);
 
+  /**
+   * This is a dumb way to fix some sliding animation bugs. The real way this should be
+   * implemented is by creating a unique Animated.Value for each layer and animating
+   * the correct one when the layer is active. The current implementation changes the
+   * Animated.Value that a layer points to when rendering which is just asking for problems.
+   */
+  touchX.resetAnimation();
+
   return (
     <View
       style={styles.historyContainer}
@@ -108,7 +116,9 @@ function History() {
           tension: 100,
         }).start(() => {
           setSelected(null);
-          if (gestureDirection.current === swipeDirection) return;
+          if (gestureDirection.current === swipeDirection) {
+            return;
+          };
           if (swipeDirection === "forward") {
             history.backward();
           } else {

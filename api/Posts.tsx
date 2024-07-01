@@ -21,6 +21,7 @@ export type Post = {
   title: string;
   author: string;
   upvotes: number;
+  scoreHidden: boolean;
   saved: boolean;
   userVote: VoteOption;
   subreddit: string;
@@ -105,6 +106,7 @@ export async function formatPostData(child: any): Promise<Post> {
     title: decode(child.data.title),
     author: child.data.author,
     upvotes: child.data.ups,
+    scoreHidden: child.data.score_hidden,
     saved: child.data.saved,
     userVote,
     subreddit: child.data.subreddit,

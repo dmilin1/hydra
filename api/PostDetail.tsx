@@ -16,6 +16,7 @@ export type Comment = {
   author: string;
   isOP: boolean;
   upvotes: number;
+  scoreHidden: boolean;
   userVote: VoteOption;
   link: string;
   postTitle: string;
@@ -69,6 +70,7 @@ export function formatComments(
       author: comment.data.author,
       isOP: comment.data.is_submitter,
       upvotes: comment.data.ups,
+      scoreHidden: comment.data.score_hidden,
       userVote,
       link: comment.data.permalink,
       postTitle: comment.data.link_title,

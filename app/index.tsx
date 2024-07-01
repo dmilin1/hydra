@@ -7,7 +7,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
-import { renderRootComponent } from "expo-router/src/renderRootComponent";
 import React, { useEffect } from "react";
 import { LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -17,6 +16,7 @@ import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
+import { registerRootComponent } from "expo";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -56,4 +56,4 @@ export default function RootLayout() {
   );
 }
 
-renderRootComponent(RootLayout);
+registerRootComponent(RootLayout);
