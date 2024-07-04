@@ -102,8 +102,6 @@ export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
               <View
                 style={t(styles.video, {
                   backgroundColor: theme.background,
-                  justifyContent: "center",
-                  alignItems: "center",
                 })}
               >
                 <Text
@@ -115,96 +113,103 @@ export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
                 </Text>
               </View>
             ) : (
-              <Video
-                ref={video}
-                style={styles.video}
-                resizeMode={ResizeMode.CONTAIN}
-                source={{
-                  uri: source,
-                  headers: {
-                    "User-Agent": "Hydra",
-                  },
-                }}
-                isLooping
-                shouldPlay
-                useNativeControls={fullscreen}
-                volume={fullscreen ? 1 : 0}
-                onFullscreenUpdate={(e) => {
-                  setFullscreen(
-                    e.fullscreenUpdate ===
-                      VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
+              /**
+               * Had to add this seeminly useless View as well as the
+               * width: 100%, height 100% properties to fix this bug:
+               * https://github.com/expo/expo/issues/26829
+               */
+              <View style={styles.video}>
+                <Video
+                  ref={video}
+                  style={styles.video}
+                  resizeMode={ResizeMode.CONTAIN}
+                  source={{
+                    uri: source,
+                    headers: {
+                      "User-Agent": "Hydra",
+                    },
+                  }}
+                  isLooping
+                  shouldPlay
+                  useNativeControls={fullscreen}
+                  volume={fullscreen ? 1 : 0}
+                  onFullscreenUpdate={(e) => {
+                    setFullscreen(
                       e.fullscreenUpdate ===
-                        VideoFullscreenUpdate.PLAYER_DID_PRESENT,
-                  );
-                  if (
-                    e.fullscreenUpdate ===
-                    VideoFullscreenUpdate.PLAYER_DID_PRESENT
-                  ) {
-                    audio.current?.sound.playFromPositionAsync(
-                      lastProgressMillis.current,
+                        VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
+                        e.fullscreenUpdate ===
+                          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
                     );
-                    audioIsPlaying.current = true;
-                    isFullscreen.current = true;
-                  }
-                  if (
-                    e.fullscreenUpdate ===
-                    VideoFullscreenUpdate.PLAYER_DID_DISMISS
-                  ) {
-                    video.current?.playAsync();
-                    audio.current?.sound.pauseAsync();
-                    audioIsPlaying.current = false;
-                    isFullscreen.current = false;
-                  }
-                }}
-                onPlaybackStatusUpdate={async (e: AVPlaybackStatus) => {
-                  const status = e as AVPlaybackStatusSuccess;
-                  if (!status.durationMillis) return;
-                  const newProgress =
-                    (status.progressUpdateIntervalMillis +
-                      status.positionMillis) /
-                    status.durationMillis;
-                  Animated.timing(progressAnim, {
-                    toValue: newProgress,
-                    duration: newProgress < lastProgress.current ? 0 : 500,
-                    useNativeDriver: false,
-                    easing: Easing.linear,
-                  }).start();
-                  lastProgress.current = newProgress;
-                  lastProgressMillis.current = status.positionMillis;
-                  if (!audio.current) return;
-                  const audioStatus =
-                    (await audio.current?.sound.getStatusAsync()) as AVPlaybackStatusSuccess;
-                  const audioDelay = Math.abs(
-                    audioStatus.positionMillis - status.positionMillis,
-                  );
-                  if (audioDelay > 500 && isFullscreen.current) {
-                    oneChangeAtATime(async () => {
-                      /* adding ~150ms to account for OS time to set play spot */
-                      audio.current?.sound.setPositionAsync(
-                        audioStatus.positionMillis + audioDelay + 150,
+                    if (
+                      e.fullscreenUpdate ===
+                      VideoFullscreenUpdate.PLAYER_DID_PRESENT
+                    ) {
+                      audio.current?.sound.playFromPositionAsync(
+                        lastProgressMillis.current,
                       );
-                    });
-                  }
-                  if (audioIsPlaying.current && !status.isPlaying) {
-                    audio.current?.sound.pauseAsync();
-                    audioIsPlaying.current = false;
-                  }
-                  if (
-                    !audioIsPlaying.current &&
-                    status.isPlaying &&
-                    isFullscreen.current
-                  ) {
-                    audio.current?.sound.playFromPositionAsync(
-                      status.durationMillis,
+                      audioIsPlaying.current = true;
+                      isFullscreen.current = true;
+                    }
+                    if (
+                      e.fullscreenUpdate ===
+                      VideoFullscreenUpdate.PLAYER_DID_DISMISS
+                    ) {
+                      video.current?.playAsync();
+                      audio.current?.sound.pauseAsync();
+                      audioIsPlaying.current = false;
+                      isFullscreen.current = false;
+                    }
+                  }}
+                  onPlaybackStatusUpdate={async (e: AVPlaybackStatus) => {
+                    const status = e as AVPlaybackStatusSuccess;
+                    if (!status.durationMillis) return;
+                    const newProgress =
+                      (status.progressUpdateIntervalMillis +
+                        status.positionMillis) /
+                      status.durationMillis;
+                    Animated.timing(progressAnim, {
+                      toValue: newProgress,
+                      duration: newProgress < lastProgress.current ? 0 : 500,
+                      useNativeDriver: false,
+                      easing: Easing.linear,
+                    }).start();
+                    lastProgress.current = newProgress;
+                    lastProgressMillis.current = status.positionMillis;
+                    if (!audio.current) return;
+                    const audioStatus =
+                      (await audio.current?.sound.getStatusAsync()) as AVPlaybackStatusSuccess;
+                    const audioDelay = Math.abs(
+                      audioStatus.positionMillis - status.positionMillis,
                     );
-                    audioIsPlaying.current = true;
-                  }
-                }}
-                progressUpdateIntervalMillis={500}
-                onError={() => {
-                  setFailedToLoad(true);
-                }}
-              />
+                    if (audioDelay > 500 && isFullscreen.current) {
+                      oneChangeAtATime(async () => {
+                        /* adding ~150ms to account for OS time to set play spot */
+                        audio.current?.sound.setPositionAsync(
+                          audioStatus.positionMillis + audioDelay + 150,
+                        );
+                      });
+                    }
+                    if (audioIsPlaying.current && !status.isPlaying) {
+                      audio.current?.sound.pauseAsync();
+                      audioIsPlaying.current = false;
+                    }
+                    if (
+                      !audioIsPlaying.current &&
+                      status.isPlaying &&
+                      isFullscreen.current
+                    ) {
+                      audio.current?.sound.playFromPositionAsync(
+                        status.durationMillis,
+                      );
+                      audioIsPlaying.current = true;
+                    }
+                  }}
+                  progressUpdateIntervalMillis={500}
+                  onError={() => {
+                    setFailedToLoad(true);
+                  }}
+                />
+              </View>
             )}
           </TouchableWithoutFeedback>
           <View
@@ -256,6 +261,10 @@ const styles = StyleSheet.create({
   },
   video: {
     flex: 1,
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   progressContainer: {
     height: 5,
