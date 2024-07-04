@@ -17,7 +17,7 @@ type AccountsPageProps = {
   url: string;
 };
 
-export default function AccountsPage(_ : AccountsPageProps) {
+export default function AccountsPage(_: AccountsPageProps) {
   const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);

@@ -37,7 +37,9 @@ export default function Root() {
           },
           {
             key: "requestFeature",
-            icon: <Feather name="git-pull-request" size={24} color={theme.text} />,
+            icon: (
+              <Feather name="git-pull-request" size={24} color={theme.text} />
+            ),
             text: "Request A Feature",
             onPress: () => history.pushPath("/r/HydraFeatureRequests/top"),
           },

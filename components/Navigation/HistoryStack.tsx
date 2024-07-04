@@ -118,7 +118,7 @@ function History() {
           setSelected(null);
           if (gestureDirection.current === swipeDirection) {
             return;
-          };
+          }
           if (swipeDirection === "forward") {
             history.backward();
           } else {

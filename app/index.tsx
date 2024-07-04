@@ -5,6 +5,7 @@ import "@expo/metro-runtime";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { NavigationContainer } from "@react-navigation/native";
+import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
@@ -16,7 +17,6 @@ import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
-import { registerRootComponent } from "expo";
 
 LogBox.ignoreLogs([
   "Require cycle: ",

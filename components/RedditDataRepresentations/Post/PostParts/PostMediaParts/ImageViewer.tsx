@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react";
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import { saveToLibraryAsync } from "expo-media-library";
+import React, { useState, useContext } from "react";
 import {
   Text,
   StyleSheet,
@@ -9,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { default as ImageView } from "react-native-image-viewing";
-import { saveToLibraryAsync } from "expo-media-library";
+
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
   ThemeContext,
@@ -43,14 +44,12 @@ export default function ImageViewer({
         cancelButtonIndex,
       },
       async (buttonIndex) => {
-        if (
-          buttonIndex === undefined ||
-          buttonIndex === cancelButtonIndex
-        ) return;
+        if (buttonIndex === undefined || buttonIndex === cancelButtonIndex)
+          return;
         await saveToLibraryAsync(images[imageIndex]);
         Alert.alert("Image saved to library");
-      }
-    )
+      },
+    );
   };
 
   return (

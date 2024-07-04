@@ -187,7 +187,9 @@ export function CommentComponent({
                               : theme.subtleText,
                       })}
                     >
-                      {comment.scoreHidden && !comment.userVote ? '-' : comment.upvotes}
+                      {comment.scoreHidden && !comment.userVote
+                        ? "-"
+                        : comment.upvotes}
                     </Text>
                   </TouchableOpacity>
                   <Text
