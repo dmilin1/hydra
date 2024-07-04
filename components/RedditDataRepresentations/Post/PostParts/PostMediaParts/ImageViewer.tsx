@@ -1,13 +1,15 @@
 import React, { useState, useContext } from "react";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 import {
   Text,
   StyleSheet,
   Image,
   View,
   TouchableHighlight,
+  Alert,
 } from "react-native";
 import { default as ImageView } from "react-native-image-viewing";
-
+import { saveToLibraryAsync } from "expo-media-library";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
   ThemeContext,
@@ -23,6 +25,7 @@ export default function ImageViewer({
   thumbnail?: string;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
@@ -31,6 +34,24 @@ export default function ImageViewer({
   const { theme } = useContext(ThemeContext);
 
   const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
+
+  const saveImage = async () => {
+    const cancelButtonIndex = 1;
+    showActionSheetWithOptions(
+      {
+        options: ["Save Image", "Cancel"],
+        cancelButtonIndex,
+      },
+      async (buttonIndex) => {
+        if (
+          buttonIndex === undefined ||
+          buttonIndex === cancelButtonIndex
+        ) return;
+        await saveToLibraryAsync(images[imageIndex]);
+        Alert.alert("Image saved to library");
+      }
+    )
+  };
 
   return (
     <View style={styles.imageViewerContainer}>
@@ -41,6 +62,7 @@ export default function ImageViewer({
           presentationStyle="fullScreen"
           visible={visible}
           onRequestClose={() => setVisible(false)}
+          onLongPress={saveImage}
         />
       )}
       {images.slice(0, loadLowData ? 1 : 2).map((image, index) => (
@@ -52,6 +74,7 @@ export default function ImageViewer({
             setVisible(true);
           }}
           style={styles.touchableZone}
+          onLongPress={saveImage}
         >
           <Image
             style={styles.img}

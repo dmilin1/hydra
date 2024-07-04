@@ -1,6 +1,6 @@
 {
   "name": "hydra",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "./app/index.tsx",
   "scripts": {
     "start": "expo start",
@@ -47,7 +47,8 @@
     "react-native-screens": "3.31.1",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.6",
-    "react-native-webview": "13.8.6"
+    "react-native-webview": "13.8.6",
+    "expo-media-library": "~16.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

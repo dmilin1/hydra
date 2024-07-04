@@ -43,7 +43,12 @@ module.exports = {
     },
     owner: "dmilin",
     plugins: [
-      "expo-router"
+      "expo-router",
+      [
+        'expo-media-library', {
+          savePhotosPermission: 'Allow $(PRODUCT_NAME) to save photos and videos to your library.',
+        }
+      ]
     ],
     updates: {
       url: `https://u.expo.dev/${projectId}`
