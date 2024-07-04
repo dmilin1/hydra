@@ -35,6 +35,12 @@ export default function Root() {
             text: "Data Use",
             onPress: () => history.pushPath("hydra://settings/dataUse"),
           },
+          {
+            key: "requestFeature",
+            icon: <Feather name="git-pull-request" size={24} color={theme.text} />,
+            text: "Request A Feature",
+            onPress: () => history.pushPath("/r/HydraFeatureRequests/top"),
+          },
         ]}
       />
       <View style={styles.appDetails}>
@@ -48,7 +54,7 @@ export default function Root() {
           Build #{Application.nativeBuildVersion}
           {"\n"}
           Update Group:{" "}
-          {Updates.manifest?.metadata?.updateGroup ?? "development"}
+          {(Updates.manifest as any)?.metadata?.updateGroup ?? "development"}
           {"\n"}
         </Text>
       </View>
