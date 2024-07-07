@@ -9,8 +9,11 @@ import {
   ScrollView,
 } from "react-native";
 
+import { Needs2FA } from "../api/Authentication";
+import Login from "../components/Modals/Login";
 import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
+import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
 type AccountsPageProps = {
@@ -21,6 +24,7 @@ export default function AccountsPage(_: AccountsPageProps) {
   const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);
+  const { setModal } = useContext(ModalContext);
   const [loading, setLoading] = useState(false);
 
   return (
@@ -63,7 +67,15 @@ export default function AccountsPage(_: AccountsPageProps) {
                     if (account.username === "Logged Out") {
                       await logOut();
                     } else {
-                      await logIn(account);
+                      try {
+                        await logIn(account);
+                      } catch (e) {
+                        if (e instanceof Needs2FA) {
+                          setModal(<Login loginExisting={account} />);
+                        } else {
+                          throw e;
+                        }
+                      }
                     }
                     setLoading(false);
                   }}

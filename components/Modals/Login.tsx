@@ -10,16 +10,21 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { AccountContext } from "../../contexts/AccountContext";
+import { Account, AccountContext } from "../../contexts/AccountContext";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
-export default function Login() {
+type LoginProps = {
+  loginExisting?: Account;
+};
+
+export default function Login({ loginExisting }: LoginProps) {
   const { theme } = useContext(ThemeContext);
-  const { addUser } = useContext(AccountContext);
+  const { addUser, logIn, needs2FA } = useContext(AccountContext);
   const { setModal } = useContext(ModalContext);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState(loginExisting?.username ?? "");
+  const [password, setPassword] = useState(loginExisting?.password ?? "");
+  const [twoFACode, setTwoFACode] = useState("");
   const [loading, setLoading] = useState(false);
 
   return (
@@ -75,6 +80,28 @@ export default function Login() {
             secureTextEntry
           />
         </View>
+        {needs2FA && (
+          <View style={styles.fieldContainer}>
+            <Text
+              style={t(styles.textLabel, {
+                color: theme.text,
+              })}
+            >
+              2FA Code:
+            </Text>
+            <TextInput
+              style={t(styles.textInput, {
+                color: theme.text,
+                borderColor: theme.divider,
+              })}
+              onChangeText={(text) => setTwoFACode(text)}
+              value={twoFACode}
+              autoComplete="one-time-code"
+              autoCapitalize="none"
+              keyboardType="number-pad"
+            />
+          </View>
+        )}
         <View style={styles.buttonContainer}>
           {loading ? (
             <ActivityIndicator size="small" color={theme.text} />
@@ -85,10 +112,25 @@ export default function Login() {
               })}
               onPress={async () => {
                 setLoading(true);
-                if (await addUser({ username, password })) {
+                let wasSuccessful = false;
+                if (loginExisting) {
+                  wasSuccessful = await logIn({
+                    username: loginExisting.username,
+                    password:
+                      loginExisting.password +
+                      (twoFACode ? `:${twoFACode}` : ""),
+                  });
+                } else {
+                  wasSuccessful = await addUser(
+                    { username, password },
+                    twoFACode,
+                  );
+                }
+                if (wasSuccessful) {
                   setModal(null);
                   setUsername("");
                   setPassword("");
+                  setTwoFACode("");
                 }
                 setLoading(false);
               }}

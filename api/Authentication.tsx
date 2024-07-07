@@ -1,7 +1,40 @@
 import { Account } from "../contexts/AccountContext";
 
+type CurrentUser = {
+  data: {
+    modhash: string;
+    name: string;
+  };
+};
+
 export class UserAuth {
   static modhash?: string;
+}
+
+export class IncorrectCredentials extends Error {
+  constructor() {
+    super("Incorrect credentials");
+  }
+}
+export class Needs2FA extends Error {
+  constructor() {
+    super("2FA is required");
+  }
+}
+
+export async function getCurrentUser(): Promise<CurrentUser | null> {
+  const user = await fetch("https://www.reddit.com/user/me/about.json", {
+    method: "GET",
+    redirect: "follow",
+    cache: "no-store",
+  }).then((response) => response.json());
+
+  if (user?.data?.modhash) {
+    UserAuth.modhash = user.data.modhash;
+    return user;
+  }
+
+  return null;
 }
 
 export async function login(account: Account): Promise<void> {
@@ -9,27 +42,34 @@ export async function login(account: Account): Promise<void> {
   formdata.append("user", account.username);
   formdata.append("passwd", account.password);
 
-  await fetch("https://ssl.reddit.com/api/login", {
+  await logout();
+
+  const res = await fetch("https://ssl.reddit.com/api/login", {
     method: "POST",
     body: formdata,
     redirect: "follow",
-  });
-
-  const user = await fetch("https://www.reddit.com/user/me/about.json", {
-    method: "GET",
-    redirect: "follow",
-    cache: "no-store",
   }).then((response) => response.json());
+
+  if (res?.success !== true) {
+    throw new IncorrectCredentials();
+  }
+
+  const user = await getCurrentUser();
+
+  if (!user?.data?.modhash) {
+    throw new Needs2FA();
+  }
 
   UserAuth.modhash = user.data.modhash;
 }
 
 export async function logout(): Promise<void> {
-  const user = await fetch("https://www.reddit.com/user/me/about.json", {
-    method: "GET",
-    redirect: "follow",
-    cache: "no-store",
-  }).then((response) => response.json());
+  const user = await getCurrentUser();
+
+  if (!user) {
+    UserAuth.modhash = undefined;
+    return;
+  }
 
   const formdata = new FormData();
   formdata.append("uh", user.data.modhash);

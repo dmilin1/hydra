@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
 
-import { login, logout } from "../api/Authentication";
+import { getCurrentUser, login, logout, Needs2FA } from "../api/Authentication";
 import { User, getUser } from "../api/User";
 
 export type Account = {
@@ -15,9 +15,10 @@ type AccountContextType = {
   currentAcc: Account | null;
   currentUser: User | null;
   accounts: Account[];
+  needs2FA: boolean;
   logIn: (account: Account) => Promise<boolean>;
   logOut: () => Promise<void>;
-  addUser: (account: Account) => Promise<boolean>;
+  addUser: (account: Account, twoFACode: string) => Promise<boolean>;
   removeUser: (account: Account) => Promise<void>;
 };
 
@@ -25,6 +26,7 @@ const initialAccountContext: AccountContextType = {
   loginInitialized: false,
   currentAcc: null,
   currentUser: null,
+  needs2FA: false,
   accounts: [],
   logIn: async () => false,
   logOut: async () => {},
@@ -41,16 +43,25 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   const [currentUser, setCurrentUser] =
     useState<AccountContextType["currentUser"]>(null);
   const [accounts, setAccounts] = useState<AccountContextType["accounts"]>([]);
+  const [needs2FA, setNeeds2FA] = useState(false);
 
   const logInContext = async (account: Account): Promise<boolean> => {
     try {
-      await login(account);
+      const currentUser = await getCurrentUser();
+      if (currentUser?.data?.name !== account.username) {
+        await login(account);
+      }
       const user = await getUser("/u/me");
       await AsyncStorage.setItem("currentUser", account.username);
       setCurrentAcc(account);
       setCurrentUser(user);
+      setNeeds2FA(false);
       return true;
-    } catch (_) {
+    } catch (e) {
+      if (e instanceof Needs2FA) {
+        setNeeds2FA(true);
+        throw e;
+      }
       alert("Incorrect username or password");
       return false;
     }
@@ -61,14 +72,23 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     await AsyncStorage.removeItem("currentUser");
     setCurrentAcc(null);
     setCurrentUser(null);
+    setNeeds2FA(false);
   };
 
-  const addUser = async (account: Account): Promise<boolean> => {
+  const addUser = async (
+    account: Account,
+    twoFACode: string,
+  ): Promise<boolean> => {
     if (accounts.find((acc) => acc.username === account.username)) {
       alert("Account already added");
       return false;
     }
-    if (await logInContext(account)) {
+    if (
+      await logInContext({
+        username: account.username,
+        password: account.password + (twoFACode ? `:${twoFACode}` : ""),
+      })
+    ) {
       const accs = [...accounts, account];
       await saveAccounts(accs);
       setAccounts(accs);
@@ -136,6 +156,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
         loginInitialized,
         currentAcc,
         currentUser,
+        needs2FA,
         accounts,
         logIn: logInContext,
         logOut: logOutContext,

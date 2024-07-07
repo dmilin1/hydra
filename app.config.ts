@@ -1,6 +1,7 @@
 import packageJson from './package.json';
 
 const projectId = "7e403d7f-7747-4daa-a3c9-4acb948f7a60";
+const IS_DEV = process.env.APP_VARIANT === 'development';
 
 module.exports = {
   expo: {
@@ -24,7 +25,7 @@ module.exports = {
     ],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.dmilin.hydra"
+      bundleIdentifier: IS_DEV ? 'com.dmilin.hydra-dev' : "com.dmilin.hydra"
     },
     android: {
       adaptiveIcon: {

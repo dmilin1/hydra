@@ -1,6 +1,7 @@
 // `@expo/metro-runtime` MUST be the first import to ensure Fast Refresh works
 // on web.
 import "@expo/metro-runtime";
+import "expo-dev-client";
 
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
