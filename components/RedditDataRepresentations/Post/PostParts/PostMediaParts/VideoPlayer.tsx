@@ -5,7 +5,7 @@ import {
   AVPlaybackStatus,
   AVPlaybackStatusSuccess,
 } from "expo-av";
-import { Sound, SoundObject } from "expo-av/build/Audio";
+import { Sound, SoundObject, setAudioModeAsync } from "expo-av/build/Audio";
 import React, { useRef, useState, useContext, useEffect } from "react";
 import {
   Animated,
@@ -50,6 +50,7 @@ export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
 
   const loadAudio = async () => {
     const audioUrl = source.replace(/DASH_\d+/, "DASH_AUDIO_128");
+    await setAudioModeAsync({ playsInSilentModeIOS: true });
     try {
       audio.current = await Sound.createAsync({ uri: audioUrl });
       audio.current.sound.setIsLoopingAsync(true);
@@ -136,9 +137,9 @@ export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
                   onFullscreenUpdate={(e) => {
                     setFullscreen(
                       e.fullscreenUpdate ===
-                        VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
-                        e.fullscreenUpdate ===
-                          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
+                      VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
+                      e.fullscreenUpdate ===
+                      VideoFullscreenUpdate.PLAYER_DID_PRESENT,
                     );
                     if (
                       e.fullscreenUpdate ===
