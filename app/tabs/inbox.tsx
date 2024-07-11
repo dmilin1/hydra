@@ -8,7 +8,7 @@ export default function Inbox() {
     <HistoryStack
       initialPast={[
         {
-          elem: <MessagesPage url="https://www.reddit.com/message/inbox" />,
+          elem: <MessagesPage />,
           name: "Inbox",
         },
       ]}

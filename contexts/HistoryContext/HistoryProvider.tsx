@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import {
   HistoryProviderProps,
@@ -17,6 +17,7 @@ import PostsPage from "../../pages/PostsPage";
 import SettingsPage from "../../pages/SettingsPage";
 import UserPage from "../../pages/UserPage";
 import RedditURL, { PageType } from "../../utils/RedditURL";
+import { NavigationContext, useRoute } from "@react-navigation/native";
 
 /**
  * These providers are in their own file in order to avoid circular dependencies.
@@ -32,6 +33,28 @@ export function HistoryProvider({
   const [past, setPast] = useState<typeof initialHistory.past>(initialPast);
   const [future, setFuture] =
     useState<typeof initialHistory.future>(initialFuture);
+
+  const navigation = useContext(NavigationContext);
+
+  const route = useRoute();
+
+  useEffect(() => {
+    if (!navigation) return;
+    // @ts-ignore: tabPress is not in the type definition even though it's in the docs
+    const clearListener = navigation.addListener("tabPress", (e) => {
+      // Handles tab presses navigating backward in the stack history
+      if (navigation.isFocused()) {
+        if (route.name === "Posts" && past.length === 1) {
+          forward();
+          return;
+        }
+        if (past.length > 1) {
+          backward();
+        }
+      }
+    });
+    return clearListener;
+  }, [past.length, future.length]);
 
   const pushPath = (path: string) => {
     const name = new RedditURL(path).getPageName();

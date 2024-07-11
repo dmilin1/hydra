@@ -29,9 +29,9 @@ const initialAccountContext: AccountContextType = {
   needs2FA: false,
   accounts: [],
   logIn: async () => false,
-  logOut: async () => {},
+  logOut: async () => { },
   addUser: async () => false,
-  removeUser: async () => {},
+  removeUser: async () => { },
 };
 
 export const AccountContext = createContext(initialAccountContext);
