@@ -66,6 +66,7 @@ function History() {
           touchStart.current.x < boundarySize &&
           history.past.length > 1
         ) {
+          touchX.setOffset(-e.nativeEvent.pageX);
           setSelected(history.past.slice(-1)[0]);
           gestureDirection.current = "backward";
           return true;
@@ -75,6 +76,7 @@ function History() {
           touchStart.current.x > screenWidth - boundarySize &&
           history.future.length > 0
         ) {
+          touchX.setOffset(screenWidth - e.nativeEvent.pageX);
           setSelected(history.future.slice(-1)[0]);
           gestureDirection.current = "forward";
           return true;
@@ -108,6 +110,7 @@ function History() {
               ? "forward"
               : "backward";
         }
+        touchX.flattenOffset();
         Animated.spring(touchX, {
           toValue:
             swipeDirection === "forward" ? Dimensions.get("window").width : 0,
