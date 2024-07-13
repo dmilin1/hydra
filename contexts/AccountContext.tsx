@@ -2,7 +2,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
 
-import { getCurrentUser, login, logout, Needs2FA } from "../api/Authentication";
+import {
+  getCurrentUser,
+  IncorrectCredentials,
+  login,
+  logout,
+  Needs2FA,
+} from "../api/Authentication";
 import { User, getUser } from "../api/User";
 
 export type Account = {
@@ -15,10 +21,9 @@ type AccountContextType = {
   currentAcc: Account | null;
   currentUser: User | null;
   accounts: Account[];
-  needs2FA: boolean;
-  logIn: (account: Account) => Promise<boolean>;
+  logIn: (account: Account) => Promise<void>;
   logOut: () => Promise<void>;
-  addUser: (account: Account, twoFACode: string) => Promise<boolean>;
+  addUser: (account: Account, twoFACode: string) => Promise<void>;
   removeUser: (account: Account) => Promise<void>;
 };
 
@@ -26,11 +31,10 @@ const initialAccountContext: AccountContextType = {
   loginInitialized: false,
   currentAcc: null,
   currentUser: null,
-  needs2FA: false,
   accounts: [],
-  logIn: async () => false,
+  logIn: async () => {},
   logOut: async () => {},
-  addUser: async () => false,
+  addUser: async () => {},
   removeUser: async () => {},
 };
 
@@ -43,9 +47,8 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   const [currentUser, setCurrentUser] =
     useState<AccountContextType["currentUser"]>(null);
   const [accounts, setAccounts] = useState<AccountContextType["accounts"]>([]);
-  const [needs2FA, setNeeds2FA] = useState(false);
 
-  const logInContext = async (account: Account): Promise<boolean> => {
+  const logInContext = async (account: Account): Promise<void> => {
     try {
       const currentUser = await getCurrentUser();
       if (currentUser?.data?.name !== account.username) {
@@ -55,15 +58,11 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       await AsyncStorage.setItem("currentUser", account.username);
       setCurrentAcc(account);
       setCurrentUser(user);
-      setNeeds2FA(false);
-      return true;
     } catch (e) {
-      if (e instanceof Needs2FA) {
-        setNeeds2FA(true);
-        throw e;
+      if (!(e instanceof Needs2FA) && !(e instanceof IncorrectCredentials)) {
+        alert("Unexpected error logging in:" + e);
       }
-      alert("Incorrect username or password");
-      return false;
+      throw e;
     }
   };
 
@@ -72,29 +71,20 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     await AsyncStorage.removeItem("currentUser");
     setCurrentAcc(null);
     setCurrentUser(null);
-    setNeeds2FA(false);
   };
 
-  const addUser = async (
-    account: Account,
-    twoFACode: string,
-  ): Promise<boolean> => {
+  const addUser = async (account: Account, twoFACode: string) => {
     if (accounts.find((acc) => acc.username === account.username)) {
       alert("Account already added");
-      return false;
+      return;
     }
-    if (
-      await logInContext({
-        username: account.username,
-        password: account.password + (twoFACode ? `:${twoFACode}` : ""),
-      })
-    ) {
-      const accs = [...accounts, account];
-      await saveAccounts(accs);
-      setAccounts(accs);
-      return true;
-    }
-    return false;
+    await logInContext({
+      username: account.username,
+      password: account.password + (twoFACode ? `:${twoFACode}` : ""),
+    });
+    const accs = [...accounts, account];
+    await saveAccounts(accs);
+    setAccounts(accs);
   };
 
   const removeUser = async (account: Account) => {
@@ -139,7 +129,16 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
         (acc) => acc.username === currentUsername,
       );
       if (currentUsername && currentAccount) {
-        await logInContext(currentAccount);
+        try {
+          await logInContext(currentAccount);
+        } catch (e) {
+          if (e instanceof Needs2FA || e instanceof IncorrectCredentials) {
+            await logOutContext();
+            alert("Your login session has expired. Please log in again.");
+          } else {
+            alert(`Unknown error when logging in: ${e}`);
+          }
+        }
       }
       setAccounts(accs);
     }
@@ -156,7 +155,6 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
         loginInitialized,
         currentAcc,
         currentUser,
-        needs2FA,
         accounts,
         logIn: logInContext,
         logOut: logOutContext,

@@ -71,7 +71,7 @@ export default function AccountsPage(_: AccountsPageProps) {
                         await logIn(account);
                       } catch (e) {
                         if (e instanceof Needs2FA) {
-                          setModal(<Login loginExisting={account} />);
+                          setModal(<Login just2FAVerifyAcc={account} />);
                         } else {
                           throw e;
                         }

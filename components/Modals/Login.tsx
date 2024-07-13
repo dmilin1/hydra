@@ -10,22 +10,62 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+import { IncorrectCredentials, Needs2FA } from "../../api/Authentication";
 import { Account, AccountContext } from "../../contexts/AccountContext";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 type LoginProps = {
-  loginExisting?: Account;
+  just2FAVerifyAcc?: Account;
 };
 
-export default function Login({ loginExisting }: LoginProps) {
+export default function Login({ just2FAVerifyAcc }: LoginProps) {
   const { theme } = useContext(ThemeContext);
-  const { addUser, logIn, needs2FA } = useContext(AccountContext);
+  const { addUser, logIn } = useContext(AccountContext);
   const { setModal } = useContext(ModalContext);
-  const [username, setUsername] = useState(loginExisting?.username ?? "");
-  const [password, setPassword] = useState(loginExisting?.password ?? "");
+  const [username, setUsername] = useState(just2FAVerifyAcc?.username ?? "");
+  const [password, setPassword] = useState(just2FAVerifyAcc?.password ?? "");
   const [twoFACode, setTwoFACode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [needs2FA, setNeeds2FA] = useState(!!just2FAVerifyAcc);
+
+  const resetModal = () => {
+    setModal(null);
+    setUsername("");
+    setPassword("");
+    setTwoFACode("");
+    setLoading(false);
+  };
+
+  const handleLoginError = (e: unknown) => {
+    setLoading(false);
+    if (e instanceof Needs2FA) {
+      setNeeds2FA(true);
+    } else if (e instanceof IncorrectCredentials) {
+      alert("Incorrect username or password");
+    }
+  };
+
+  const submit2FACheck = async () => {
+    try {
+      await logIn({
+        username,
+        password: needs2FA ? `${password}:${twoFACode}` : password,
+      });
+      resetModal();
+    } catch (e) {
+      handleLoginError(e);
+    }
+  };
+
+  const addNewUser = async () => {
+    try {
+      await addUser({ username, password }, twoFACode);
+      resetModal();
+    } catch (e) {
+      handleLoginError(e);
+    }
+  };
 
   return (
     <>
@@ -112,27 +152,11 @@ export default function Login({ loginExisting }: LoginProps) {
               })}
               onPress={async () => {
                 setLoading(true);
-                let wasSuccessful = false;
-                if (loginExisting) {
-                  wasSuccessful = await logIn({
-                    username: loginExisting.username,
-                    password:
-                      loginExisting.password +
-                      (twoFACode ? `:${twoFACode}` : ""),
-                  });
+                if (just2FAVerifyAcc) {
+                  submit2FACheck();
                 } else {
-                  wasSuccessful = await addUser(
-                    { username, password },
-                    twoFACode,
-                  );
+                  addNewUser();
                 }
-                if (wasSuccessful) {
-                  setModal(null);
-                  setUsername("");
-                  setPassword("");
-                  setTwoFACode("");
-                }
-                setLoading(false);
               }}
             >
               <Text
