@@ -22,6 +22,7 @@ export type Comment = {
   postTitle: string;
   postLink: string;
   subreddit: string;
+  text: string;
   html: string;
   renderCount: number;
   comments: Comment[];
@@ -76,6 +77,7 @@ export function formatComments(
       postTitle: comment.data.link_title,
       postLink: comment.data.link_permalink,
       subreddit: comment.data.subreddit,
+      text: decode(comment.data.body),
       html: decode(comment.data.body_html),
       comments: comment.data.replies
         ? formatComments(comment.data.replies.data.children, childCommentPath)
@@ -182,11 +184,31 @@ export async function reloadComment(
 }
 
 export async function submitComment(
-  userContent: UserContent,
+  userContent: Comment | PostDetail,
   text: string,
 ): Promise<boolean> {
   const response = await api(
     "https://www.reddit.com/api/comment",
+    {
+      method: "POST",
+    },
+    {
+      requireAuth: true,
+      body: {
+        thing_id: userContent.name,
+        text,
+      },
+    },
+  );
+  return response?.success ?? false;
+}
+
+export async function editUserContent(
+  userContent: Comment | PostDetail,
+  text: string,
+): Promise<boolean> {
+  const response = await api(
+    "https://www.reddit.com/api/editusertext",
     {
       method: "POST",
     },

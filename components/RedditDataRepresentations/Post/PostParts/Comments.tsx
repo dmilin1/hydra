@@ -1,3 +1,4 @@
+import { useActionSheet } from "@expo/react-native-action-sheet";
 import { AntDesign, Octicons } from "@expo/vector-icons";
 import React, { useContext, useState, useMemo, Suspense } from "react";
 import {
@@ -15,6 +16,7 @@ import {
   vote,
 } from "../../../../api/PostDetail";
 import { VoteOption } from "../../../../api/Posts";
+import { AccountContext } from "../../../../contexts/AccountContext";
 import { HistoryFunctionsContext } from "../../../../contexts/HistoryContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import {
@@ -46,6 +48,8 @@ export function CommentComponent({
   const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryFunctionsContext);
   const { setModal } = useContext(ModalContext);
+  const { currentUser } = useContext(AccountContext);
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const commentRef = React.useRef<TouchableOpacity>(null);
 
@@ -62,6 +66,57 @@ export function CommentComponent({
         renderCount: comment.renderCount + 1,
       });
     }
+  };
+
+  const replyToComment = () => {
+    setModal(
+      <Reply
+        parent={comment}
+        replySent={async () => {
+          const reloadedComment = await reloadComment(comment);
+          changeComment?.(reloadedComment);
+        }}
+      />,
+    );
+  };
+
+  const editComment = () => {
+    if (comment.type !== "comment") return;
+    setModal(
+      <Reply
+        edit={comment}
+        replySent={async () => {
+          const reloadedComment = await reloadComment(comment);
+          changeComment?.(reloadedComment);
+        }}
+      />,
+    );
+  };
+
+  const showCommentOptions = () => {
+    if (currentUser?.userName !== comment.author) {
+      /**
+       * Don't show options for comments that aren't the user's since the
+       * only option right now is to edit comments
+       */
+      return;
+    }
+    const options = ["Edit Comment", "Cancel"];
+    const cancelButtonIndex = options.length;
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex: 1,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === undefined || buttonIndex === cancelButtonIndex) {
+          return;
+        }
+        if (options[buttonIndex] === "Edit Comment") {
+          editComment();
+        }
+      },
+    );
   };
 
   return useMemo(
@@ -86,16 +141,7 @@ export function CommentComponent({
               {
                 icon: <Octicons name="reply" />,
                 color: theme.reply,
-                action: () =>
-                  setModal(
-                    <Reply
-                      userContent={comment}
-                      replySent={async () => {
-                        const reloadedComment = await reloadComment(comment);
-                        changeComment?.(reloadedComment);
-                      }}
-                    />,
-                  ),
+                action: () => replyToComment(),
               },
             ]}
           >
@@ -119,6 +165,7 @@ export function CommentComponent({
                   setCollapsed(!collapsed);
                 }
               }}
+              onLongPress={() => showCommentOptions()}
               style={t(
                 styles.outerCommentContainer,
                 displayInList ? styles.outerCommentContainerDisplayInList : {},

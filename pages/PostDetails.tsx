@@ -311,7 +311,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
                   onPress={() =>
                     setModal(
                       <Reply
-                        userContent={postDetail}
+                        parent={postDetail}
                         replySent={async () => await loadPostDetails()}
                       />,
                     )

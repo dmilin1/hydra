@@ -15,17 +15,29 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { submitComment } from "../../api/PostDetail";
-import { UserContent } from "../../api/User";
+import {
+  Comment,
+  editUserContent,
+  PostDetail,
+  submitComment,
+} from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 
 type ReplyProps = {
-  userContent: UserContent;
   replySent: () => void;
-};
+} & (
+  | {
+      parent: Comment | PostDetail;
+      edit?: undefined;
+    }
+  | {
+      parent?: undefined;
+      edit: Comment;
+    }
+);
 
 const getSelected = (
   text: string,
@@ -50,7 +62,7 @@ const replaceText = (
   );
 };
 
-export default function Reply({ userContent, replySent }: ReplyProps) {
+export default function Reply({ parent, edit, replySent }: ReplyProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
@@ -59,11 +71,34 @@ export default function Reply({ userContent, replySent }: ReplyProps) {
     end: 0,
   });
 
-  const [text, setText] = React.useState("");
+  const [text, setText] = React.useState(edit?.text ?? "");
   const [viewMode, setViewMode] = React.useState<"parent" | "preview">(
     "parent",
   );
-  const [sendingPost, setSendingPost] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const submit = async () => {
+    setIsSubmitting(true);
+    try {
+      let success = false;
+      if (edit) {
+        success = await editUserContent(edit, text);
+      } else {
+        success = await submitComment(parent, text);
+      }
+      if (success) {
+        setTimeout(() => {
+          replySent();
+          setModal(undefined);
+        }, 5000);
+      } else {
+        throw new Error("Failed to submit comment");
+      }
+    } catch {
+      setIsSubmitting(false);
+      Alert.alert(`Failed to ${edit ? "edit" : "post"} comment`);
+    }
+  };
 
   return (
     <View
@@ -80,7 +115,7 @@ export default function Reply({ userContent, replySent }: ReplyProps) {
           >
             <TouchableOpacity
               onPress={() => {
-                setSendingPost(false);
+                setIsSubmitting(false);
                 setModal(undefined);
               }}
             >
@@ -97,36 +132,18 @@ export default function Reply({ userContent, replySent }: ReplyProps) {
                 color: theme.text,
               })}
             >
-              New Comment
+              {edit ? "Edit Comment" : "New Comment"}
             </Text>
-            {sendingPost ? (
+            {isSubmitting ? (
               <ActivityIndicator size="small" color={theme.buttonText} />
             ) : (
-              <TouchableOpacity
-                onPress={async () => {
-                  setSendingPost(true);
-                  try {
-                    const success = await submitComment(userContent, text);
-                    if (success) {
-                      setTimeout(() => {
-                        replySent();
-                        setModal(undefined);
-                      }, 5000);
-                    } else {
-                      throw new Error("Failed to submit comment");
-                    }
-                  } catch {
-                    setSendingPost(false);
-                    Alert.alert("Failed to post comment");
-                  }
-                }}
-              >
+              <TouchableOpacity onPress={() => submit()}>
                 <Text
                   style={t(styles.topBarButton, {
                     color: theme.buttonText,
                   })}
                 >
-                  Post
+                  {edit ? "Edit" : "Post"}
                 </Text>
               </TouchableOpacity>
             )}
@@ -152,23 +169,29 @@ export default function Reply({ userContent, replySent }: ReplyProps) {
                 borderBottomColor: theme.divider,
               })}
             >
-              <TouchableOpacity onPress={() => setViewMode("parent")}>
-                <Text
-                  style={t(styles.previewTypeText, {
-                    color: theme.text,
-                    borderColor:
-                      viewMode === "parent" ? theme.buttonText : theme.tint,
-                  })}
-                >
-                  Parent
-                </Text>
-              </TouchableOpacity>
+              {parent && (
+                <TouchableOpacity onPress={() => setViewMode("parent")}>
+                  <Text
+                    style={t(styles.previewTypeText, {
+                      color: theme.text,
+                      paddingVertical: 10,
+                      borderColor:
+                        viewMode === "parent" ? theme.buttonText : theme.tint,
+                    })}
+                  >
+                    Parent
+                  </Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity onPress={() => setViewMode("preview")}>
                 <Text
                   style={t(styles.previewTypeText, {
                     color: theme.text,
+                    paddingVertical: edit ? 0 : 10,
                     borderColor:
-                      viewMode === "preview" ? theme.buttonText : theme.tint,
+                      !edit && viewMode === "preview"
+                        ? theme.buttonText
+                        : theme.tint,
                   })}
                 >
                   Preview
@@ -182,8 +205,8 @@ export default function Reply({ userContent, replySent }: ReplyProps) {
             >
               <RenderHtml
                 html={
-                  viewMode === "parent"
-                    ? userContent.html
+                  parent && viewMode === "parent"
+                    ? parent.html
                     : Snudown.markdown(text)
                 }
               />
@@ -336,7 +359,6 @@ const styles = StyleSheet.create({
   },
   previewTypeText: {
     fontSize: 16,
-    paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
     borderRadius: 5,

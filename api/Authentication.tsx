@@ -52,9 +52,6 @@ export async function login(account: Account): Promise<void> {
   }).then((response) => response.json());
 
   if (res?.success !== true) {
-    console.log(await getCurrentUser());
-    console.log(account);
-    console.log(res);
     throw new IncorrectCredentials();
   }
 
