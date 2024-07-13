@@ -19,7 +19,15 @@ export default class RedditURL extends URL {
 
   constructor(url: string) {
     super(url);
-    if (url.startsWith("hydra://")) {
+    if (
+      /* Override super() call if short reddit link */
+      url.startsWith("/r") ||
+      url.startsWith("/u") ||
+      url.startsWith("/user") ||
+      url.startsWith("/search")
+    ) {
+      this.url = `https://www.reddit.com${url}`;
+    } else if (url.startsWith("hydra://")) {
       this.url = url;
     } else if (url.startsWith("https://")) {
       this.url = url;
@@ -27,13 +35,6 @@ export default class RedditURL extends URL {
       this.url = `https://${url}`;
     } else if (url.startsWith("reddit.com")) {
       this.url = `https://www.${url}`;
-    } else if (
-      url.startsWith("/r") ||
-      url.startsWith("/u") ||
-      url.startsWith("/user") ||
-      url.startsWith("/search")
-    ) {
-      this.url = `https://www.reddit.com${url}`;
     } else {
       throw new Error(`Weird URL being passed ${url}`);
     }
@@ -43,7 +44,6 @@ export default class RedditURL extends URL {
       !this.url.startsWith("https://i.redd.it") &&
       !this.url.startsWith("https://v.redd.it")
     ) {
-      console.log(this.url)
       throw new Error("Not a reddit URL");
     }
   }
