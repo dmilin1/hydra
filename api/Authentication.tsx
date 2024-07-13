@@ -1,4 +1,5 @@
 import { Account } from "../contexts/AccountContext";
+import RedditCookies from "../utils/RedditCookies";
 
 type CurrentUser = {
   data: {
@@ -51,6 +52,9 @@ export async function login(account: Account): Promise<void> {
   }).then((response) => response.json());
 
   if (res?.success !== true) {
+    console.log(await getCurrentUser());
+    console.log(account);
+    console.log(res);
     throw new IncorrectCredentials();
   }
 
@@ -80,5 +84,6 @@ export async function logout(): Promise<void> {
     redirect: "follow",
   });
 
+  await RedditCookies.clearSessionCookies();
   UserAuth.modhash = undefined;
 }

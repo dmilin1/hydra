@@ -106,7 +106,8 @@ export default function UserPage({ url }: UserPageProps) {
                         />
                       ),
                       text: "Posts",
-                      onPress: () => history.pushPath(`/u/${user.userName}/submitted`),
+                      onPress: () =>
+                        history.pushPath(`/u/${user.userName}/submitted`),
                     },
                     {
                       key: "comments",
@@ -118,59 +119,64 @@ export default function UserPage({ url }: UserPageProps) {
                         />
                       ),
                       text: "Comments",
-                      onPress: () => history.pushPath(`/u/${user.userName}/comments`),
+                      onPress: () =>
+                        history.pushPath(`/u/${user.userName}/comments`),
                     },
                     ...(user.isLoggedInUser
                       ? [
-                        {
-                          key: "upvoted",
-                          icon: (
-                            <Feather
-                              name="thumbs-up"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Upvoted",
-                          onPress: () => history.pushPath(`/u/${user.userName}/upvoted`),
-                        },
-                        {
-                          key: "downvoted",
-                          icon: (
-                            <Feather
-                              name="thumbs-down"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Downvoted",
-                          onPress: () => history.pushPath(`/u/${user.userName}/downvoted`),
-                        },
-                        {
-                          key: "hidden",
-                          icon: (
-                            <Feather
-                              name="eye-off"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Hidden",
-                          onPress: () => history.pushPath(`/u/${user.userName}/hidden`),
-                        },
-                        {
-                          key: "saved",
-                          icon: (
-                            <Feather
-                              name="bookmark"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Saved",
-                          onPress: () => history.pushPath(`/u/${user.userName}/saved`),
-                        },
-                      ]
+                          {
+                            key: "upvoted",
+                            icon: (
+                              <Feather
+                                name="thumbs-up"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Upvoted",
+                            onPress: () =>
+                              history.pushPath(`/u/${user.userName}/upvoted`),
+                          },
+                          {
+                            key: "downvoted",
+                            icon: (
+                              <Feather
+                                name="thumbs-down"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Downvoted",
+                            onPress: () =>
+                              history.pushPath(`/u/${user.userName}/downvoted`),
+                          },
+                          {
+                            key: "hidden",
+                            icon: (
+                              <Feather
+                                name="eye-off"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Hidden",
+                            onPress: () =>
+                              history.pushPath(`/u/${user.userName}/hidden`),
+                          },
+                          {
+                            key: "saved",
+                            icon: (
+                              <Feather
+                                name="bookmark"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Saved",
+                            onPress: () =>
+                              history.pushPath(`/u/${user.userName}/saved`),
+                          },
+                        ]
                       : []),
                   ]}
                 />

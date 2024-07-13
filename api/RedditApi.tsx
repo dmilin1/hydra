@@ -1,7 +1,7 @@
-import CookieManager from "@react-native-cookies/cookies";
 import { Alert } from "react-native";
 
 import { UserAuth } from "./Authentication";
+import RedditCookies from "../utils/RedditCookies";
 import RedditURL from "../utils/RedditURL";
 
 type ApiOptions = {
@@ -38,19 +38,11 @@ export async function api(
 
   /**
    * Reddit's session cookie doesn't set an expiration date meaning it expires
-   * when the session ends. We want sessions to persist between app closes,
+   * when the session ends. iOS automatically clears cookies without an expiration
+   * date on app launch. We want sessions to persist between app closes,
    * so we set an expiration date of 10,000 days in the future.
    */
-  const cookies = await CookieManager.get("https://www.reddit.com");
-  if (cookies?.reddit_session && !cookies?.reddit_session?.expires) {
-    const newCookies = {
-      ...cookies.reddit_session,
-      expires: new Date(
-        Date.now() + 1000 * 60 * 60 * 24 * 10_000,
-      ).toISOString(),
-    };
-    await CookieManager.set("https://www.reddit.com", newCookies);
-  }
+  await RedditCookies.persistSessionCookies();
 
   const json = await res.json();
   if (apiOptions.depaginate) {

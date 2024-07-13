@@ -137,9 +137,9 @@ export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
                   onFullscreenUpdate={(e) => {
                     setFullscreen(
                       e.fullscreenUpdate ===
-                      VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
-                      e.fullscreenUpdate ===
-                      VideoFullscreenUpdate.PLAYER_DID_PRESENT,
+                        VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
+                        e.fullscreenUpdate ===
+                          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
                     );
                     if (
                       e.fullscreenUpdate ===
