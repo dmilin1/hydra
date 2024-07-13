@@ -30,6 +30,7 @@ export default class RedditURL extends URL {
     } else if (
       url.startsWith("/r") ||
       url.startsWith("/u") ||
+      url.startsWith("/user") ||
       url.startsWith("/search")
     ) {
       this.url = `https://www.reddit.com${url}`;
@@ -42,6 +43,7 @@ export default class RedditURL extends URL {
       !this.url.startsWith("https://i.redd.it") &&
       !this.url.startsWith("https://v.redd.it")
     ) {
+      console.log(this.url)
       throw new Error("Not a reddit URL");
     }
   }

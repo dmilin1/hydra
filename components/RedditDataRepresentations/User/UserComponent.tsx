@@ -22,7 +22,7 @@ export default function UserComponent({ user }: { user: User }) {
           backgroundColor: theme.background,
         })}
         onPress={() => {
-          history.pushPath("/user/" + user.userName);
+          history.pushPath(`https://www.reddit.com/u/${user.userName}`);
         }}
       >
         <Text
