@@ -101,6 +101,14 @@ export default function PostDetails({ url }: PostDetailsProps) {
     }
   };
 
+  const deleteComment = (comment: Comment) => {
+    if (postDetail) {
+      const parent = getCommentFromPath(postDetail, comment.path.slice(0, -1));
+      parent.comments = parent.comments.filter((c) => c.id !== comment.id);
+      rerenderComment(comment);
+    }
+  };
+
   const rerenderComment = (comment: Comment | PostDetail) => {
     if (postDetail) {
       let currentComment: Comment | PostDetail = postDetail;
@@ -336,6 +344,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
                   postDetail={postDetail}
                   scrollChange={scrollChange}
                   changeComment={(comment: Comment) => changeComment(comment)}
+                  deleteComment={(comment: Comment) => deleteComment(comment)}
                 />
               ) : (
                 <View style={styles.noCommentsContainer}>

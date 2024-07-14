@@ -204,6 +204,11 @@ export default function UserPage({ url }: UserPageProps) {
                         ),
                       );
                     }}
+                    deleteComment={(comment) => {
+                      setUserContent(
+                        userContent.filter((c) => c.id !== comment.id),
+                      );
+                    }}
                   />
                 );
               }

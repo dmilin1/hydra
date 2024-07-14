@@ -223,6 +223,23 @@ export async function editUserContent(
   return response?.success ?? false;
 }
 
+export async function deleteUserContent(
+  userContent: Comment | PostDetail,
+): Promise<void> {
+  await api(
+    "https://www.reddit.com/api/del",
+    {
+      method: "POST",
+    },
+    {
+      requireAuth: true,
+      body: {
+        id: userContent.name,
+      },
+    },
+  );
+}
+
 export async function savePost(
   post: PostDetail,
   saved: boolean,

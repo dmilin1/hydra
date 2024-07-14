@@ -7,10 +7,12 @@ import {
   Text,
   TouchableOpacity,
   TouchableHighlight,
+  Alert,
 } from "react-native";
 
 import {
   Comment,
+  deleteUserContent,
   PostDetail,
   reloadComment,
   vote,
@@ -35,6 +37,7 @@ interface CommentProps {
   scrollChange?: (y: number) => void;
   displayInList?: boolean; // Changes render style for use in something like a list of user comments,
   changeComment: (comment: Comment) => void;
+  deleteComment: (comment: Comment) => void;
 }
 
 export function CommentComponent({
@@ -44,6 +47,7 @@ export function CommentComponent({
   scrollChange,
   displayInList,
   changeComment,
+  deleteComment,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryFunctionsContext);
@@ -93,20 +97,46 @@ export function CommentComponent({
     );
   };
 
+  const confirmDeleteComment = () => {
+    if (comment.type !== "comment") return;
+    Alert.alert(
+      "Delete Comment",
+      "Are you sure you want to delete this comment?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteUserContent(comment);
+              deleteComment(comment);
+            } catch (_) {
+              alert("Failed to delete comment");
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const showCommentOptions = () => {
     if (currentUser?.userName !== comment.author) {
       /**
        * Don't show options for comments that aren't the user's since the
-       * only option right now is to edit comments
+       * only options right now are for editing and deleting comments.
        */
       return;
     }
-    const options = ["Edit Comment", "Cancel"];
-    const cancelButtonIndex = options.length;
+    const options = ["Edit Comment", "Delete Comment", "Cancel"];
+    const cancelButtonIndex = options.length - 1;
     showActionSheetWithOptions(
       {
         options,
-        cancelButtonIndex: 1,
+        cancelButtonIndex,
       },
       (buttonIndex) => {
         if (buttonIndex === undefined || buttonIndex === cancelButtonIndex) {
@@ -114,6 +144,9 @@ export function CommentComponent({
         }
         if (options[buttonIndex] === "Edit Comment") {
           editComment();
+        }
+        if (options[buttonIndex] === "Delete Comment") {
+          confirmDeleteComment();
         }
       },
     );
@@ -292,6 +325,7 @@ export function CommentComponent({
                   index={childIndex}
                   scrollChange={scrollChange}
                   changeComment={changeComment}
+                  deleteComment={deleteComment}
                 />
               ))}
             {comment.loadMore && comment.loadMore.childIds.length > 0 && (
@@ -354,6 +388,7 @@ interface CommentsProps {
   postDetail: PostDetail;
   scrollChange: (y: number) => void;
   changeComment: (comment: Comment) => void;
+  deleteComment: (comment: Comment) => void;
 }
 
 export default function Comments({
@@ -361,6 +396,7 @@ export default function Comments({
   postDetail,
   scrollChange,
   changeComment,
+  deleteComment,
 }: CommentsProps) {
   const { theme } = useContext(ThemeContext);
 
@@ -384,6 +420,7 @@ export default function Comments({
           index={0}
           scrollChange={scrollChange}
           changeComment={changeComment}
+          deleteComment={deleteComment}
         />
       </Suspense>
     </View>
