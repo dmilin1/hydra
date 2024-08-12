@@ -14,7 +14,7 @@ export default function Subreddit() {
       <TextButton text={history.past.slice(-1)[0]?.name} />
       <SortAndContext
         sortOptions={["Hot", "New", "Top", "Rising"]}
-        contextOptions={["Share"]}
+        contextOptions={["New Post", "Share"]}
       />
     </>
   );

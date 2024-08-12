@@ -25,7 +25,7 @@ import {
   savePost,
 } from "../api/PostDetail";
 import { VoteOption } from "../api/Posts";
-import Reply from "../components/Modals/Reply";
+import ContentEditor from "../components/Modals/ContentEditor";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import PostMedia from "../components/RedditDataRepresentations/Post/PostParts/PostMedia";
 import Scroller from "../components/UI/Scroller";
@@ -318,9 +318,10 @@ export default function PostDetails({ url }: PostDetailsProps) {
                   style={styles.buttonsContainer}
                   onPress={() =>
                     setModal(
-                      <Reply
+                      <ContentEditor
+                        mode="makeComment"
                         parent={postDetail}
-                        replySent={async () => await loadPostDetails()}
+                        contentSent={async () => await loadPostDetails()}
                       />,
                     )
                   }

@@ -27,11 +27,11 @@ export type Comment = {
   renderCount: number;
   comments: Comment[];
   loadMore:
-    | undefined
-    | {
-        depth: number;
-        childIds: string[];
-      };
+  | undefined
+  | {
+    depth: number;
+    childIds: string[];
+  };
   after: string;
   createdAt: number;
   timeSince: string;
@@ -85,9 +85,9 @@ export function formatComments(
       renderCount,
       loadMore: loadMoreChild
         ? {
-            depth: loadMoreChild.data.depth,
-            childIds: loadMoreChild.data.children,
-          }
+          depth: loadMoreChild.data.depth,
+          childIds: loadMoreChild.data.children,
+        }
         : undefined,
       after: comment.data.name,
       createdAt: comment.data.created,
@@ -117,9 +117,9 @@ export async function getPostsDetail(url: string): Promise<PostDetail> {
     renderCount: 0,
     loadMore: loadMoreChild
       ? {
-          depth: loadMoreChild.data.depth,
-          childIds: loadMoreChild.data.children,
-        }
+        depth: loadMoreChild.data.depth,
+        childIds: loadMoreChild.data.children,
+      }
       : undefined,
   };
 }
@@ -181,6 +181,30 @@ export async function reloadComment(
     comment.renderCount + 1,
   )[0];
   return formattedComment;
+}
+
+export async function submitPost(
+  subreddit: string,
+  kind: 'self' | 'link',
+  title: string,
+  content: string,
+): Promise<boolean> {
+  const response = await api(
+    "https://www.reddit.com/api/submit",
+    {
+      method: "POST",
+    },
+    {
+      requireAuth: true,
+      body: {
+        sr: subreddit,
+        kind,
+        title,
+        [kind === 'link' ? 'url' : 'text']: content,
+      },
+    },
+  );
+  return response?.success ?? false;
 }
 
 export async function submitComment(

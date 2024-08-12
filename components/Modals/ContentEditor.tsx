@@ -1,5 +1,5 @@
 import { AntDesign, Entypo, FontAwesome } from "@expo/vector-icons";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -20,24 +20,29 @@ import {
   editUserContent,
   PostDetail,
   submitComment,
+  submitPost,
 } from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 
-type ReplyProps = {
-  replySent: () => void;
+type ContentEditorProps = {
+  contentSent: () => void;
 } & (
-  | {
-      parent: Comment | PostDetail;
-      edit?: undefined;
+    {
+      mode: 'makePost';
+      subreddit: string;
     }
-  | {
-      parent?: undefined;
+    | {
+      mode: 'makeComment';
+      parent: Comment | PostDetail;
+    }
+    | {
+      mode: 'editComment';
       edit: Comment;
     }
-);
+  );
 
 const getSelected = (
   text: string,
@@ -62,7 +67,13 @@ const replaceText = (
   );
 };
 
-export default function Reply({ parent, edit, replySent }: ReplyProps) {
+export default function ContentEditor(props: ContentEditorProps) {
+  const { subreddit, mode, parent, edit, contentSent } = {
+    subreddit: undefined,
+    parent: undefined,
+    edit: undefined,
+    ...props
+  };
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
@@ -71,32 +82,36 @@ export default function Reply({ parent, edit, replySent }: ReplyProps) {
     end: 0,
   });
 
-  const [text, setText] = React.useState(edit?.text ?? "");
-  const [viewMode, setViewMode] = React.useState<"parent" | "preview">(
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState(edit?.text ?? "");
+  const [viewMode, setViewMode] = useState<"parent" | "preview">(
     "parent",
   );
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [kind, setKind] = useState<"self" | "link">("self");
 
   const submit = async () => {
     setIsSubmitting(true);
     try {
       let success = false;
-      if (edit) {
+      if (mode === 'editComment') {
         success = await editUserContent(edit, text);
-      } else {
+      } else if (mode === 'makeComment') {
         success = await submitComment(parent, text);
+      } else if (mode === 'makePost') {
+        success = await submitPost(subreddit, kind, title, text);
       }
       if (success) {
         setTimeout(() => {
-          replySent();
+          contentSent();
           setModal(undefined);
         }, 5000);
       } else {
-        throw new Error("Failed to submit comment");
+        throw new Error(`Failed to submit ${mode.includes('Comment') ? "comment" : "post"}`);
       }
     } catch {
       setIsSubmitting(false);
-      Alert.alert(`Failed to ${edit ? "edit" : "post"} comment`);
+      Alert.alert(`Failed to ${mode.includes('edit') ? "edit" : "post"} ${mode.includes('Comment') ? "comment" : "post"}`);
     }
   };
 
@@ -132,7 +147,9 @@ export default function Reply({ parent, edit, replySent }: ReplyProps) {
                 color: theme.text,
               })}
             >
-              {edit ? "Edit Comment" : "New Comment"}
+              {mode === 'makeComment' && "New Comment"}
+              {mode === 'editComment' && "Edit Comment"}
+              {mode === 'makePost' && "New Post"}
             </Text>
             {isSubmitting ? (
               <ActivityIndicator size="small" color={theme.buttonText} />
@@ -143,17 +160,43 @@ export default function Reply({ parent, edit, replySent }: ReplyProps) {
                     color: theme.buttonText,
                   })}
                 >
-                  {edit ? "Edit" : "Post"}
+                  {mode.includes('edit') ? "Edit" : "Post"}
                 </Text>
               </TouchableOpacity>
             )}
           </View>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            {mode === "makePost" && (
+              <View style={t(styles.titleContainer, {
+                borderBottomColor: theme.divider,
+                backgroundColor: theme.tint,
+              })}>
+                <TextInput
+                  style={t(styles.titleInput, {
+                    color: theme.text,
+                  })}
+                  placeholder="Title"
+                  placeholderTextColor={theme.verySubtleText}
+                  value={title}
+                  onChangeText={setTitle}
+                />
+                <TouchableOpacity
+                  style={t(styles.postTypeBtn, {
+                    backgroundColor: theme.iconSecondary,
+                  })}
+                  onPress={() => setKind(kind === "self" ? "link" : "self")}
+                >
+                  <Text>
+                    {kind === "self" ? "Text Post" : "Link Post"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
             <TextInput
               style={t(styles.textInput, {
                 color: theme.text,
               })}
-              placeholder="Reply"
+              placeholder={mode.includes('Comment') ? "Reply" : "Content"}
               placeholderTextColor={theme.verySubtleText}
               multiline
               numberOfLines={4}
@@ -343,6 +386,25 @@ const styles = StyleSheet.create({
   },
   topBarButton: {
     fontSize: 18,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginHorizontal: 5,
+    marginVertical: 10,
+    borderRadius: 15,
+  },
+  titleInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+  },
+  postTypeBtn: {
+    marginRight: 10,
+    padding: 10,
+    borderRadius: 15,
   },
   textInput: {
     flex: 1,

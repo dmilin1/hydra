@@ -27,7 +27,7 @@ import {
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import { LoadMoreCommentsFunc } from "../../../../pages/PostDetails";
 import RenderHtml from "../../../HTML/RenderHTML";
-import Reply from "../../../Modals/Reply";
+import ContentEditor from "../../../Modals/ContentEditor";
 import Slideable from "../../../UI/Slideable";
 
 interface CommentProps {
@@ -74,9 +74,10 @@ export function CommentComponent({
 
   const replyToComment = () => {
     setModal(
-      <Reply
+      <ContentEditor
+        mode="makeComment"
         parent={comment}
-        replySent={async () => {
+        contentSent={async () => {
           const reloadedComment = await reloadComment(comment);
           changeComment?.(reloadedComment);
         }}
@@ -87,9 +88,10 @@ export function CommentComponent({
   const editComment = () => {
     if (comment.type !== "comment") return;
     setModal(
-      <Reply
+      <ContentEditor
+        mode="editComment"
         edit={comment}
-        replySent={async () => {
+        contentSent={async () => {
           const reloadedComment = await reloadComment(comment);
           changeComment?.(reloadedComment);
         }}
@@ -217,7 +219,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === 0 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                        (comment.depth - 1) % theme.postColorTint.length
+                      (comment.depth - 1) % theme.postColorTint.length
                       ],
                   },
                 )}
@@ -352,7 +354,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === -1 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                        comment.depth % theme.postColorTint.length
+                      comment.depth % theme.postColorTint.length
                       ],
                   })}
                 >

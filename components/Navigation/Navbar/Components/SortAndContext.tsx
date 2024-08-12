@@ -18,6 +18,8 @@ import {
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../../../../utils/RedditURL";
+import { ModalContext } from "../../../../contexts/ModalContext";
+import ContentEditor from "../../../Modals/ContentEditor";
 
 type SortTypes =
   | "Best"
@@ -29,7 +31,7 @@ type SortTypes =
   | "Old"
   | "Q&A";
 
-type ContextTypes = "Share";
+type ContextTypes = "Share" | "New Post";
 
 type SortAndContextProps = {
   sortOptions?: SortTypes[];
@@ -45,6 +47,7 @@ export default function SortAndContext({
     ...useContext(HistoryFunctionsContext),
   };
   const { theme } = useContext(ThemeContext);
+  const { setModal } = useContext(ModalContext);
 
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -201,6 +204,15 @@ export default function SortAndContext({
                   return;
                 if (contextOptions[buttonIndex] === "Share") {
                   Share.share({ url: new RedditURL(currentPath).toString() });
+                }
+                if (contextOptions[buttonIndex] === "New Post") {
+                  setModal(
+                    <ContentEditor
+                      subreddit={new RedditURL(currentPath).getSubreddit()}
+                      mode="makePost"
+                      contentSent={() => { }}
+                    />
+                  );
                 }
               },
             );
