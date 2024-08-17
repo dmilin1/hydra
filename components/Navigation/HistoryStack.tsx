@@ -31,7 +31,7 @@ function History() {
    * the correct one when the layer is active. The current implementation changes the
    * Animated.Value that a layer points to when rendering which is just asking for problems.
    */
-  touchX.resetAnimation();
+  touchX.setValue(gestureDirection.current === "forward" ? Dimensions.get("window").width : 0);
 
   return (
     <View
