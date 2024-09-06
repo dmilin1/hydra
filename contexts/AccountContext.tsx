@@ -32,10 +32,10 @@ const initialAccountContext: AccountContextType = {
   currentAcc: null,
   currentUser: null,
   accounts: [],
-  logIn: async () => {},
-  logOut: async () => {},
-  addUser: async () => {},
-  removeUser: async () => {},
+  logIn: async () => { },
+  logOut: async () => { },
+  addUser: async () => { },
+  removeUser: async () => { },
 };
 
 export const AccountContext = createContext(initialAccountContext);
@@ -54,7 +54,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       if (currentUser?.data?.name !== account.username) {
         await login(account);
       }
-      const user = await getUser("/u/me");
+      const user = await getUser("/user/me");
       await AsyncStorage.setItem("currentUser", account.username);
       setCurrentAcc(account);
       setCurrentUser(user);
