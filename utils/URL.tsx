@@ -1,3 +1,13 @@
+import { Parser } from "htmlparser2";
+
+export type OpenGraphData = {
+  title?: string;
+  type?: string;
+  image?: string;
+  url?: string;
+  description?: string;
+};
+
 export default class URL {
   url: string;
 
@@ -53,5 +63,24 @@ export default class URL {
     });
     this.url = this.url.split("?")[0] + "?" + urlParamsObject.toString();
     return this;
+  }
+
+  async getOpenGraphData(): Promise<OpenGraphData> {
+    const res = await fetch(this.url);
+    const html = await res.text();
+    const results: OpenGraphData = {};
+    const parser = new Parser(
+      {
+        onopentag(name, attribs) {
+          if (name === "meta" && attribs.property?.startsWith("og:")) {
+            const key = attribs.property.split("og:")[1] as keyof OpenGraphData;
+            results[key] = attribs.content;
+          }
+        },
+      },
+    );
+    parser.write(html);
+    parser.end();
+    return results;
   }
 }

@@ -32,7 +32,10 @@ export default function PostsPage({ url }: PostsPageProps) {
         backgroundColor: theme.background,
       })}
     >
-      <Scroller loadMore={loadMorePosts}>
+      <Scroller
+        loadMore={loadMorePosts}
+        maintainVisibleContentPosition={!!posts.length}
+      >
         {posts.map((post, index) => (
           <PostComponent key={index} initialPostState={post} />
         ))}
