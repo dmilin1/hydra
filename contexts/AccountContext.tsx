@@ -32,10 +32,10 @@ const initialAccountContext: AccountContextType = {
   currentAcc: null,
   currentUser: null,
   accounts: [],
-  logIn: async () => { },
-  logOut: async () => { },
-  addUser: async () => { },
-  removeUser: async () => { },
+  logIn: async () => {},
+  logOut: async () => {},
+  addUser: async () => {},
+  removeUser: async () => {},
 };
 
 export const AccountContext = createContext(initialAccountContext);

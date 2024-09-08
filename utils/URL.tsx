@@ -69,16 +69,14 @@ export default class URL {
     const res = await fetch(this.url);
     const html = await res.text();
     const results: OpenGraphData = {};
-    const parser = new Parser(
-      {
-        onopentag(name, attribs) {
-          if (name === "meta" && attribs.property?.startsWith("og:")) {
-            const key = attribs.property.split("og:")[1] as keyof OpenGraphData;
-            results[key] = attribs.content;
-          }
-        },
+    const parser = new Parser({
+      onopentag(name, attribs) {
+        if (name === "meta" && attribs.property?.startsWith("og:")) {
+          const key = attribs.property.split("og:")[1] as keyof OpenGraphData;
+          results[key] = attribs.content;
+        }
       },
-    );
+    });
     parser.write(html);
     parser.end();
     return results;

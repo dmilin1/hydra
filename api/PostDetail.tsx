@@ -27,11 +27,11 @@ export type Comment = {
   renderCount: number;
   comments: Comment[];
   loadMore:
-  | undefined
-  | {
-    depth: number;
-    childIds: string[];
-  };
+    | undefined
+    | {
+        depth: number;
+        childIds: string[];
+      };
   after: string;
   createdAt: number;
   timeSince: string;
@@ -85,9 +85,9 @@ export function formatComments(
       renderCount,
       loadMore: loadMoreChild
         ? {
-          depth: loadMoreChild.data.depth,
-          childIds: loadMoreChild.data.children,
-        }
+            depth: loadMoreChild.data.depth,
+            childIds: loadMoreChild.data.children,
+          }
         : undefined,
       after: comment.data.name,
       createdAt: comment.data.created,
@@ -117,9 +117,9 @@ export async function getPostsDetail(url: string): Promise<PostDetail> {
     renderCount: 0,
     loadMore: loadMoreChild
       ? {
-        depth: loadMoreChild.data.depth,
-        childIds: loadMoreChild.data.children,
-      }
+          depth: loadMoreChild.data.depth,
+          childIds: loadMoreChild.data.children,
+        }
       : undefined,
   };
 }
@@ -185,7 +185,7 @@ export async function reloadComment(
 
 export async function submitPost(
   subreddit: string,
-  kind: 'self' | 'link',
+  kind: "self" | "link",
   title: string,
   content: string,
 ): Promise<boolean> {
@@ -200,7 +200,7 @@ export async function submitPost(
         sr: subreddit,
         kind,
         title,
-        [kind === 'link' ? 'url' : 'text']: content,
+        [kind === "link" ? "url" : "text"]: content,
       },
     },
   );

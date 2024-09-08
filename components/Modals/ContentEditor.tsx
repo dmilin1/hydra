@@ -30,19 +30,19 @@ import RenderHtml from "../HTML/RenderHTML";
 type ContentEditorProps = {
   contentSent: () => void;
 } & (
-    {
-      mode: 'makePost';
+  | {
+      mode: "makePost";
       subreddit: string;
     }
-    | {
-      mode: 'makeComment';
+  | {
+      mode: "makeComment";
       parent: Comment | PostDetail;
     }
-    | {
-      mode: 'editComment';
+  | {
+      mode: "editComment";
       edit: Comment;
     }
-  );
+);
 
 const getSelected = (
   text: string,
@@ -72,7 +72,7 @@ export default function ContentEditor(props: ContentEditorProps) {
     subreddit: undefined,
     parent: undefined,
     edit: undefined,
-    ...props
+    ...props,
   };
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
@@ -84,9 +84,7 @@ export default function ContentEditor(props: ContentEditorProps) {
 
   const [title, setTitle] = useState("");
   const [text, setText] = useState(edit?.text ?? "");
-  const [viewMode, setViewMode] = useState<"parent" | "preview">(
-    "parent",
-  );
+  const [viewMode, setViewMode] = useState<"parent" | "preview">("parent");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [kind, setKind] = useState<"self" | "link">("self");
 
@@ -94,11 +92,11 @@ export default function ContentEditor(props: ContentEditorProps) {
     setIsSubmitting(true);
     try {
       let success = false;
-      if (mode === 'editComment') {
+      if (mode === "editComment") {
         success = await editUserContent(edit, text);
-      } else if (mode === 'makeComment') {
+      } else if (mode === "makeComment") {
         success = await submitComment(parent, text);
-      } else if (mode === 'makePost') {
+      } else if (mode === "makePost") {
         success = await submitPost(subreddit, kind, title, text);
       }
       if (success) {
@@ -107,11 +105,15 @@ export default function ContentEditor(props: ContentEditorProps) {
           setModal(undefined);
         }, 5000);
       } else {
-        throw new Error(`Failed to submit ${mode.includes('Comment') ? "comment" : "post"}`);
+        throw new Error(
+          `Failed to submit ${mode.includes("Comment") ? "comment" : "post"}`,
+        );
       }
     } catch {
       setIsSubmitting(false);
-      Alert.alert(`Failed to ${mode.includes('edit') ? "edit" : "post"} ${mode.includes('Comment') ? "comment" : "post"}`);
+      Alert.alert(
+        `Failed to ${mode.includes("edit") ? "edit" : "post"} ${mode.includes("Comment") ? "comment" : "post"}`,
+      );
     }
   };
 
@@ -147,9 +149,9 @@ export default function ContentEditor(props: ContentEditorProps) {
                 color: theme.text,
               })}
             >
-              {mode === 'makeComment' && "New Comment"}
-              {mode === 'editComment' && "Edit Comment"}
-              {mode === 'makePost' && "New Post"}
+              {mode === "makeComment" && "New Comment"}
+              {mode === "editComment" && "Edit Comment"}
+              {mode === "makePost" && "New Post"}
             </Text>
             {isSubmitting ? (
               <ActivityIndicator size="small" color={theme.buttonText} />
@@ -160,17 +162,19 @@ export default function ContentEditor(props: ContentEditorProps) {
                     color: theme.buttonText,
                   })}
                 >
-                  {mode.includes('edit') ? "Edit" : "Post"}
+                  {mode.includes("edit") ? "Edit" : "Post"}
                 </Text>
               </TouchableOpacity>
             )}
           </View>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             {mode === "makePost" && (
-              <View style={t(styles.titleContainer, {
-                borderBottomColor: theme.divider,
-                backgroundColor: theme.tint,
-              })}>
+              <View
+                style={t(styles.titleContainer, {
+                  borderBottomColor: theme.divider,
+                  backgroundColor: theme.tint,
+                })}
+              >
                 <TextInput
                   style={t(styles.titleInput, {
                     color: theme.text,
@@ -186,9 +190,7 @@ export default function ContentEditor(props: ContentEditorProps) {
                   })}
                   onPress={() => setKind(kind === "self" ? "link" : "self")}
                 >
-                  <Text>
-                    {kind === "self" ? "Text Post" : "Link Post"}
-                  </Text>
+                  <Text>{kind === "self" ? "Text Post" : "Link Post"}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -196,7 +198,7 @@ export default function ContentEditor(props: ContentEditorProps) {
               style={t(styles.textInput, {
                 color: theme.text,
               })}
-              placeholder={mode.includes('Comment') ? "Reply" : "Content"}
+              placeholder={mode.includes("Comment") ? "Reply" : "Content"}
               placeholderTextColor={theme.verySubtleText}
               multiline
               numberOfLines={4}

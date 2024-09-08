@@ -219,7 +219,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === 0 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                      (comment.depth - 1) % theme.postColorTint.length
+                        (comment.depth - 1) % theme.postColorTint.length
                       ],
                   },
                 )}
@@ -354,7 +354,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === -1 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                      comment.depth % theme.postColorTint.length
+                        comment.depth % theme.postColorTint.length
                       ],
                   })}
                 >

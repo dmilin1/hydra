@@ -1,13 +1,13 @@
 import * as WebBrowser from "expo-web-browser";
 import React, { useContext, useEffect, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import URL, { OpenGraphData } from "../../../../../utils/URL";
 
+import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
   ThemeContext,
   t,
 } from "../../../../../contexts/SettingsContexts/ThemeContext";
-import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
+import URL, { OpenGraphData } from "../../../../../utils/URL";
 
 export default function Link({ link }: { link: string }) {
   const { theme } = useContext(ThemeContext);
@@ -20,7 +20,9 @@ export default function Link({ link }: { link: string }) {
     setOpenGraphData(data);
   };
 
-  useEffect(() => { fetchOpenGraphData() }, []);
+  useEffect(() => {
+    fetchOpenGraphData();
+  }, []);
 
   return (
     <TouchableOpacity
@@ -34,13 +36,17 @@ export default function Link({ link }: { link: string }) {
         }
       }}
     >
-      {openGraphData?.image && openGraphData?.title && openGraphData?.description ? (
+      {openGraphData?.image &&
+      openGraphData?.title &&
+      openGraphData?.description ? (
         <>
-          {currentDataMode === 'normal' && <Image
-            source={{ uri: openGraphData.image }}
-            resizeMode="cover"
-            style={{ height: 200, borderRadius: 10 }}
-          />}
+          {currentDataMode === "normal" && (
+            <Image
+              source={{ uri: openGraphData.image }}
+              resizeMode="cover"
+              style={{ height: 200, borderRadius: 10 }}
+            />
+          )}
           <Text
             numberOfLines={1}
             style={t(styles.title, {
@@ -52,7 +58,8 @@ export default function Link({ link }: { link: string }) {
           <Text
             style={t(styles.descriptionText, {
               color: theme.subtleText,
-            })}>
+            })}
+          >
             {openGraphData.description}
           </Text>
           <Text
@@ -68,7 +75,7 @@ export default function Link({ link }: { link: string }) {
         <Text
           numberOfLines={1}
           style={t(styles.linkOnlyText, {
-            color: theme.text
+            color: theme.text,
           })}
         >
           {link}
@@ -100,5 +107,5 @@ const styles = StyleSheet.create({
   },
   linkOnlyText: {
     padding: 10,
-  }
+  },
 });

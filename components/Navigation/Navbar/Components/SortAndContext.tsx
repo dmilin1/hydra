@@ -13,12 +13,12 @@ import {
   HistoryContext,
   HistoryFunctionsContext,
 } from "../../../../contexts/HistoryContext";
+import { ModalContext } from "../../../../contexts/ModalContext";
 import {
   ThemeContext,
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../../../../utils/RedditURL";
-import { ModalContext } from "../../../../contexts/ModalContext";
 import ContentEditor from "../../../Modals/ContentEditor";
 
 type SortTypes =
@@ -210,8 +210,8 @@ export default function SortAndContext({
                     <ContentEditor
                       subreddit={new RedditURL(currentPath).getSubreddit()}
                       mode="makePost"
-                      contentSent={() => { }}
-                    />
+                      contentSent={() => {}}
+                    />,
                   );
                 }
               },
