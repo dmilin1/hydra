@@ -3,15 +3,20 @@ import React, { useContext } from "react";
 import { ColorValue, StyleSheet, Switch, Text } from "react-native";
 
 import List from "../../components/UI/List";
-import { HistoryFunctionsContext } from "../../contexts/HistoryContext";
 import { DataModeContext } from "../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 export default function DataUse() {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
   const { dataModeSettings, changeDataModeSetting } =
     useContext(DataModeContext);
+
+  const toggleSetting = (setting: keyof typeof dataModeSettings) => {
+    changeDataModeSetting(
+      setting,
+      dataModeSettings[setting] === "normal" ? "lowData" : "normal",
+    );
+  };
 
   return (
     <>
@@ -28,13 +33,11 @@ export default function DataUse() {
                   true: theme.iconPrimary as ColorValue,
                 }}
                 value={dataModeSettings.wifi === "lowData"}
-                onValueChange={(value) =>
-                  changeDataModeSetting("wifi", value ? "lowData" : "normal")
-                }
+                onValueChange={() => toggleSetting("wifi")}
               />
             ),
             text: "Use Low Data on Wi-Fi",
-            onPress: () => history.pushPath("hydra://settings/theme"),
+            onPress: () => toggleSetting("wifi"),
           },
           {
             key: "cellular",
@@ -46,16 +49,11 @@ export default function DataUse() {
                   true: theme.iconPrimary as ColorValue,
                 }}
                 value={dataModeSettings.cellular === "lowData"}
-                onValueChange={(value) =>
-                  changeDataModeSetting(
-                    "cellular",
-                    value ? "lowData" : "normal",
-                  )
-                }
+                onValueChange={() => toggleSetting("cellular")}
               />
             ),
             text: "Use Low Data on Cellular",
-            onPress: () => history.pushPath("hydra://accounts"),
+            onPress: () => toggleSetting("cellular"),
           },
         ]}
       />
