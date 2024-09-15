@@ -35,7 +35,11 @@ export default function PostMedia({
       )}
       {post.images.length > 0 && (
         <View style={styles.imgContainer}>
-          <ImageViewer images={post.images} thumbnail={post.imageThumbnail} />
+          <ImageViewer
+            images={post.images}
+            thumbnail={post.imageThumbnail}
+            resizeDynamically
+          />
         </View>
       )}
       {renderHTML
@@ -86,7 +90,6 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     marginVertical: 10,
-    height: 200,
   },
   videoContainer: {
     marginVertical: 10,

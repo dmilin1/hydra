@@ -1,6 +1,6 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { saveToLibraryAsync } from "expo-media-library";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Text,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   View,
   TouchableHighlight,
   Alert,
+  Dimensions,
 } from "react-native";
 
 import { default as ImageView } from "./ImageView/ImageViewing";
@@ -18,12 +19,17 @@ import {
 } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../../utils/URL";
 
+const DEVICE_HEIGHT = Dimensions.get("window").height;
+const DEVICE_WIDTH = Dimensions.get("window").width;
+
 export default function ImageViewer({
   images,
   thumbnail,
+  resizeDynamically,
 }: {
   images: string[];
   thumbnail?: string;
+  resizeDynamically?: boolean;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
   const { showActionSheetWithOptions } = useActionSheet();
@@ -31,10 +37,15 @@ export default function ImageViewer({
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
+  const [dimensions, setDimensions] = useState({ width: 300, height: 200 });
 
   const { theme } = useContext(ThemeContext);
 
   const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
+
+  const imgRatio = dimensions.width / dimensions.height;
+  const heightIfFullSize = DEVICE_WIDTH / imgRatio;
+  const imgHeight = Math.min(DEVICE_HEIGHT * 0.5, heightIfFullSize);
 
   const saveImage = async () => {
     const cancelButtonIndex = 1;
@@ -51,6 +62,21 @@ export default function ImageViewer({
       },
     );
   };
+
+  const getDimensions = async (uri: string) => {
+    Image.getSize(uri, (width, height) => {
+      setDimensions({ width, height });
+    });
+  };
+
+  useEffect(() => {
+    if (!resizeDynamically) {
+    } else if (loadLowData && thumbnail) {
+      getDimensions(thumbnail);
+    } else if (!loadLowData) {
+      getDimensions(images[0]);
+    }
+  }, []);
 
   return (
     <View style={styles.imageViewerContainer}>
@@ -78,7 +104,12 @@ export default function ImageViewer({
           onLongPress={saveImage}
         >
           <Image
-            style={styles.img}
+            style={[
+              styles.img,
+              {
+                height: images.length >= 2 ? imgHeight / 2 : imgHeight,
+              },
+            ]}
             resizeMode="contain"
             source={{
               uri: (isGif || loadLowData) && thumbnail ? thumbnail : image,
