@@ -72,7 +72,11 @@ const ImageItem = ({
 
       onZoom(scaled);
       setScaled(scaled);
-      scrollViewRef.current?.scrollTo({ x: 0, y: 0.5 });
+
+      if (!scaled) {
+        // Fixes a bug where the image would get stuck when trying to swipe to close
+        scrollViewRef.current?.scrollTo({ x: 0, y: 0.5 });
+      }
 
       if (
         !scaled &&
