@@ -2,6 +2,7 @@ module.exports = {
     root: true,
     extends: [
         'universe/native',
+        'prettier',
     ],
     rules: {
         // Ensures props and state inside functions are always up-to-date
@@ -11,13 +12,13 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': [
             'warn',
             {
-              'args': 'all',
-              'argsIgnorePattern': '^_',
-              'caughtErrors': 'all',
-              'caughtErrorsIgnorePattern': '^_',
-              'destructuredArrayIgnorePattern': '^_',
-              'varsIgnorePattern': '^_',
-              'ignoreRestSiblings': true
+                'args': 'all',
+                'argsIgnorePattern': '^_',
+                'caughtErrors': 'all',
+                'caughtErrorsIgnorePattern': '^_',
+                'destructuredArrayIgnorePattern': '^_',
+                'varsIgnorePattern': '^_',
+                'ignoreRestSiblings': true
             }
         ],
         "prettier/prettier": [
