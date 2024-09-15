@@ -8,7 +8,7 @@ const initialScrollerContext = {
 export const ScrollerContext = createContext(initialScrollerContext);
 
 export function ScrollerProvider({ children }: React.PropsWithChildren) {
-  const [scrollDisabled, setScrollDisabledForReal] = useState(
+  const [scrollDisabled, setScrollDisabled] = useState(
     initialScrollerContext.scrollDisabled,
   );
 
@@ -16,11 +16,7 @@ export function ScrollerProvider({ children }: React.PropsWithChildren) {
     <ScrollerContext.Provider
       value={{
         scrollDisabled,
-        setScrollDisabled: (newScrollDisabled) => {
-          if (newScrollDisabled !== scrollDisabled) {
-            setScrollDisabledForReal(newScrollDisabled);
-          }
-        },
+        setScrollDisabled,
       }}
     >
       {children}
