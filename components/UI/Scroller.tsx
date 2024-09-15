@@ -6,6 +6,8 @@ import {
   Text,
   View,
   VirtualizedList,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from "react-native";
 
 import {
@@ -92,20 +94,20 @@ function Scroller({
       maintainVisibleContentPosition={
         maintainVisibleContentPosition
           ? {
-              minIndexForVisible: 0,
-              autoscrollToTopThreshold: 0,
-            }
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 0,
+          }
           : undefined
       }
       scrollEventThrottle={100}
-      onScroll={(e) => {
+      onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
         const pageHeight = e.nativeEvent.contentSize.height;
         const windowHeight = e.nativeEvent.layoutMeasurement.height;
         const bottomOfWindow = e.nativeEvent.contentOffset.y + windowHeight;
         if (
           bottomOfWindow >=
-            pageHeight -
-              windowHeight * 1.5 /* 1.5 windows from bottom of page */ &&
+          pageHeight -
+          windowHeight * 1.5 /* 1.5 windows from bottom of page */ &&
           !isLoadingMore &&
           prevPageHeight !== pageHeight
         ) {
@@ -121,10 +123,10 @@ function Scroller({
       //     }
       // }}
       data={Array.isArray(children) ? [...children, null] : [children]}
-      renderItem={({ item }) => item as any}
-      getItem={(data, index) => data[index]}
-      getItemCount={(data) => data.length}
-      keyExtractor={(item, index) => {
+      renderItem={({ item }: { item: ReactNode }) => item}
+      getItem={(data: ReactNode[], index: number) => data[index]}
+      getItemCount={(data: ReactNode[]) => data.length}
+      keyExtractor={(item: ReactNode, index: number) => {
         if (item) {
           return JSON.stringify((item as any).props, (key, value) => {
             return key !== "children" ? value : undefined;

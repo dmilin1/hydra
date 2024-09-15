@@ -37,7 +37,7 @@ export default function PostsPage({ url }: PostsPageProps) {
         maintainVisibleContentPosition={!!posts.length}
       >
         {posts.map((post, index) => (
-          <PostComponent key={index} initialPostState={post} />
+          <PostComponent key={`${post.id}-${index}`} initialPostState={post} />
         ))}
       </Scroller>
     </View>

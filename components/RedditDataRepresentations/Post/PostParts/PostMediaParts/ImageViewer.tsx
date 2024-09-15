@@ -9,7 +9,7 @@ import {
   TouchableHighlight,
   Alert,
 } from "react-native";
-import { default as ImageView } from "react-native-image-viewing";
+import { default as ImageView } from "./ImageView/ImageViewing";
 
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
@@ -59,14 +59,16 @@ export default function ImageViewer({
           images={images.map((image) => ({ uri: image }))}
           imageIndex={imageIndex}
           presentationStyle="fullScreen"
+          animationType="none"
           visible={visible}
           onRequestClose={() => setVisible(false)}
           onLongPress={saveImage}
+          delayLongPress={500}
         />
       )}
       {images.slice(0, loadLowData ? 1 : 2).map((image, index) => (
         <TouchableHighlight
-          key={index}
+          key={`${image}-${index}`}
           onPress={() => {
             setLoadLowData(false);
             setImageIndex(index);

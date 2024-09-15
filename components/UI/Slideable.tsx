@@ -62,18 +62,19 @@ export default function Slideable({
         touchStart.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
         return false;
       }}
+      onResponderGrant={() => setScrollDisabled(true)}
+      onResponderReject={() => setScrollDisabled(false)}
       onMoveShouldSetResponder={(e) => {
         if (
           touchStart.current &&
           Math.abs(e.nativeEvent.pageX - touchStart.current?.x) >
-            (xScrollToEngage ?? 20) &&
+          (xScrollToEngage ?? 20) &&
           Math.abs(e.nativeEvent.pageY - touchStart.current?.y) < 10
         ) {
           touchStart.current = {
             x: e.nativeEvent.pageX,
             y: e.nativeEvent.pageY,
           };
-          setScrollDisabled(true);
           return true;
         }
         return false;
