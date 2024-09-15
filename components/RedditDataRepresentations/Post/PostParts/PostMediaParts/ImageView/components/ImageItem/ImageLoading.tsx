@@ -1,5 +1,4 @@
 import React from "react";
-
 import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
 
 const SCREEN = Dimensions.get("screen");

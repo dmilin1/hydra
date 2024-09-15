@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Image, ImageURISource } from "react-native";
 
-import { createCache } from "../utils";
 import { Dimensions, ImageSource } from "../@types";
+import { createCache } from "../utils";
 
 const CACHE_SIZE = 50;
 const imageDimensionsCache = createCache(CACHE_SIZE);
@@ -48,7 +48,7 @@ const useImageDimensions = (image: ImageSource): Dimensions | null => {
             },
             () => {
               resolve({ width: 0, height: 0 });
-            }
+            },
           );
         }
       } else {

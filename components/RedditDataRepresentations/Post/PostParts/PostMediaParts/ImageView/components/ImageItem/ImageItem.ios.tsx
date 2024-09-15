@@ -1,5 +1,4 @@
 import React, { useCallback, useRef, useState } from "react";
-
 import {
   Animated,
   Dimensions,
@@ -9,16 +8,14 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   TouchableWithoutFeedback,
-  GestureResponderEvent,
   Image,
 } from "react-native";
 
+import { ImageLoading } from "./ImageLoading";
+import { ImageSource } from "../../@types";
 import useDoubleTapToZoom from "../../hooks/useDoubleTapToZoom";
 import useImageDimensions from "../../hooks/useImageDimensions";
-
 import { getImageStyles, getImageTransform } from "../../utils";
-import { ImageSource } from "../../@types";
-import { ImageLoading } from "./ImageLoading";
 
 const SWIPE_CLOSE_OFFSET = 75;
 const SWIPE_CLOSE_VELOCITY = 1.55;
@@ -64,7 +61,7 @@ const ImageItem = ({
   const imagesStyles = getImageStyles(
     imageDimensions,
     translateValue,
-    scaleValue
+    scaleValue,
   );
   const imageStylesWithOpacity = { ...imagesStyles, opacity: imageOpacity };
 
@@ -85,7 +82,7 @@ const ImageItem = ({
         onRequestClose();
       }
     },
-    [scaled]
+    [scaled],
   );
 
   const onScroll = ({
@@ -100,12 +97,9 @@ const ImageItem = ({
     scrollValueY.setValue(offsetY);
   };
 
-  const onLongPressHandler = useCallback(
-    (event: GestureResponderEvent) => {
-      onLongPress(imageSrc);
-    },
-    [imageSrc, onLongPress]
-  );
+  const onLongPressHandler = useCallback(() => {
+    onLongPress(imageSrc);
+  }, [imageSrc, onLongPress]);
 
   return (
     <View>

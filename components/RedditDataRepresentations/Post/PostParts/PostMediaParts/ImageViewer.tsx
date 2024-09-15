@@ -9,8 +9,8 @@ import {
   TouchableHighlight,
   Alert,
 } from "react-native";
-import { default as ImageView } from "./ImageView/ImageViewing";
 
+import { default as ImageView } from "./ImageView/ImageViewing";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
   ThemeContext,

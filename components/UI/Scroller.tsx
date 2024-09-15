@@ -94,9 +94,9 @@ function Scroller({
       maintainVisibleContentPosition={
         maintainVisibleContentPosition
           ? {
-            minIndexForVisible: 0,
-            autoscrollToTopThreshold: 0,
-          }
+              minIndexForVisible: 0,
+              autoscrollToTopThreshold: 0,
+            }
           : undefined
       }
       scrollEventThrottle={100}
@@ -106,8 +106,8 @@ function Scroller({
         const bottomOfWindow = e.nativeEvent.contentOffset.y + windowHeight;
         if (
           bottomOfWindow >=
-          pageHeight -
-          windowHeight * 1.5 /* 1.5 windows from bottom of page */ &&
+            pageHeight -
+              windowHeight * 1.5 /* 1.5 windows from bottom of page */ &&
           !isLoadingMore &&
           prevPageHeight !== pageHeight
         ) {

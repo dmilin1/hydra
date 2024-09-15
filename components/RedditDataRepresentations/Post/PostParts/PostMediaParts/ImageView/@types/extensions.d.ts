@@ -1,4 +1,4 @@
-import * as rn from "react-native";
+import * as _rn from "react-native";
 
 declare module "react-native" {
   class VirtualizedList<ItemT> extends React.Component<

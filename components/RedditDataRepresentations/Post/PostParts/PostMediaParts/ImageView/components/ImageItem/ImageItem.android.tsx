@@ -1,5 +1,4 @@
 import React, { useCallback, useRef, useState } from "react";
-
 import {
   Animated,
   ScrollView,
@@ -10,12 +9,11 @@ import {
   NativeMethodsMixin,
 } from "react-native";
 
+import { ImageLoading } from "./ImageLoading";
+import { ImageSource } from "../../@types";
 import useImageDimensions from "../../hooks/useImageDimensions";
 import usePanResponder from "../../hooks/usePanResponder";
-
 import { getImageStyles, getImageTransform } from "../../utils";
-import { ImageSource } from "../../@types";
-import { ImageLoading } from "./ImageLoading";
 
 const SWIPE_CLOSE_OFFSET = 75;
 const SWIPE_CLOSE_VELOCITY = 1.75;
@@ -58,7 +56,7 @@ const ImageItem = ({
         });
       }
     },
-    [imageContainer]
+    [imageContainer],
   );
 
   const onLongPressHandler = useCallback(() => {
@@ -77,7 +75,7 @@ const ImageItem = ({
   const imagesStyles = getImageStyles(
     imageDimensions,
     translateValue,
-    scaleValue
+    scaleValue,
   );
   const imageOpacity = scrollValueY.interpolate({
     inputRange: [-SWIPE_CLOSE_OFFSET, 0, SWIPE_CLOSE_OFFSET],

@@ -9,14 +9,13 @@ import {
   Modal,
 } from "react-native";
 
-import ImageItem from "./components/ImageItem/ImageItem";
+import { ImageSource } from "./@types";
 import ImageDefaultHeader from "./components/ImageDefaultHeader";
+import ImageItem from "./components/ImageItem/ImageItem";
 import StatusBarManager from "./components/StatusBarManager";
-
 import useAnimatedComponents from "./hooks/useAnimatedComponents";
 import useImageIndexChange from "./hooks/useImageIndexChange";
 import useRequestClose from "./hooks/useRequestClose";
-import { ImageSource } from "./@types";
 
 type Props = {
   images: ImageSource[];
@@ -48,7 +47,7 @@ function ImageViewing({
   imageIndex,
   visible,
   onRequestClose,
-  onLongPress = () => { },
+  onLongPress = () => {},
   onImageIndexChange,
   animationType = DEFAULT_ANIMATION_TYPE,
   backgroundColor = DEFAULT_BG_COLOR,
@@ -77,7 +76,7 @@ function ImageViewing({
       imageList?.current?.setNativeProps({ scrollEnabled: !isScaled });
       toggleBarsVisible(!isScaled);
     },
-    [imageList]
+    [imageList],
   );
 
   if (!visible) {
@@ -104,7 +103,9 @@ function ImageViewing({
       >
         <StatusBarManager presentationStyle={presentationStyle} />
         <View style={[styles.container, { opacity, backgroundColor }]}>
-          <Animated.View style={[styles.header, { transform: headerTransform }]}>
+          <Animated.View
+            style={[styles.header, { transform: headerTransform }]}
+          >
             {typeof HeaderComponent !== "undefined" ? (
               React.createElement(HeaderComponent, {
                 imageIndex: currentImageIndex,
