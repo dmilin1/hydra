@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -82,6 +83,7 @@ function Scroller({
           tintColor={theme.text}
           refreshing={refreshing}
           onRefresh={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             setRefreshing(true);
             if (loadMore) {
               loadMoreData(true);
