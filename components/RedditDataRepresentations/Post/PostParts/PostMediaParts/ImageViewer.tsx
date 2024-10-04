@@ -84,7 +84,7 @@ export default function ImageViewer({
         <ImageView
           images={images.map((image) => ({ uri: image }))}
           imageIndex={imageIndex}
-          presentationStyle="fullScreen"
+          presentationStyle="overFullScreen"
           animationType="none"
           visible={visible}
           onRequestClose={() => setVisible(false)}

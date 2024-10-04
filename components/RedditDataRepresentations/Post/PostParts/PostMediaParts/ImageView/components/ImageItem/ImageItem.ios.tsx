@@ -4,7 +4,6 @@ import {
   Dimensions,
   ScrollView,
   StyleSheet,
-  View,
   NativeScrollEvent,
   NativeSyntheticEvent,
   TouchableWithoutFeedback,
@@ -55,15 +54,32 @@ const ImageItem = ({
   const maxScale = scale && scale > 0 ? Math.max(1 / scale, 1) : 1;
 
   const imageOpacity = scrollValueY.interpolate({
-    inputRange: [-SWIPE_CLOSE_OFFSET, 0, SWIPE_CLOSE_OFFSET],
-    outputRange: [0.5, 1, 0.5],
+    inputRange: [
+      -SWIPE_CLOSE_OFFSET,
+      -SWIPE_CLOSE_OFFSET / 2,
+      0,
+      SWIPE_CLOSE_OFFSET / 2,
+      SWIPE_CLOSE_OFFSET,
+    ],
+    outputRange: [0.85, 1, 1, 1, 0.85],
   });
+
+  const imgClosingScale = scrollValueY.interpolate({
+    inputRange: [
+      -SWIPE_CLOSE_OFFSET * 2,
+      -SWIPE_CLOSE_OFFSET,
+      0,
+      SWIPE_CLOSE_OFFSET,
+      SWIPE_CLOSE_OFFSET * 2,
+    ],
+    outputRange: [0.75, 1, 1, 1, 0.75],
+  });
+
   const imagesStyles = getImageStyles(
     imageDimensions,
     translateValue,
-    scaleValue,
+    Animated.multiply(scaleValue, imgClosingScale) as Animated.Value,
   );
-  const imageStylesWithOpacity = { ...imagesStyles, opacity: imageOpacity };
 
   const onScrollEndDrag = useCallback(
     ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -81,7 +97,8 @@ const ImageItem = ({
       if (
         !scaled &&
         swipeToCloseEnabled &&
-        Math.abs(velocityY) > SWIPE_CLOSE_VELOCITY
+        (Math.abs(velocityY) > SWIPE_CLOSE_VELOCITY ||
+          Math.abs(nativeEvent?.contentOffset.y) > SWIPE_CLOSE_OFFSET)
       ) {
         onRequestClose();
       }
@@ -106,7 +123,12 @@ const ImageItem = ({
   }, [imageSrc, onLongPress]);
 
   return (
-    <View>
+    <Animated.View
+      style={{
+        opacity: imageOpacity,
+        backgroundColor: "black",
+      }}
+    >
       <ScrollView
         ref={scrollViewRef}
         style={styles.listItem}
@@ -129,7 +151,7 @@ const ImageItem = ({
           onLongPress={onLongPressHandler}
           delayLongPress={delayLongPress}
         >
-          <Animated.View style={imageStylesWithOpacity}>
+          <Animated.View style={imagesStyles}>
             <Image
               source={imageSrc}
               style={{ width: "100%", height: "100%" }}
@@ -138,7 +160,7 @@ const ImageItem = ({
           </Animated.View>
         </TouchableWithoutFeedback>
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 };
 

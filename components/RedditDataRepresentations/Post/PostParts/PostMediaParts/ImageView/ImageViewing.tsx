@@ -36,7 +36,6 @@ type Props = {
 };
 
 const DEFAULT_ANIMATION_TYPE = "fade";
-const DEFAULT_BG_COLOR = "#000";
 const DEFAULT_DELAY_LONG_PRESS = 800;
 const SCREEN = Dimensions.get("screen");
 const SCREEN_WIDTH = SCREEN.width;
@@ -50,7 +49,6 @@ function ImageViewing({
   onLongPress = () => {},
   onImageIndexChange,
   animationType = DEFAULT_ANIMATION_TYPE,
-  backgroundColor = DEFAULT_BG_COLOR,
   presentationStyle,
   swipeToCloseEnabled,
   doubleTapToZoomEnabled,
@@ -59,7 +57,7 @@ function ImageViewing({
   FooterComponent,
 }: Props) {
   const imageList = useRef<VirtualizedList<ImageSource>>(null);
-  const [opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
+  const [_opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
   const [currentImageIndex, onScroll] = useImageIndexChange(imageIndex, SCREEN);
   const [headerTransform, footerTransform, toggleBarsVisible] =
     useAnimatedComponents();
@@ -102,7 +100,7 @@ function ImageViewing({
         hardwareAccelerated
       >
         <StatusBarManager presentationStyle={presentationStyle} />
-        <View style={[styles.container, { opacity, backgroundColor }]}>
+        <View style={styles.container}>
           <Animated.View
             style={[styles.header, { transform: headerTransform }]}
           >
@@ -171,7 +169,7 @@ function ImageViewing({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "rgba(0, 0, 0, 0)",
   },
   header: {
     position: "absolute",
