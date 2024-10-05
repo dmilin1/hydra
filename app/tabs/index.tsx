@@ -8,7 +8,6 @@ import {
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SplashScreen } from "expo-router";
 import React, { useContext, useEffect } from "react";
-import { Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Account from "./account";
@@ -31,17 +30,6 @@ export default function Tabs() {
     backgroundColor: theme.background,
     borderTopWidth: 0,
   };
-
-  const makeTabBarLabel = (label: string, focused: boolean) => (
-    <Text
-      style={{
-        color: focused ? theme.buttonText : theme.subtleText,
-        fontSize: 10,
-      }}
-    >
-      {label}
-    </Text>
-  );
 
   useEffect(() => {
     if (loginInitialized) {
@@ -72,7 +60,9 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarLabel: ({ focused }) => makeTabBarLabel("Posts", focused),
+              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarLabel: "Posts",
             }}
             component={Posts}
           />
@@ -89,7 +79,9 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarLabel: ({ focused }) => makeTabBarLabel("Inbox", focused),
+              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarLabel: "Inbox",
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
               unmountOnBlur: true,
             }}
@@ -108,8 +100,9 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarLabel: ({ focused }) =>
-                makeTabBarLabel(currentUser?.userName ?? "Account", focused),
+              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarLabel: currentUser?.userName ?? "Account",
             }}
             component={Account}
           />
@@ -126,7 +119,9 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarLabel: ({ focused }) => makeTabBarLabel("Search", focused),
+              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarLabel: "Search",
             }}
             component={Search}
           />
@@ -143,8 +138,9 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarLabel: ({ focused }) =>
-                makeTabBarLabel("Settings", focused),
+              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarLabel: "Settings",
             }}
             component={Settings}
           />
