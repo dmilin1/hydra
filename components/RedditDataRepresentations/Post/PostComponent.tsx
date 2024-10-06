@@ -2,10 +2,12 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
+import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
 import { vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
 import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
+import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import {
   ThemeContext,
   t,
@@ -21,6 +23,7 @@ export default function PostComponent({
 }: PostComponentProps) {
   const history = useContext(HistoryFunctionsContext);
   const { theme } = useContext(ThemeContext);
+  const { compactMode } = useContext(PostSettingsContext);
 
   const [post, setPost] = useState(initialPostState);
 
@@ -59,109 +62,128 @@ export default function PostComponent({
         activeOpacity={0.8}
         style={t(styles.postContainer, {
           backgroundColor: theme.background,
+          flexDirection: compactMode ? "row" : "column",
         })}
         onPress={() => {
           history.pushPath(post.link);
         }}
       >
-        <Text
-          numberOfLines={2}
-          style={t(styles.postTitle, {
-            color: theme.text,
-          })}
-        >
-          {post.title}
-        </Text>
-        <View style={styles.postBody}>
-          <PostMedia post={post} maxLines={3} renderHTML={false} />
-        </View>
-        <View style={styles.postFooter}>
-          <View style={styles.footerLeft}>
-            <View style={styles.subAndAuthorContainer}>
-              <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
-              >
-                in{" "}
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={() =>
-                  history.pushPath(`https://www.reddit.com/r/${post.subreddit}`)
-                }
-              >
-                <Text
-                  style={t(styles.boldedSmallText, {
-                    color: theme.subtleText,
-                  })}
-                >
-                  {post.subreddit}
-                </Text>
-              </TouchableOpacity>
-              <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
-              >
-                {" "}
-                by{" "}
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() =>
-                  history.pushPath(`https://www.reddit.com/user/${post.author}`)
-                }
-              >
-                <Text
-                  style={t(styles.boldedSmallText, {
-                    color: theme.subtleText,
-                  })}
-                >
-                  {post.author}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.metadataContainer}>
-              <Feather
-                name={
-                  post.userVote === VoteOption.DownVote
-                    ? "arrow-down"
-                    : "arrow-up"
-                }
-                size={18}
-                color={currentVoteColor}
-              />
-              <Text
-                style={t(styles.metadataText, {
-                  color: currentVoteColor,
-                })}
-              >
-                {post.upvotes}
-              </Text>
-              <Feather
-                name="message-square"
-                size={18}
-                color={theme.subtleText}
-              />
-              <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
-              >
-                {post.commentCount}
-              </Text>
-              <Feather name="clock" size={18} color={theme.subtleText} />
-              <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
-              >
-                {post.timeSince}
-              </Text>
-            </View>
+        {compactMode && (
+          <View style={styles.compactMediaContainer}>
+            <CompactPostMedia post={post} />
           </View>
-          <View style={styles.footerRight} />
+        )}
+        <View style={styles.bodyContainer}>
+          <Text
+            numberOfLines={2}
+            style={t(styles.postTitle, {
+              fontSize: compactMode ? 16 : 17,
+              color: theme.text,
+            })}
+          >
+            {post.title.trim()}
+          </Text>
+          <View
+            style={t(styles.postBody, {
+              marginVertical: compactMode ? 3 : 5,
+            })}
+          >
+            {!compactMode && (
+              <PostMedia post={post} maxLines={3} renderHTML={false} />
+            )}
+          </View>
+          <View style={styles.postFooter}>
+            <View style={styles.footerLeft}>
+              <View style={styles.subAndAuthorContainer}>
+                <Text
+                  style={t(styles.smallText, {
+                    color: theme.subtleText,
+                  })}
+                >
+                  in{" "}
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() =>
+                    history.pushPath(
+                      `https://www.reddit.com/r/${post.subreddit}`,
+                    )
+                  }
+                >
+                  <Text
+                    style={t(styles.boldedSmallText, {
+                      color: theme.subtleText,
+                    })}
+                  >
+                    {post.subreddit}
+                  </Text>
+                </TouchableOpacity>
+                <Text
+                  style={t(styles.smallText, {
+                    color: theme.subtleText,
+                  })}
+                >
+                  {" "}
+                  by{" "}
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() =>
+                    history.pushPath(
+                      `https://www.reddit.com/user/${post.author}`,
+                    )
+                  }
+                >
+                  <Text
+                    style={t(styles.boldedSmallText, {
+                      color: theme.subtleText,
+                    })}
+                  >
+                    {post.author}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.metadataContainer}>
+                <Feather
+                  name={
+                    post.userVote === VoteOption.DownVote
+                      ? "arrow-down"
+                      : "arrow-up"
+                  }
+                  size={18}
+                  color={currentVoteColor}
+                />
+                <Text
+                  style={t(styles.metadataText, {
+                    color: currentVoteColor,
+                  })}
+                >
+                  {post.upvotes}
+                </Text>
+                <Feather
+                  name="message-square"
+                  size={18}
+                  color={theme.subtleText}
+                />
+                <Text
+                  style={t(styles.metadataText, {
+                    color: theme.subtleText,
+                  })}
+                >
+                  {post.commentCount}
+                </Text>
+                <Feather name="clock" size={18} color={theme.subtleText} />
+                <Text
+                  style={t(styles.metadataText, {
+                    color: theme.subtleText,
+                  })}
+                >
+                  {post.timeSince}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.footerRight} />
+          </View>
         </View>
       </TouchableOpacity>
       <View
@@ -178,13 +200,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
   },
+  compactMediaContainer: {
+    marginLeft: 10,
+  },
+  bodyContainer: {
+    flex: 1,
+  },
   postTitle: {
-    fontSize: 17,
     paddingHorizontal: 10,
   },
   postBody: {
     flex: 1,
-    marginVertical: 5,
   },
   postFooter: {
     marginHorizontal: 10,

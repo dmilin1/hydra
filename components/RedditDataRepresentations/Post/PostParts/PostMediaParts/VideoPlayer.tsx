@@ -27,9 +27,16 @@ import {
 type VideoPlayerProps = {
   source: string;
   thumbnail: string;
+  straightToFullscreen?: boolean;
+  exitedFullScreenCallback?: () => void;
 };
 
-export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
+export default function VideoPlayer({
+  source,
+  thumbnail,
+  straightToFullscreen,
+  exitedFullScreenCallback,
+}: VideoPlayerProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
 
@@ -68,6 +75,9 @@ export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
 
   useEffect(() => {
     loadAudio();
+    return () => {
+      audio.current?.sound.unloadAsync();
+    };
   }, []);
 
   return (
@@ -134,13 +144,21 @@ export default function VideoPlayer({ source, thumbnail }: VideoPlayerProps) {
                   shouldPlay
                   useNativeControls={fullscreen}
                   volume={fullscreen ? 1 : 0}
+                  onLoad={() => {
+                    if (straightToFullscreen) {
+                      video.current?.presentFullscreenPlayer();
+                    }
+                  }}
                   onFullscreenUpdate={(e) => {
-                    setFullscreen(
+                    const newFullscreen =
                       e.fullscreenUpdate ===
                         VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
-                        e.fullscreenUpdate ===
-                          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
-                    );
+                      e.fullscreenUpdate ===
+                        VideoFullscreenUpdate.PLAYER_DID_PRESENT;
+                    setFullscreen(newFullscreen);
+                    if (!newFullscreen) {
+                      exitedFullScreenCallback?.();
+                    }
                     if (
                       e.fullscreenUpdate ===
                       VideoFullscreenUpdate.PLAYER_DID_PRESENT

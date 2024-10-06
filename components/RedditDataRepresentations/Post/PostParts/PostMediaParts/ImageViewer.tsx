@@ -1,5 +1,3 @@
-import { useActionSheet } from "@expo/react-native-action-sheet";
-import { saveToLibraryAsync } from "expo-media-library";
 import React, { useState, useContext, useEffect } from "react";
 import {
   Text,
@@ -7,7 +5,6 @@ import {
   Image,
   View,
   TouchableHighlight,
-  Alert,
   Dimensions,
 } from "react-native";
 
@@ -17,6 +14,7 @@ import {
   ThemeContext,
   t,
 } from "../../../../../contexts/SettingsContexts/ThemeContext";
+import MediaLibrary from "../../../../../utils/MediaLibrary";
 import URL from "../../../../../utils/URL";
 
 const DEVICE_HEIGHT = Dimensions.get("window").height;
@@ -32,7 +30,7 @@ export default function ImageViewer({
   resizeDynamically?: boolean;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
-  const { showActionSheetWithOptions } = useActionSheet();
+  const saveImage = MediaLibrary.useSaveImage();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
@@ -46,22 +44,6 @@ export default function ImageViewer({
   const imgRatio = dimensions.width / dimensions.height;
   const heightIfFullSize = DEVICE_WIDTH / imgRatio;
   const imgHeight = Math.min(DEVICE_HEIGHT * 0.5, heightIfFullSize);
-
-  const saveImage = async () => {
-    const cancelButtonIndex = 1;
-    showActionSheetWithOptions(
-      {
-        options: ["Save Image", "Cancel"],
-        cancelButtonIndex,
-      },
-      async (buttonIndex) => {
-        if (buttonIndex === undefined || buttonIndex === cancelButtonIndex)
-          return;
-        await saveToLibraryAsync(images[imageIndex]);
-        Alert.alert("Image saved to library");
-      },
-    );
-  };
 
   const getDimensions = async (uri: string) => {
     Image.getSize(uri, (width, height) => {
@@ -83,12 +65,13 @@ export default function ImageViewer({
       {!loadLowData && (
         <ImageView
           images={images.map((image) => ({ uri: image }))}
-          imageIndex={imageIndex}
+          imageIndex={0}
           presentationStyle="overFullScreen"
           animationType="none"
           visible={visible}
           onRequestClose={() => setVisible(false)}
-          onLongPress={saveImage}
+          onLongPress={() => saveImage(images[imageIndex])}
+          onImageIndexChange={(index) => setImageIndex(index)}
           delayLongPress={500}
         />
       )}
@@ -101,7 +84,7 @@ export default function ImageViewer({
             setVisible(true);
           }}
           style={styles.touchableZone}
-          onLongPress={saveImage}
+          onLongPress={() => saveImage(images[imageIndex])}
         >
           <Image
             style={[
