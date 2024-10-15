@@ -23,7 +23,7 @@ export default function PostComponent({
 }: PostComponentProps) {
   const history = useContext(HistoryFunctionsContext);
   const { theme } = useContext(ThemeContext);
-  const { compactMode } = useContext(PostSettingsContext);
+  const { compactMode, subredditAtTop } = useContext(PostSettingsContext);
 
   const [post, setPost] = useState(initialPostState);
 
@@ -74,6 +74,24 @@ export default function PostComponent({
           </View>
         )}
         <View style={styles.bodyContainer}>
+          {subredditAtTop && (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() =>
+                history.pushPath(
+                  `https://www.reddit.com/r/${post.subreddit}`,
+                )
+              }
+            >
+              <Text
+                style={t(styles.subredditAtTopText, {
+                  color: theme.subtleText,
+                })}
+              >
+                {post.subreddit}
+              </Text>
+            </TouchableOpacity>
+          )}
           <Text
             numberOfLines={2}
             style={t(styles.postTitle, {
@@ -95,35 +113,39 @@ export default function PostComponent({
           <View style={styles.postFooter}>
             <View style={styles.footerLeft}>
               <View style={styles.subAndAuthorContainer}>
+                {!subredditAtTop && (
+                  <>
+                    <Text
+                      style={t(styles.smallText, {
+                        color: theme.subtleText,
+                      })}
+                    >
+                      in{" "}
+                    </Text>
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      onPress={() =>
+                        history.pushPath(
+                          `https://www.reddit.com/r/${post.subreddit}`,
+                        )
+                      }
+                    >
+                      <Text
+                        style={t(styles.boldedSmallText, {
+                          color: theme.subtleText,
+                        })}
+                      >
+                        {post.subreddit}
+                        {" "}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
                 <Text
                   style={t(styles.smallText, {
                     color: theme.subtleText,
                   })}
                 >
-                  in{" "}
-                </Text>
-                <TouchableOpacity
-                  activeOpacity={0.5}
-                  onPress={() =>
-                    history.pushPath(
-                      `https://www.reddit.com/r/${post.subreddit}`,
-                    )
-                  }
-                >
-                  <Text
-                    style={t(styles.boldedSmallText, {
-                      color: theme.subtleText,
-                    })}
-                  >
-                    {post.subreddit}
-                  </Text>
-                </TouchableOpacity>
-                <Text
-                  style={t(styles.smallText, {
-                    color: theme.subtleText,
-                  })}
-                >
-                  {" "}
                   by{" "}
                 </Text>
                 <TouchableOpacity
@@ -206,6 +228,11 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     flex: 1,
+  },
+  subredditAtTopText: {
+    fontSize: 12,
+    paddingHorizontal: 10,
+    marginBottom: 5,
   },
   postTitle: {
     paddingHorizontal: 10,
