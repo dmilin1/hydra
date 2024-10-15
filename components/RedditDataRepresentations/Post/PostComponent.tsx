@@ -187,9 +187,10 @@ export default function PostComponent({
         </View>
       </TouchableOpacity>
       <View
-        style={t(styles.spacer, {
+        style={{
           backgroundColor: theme.divider,
-        })}
+          height: compactMode ? 1 : 10,
+        }}
       />
     </Slideable>
   );
@@ -240,8 +241,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 3,
     marginRight: 12,
-  },
-  spacer: {
-    height: 10,
   },
 });

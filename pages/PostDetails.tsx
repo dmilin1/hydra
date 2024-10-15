@@ -61,14 +61,15 @@ export default function PostDetails({ url }: PostDetailsProps) {
 
   const scrollChange = useCallback(
     (changeY: number) => {
-      (scrollView.current?.getScrollRef() as any)?.measure((...args: any) => {
+      (scrollView.current as any)?.getScrollRef()?.measure((...args: any) => {
         const scrollY: number = args[5];
         if (changeY < scrollY) {
-          (scrollView.current?.getScrollRef() as any)
+          (scrollView.current as any)
+            ?.getScrollRef()
             ?.getInnerViewRef()
             .measure((...args: any) => {
               const viewY: number = args[5];
-              scrollView.current?.scrollToOffset({
+              (scrollView.current as any)?.scrollToOffset({
                 offset: changeY - viewY,
                 animated: true,
               });
