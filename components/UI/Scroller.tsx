@@ -86,6 +86,7 @@ function Scroller({
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             setRefreshing(true);
             if (loadMore) {
+              setPrevPageHeight(0);
               loadMoreData(true);
             } else {
               refreshData();
