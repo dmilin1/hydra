@@ -1,12 +1,6 @@
-import { Feather, AntDesign } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import {
   SearchResult,
@@ -20,6 +14,7 @@ import SubredditComponent from "../components/RedditDataRepresentations/Subreddi
 import UserComponent from "../components/RedditDataRepresentations/User/UserComponent";
 import List from "../components/UI/List";
 import Scroller from "../components/UI/Scroller";
+import SearchBar from "../components/UI/SearchBar";
 import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
@@ -93,27 +88,7 @@ export default function SearchPage() {
           </TouchableOpacity>
         ))}
       </View>
-      <View
-        style={t(styles.searchBarContainer, {
-          backgroundColor: theme.tint,
-        })}
-      >
-        <AntDesign
-          name="search1"
-          size={18}
-          color={theme.text}
-          style={styles.searchBarIcon}
-        />
-        <TextInput
-          style={t(styles.searchBar, {
-            color: theme.text,
-          })}
-          returnKeyType="search"
-          value={search}
-          onChangeText={setSearch}
-          onBlur={() => loadSearch(true)}
-        />
-      </View>
+      <SearchBar onSearch={() => loadSearch(true)} onChangeText={setSearch} />
       <Scroller
         loadMore={loadSearch}
         beforeLoad={

@@ -32,6 +32,7 @@ type ScrollerWithLoadMore = {
 };
 
 type ScrollerProps = {
+  headerComponent?: ReactNode | ReactNode[];
   beforeLoad?: ReactNode | ReactNode[];
   children: ReactNode | ReactNode[];
   scrollViewRef?: React.RefObject<VirtualizedList<ReactNode>>;
@@ -45,6 +46,7 @@ function Scroller({
   refresh,
   scrollViewRef,
   maintainVisibleContentPosition,
+  headerComponent,
 }: ScrollerProps) {
   const { theme } = useContext(ThemeContext);
   const { scrollDisabled } = useContext(ScrollerContext);
@@ -140,6 +142,7 @@ function Scroller({
       windowSize={4}
       ListHeaderComponent={
         <>
+          {headerComponent}
           {isLoadingMore && !children && !refreshing && (
             <ActivityIndicator size="small" />
           )}

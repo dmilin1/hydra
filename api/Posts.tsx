@@ -48,6 +48,7 @@ export enum VoteOption {
 type GetPostOptions = {
   limit?: number;
   after?: string;
+  search?: string;
 };
 
 export async function formatPostData(child: any): Promise<Post> {
@@ -129,7 +130,12 @@ export async function getPosts(
   url: string,
   options: GetPostOptions = {},
 ): Promise<Post[]> {
-  const redditURL = new RedditURL(url);
+  let redditURL = new RedditURL(url);
+  const subreddit = redditURL.getSubreddit();
+  if (options.search && subreddit) {
+    redditURL = new RedditURL(`https://www.reddit.com/r/${subreddit}/search/`);
+    redditURL.changeQueryParam("q", options.search);
+  }
   redditURL.changeQueryParam("limit", String(options?.limit ?? 10));
   redditURL.changeQueryParam("after", options?.after ?? "");
   redditURL.jsonify();
