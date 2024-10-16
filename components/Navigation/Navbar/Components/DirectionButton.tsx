@@ -37,7 +37,6 @@ export default function DirectionButton({ direction }: DirectionButtonProps) {
     <TouchableOpacity
       style={t(styles.sectionContainer, {
         justifyContent: direction === "backward" ? "flex-start" : "flex-end",
-        marginLeft: 10,
       })}
       activeOpacity={0.5}
       onPress={() => btnAction()}
@@ -49,7 +48,7 @@ export default function DirectionButton({ direction }: DirectionButtonProps) {
               name="keyboard-arrow-left"
               size={32}
               color={theme.buttonText}
-              style={{ marginLeft: -10, marginRight: -5 }}
+              style={{ marginRight: -5 }}
             />
           ) : null}
           <Text
@@ -65,7 +64,7 @@ export default function DirectionButton({ direction }: DirectionButtonProps) {
               name="keyboard-arrow-right"
               size={32}
               color={theme.buttonText}
-              style={{ marginRight: -10, marginLeft: -5 }}
+              style={{ marginLeft: -5 }}
             />
           ) : null}
         </>
