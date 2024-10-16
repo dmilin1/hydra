@@ -5,6 +5,7 @@ import React, {
   useRef,
   useEffect,
   useState,
+  ReactNode,
 } from "react";
 import {
   StyleSheet,
@@ -55,27 +56,37 @@ export default function PostDetails({ url }: PostDetailsProps) {
   };
   const { setModal } = useContext(ModalContext);
 
-  const scrollView = useRef<VirtualizedList<unknown>>(null);
+  const scrollView = useRef<VirtualizedList<ReactNode>>(null);
+  const commentsView = React.useRef<View>(null);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
 
-  const scrollChange = useCallback(
-    (changeY: number) => {
-      (scrollView.current as any)?.getScrollRef()?.measure((...args: any) => {
-        const scrollY: number = args[5];
-        if (changeY < scrollY) {
-          (scrollView.current as any)
-            ?.getScrollRef()
-            ?.getInnerViewRef()
-            .measure((...args: any) => {
-              const viewY: number = args[5];
-              (scrollView.current as any)?.scrollToOffset({
-                offset: changeY - viewY,
-                animated: true,
-              });
-            });
-        }
+  const asyncMeasure = (
+    ref: any,
+    type: "measure" | "measureInWindow" = "measure",
+  ): Promise<number[]> => {
+    return new Promise((resolve) => {
+      ref[type]((...args: any) => {
+        resolve(args);
       });
+    });
+  };
+
+  const scrollChange = useCallback(
+    async (changeY: number) => {
+      if (!scrollView.current) return;
+      const scrollRef = scrollView.current.getScrollRef();
+      const scrollY = (await asyncMeasure(scrollRef))[5];
+      if (changeY < scrollY) {
+        const innerView = (scrollView.current as any)
+          .getScrollRef()
+          ?.getInnerViewRef();
+        const viewY = (await asyncMeasure(innerView))[5];
+        (scrollView.current as any)?.scrollToOffset({
+          offset: changeY - viewY,
+          animated: true,
+        });
+      }
     },
     [scrollView.current],
   );
@@ -156,6 +167,31 @@ export default function PostDetails({ url }: PostDetailsProps) {
         upvotes: postDetail.upvotes - postDetail.userVote + result,
         userVote: result,
       });
+    }
+  };
+
+  const scrollToNextComment = async () => {
+    if (!scrollView.current || !commentsView.current) return;
+    const scrollRef = scrollView.current.getScrollRef();
+    const innerViewRef = (scrollView.current as any)
+      .getScrollRef()
+      ?.getInnerViewRef();
+    const scrollY = (await asyncMeasure(scrollRef, "measureInWindow"))[1];
+    const currentScrollHeight = (
+      await asyncMeasure(innerViewRef, "measureInWindow")
+    )[1];
+    const childComments = (commentsView.current as any)._children[0]._children;
+    for (const comment of childComments) {
+      const commentMeasures = await asyncMeasure(comment, "measureInWindow");
+      const commentY = commentMeasures[1];
+      const delta = commentY - currentScrollHeight;
+      if (commentY > scrollY) {
+        (scrollView.current as any)?.scrollToOffset({
+          offset: delta,
+          animated: true,
+        });
+        break;
+      }
     }
   };
 
@@ -342,6 +378,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
               </View>
               {postDetail.comments.length > 0 ? (
                 <Comments
+                  ref={commentsView}
                   loadMoreComments={loadMoreCommentsFunc}
                   postDetail={postDetail}
                   scrollChange={scrollChange}
@@ -365,6 +402,15 @@ export default function PostDetails({ url }: PostDetailsProps) {
       ) : (
         <ActivityIndicator size="small" />
       )}
+      <TouchableOpacity
+        activeOpacity={0.8}
+        style={t(styles.skipToNextButton, {
+          backgroundColor: theme.buttonText,
+        })}
+        onPress={scrollToNextComment}
+      >
+        <AntDesign name="down" size={18} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -415,5 +461,15 @@ const styles = StyleSheet.create({
   },
   noCommentsText: {
     fontSize: 15,
+  },
+  skipToNextButton: {
+    bottom: 20,
+    right: 20,
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 1000,
+    width: 40,
+    height: 40,
   },
 });

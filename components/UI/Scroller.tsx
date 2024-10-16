@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactElement, ReactNode, useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   RefreshControl,
@@ -34,7 +34,7 @@ type ScrollerWithLoadMore = {
 type ScrollerProps = {
   beforeLoad?: ReactNode | ReactNode[];
   children: ReactNode | ReactNode[];
-  scrollViewRef?: React.RefObject<VirtualizedList<unknown>>;
+  scrollViewRef?: React.RefObject<VirtualizedList<ReactNode>>;
   maintainVisibleContentPosition?: boolean;
 } & (ScrollerWithRefresh | ScrollerWithLoadMore);
 
@@ -96,9 +96,9 @@ function Scroller({
       maintainVisibleContentPosition={
         maintainVisibleContentPosition
           ? {
-              minIndexForVisible: 0,
-              autoscrollToTopThreshold: 0,
-            }
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 0,
+          }
           : undefined
       }
       scrollEventThrottle={100}
@@ -108,8 +108,8 @@ function Scroller({
         const bottomOfWindow = e.nativeEvent.contentOffset.y + windowHeight;
         if (
           bottomOfWindow >=
-            pageHeight -
-              windowHeight * 1.5 /* 1.5 windows from bottom of page */ &&
+          pageHeight -
+          windowHeight * 1.5 /* 1.5 windows from bottom of page */ &&
           !isLoadingMore &&
           prevPageHeight !== pageHeight
         ) {
@@ -125,7 +125,7 @@ function Scroller({
       //     }
       // }}
       data={Array.isArray(children) ? [...children, null] : [children]}
-      renderItem={({ item }: { item: ReactNode }) => item}
+      renderItem={({ item }) => item as ReactElement}
       getItem={(data: ReactNode[], index: number) => data[index]}
       getItemCount={(data: ReactNode[]) => data.length}
       keyExtractor={(item: ReactNode, index: number) => {

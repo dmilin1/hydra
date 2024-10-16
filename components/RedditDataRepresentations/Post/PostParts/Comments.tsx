@@ -1,6 +1,6 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { AntDesign, Octicons } from "@expo/vector-icons";
-import React, { useContext, useState, useMemo, Suspense } from "react";
+import React, { useContext, useState, useMemo, Suspense, forwardRef, ForwardedRef } from "react";
 import {
   StyleSheet,
   View,
@@ -219,7 +219,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === 0 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                        (comment.depth - 1) % theme.postColorTint.length
+                      (comment.depth - 1) % theme.postColorTint.length
                       ],
                   },
                 )}
@@ -354,7 +354,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === -1 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                        comment.depth % theme.postColorTint.length
+                      comment.depth % theme.postColorTint.length
                       ],
                   })}
                 >
@@ -393,13 +393,13 @@ interface CommentsProps {
   deleteComment: (comment: Comment) => void;
 }
 
-export default function Comments({
+const Comments = forwardRef(({
   loadMoreComments,
   postDetail,
   scrollChange,
   changeComment,
   deleteComment,
-}: CommentsProps) {
+}: CommentsProps, ref: ForwardedRef<View>) => {
   const { theme } = useContext(ThemeContext);
 
   return (
@@ -407,6 +407,7 @@ export default function Comments({
       style={t(styles.commentsContainer, {
         borderBottomColor: theme.divider,
       })}
+      ref={ref}
     >
       <Suspense
         fallback={
@@ -427,7 +428,9 @@ export default function Comments({
       </Suspense>
     </View>
   );
-}
+});
+
+export default Comments;
 
 const styles = StyleSheet.create({
   commentsContainer: {
