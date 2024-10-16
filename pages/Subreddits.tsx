@@ -175,7 +175,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomStyle: "solid",
   },
   bigButtonSubContainer: {
     flex: 1,
@@ -205,7 +204,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomStyle: "solid",
   },
   subredditText: {
     fontSize: 16,
