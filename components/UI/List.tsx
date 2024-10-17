@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomStyle: "solid",
   },
   itemButtonSubContainer: {
     flex: 1,
