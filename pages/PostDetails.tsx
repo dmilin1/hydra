@@ -187,7 +187,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
       const delta = commentY - currentScrollHeight;
       if (commentY > scrollY) {
         (scrollView.current as any)?.scrollToOffset({
-          offset: delta,
+          offset: delta + 1 /* scroll a bit over to fix bug */,
           animated: true,
         });
         break;
