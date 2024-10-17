@@ -32,6 +32,7 @@ export async function getSearchResults(
     ...options,
     type: typeMap[type],
     q: text,
+    sr_detail: "true",
   });
   redditURL.jsonify();
   const res = await api(redditURL.toString());

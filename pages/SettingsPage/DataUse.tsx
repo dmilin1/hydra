@@ -65,7 +65,7 @@ export default function DataUse() {
         Low data mode reduces the quality and amount of media that gets loaded
         when scrolling. For example, videos will not be loaded while scrolling
         and will only load when they are clicked on. Links will not load article
-        images.
+        images. Subreddit icons will be not be loaded.
       </Text>
     </>
   );

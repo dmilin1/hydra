@@ -62,6 +62,7 @@ export async function getUserContent(
 ): Promise<UserContent[]> {
   const redditURL = new RedditURL(url);
   redditURL.setQueryParams(options);
+  redditURL.changeQueryParam("sr_detail", "true");
   redditURL.jsonify();
   const response = await api(redditURL.toString());
   const overview = await Promise.all(

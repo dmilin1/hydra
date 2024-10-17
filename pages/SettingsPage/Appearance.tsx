@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
+import { MaterialCommunityIcons, AntDesign, FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { ColorValue, Switch } from "react-native";
 
@@ -8,7 +8,14 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 export default function Appearance() {
   const { theme } = useContext(ThemeContext);
-  const { compactMode, toggleCompactMode, subredditAtTop, toggleSubredditAtTop } = useContext(PostSettingsContext);
+  const {
+    compactMode,
+    toggleCompactMode,
+    subredditAtTop,
+    toggleSubredditAtTop,
+    showSubredditIcon,
+    toggleSubredditIcon
+  } = useContext(PostSettingsContext);
 
   return (
     <List
@@ -57,6 +64,28 @@ export default function Appearance() {
           ),
           text: "Show subreddit at top",
           onPress: () => toggleSubredditAtTop(),
+        },
+        {
+          key: "subredditIcon",
+          icon: (
+            <FontAwesome
+              name="reddit-alien"
+              size={24}
+              color={theme.text}
+            />
+          ),
+          rightIcon: (
+            <Switch
+              trackColor={{
+                false: theme.iconSecondary as ColorValue,
+                true: theme.iconPrimary as ColorValue,
+              }}
+              value={showSubredditIcon}
+              onValueChange={() => toggleSubredditIcon()}
+            />
+          ),
+          text: "Show subreddit icons",
+          onPress: () => toggleSubredditIcon(),
         },
       ]}
     />

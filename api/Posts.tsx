@@ -25,6 +25,7 @@ export type Post = {
   saved: boolean;
   userVote: VoteOption;
   subreddit: string;
+  subredditIcon: string;
   text: string;
   html: string;
   commentCount: number;
@@ -111,6 +112,9 @@ export async function formatPostData(child: any): Promise<Post> {
     saved: child.data.saved,
     userVote,
     subreddit: child.data.subreddit,
+    subredditIcon:
+      child.data.sr_detail?.community_icon?.split("?")?.[0] ??
+      child.data.sr_detail?.icon_img,
     text: decode(child.data.selftext),
     html: decode(child.data.selftext_html),
     commentCount: child.data.num_comments,
@@ -137,6 +141,7 @@ export async function getPosts(
     redditURL.changeQueryParam("q", options.search);
     redditURL.changeQueryParam("restrict_sr", "true");
   }
+  redditURL.changeQueryParam("sr_detail", "true");
   redditURL.changeQueryParam("limit", String(options?.limit ?? 10));
   redditURL.changeQueryParam("after", options?.after ?? "");
   redditURL.jsonify();

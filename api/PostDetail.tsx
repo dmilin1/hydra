@@ -99,7 +99,10 @@ export function formatComments(
 }
 
 export async function getPostsDetail(url: string): Promise<PostDetail> {
-  const response = await api(new RedditURL(url).jsonify().toString());
+  const redditURL = new RedditURL(url);
+  redditURL.changeQueryParam("sr_detail", "true");
+  redditURL.jsonify();
+  const response = await api(redditURL.toString());
   const postData = response[0].data.children[0];
   const post = await formatPostData(postData);
   const comments = response[1].data.children;

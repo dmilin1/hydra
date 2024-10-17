@@ -29,6 +29,7 @@ import { VoteOption } from "../api/Posts";
 import ContentEditor from "../components/Modals/ContentEditor";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import PostMedia from "../components/RedditDataRepresentations/Post/PostParts/PostMedia";
+import SubredditIcon from "../components/RedditDataRepresentations/Post/PostParts/SubredditIcon";
 import Scroller from "../components/UI/Scroller";
 import {
   HistoryContext,
@@ -223,19 +224,14 @@ export default function PostDetails({ url }: PostDetailsProps) {
                 <PostMedia post={postDetail} />
                 <View style={styles.metadataContainer}>
                   <View style={styles.metadataRow}>
-                    <Text
-                      style={t(styles.smallText, {
-                        color: theme.subtleText,
-                      })}
-                    >
-                      {"in "}
-                    </Text>
                     <TouchableOpacity
+                      style={styles.subredditContainer}
                       activeOpacity={0.5}
                       onPress={() =>
                         history.pushPath(`/r/${postDetail.subreddit}`)
                       }
                     >
+                      <SubredditIcon post={postDetail} />
                       <Text
                         style={t(styles.boldedSmallText, {
                           color: theme.subtleText,
@@ -435,6 +431,12 @@ const styles = StyleSheet.create({
   },
   metadataRow: {
     flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  subredditContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   smallText: {
     fontSize: 14,

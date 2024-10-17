@@ -1,6 +1,6 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
@@ -13,6 +13,7 @@ import {
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import Slideable from "../../UI/Slideable";
+import SubredditIcon from "./PostParts/SubredditIcon";
 
 type PostComponentProps = {
   initialPostState: Post;
@@ -76,6 +77,7 @@ export default function PostComponent({
         <View style={styles.bodyContainer}>
           {subredditAtTop && (
             <TouchableOpacity
+              style={t(styles.subredditAtTopContainer, styles.subredditContainer)}
               activeOpacity={0.5}
               onPress={() =>
                 history.pushPath(
@@ -83,6 +85,7 @@ export default function PostComponent({
                 )
               }
             >
+              <SubredditIcon post={post} />
               <Text
                 style={t(styles.subredditAtTopText, {
                   color: theme.subtleText,
@@ -115,14 +118,8 @@ export default function PostComponent({
               <View style={styles.subAndAuthorContainer}>
                 {!subredditAtTop && (
                   <>
-                    <Text
-                      style={t(styles.smallText, {
-                        color: theme.subtleText,
-                      })}
-                    >
-                      in{" "}
-                    </Text>
                     <TouchableOpacity
+                      style={styles.subredditContainer}
                       activeOpacity={0.5}
                       onPress={() =>
                         history.pushPath(
@@ -130,6 +127,7 @@ export default function PostComponent({
                         )
                       }
                     >
+                      <SubredditIcon post={post} />
                       <Text
                         style={t(styles.boldedSmallText, {
                           color: theme.subtleText,
@@ -229,10 +227,16 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flex: 1,
   },
-  subredditAtTopText: {
-    fontSize: 12,
+  subredditContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  subredditAtTopContainer: {
     paddingHorizontal: 10,
     marginBottom: 5,
+  },
+  subredditAtTopText: {
+    fontSize: 12,
   },
   postTitle: {
     paddingHorizontal: 10,
@@ -251,6 +255,8 @@ const styles = StyleSheet.create({
   },
   subAndAuthorContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
   },
   smallText: {
     fontSize: 14,
