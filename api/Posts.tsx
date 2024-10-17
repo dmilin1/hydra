@@ -135,6 +135,7 @@ export async function getPosts(
   if (options.search && subreddit) {
     redditURL = new RedditURL(`https://www.reddit.com/r/${subreddit}/search/`);
     redditURL.changeQueryParam("q", options.search);
+    redditURL.changeQueryParam("restrict_sr", "true");
   }
   redditURL.changeQueryParam("limit", String(options?.limit ?? 10));
   redditURL.changeQueryParam("after", options?.after ?? "");
