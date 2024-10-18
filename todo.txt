@@ -1,0 +1,15 @@
+
+### HARD
+- Mark subreddits as favorites (no official API that I can find)
+- Respond to inbox messages
+
+
+### Medium
+- Subscribe/unsubscribe to subreddit
+- Subreddit icons on Subreddit List page
+
+
+### Easy
+- Indicate pinned posts and stickied comments
+- Ability to collapse post description on Post Details page
+- Long press options to share posts and Comments
