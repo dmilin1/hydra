@@ -31,7 +31,7 @@ export default function SearchBar({ onSearch, onChangeText }: SearchBarProps) {
         })}
         returnKeyType="search"
         value={search}
-        onChangeText={text => {
+        onChangeText={(text) => {
           setSearch(text);
           onChangeText?.(text);
         }}

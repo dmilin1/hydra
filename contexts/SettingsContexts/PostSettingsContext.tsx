@@ -26,10 +26,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     initialPostSettingsContext.compactMode,
   );
   const [subredditAtTop, setSubredditAtTop] = useState(
-    initialPostSettingsContext.subredditAtTop
+    initialPostSettingsContext.subredditAtTop,
   );
   const [showSubredditIcon, setShowSubredditIcon] = useState(
-    initialPostSettingsContext.showSubredditIcon
+    initialPostSettingsContext.showSubredditIcon,
   );
 
   const toggleCompactMode = (newValue = !compactMode) => {
@@ -48,23 +48,27 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   };
 
   const loadSavedData = () => {
-    [{
-      key: 'postCompactMode',
-      setFn: setCompactMode,
-    }, {
-      key: 'subredditAtTop',
-      setFn: setSubredditAtTop,
-    }, {
-      key: 'showSubredditIcon',
-      setFn: setShowSubredditIcon,
-    }].forEach(({ key, setFn }) => {
+    [
+      {
+        key: "postCompactMode",
+        setFn: setCompactMode,
+      },
+      {
+        key: "subredditAtTop",
+        setFn: setSubredditAtTop,
+      },
+      {
+        key: "showSubredditIcon",
+        setFn: setShowSubredditIcon,
+      },
+    ].forEach(({ key, setFn }) => {
       AsyncStorage.getItem(key).then((val) => {
         if (val) {
           setFn(JSON.parse(val));
         }
       });
-    })
-  }
+    });
+  };
 
   useEffect(() => loadSavedData(), []);
 

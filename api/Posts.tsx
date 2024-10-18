@@ -33,6 +33,7 @@ export type Post = {
   images: string[];
   imageThumbnail: string;
   video: string | undefined;
+  redditAudioSource?: string;
   poll: Poll | undefined;
   externalLink: string | undefined;
   createdAt: number;
@@ -61,6 +62,10 @@ export async function formatPostData(child: any): Promise<Post> {
   }
 
   let video = child.data.media?.reddit_video?.fallback_url;
+  let redditAudioSource;
+  if (video) {
+    redditAudioSource = video.replace(/DASH_\d+/, "DASH_AUDIO_128");
+  }
 
   let externalLink = undefined;
   try {
@@ -122,6 +127,7 @@ export async function formatPostData(child: any): Promise<Post> {
     images,
     imageThumbnail,
     video,
+    redditAudioSource,
     poll,
     externalLink,
     createdAt: child.data.created,

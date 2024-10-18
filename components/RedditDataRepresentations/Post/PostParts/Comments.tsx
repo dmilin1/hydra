@@ -1,6 +1,13 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { AntDesign, Octicons } from "@expo/vector-icons";
-import React, { useContext, useState, useMemo, Suspense, forwardRef, ForwardedRef } from "react";
+import React, {
+  useContext,
+  useState,
+  useMemo,
+  Suspense,
+  forwardRef,
+  ForwardedRef,
+} from "react";
 import {
   StyleSheet,
   View,
@@ -219,7 +226,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === 0 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                      (comment.depth - 1) % theme.postColorTint.length
+                        (comment.depth - 1) % theme.postColorTint.length
                       ],
                   },
                 )}
@@ -354,7 +361,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === -1 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                      comment.depth % theme.postColorTint.length
+                        comment.depth % theme.postColorTint.length
                       ],
                   })}
                 >
@@ -393,42 +400,47 @@ interface CommentsProps {
   deleteComment: (comment: Comment) => void;
 }
 
-const Comments = forwardRef(({
-  loadMoreComments,
-  postDetail,
-  scrollChange,
-  changeComment,
-  deleteComment,
-}: CommentsProps, ref: ForwardedRef<View>) => {
-  const { theme } = useContext(ThemeContext);
+const Comments = forwardRef(
+  (
+    {
+      loadMoreComments,
+      postDetail,
+      scrollChange,
+      changeComment,
+      deleteComment,
+    }: CommentsProps,
+    ref: ForwardedRef<View>,
+  ) => {
+    const { theme } = useContext(ThemeContext);
 
-  return (
-    <View
-      style={t(styles.commentsContainer, {
-        borderBottomColor: theme.divider,
-      })}
-      ref={ref}
-    >
-      <Suspense
-        fallback={
-          <View>
-            <Text>Loading</Text>
-          </View>
-        }
+    return (
+      <View
+        style={t(styles.commentsContainer, {
+          borderBottomColor: theme.divider,
+        })}
+        ref={ref}
       >
-        <CommentComponent
-          key={postDetail.id}
-          loadMoreComments={loadMoreComments}
-          comment={postDetail}
-          index={0}
-          scrollChange={scrollChange}
-          changeComment={changeComment}
-          deleteComment={deleteComment}
-        />
-      </Suspense>
-    </View>
-  );
-});
+        <Suspense
+          fallback={
+            <View>
+              <Text>Loading</Text>
+            </View>
+          }
+        >
+          <CommentComponent
+            key={postDetail.id}
+            loadMoreComments={loadMoreComments}
+            comment={postDetail}
+            index={0}
+            scrollChange={scrollChange}
+            changeComment={changeComment}
+            deleteComment={deleteComment}
+          />
+        </Suspense>
+      </View>
+    );
+  },
+);
 
 export default Comments;
 

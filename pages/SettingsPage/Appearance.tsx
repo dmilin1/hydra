@@ -1,4 +1,8 @@
-import { MaterialCommunityIcons, AntDesign, FontAwesome } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  AntDesign,
+  FontAwesome,
+} from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { ColorValue, Switch } from "react-native";
 
@@ -14,7 +18,7 @@ export default function Appearance() {
     subredditAtTop,
     toggleSubredditAtTop,
     showSubredditIcon,
-    toggleSubredditIcon
+    toggleSubredditIcon,
   } = useContext(PostSettingsContext);
 
   return (
@@ -45,13 +49,7 @@ export default function Appearance() {
         },
         {
           key: "subredditAtTop",
-          icon: (
-            <AntDesign
-              name="totop"
-              size={24}
-              color={theme.text}
-            />
-          ),
+          icon: <AntDesign name="totop" size={24} color={theme.text} />,
           rightIcon: (
             <Switch
               trackColor={{
@@ -68,11 +66,7 @@ export default function Appearance() {
         {
           key: "subredditIcon",
           icon: (
-            <FontAwesome
-              name="reddit-alien"
-              size={24}
-              color={theme.text}
-            />
+            <FontAwesome name="reddit-alien" size={24} color={theme.text} />
           ),
           rightIcon: (
             <Switch

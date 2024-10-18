@@ -27,6 +27,7 @@ import {
 type VideoPlayerProps = {
   source: string;
   thumbnail: string;
+  redditAudioSource?: string;
   straightToFullscreen?: boolean;
   exitedFullScreenCallback?: () => void;
 };
@@ -34,6 +35,7 @@ type VideoPlayerProps = {
 export default function VideoPlayer({
   source,
   thumbnail,
+  redditAudioSource,
   straightToFullscreen,
   exitedFullScreenCallback,
 }: VideoPlayerProps) {
@@ -56,10 +58,10 @@ export default function VideoPlayer({
   const isChangingAudio = useRef(false);
 
   const loadAudio = async () => {
-    const audioUrl = source.replace(/DASH_\d+/, "DASH_AUDIO_128");
+    if (!redditAudioSource) return;
     await setAudioModeAsync({ playsInSilentModeIOS: true });
     try {
-      audio.current = await Sound.createAsync({ uri: audioUrl });
+      audio.current = await Sound.createAsync({ uri: redditAudioSource });
       audio.current.sound.setIsLoopingAsync(true);
     } catch {
       /* video has no audio */

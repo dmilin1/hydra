@@ -1,9 +1,10 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
+import SubredditIcon from "./PostParts/SubredditIcon";
 import { vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
 import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
@@ -13,7 +14,6 @@ import {
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import Slideable from "../../UI/Slideable";
-import SubredditIcon from "./PostParts/SubredditIcon";
 
 type PostComponentProps = {
   initialPostState: Post;
@@ -77,12 +77,13 @@ export default function PostComponent({
         <View style={styles.bodyContainer}>
           {subredditAtTop && (
             <TouchableOpacity
-              style={t(styles.subredditAtTopContainer, styles.subredditContainer)}
+              style={t(
+                styles.subredditAtTopContainer,
+                styles.subredditContainer,
+              )}
               activeOpacity={0.5}
               onPress={() =>
-                history.pushPath(
-                  `https://www.reddit.com/r/${post.subreddit}`,
-                )
+                history.pushPath(`https://www.reddit.com/r/${post.subreddit}`)
               }
             >
               <SubredditIcon post={post} />
@@ -133,8 +134,7 @@ export default function PostComponent({
                           color: theme.subtleText,
                         })}
                       >
-                        {post.subreddit}
-                        {" "}
+                        {post.subreddit}{" "}
                       </Text>
                     </TouchableOpacity>
                   </>
