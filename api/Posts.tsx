@@ -54,7 +54,16 @@ type GetPostOptions = {
 };
 
 export async function formatPostData(child: any): Promise<Post> {
+  const galleryIndexes =
+    child.data.gallery_data?.items?.reduce?.(
+      (acc: string[], item: any, i: number) => ({
+        ...acc,
+        [item.media_id]: i,
+      }),
+      {},
+    ) ?? {};
   let images = Object.values(child.data.media_metadata ?? {})
+    .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
     .map((data: any) => data.s?.u?.replace(/&amp;/g, "&"))
     .filter((img) => img !== undefined);
   if (images.length === 0 && child.data.post_hint === "image") {
