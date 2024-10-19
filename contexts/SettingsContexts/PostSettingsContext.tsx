@@ -37,7 +37,7 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     AsyncStorage.setItem("postCompactMode", JSON.stringify(newValue));
   };
 
-  const toggleSubredditAtTop = (newValue = !compactMode) => {
+  const toggleSubredditAtTop = (newValue = !subredditAtTop) => {
     setSubredditAtTop((prev) => !prev);
     AsyncStorage.setItem("subredditAtTop", JSON.stringify(newValue));
   };
