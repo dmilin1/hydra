@@ -61,6 +61,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
   const commentsView = React.useRef<View>(null);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
+  const [mediaCollapsed, setMediaCollapsed] = useState(false);
 
   const asyncMeasure = (
     ref: any,
@@ -213,79 +214,85 @@ export default function PostDetails({ url }: PostDetailsProps) {
         >
           {postDetail && (
             <>
-              <View style={styles.postDetailsContainer}>
-                <Text
-                  style={t(styles.title, {
-                    color: theme.text,
-                  })}
-                >
-                  {postDetail.title}
-                </Text>
-                <PostMedia post={postDetail} />
-                <View style={styles.metadataContainer}>
-                  <View style={styles.metadataRow}>
-                    <TouchableOpacity
-                      style={styles.subredditContainer}
-                      activeOpacity={0.5}
-                      onPress={() =>
-                        history.pushPath(`/r/${postDetail.subreddit}`)
-                      }
-                    >
-                      <SubredditIcon post={postDetail} />
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setMediaCollapsed(!mediaCollapsed)}
+              >
+                <View style={styles.postDetailsContainer}>
+                  <Text
+                    style={t(styles.title, {
+                      color: theme.text,
+                    })}
+                  >
+                    {postDetail.title}
+                  </Text>
+
+                  {!mediaCollapsed && <PostMedia post={postDetail} />}
+                  <View style={styles.metadataContainer}>
+                    <View style={styles.metadataRow}>
+                      <TouchableOpacity
+                        style={styles.subredditContainer}
+                        activeOpacity={0.5}
+                        onPress={() =>
+                          history.pushPath(`/r/${postDetail.subreddit}`)
+                        }
+                      >
+                        <SubredditIcon post={postDetail} />
+                        <Text
+                          style={t(styles.boldedSmallText, {
+                            color: theme.subtleText,
+                          })}
+                        >
+                          {`r/${postDetail.subreddit}`}
+                        </Text>
+                      </TouchableOpacity>
                       <Text
-                        style={t(styles.boldedSmallText, {
+                        style={t(styles.smallText, {
                           color: theme.subtleText,
                         })}
                       >
-                        {`r/${postDetail.subreddit}`}
+                        {" by "}
                       </Text>
-                    </TouchableOpacity>
-                    <Text
-                      style={t(styles.smallText, {
-                        color: theme.subtleText,
-                      })}
-                    >
-                      {" by "}
-                    </Text>
-                    <TouchableOpacity
-                      activeOpacity={0.5}
-                      onPress={() =>
-                        history.pushPath(`/u/${postDetail.author}`)
-                      }
-                    >
+                      <TouchableOpacity
+                        activeOpacity={0.5}
+                        onPress={() =>
+                          history.pushPath(`/u/${postDetail.author}`)
+                        }
+                      >
+                        <Text
+                          style={t(styles.boldedSmallText, {
+                            color: theme.subtleText,
+                          })}
+                        >
+                          {`u/${postDetail.author}`}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={[styles.metadataRow, { marginTop: 5 }]}>
+                      <AntDesign
+                        name="arrowup"
+                        size={15}
+                        color={theme.subtleText}
+                      />
                       <Text
-                        style={t(styles.boldedSmallText, {
+                        style={t(styles.smallText, {
                           color: theme.subtleText,
                         })}
                       >
-                        {`u/${postDetail.author}`}
+                        {postDetail.upvotes}
                       </Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={[styles.metadataRow, { marginTop: 5 }]}>
-                    <AntDesign
-                      name="arrowup"
-                      size={15}
-                      color={theme.subtleText}
-                    />
-                    <Text
-                      style={t(styles.smallText, {
-                        color: theme.subtleText,
-                      })}
-                    >
-                      {postDetail.upvotes}
-                    </Text>
-                    <Text
-                      style={t(styles.smallText, {
-                        color: theme.subtleText,
-                      })}
-                    >
-                      {"  •  "}
-                      {postDetail.timeSince}
-                    </Text>
+                      <Text
+                        style={t(styles.smallText, {
+                          color: theme.subtleText,
+                        })}
+                      >
+                        {"  •  "}
+                        {postDetail.timeSince}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
               <View
                 style={t(styles.buttonsBarContainer, {
                   borderTopColor: theme.divider,
