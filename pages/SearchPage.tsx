@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import {
@@ -23,12 +23,12 @@ export default function SearchPage() {
   const history = useContext(HistoryFunctionsContext);
 
   const [trending, setTrending] = useState<Subreddit[]>([]);
-  const [search, setSearch] = useState<string>("");
+  const search = useRef<string>("");
   const [searchType, setSearchType] = useState<SearchType>("posts");
   const [searchResults, setSearchResults] = useState<SearchResult[]>();
 
   const loadSearch = async (refresh = false) => {
-    if (!search) {
+    if (!search.current) {
       setSearchResults(undefined);
       return;
     }
@@ -36,7 +36,7 @@ export default function SearchPage() {
       // API only allows 1 page of search for users
       return;
     }
-    const newResults = await getSearchResults(searchType, search, {
+    const newResults = await getSearchResults(searchType, search.current, {
       after: refresh ? undefined : searchResults?.slice(-1)[0]?.after,
     });
     if (refresh) {
@@ -88,7 +88,12 @@ export default function SearchPage() {
           </TouchableOpacity>
         ))}
       </View>
-      <SearchBar onSearch={() => loadSearch(true)} onChangeText={setSearch} />
+      <SearchBar
+        onSearch={(text) => {
+          search.current = text;
+          loadSearch(true);
+        }}
+      />
       <Scroller
         loadMore={loadSearch}
         beforeLoad={

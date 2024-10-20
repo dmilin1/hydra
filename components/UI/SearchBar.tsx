@@ -1,17 +1,26 @@
-import { AntDesign } from "@expo/vector-icons";
-import { useContext, useState } from "react";
-import { View, StyleSheet, TextInput } from "react-native";
+import { AntDesign, FontAwesome6 } from "@expo/vector-icons";
+import { useContext, useRef, useState } from "react";
+import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 type SearchBarProps = {
   onSearch: (text: string) => void;
-  onChangeText?: (text: string) => void;
 };
 
-export default function SearchBar({ onSearch, onChangeText }: SearchBarProps) {
+export default function SearchBar({ onSearch }: SearchBarProps) {
   const { theme } = useContext(ThemeContext);
-  const [search, setSearch] = useState<string>("");
+  const search = useRef<string>("");
+  const prevSearch = useRef<string>("");
+  const textInputRef = useRef<TextInput>(null);
+  const [showX, setShowX] = useState(false);
+
+  const doSearch = () => {
+    if (search.current !== prevSearch.current) {
+      onSearch(search.current);
+      prevSearch.current = search.current;
+    }
+  };
 
   return (
     <View
@@ -26,17 +35,35 @@ export default function SearchBar({ onSearch, onChangeText }: SearchBarProps) {
         style={styles.searchBarIcon}
       />
       <TextInput
+        ref={textInputRef}
         style={t(styles.searchBar, {
           color: theme.text,
         })}
         returnKeyType="search"
-        value={search}
         onChangeText={(text) => {
-          setSearch(text);
-          onChangeText?.(text);
+          search.current = text;
+          setShowX(!!text);
         }}
-        onBlur={() => onSearch(search)}
+        onBlur={() => doSearch()}
       />
+      {showX && (
+        <TouchableOpacity
+          onPress={() => {
+            search.current = "";
+            textInputRef.current?.clear();
+            setShowX(false);
+            doSearch();
+          }}
+          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+        >
+          <FontAwesome6
+            name="xmark-circle"
+            size={18}
+            color={theme.text}
+            style={styles.xIcon}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -58,5 +85,8 @@ const styles = StyleSheet.create({
   searchBar: {
     flex: 1,
     fontSize: 18,
+  },
+  xIcon: {
+    marginRight: 5,
   },
 });

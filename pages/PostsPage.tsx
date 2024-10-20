@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { getPosts, Post } from "../api/Posts";
@@ -16,7 +16,7 @@ export default function PostsPage({ url }: PostsPageProps) {
   const { theme } = useContext(ThemeContext);
 
   const [posts, setPosts] = useState<Post[]>([]);
-  const [search, setSearch] = useState<string>("");
+  const search = useRef<string>("");
 
   const isSubredditPage =
     new RedditURL(url).getPageType() === PageType.SUBREDDIT;
@@ -24,7 +24,7 @@ export default function PostsPage({ url }: PostsPageProps) {
   const loadMorePosts = async (refresh = false) => {
     const newPosts = await getPosts(url, {
       after: refresh ? undefined : posts.slice(-1)[0]?.after,
-      search,
+      search: search.current,
     });
     if (refresh) {
       setPosts(newPosts);
@@ -45,8 +45,10 @@ export default function PostsPage({ url }: PostsPageProps) {
         headerComponent={
           isSubredditPage && (
             <SearchBar
-              onSearch={() => loadMorePosts(true)}
-              onChangeText={setSearch}
+              onSearch={(text) => {
+                search.current = text;
+                loadMorePosts(true);
+              }}
             />
           )
         }
