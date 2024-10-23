@@ -3,6 +3,8 @@
 - Mark subreddits as favorites (no official API that I can find)
 - Respond to inbox messages
 - Get polls working
+- Make subreddit title a search button
+- Image upload when making posts/comments
 
 
 ### Medium
@@ -13,3 +15,4 @@
 ### Easy
 - Indicate pinned posts and stickied comments
 - Long press options to share posts and Comments
+- Setting to change post title length
