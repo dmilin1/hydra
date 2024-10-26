@@ -5,6 +5,8 @@
 - Get polls working
 - Make subreddit title a search button
 - Image upload when making posts/comments
+- Make OTA updating smoother
+- Accessibility support
 
 
 ### Medium

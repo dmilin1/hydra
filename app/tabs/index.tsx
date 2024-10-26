@@ -15,6 +15,7 @@ import Inbox from "./inbox";
 import Posts from "./posts";
 import Search from "./search";
 import Settings from "./settings";
+import LoadingSplash from "../../components/UI/LoadingSplash";
 import { AccountContext } from "../../contexts/AccountContext";
 import { InboxContext } from "../../contexts/InboxContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -42,7 +43,7 @@ export default function Tabs() {
       style={{ flex: 1, backgroundColor: theme.background }}
       edges={["right", "top", "left"]}
     >
-      {loginInitialized && (
+      {loginInitialized ? (
         <Tab.Navigator
           initialRouteName="Posts"
           sceneContainerStyle={{ backgroundColor: theme.background }}
@@ -145,6 +146,8 @@ export default function Tabs() {
             component={Settings}
           />
         </Tab.Navigator>
+      ) : (
+        <LoadingSplash />
       )}
     </SafeAreaView>
   );
