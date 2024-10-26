@@ -12,6 +12,7 @@ const rainbow = [
 
 type Theme = {
   name: string;
+  systemModeStyle: "light" | "dark";
   statusBar: StatusBarStyle;
   text: ColorValue;
   buttonText: ColorValue;
@@ -33,11 +34,15 @@ type Theme = {
 type Themes = {
   dark: Theme;
   light: Theme;
+  midnight: Theme;
+  discord: Theme;
+  spotify: Theme;
 };
 
-export default {
+const themes: Themes = {
   dark: {
     name: "Dark",
+    systemModeStyle: "dark",
     statusBar: "light",
     text: "#fff",
     buttonText: "#2282fe",
@@ -57,6 +62,7 @@ export default {
   },
   light: {
     name: "Light",
+    systemModeStyle: "light",
     statusBar: "dark",
     text: "#000",
     buttonText: "#2282fe",
@@ -76,6 +82,7 @@ export default {
   },
   midnight: {
     name: "Midnight",
+    systemModeStyle: "dark",
     statusBar: "light",
     text: "#fff",
     buttonText: "#2282fe",
@@ -95,6 +102,7 @@ export default {
   },
   discord: {
     name: "Discord",
+    systemModeStyle: "dark",
     statusBar: "light",
     text: "#fff",
     buttonText: "#00a8fc",
@@ -114,6 +122,7 @@ export default {
   },
   spotify: {
     name: "Spotify",
+    systemModeStyle: "dark",
     statusBar: "light",
     text: "#fff",
     buttonText: "#1fdf64",
@@ -131,4 +140,6 @@ export default {
     reply: "#23b5ff",
     moderator: "#4687d6",
   },
-} as Themes;
+};
+
+export default themes;

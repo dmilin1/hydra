@@ -24,7 +24,8 @@ export default function PostComponent({
 }: PostComponentProps) {
   const history = useContext(HistoryFunctionsContext);
   const { theme } = useContext(ThemeContext);
-  const { compactMode, subredditAtTop } = useContext(PostSettingsContext);
+  const { postCompactMode, subredditAtTop, postTitleLength } =
+    useContext(PostSettingsContext);
 
   const [post, setPost] = useState(initialPostState);
 
@@ -63,13 +64,13 @@ export default function PostComponent({
         activeOpacity={0.8}
         style={t(styles.postContainer, {
           backgroundColor: theme.background,
-          flexDirection: compactMode ? "row" : "column",
+          flexDirection: postCompactMode ? "row" : "column",
         })}
         onPress={() => {
           history.pushPath(post.link);
         }}
       >
-        {compactMode && (
+        {postCompactMode && (
           <View style={styles.compactMediaContainer}>
             <CompactPostMedia post={post} />
           </View>
@@ -97,9 +98,9 @@ export default function PostComponent({
             </TouchableOpacity>
           )}
           <Text
-            numberOfLines={2}
+            numberOfLines={postTitleLength}
             style={t(styles.postTitle, {
-              fontSize: compactMode ? 16 : 17,
+              fontSize: postCompactMode ? 16 : 17,
               color: theme.text,
             })}
           >
@@ -107,10 +108,10 @@ export default function PostComponent({
           </Text>
           <View
             style={t(styles.postBody, {
-              marginVertical: compactMode ? 3 : 5,
+              marginVertical: postCompactMode ? 3 : 5,
             })}
           >
-            {!compactMode && (
+            {!postCompactMode && (
               <PostMedia post={post} maxLines={3} renderHTML={false} />
             )}
           </View>
@@ -219,7 +220,7 @@ export default function PostComponent({
       <View
         style={{
           backgroundColor: theme.divider,
-          height: compactMode ? 1 : 10,
+          height: postCompactMode ? 1 : 10,
         }}
       />
     </Slideable>

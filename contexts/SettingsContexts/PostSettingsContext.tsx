@@ -2,28 +2,43 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useEffect, useState } from "react";
 
 type PostSettingsContextType = {
-  compactMode: boolean;
-  toggleCompactMode: (newValue?: boolean) => void;
+  postCompactMode: boolean;
+  togglePostCompactMode: (newValue?: boolean) => void;
   subredditAtTop: boolean;
   toggleSubredditAtTop: (newValue?: boolean) => void;
   showSubredditIcon: boolean;
   toggleSubredditIcon: (newValue?: boolean) => void;
+  postTitleLength: number;
+  changePostTitleLength: (newValue: number) => void;
+};
+
+const initialValues = {
+  postCompactMode: false,
+  subredditAtTop: false,
+  showSubredditIcon: true,
+  postTitleLength: 2,
 };
 
 const initialPostSettingsContext: PostSettingsContextType = {
-  compactMode: false,
-  toggleCompactMode: () => {},
-  subredditAtTop: false,
+  ...initialValues,
+  togglePostCompactMode: () => {},
   toggleSubredditAtTop: () => {},
-  showSubredditIcon: true,
   toggleSubredditIcon: () => {},
+  changePostTitleLength: () => {},
 };
+
+type SettingsLoaders = {
+  [Key in keyof typeof initialValues]: {
+    key: Key;
+    setFn: React.Dispatch<React.SetStateAction<(typeof initialValues)[Key]>>;
+  };
+}[keyof typeof initialValues][];
 
 export const PostSettingsContext = createContext(initialPostSettingsContext);
 
 export function PostSettingsProvider({ children }: React.PropsWithChildren) {
-  const [compactMode, setCompactMode] = useState(
-    initialPostSettingsContext.compactMode,
+  const [postCompactMode, setPostCompactMode] = useState(
+    initialPostSettingsContext.postCompactMode,
   );
   const [subredditAtTop, setSubredditAtTop] = useState(
     initialPostSettingsContext.subredditAtTop,
@@ -31,9 +46,12 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [showSubredditIcon, setShowSubredditIcon] = useState(
     initialPostSettingsContext.showSubredditIcon,
   );
+  const [postTitleLength, setPostTitleLength] = useState(
+    initialPostSettingsContext.postTitleLength,
+  );
 
-  const toggleCompactMode = (newValue = !compactMode) => {
-    setCompactMode((prev) => !prev);
+  const togglePostCompactMode = (newValue = !postCompactMode) => {
+    setPostCompactMode((prev) => !prev);
     AsyncStorage.setItem("postCompactMode", JSON.stringify(newValue));
   };
 
@@ -47,11 +65,16 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     AsyncStorage.setItem("showSubredditIcon", JSON.stringify(newValue));
   };
 
+  const changePostTitleLength = (newValue: number) => {
+    setPostTitleLength(newValue);
+    AsyncStorage.setItem("postTitleLength", JSON.stringify(newValue));
+  };
+
   const loadSavedData = () => {
-    [
+    const settingsLoaders: SettingsLoaders = [
       {
         key: "postCompactMode",
-        setFn: setCompactMode,
+        setFn: setPostCompactMode,
       },
       {
         key: "subredditAtTop",
@@ -61,9 +84,18 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         key: "showSubredditIcon",
         setFn: setShowSubredditIcon,
       },
-    ].forEach(({ key, setFn }) => {
-      AsyncStorage.getItem(key).then((val) => {
-        if (val) {
+      {
+        key: "postTitleLength",
+        setFn: setPostTitleLength,
+      },
+    ];
+    settingsLoaders.forEach(({ key, setFn }) => {
+      AsyncStorage.getItem(key).then((str) => {
+        if (str) {
+          let val = JSON.parse(str);
+          if (typeof initialPostSettingsContext[key] === "number") {
+            val = Number(val);
+          }
           setFn(JSON.parse(val));
         }
       });
@@ -75,12 +107,14 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   return (
     <PostSettingsContext.Provider
       value={{
-        compactMode,
-        toggleCompactMode,
+        postCompactMode,
+        togglePostCompactMode,
         subredditAtTop,
         toggleSubredditAtTop,
         showSubredditIcon,
         toggleSubredditIcon,
+        postTitleLength,
+        changePostTitleLength,
       }}
     >
       {children}
