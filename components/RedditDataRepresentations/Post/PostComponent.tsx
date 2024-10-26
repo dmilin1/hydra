@@ -117,6 +117,14 @@ export default function PostComponent({
           <View style={styles.postFooter}>
             <View style={styles.footerLeft}>
               <View style={styles.subAndAuthorContainer}>
+                {post.isStickied && (
+                  <AntDesign
+                    name="pushpin"
+                    style={t(styles.stickiedIcon, {
+                      color: theme.moderator,
+                    })}
+                  />
+                )}
                 {!subredditAtTop && (
                   <>
                     <TouchableOpacity
@@ -156,7 +164,9 @@ export default function PostComponent({
                 >
                   <Text
                     style={t(styles.boldedSmallText, {
-                      color: theme.subtleText,
+                      color: post.isModerator
+                        ? theme.moderator
+                        : theme.subtleText,
                     })}
                   >
                     {post.author}
@@ -257,6 +267,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
+  },
+  stickiedIcon: {
+    marginRight: 7,
+    fontSize: 16,
   },
   smallText: {
     fontSize: 14,

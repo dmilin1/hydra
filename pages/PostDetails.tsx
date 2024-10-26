@@ -230,6 +230,14 @@ export default function PostDetails({ url }: PostDetailsProps) {
                   {!mediaCollapsed && <PostMedia post={postDetail} />}
                   <View style={styles.metadataContainer}>
                     <View style={styles.metadataRow}>
+                      {postDetail.isStickied && (
+                        <AntDesign
+                          name="pushpin"
+                          style={t(styles.stickiedIcon, {
+                            color: theme.moderator,
+                          })}
+                        />
+                      )}
                       <TouchableOpacity
                         style={styles.subredditContainer}
                         activeOpacity={0.5}
@@ -261,7 +269,9 @@ export default function PostDetails({ url }: PostDetailsProps) {
                       >
                         <Text
                           style={t(styles.boldedSmallText, {
-                            color: theme.subtleText,
+                            color: postDetail.isModerator
+                              ? theme.moderator
+                              : theme.subtleText,
                           })}
                         >
                           {`u/${postDetail.author}`}
@@ -440,6 +450,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
+  },
+  stickiedIcon: {
+    marginRight: 7,
+    fontSize: 16,
   },
   subredditContainer: {
     flexDirection: "row",

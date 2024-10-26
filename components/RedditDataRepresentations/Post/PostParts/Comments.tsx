@@ -236,12 +236,24 @@ export function CommentComponent({
                     marginBottom: collapsed ? 0 : 8,
                   })}
                 >
+                  {comment.isStickied && (
+                    <AntDesign
+                      name="pushpin"
+                      style={t(styles.stickiedIcon, {
+                        color: theme.moderator,
+                      })}
+                    />
+                  )}
                   <TouchableOpacity
                     onPress={() => history.pushPath(`/u/${comment.author}`)}
                   >
                     <Text
                       style={t(styles.author, {
-                        color: comment.isOP ? theme.buttonText : theme.text,
+                        color: comment.isOP
+                          ? theme.buttonText
+                          : comment.isModerator
+                            ? theme.moderator
+                            : theme.text,
                       })}
                     >
                       {comment.author}
@@ -462,6 +474,10 @@ const styles = StyleSheet.create({
   },
   commentContainerDisplayInList: {
     paddingLeft: 10,
+  },
+  stickiedIcon: {
+    marginRight: 7,
+    fontSize: 16,
   },
   topBar: {
     flexDirection: "row",

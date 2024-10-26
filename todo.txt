@@ -15,6 +15,5 @@
 
 
 ### Easy
-- Indicate pinned posts and stickied comments
 - Long press options to share posts and Comments
 - Setting to change post title length

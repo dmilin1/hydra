@@ -15,6 +15,8 @@ export type Comment = {
   path: number[];
   author: string;
   isOP: boolean;
+  isModerator: boolean;
+  isStickied: boolean;
   upvotes: number;
   scoreHidden: boolean;
   userVote: VoteOption;
@@ -70,6 +72,8 @@ export function formatComments(
       path: childCommentPath,
       author: comment.data.author,
       isOP: comment.data.is_submitter,
+      isModerator: comment.data.distinguished === "moderator",
+      isStickied: comment.data.stickied,
       upvotes: comment.data.ups,
       scoreHidden: comment.data.score_hidden,
       userVote,

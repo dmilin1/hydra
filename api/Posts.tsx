@@ -26,6 +26,8 @@ export type Post = {
   userVote: VoteOption;
   subreddit: string;
   subredditIcon: string;
+  isModerator: boolean;
+  isStickied: boolean;
   text: string;
   html: string;
   commentCount: number;
@@ -129,6 +131,8 @@ export async function formatPostData(child: any): Promise<Post> {
     subredditIcon:
       child.data.sr_detail?.community_icon?.split("?")?.[0] ??
       child.data.sr_detail?.icon_img,
+    isModerator: child.data.distinguished === "moderator",
+    isStickied: child.data.stickied,
     text: decode(child.data.selftext),
     html: decode(child.data.selftext_html),
     commentCount: child.data.num_comments,

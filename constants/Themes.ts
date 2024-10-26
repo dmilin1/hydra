@@ -27,6 +27,7 @@ type Theme = {
   downvote: ColorValue;
   delete: ColorValue;
   reply: ColorValue;
+  moderator: ColorValue;
 };
 
 type Themes = {
@@ -52,6 +53,7 @@ export default {
     downvote: "#565fe3",
     delete: "#ff0000",
     reply: "#23b5ff",
+    moderator: "#00940f",
   },
   light: {
     name: "Light",
@@ -70,6 +72,7 @@ export default {
     downvote: "#565fe3",
     delete: "#ff0000",
     reply: "#23b5ff",
+    moderator: "#00940f",
   },
   midnight: {
     name: "Midnight",
@@ -88,6 +91,7 @@ export default {
     downvote: "#565fe3",
     delete: "#ff0000",
     reply: "#23b5ff",
+    moderator: "#00940f",
   },
   discord: {
     name: "Discord",
@@ -106,6 +110,7 @@ export default {
     downvote: "#f23f43",
     delete: "#ff0000",
     reply: "#23b5ff",
+    moderator: "#00940f",
   },
   spotify: {
     name: "Spotify",
@@ -124,5 +129,6 @@ export default {
     downvote: "#565fe3",
     delete: "#ff0000",
     reply: "#23b5ff",
+    moderator: "#4687d6",
   },
 } as Themes;
