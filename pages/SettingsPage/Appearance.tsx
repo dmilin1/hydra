@@ -3,6 +3,7 @@ import {
   AntDesign,
   FontAwesome,
   Entypo,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import React, { useContext, useRef } from "react";
 import { ColorValue, Switch, Text } from "react-native";
@@ -24,9 +25,12 @@ export default function Appearance() {
     toggleSubredditIcon,
     postTitleLength,
     changePostTitleLength,
+    postTextLength,
+    changePostTextLength,
   } = useContext(PostSettingsContext);
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
+  const postTextLengthRef = useRef<RNPickerSelect>(null);
 
   return (
     <List
@@ -90,7 +94,7 @@ export default function Appearance() {
         },
         {
           key: "postTitleLength",
-          icon: <Entypo name="text" size={24} color={theme.text} />,
+          icon: <MaterialIcons name="title" size={24} color={theme.text} />,
           rightIcon: (
             <Picker
               ref={postTitleLengthRef}
@@ -116,8 +120,38 @@ export default function Appearance() {
               </Text>
             </Picker>
           ),
-          text: "Post title lines",
+          text: "Post title max lines",
           onPress: () => postTitleLengthRef.current?.togglePicker(true),
+        },
+        {
+          key: "postTextlength",
+          icon: <Entypo name="text" size={24} color={theme.text} />,
+          rightIcon: (
+            <Picker
+              ref={postTextLengthRef}
+              onValueChange={(value) => {
+                if (value) {
+                  changePostTextLength(value);
+                }
+              }}
+              items={[...Array(10).keys()].map((i) => ({
+                label: (i + 1).toString(),
+                value: i + 1,
+              }))}
+              value={postTextLength}
+            >
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: theme.subtleText,
+                }}
+              >
+                {postTextLength}
+              </Text>
+            </Picker>
+          ),
+          text: "Post text max lines",
+          onPress: () => postTextLengthRef.current?.togglePicker(true),
         },
       ]}
     />

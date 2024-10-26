@@ -24,7 +24,7 @@ export default function PostComponent({
 }: PostComponentProps) {
   const history = useContext(HistoryFunctionsContext);
   const { theme } = useContext(ThemeContext);
-  const { postCompactMode, subredditAtTop, postTitleLength } =
+  const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
     useContext(PostSettingsContext);
 
   const [post, setPost] = useState(initialPostState);
@@ -112,7 +112,11 @@ export default function PostComponent({
             })}
           >
             {!postCompactMode && (
-              <PostMedia post={post} maxLines={3} renderHTML={false} />
+              <PostMedia
+                post={post}
+                maxLines={postTextLength}
+                renderHTML={false}
+              />
             )}
           </View>
           <View style={styles.postFooter}>

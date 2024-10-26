@@ -10,6 +10,8 @@ type PostSettingsContextType = {
   toggleSubredditIcon: (newValue?: boolean) => void;
   postTitleLength: number;
   changePostTitleLength: (newValue: number) => void;
+  postTextLength: number;
+  changePostTextLength: (newValue: number) => void;
 };
 
 const initialValues = {
@@ -17,6 +19,7 @@ const initialValues = {
   subredditAtTop: false,
   showSubredditIcon: true,
   postTitleLength: 2,
+  postTextLength: 3,
 };
 
 const initialPostSettingsContext: PostSettingsContextType = {
@@ -25,6 +28,7 @@ const initialPostSettingsContext: PostSettingsContextType = {
   toggleSubredditAtTop: () => {},
   toggleSubredditIcon: () => {},
   changePostTitleLength: () => {},
+  changePostTextLength: () => {},
 };
 
 type SettingsLoaders = {
@@ -49,6 +53,9 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [postTitleLength, setPostTitleLength] = useState(
     initialPostSettingsContext.postTitleLength,
   );
+  const [postTextLength, setPostTextLength] = useState(
+    initialPostSettingsContext.postTextLength,
+  );
 
   const togglePostCompactMode = (newValue = !postCompactMode) => {
     setPostCompactMode((prev) => !prev);
@@ -70,6 +77,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     AsyncStorage.setItem("postTitleLength", JSON.stringify(newValue));
   };
 
+  const changePostTextLength = (newValue: number) => {
+    setPostTextLength(newValue);
+    AsyncStorage.setItem("postTextLength", JSON.stringify(newValue));
+  };
+
   const loadSavedData = () => {
     const settingsLoaders: SettingsLoaders = [
       {
@@ -87,6 +99,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
       {
         key: "postTitleLength",
         setFn: setPostTitleLength,
+      },
+      {
+        key: "postTextLength",
+        setFn: setPostTextLength,
       },
     ];
     settingsLoaders.forEach(({ key, setFn }) => {
@@ -115,6 +131,8 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         toggleSubredditIcon,
         postTitleLength,
         changePostTitleLength,
+        postTextLength,
+        changePostTextLength,
       }}
     >
       {children}
