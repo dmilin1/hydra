@@ -1,4 +1,3 @@
-import { useActionSheet } from "@expo/react-native-action-sheet";
 import {
   AntDesign,
   MaterialCommunityIcons,
@@ -19,6 +18,7 @@ import {
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../../../../utils/RedditURL";
+import useContextMenu from "../../../../utils/useContextMenu";
 import ContentEditor from "../../../Modals/ContentEditor";
 
 type SortTypes =
@@ -49,7 +49,7 @@ export default function SortAndContext({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
-  const { showActionSheetWithOptions } = useActionSheet();
+  const showContextMenu = useContextMenu();
 
   const currentPath = history.past.slice(-1)[0]?.elem.props.url;
   const pageType = new RedditURL(currentPath).getPageType();
@@ -60,24 +60,17 @@ export default function SortAndContext({
     history.replace(url);
   };
 
-  const handleTopSort = () => {
-    const options = ["Hour", "Day", "Week", "Month", "Year", "All", "Cancel"];
-    const cancelButtonIndex = options.length;
-    showActionSheetWithOptions(
-      {
-        options: ["Hour", "Day", "Week", "Month", "Year", "All", "Cancel"],
-        cancelButtonIndex,
-      },
-      (buttonIndex) => {
-        if (buttonIndex === undefined || buttonIndex === cancelButtonIndex)
-          return;
-        const url = new RedditURL(currentPath)
-          .changeSort("top")
-          .changeQueryParam("t", options[buttonIndex].toLowerCase())
-          .toString();
-        history.replace(url);
-      },
-    );
+  const handleTopSort = async () => {
+    const topSort = await showContextMenu({
+      options: ["Hour", "Day", "Week", "Month", "Year", "All"],
+    });
+    if (topSort) {
+      const newUrl = new RedditURL(currentPath)
+        .changeSort("top")
+        .changeQueryParam("t", topSort.toLowerCase())
+        .toString();
+      history.replace(newUrl);
+    }
   };
 
   return (
@@ -85,32 +78,20 @@ export default function SortAndContext({
       {sortOptions && (
         <TouchableOpacity
           activeOpacity={0.5}
-          onPress={() => {
-            const cancelButtonIndex = sortOptions.length;
-            showActionSheetWithOptions(
-              {
-                options: [...sortOptions, "Cancel"],
-                cancelButtonIndex,
-              },
-              (buttonIndex) => {
-                if (
-                  buttonIndex === undefined ||
-                  buttonIndex === cancelButtonIndex
-                )
-                  return;
-                const sort = sortOptions[buttonIndex];
-                if (
-                  sort === "Top" &&
-                  [PageType.HOME, PageType.SUBREDDIT, PageType.USER].includes(
-                    pageType,
-                  )
-                ) {
-                  handleTopSort();
-                  return;
-                }
-                changeSort(sort);
-              },
-            );
+          onPress={async () => {
+            const sort = await showContextMenu({
+              options: sortOptions,
+            });
+            if (
+              sort === "Top" &&
+              [PageType.HOME, PageType.SUBREDDIT, PageType.USER].includes(
+                pageType,
+              )
+            ) {
+              handleTopSort();
+            } else if (sort) {
+              changeSort(sort);
+            }
           }}
         >
           {(currentSort === "best" && (
@@ -189,33 +170,21 @@ export default function SortAndContext({
       {contextOptions && (
         <TouchableOpacity
           activeOpacity={0.5}
-          onPress={() => {
-            const cancelButtonIndex = contextOptions.length;
-            showActionSheetWithOptions(
-              {
-                options: [...contextOptions, "Cancel"],
-                cancelButtonIndex,
-              },
-              (buttonIndex) => {
-                if (
-                  buttonIndex === undefined ||
-                  buttonIndex === cancelButtonIndex
-                )
-                  return;
-                if (contextOptions[buttonIndex] === "Share") {
-                  Share.share({ url: new RedditURL(currentPath).toString() });
-                }
-                if (contextOptions[buttonIndex] === "New Post") {
-                  setModal(
-                    <ContentEditor
-                      subreddit={new RedditURL(currentPath).getSubreddit()}
-                      mode="makePost"
-                      contentSent={() => {}}
-                    />,
-                  );
-                }
-              },
-            );
+          onPress={async () => {
+            const result = await showContextMenu({
+              options: contextOptions,
+            });
+            if (result === "Share") {
+              Share.share({ url: new RedditURL(currentPath).toString() });
+            } else if (result === "New Post") {
+              setModal(
+                <ContentEditor
+                  subreddit={new RedditURL(currentPath).getSubreddit()}
+                  mode="makePost"
+                  contentSent={() => {}}
+                />,
+              );
+            }
           }}
         >
           <Entypo

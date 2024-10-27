@@ -14,8 +14,8 @@ import {
   ThemeContext,
   t,
 } from "../../../../../contexts/SettingsContexts/ThemeContext";
-import MediaLibrary from "../../../../../utils/MediaLibrary";
 import URL from "../../../../../utils/URL";
+import useSaveImage from "../../../../../utils/useSaveImage";
 
 const DEVICE_HEIGHT = Dimensions.get("window").height;
 const DEVICE_WIDTH = Dimensions.get("window").width;
@@ -30,7 +30,7 @@ export default function ImageViewer({
   resizeDynamically?: boolean;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
-  const saveImage = MediaLibrary.useSaveImage();
+  const saveImage = useSaveImage();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);

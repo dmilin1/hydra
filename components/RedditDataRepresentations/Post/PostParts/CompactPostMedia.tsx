@@ -18,8 +18,8 @@ import {
   ThemeContext,
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
-import MediaLibrary from "../../../../utils/MediaLibrary";
 import URL, { OpenGraphData } from "../../../../utils/URL";
+import useSaveImage from "../../../../utils/useSaveImage";
 
 type CompactPostMediaProps = {
   post: Post | PostDetail;
@@ -32,7 +32,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
 
-  const saveImage = MediaLibrary.useSaveImage();
+  const saveImage = useSaveImage();
 
   const [mediaOpen, setMediaOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
