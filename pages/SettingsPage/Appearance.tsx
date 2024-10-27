@@ -99,7 +99,6 @@ export default function Appearance() {
             <Picker
               ref={postTitleLengthRef}
               onValueChange={(value) => {
-                console.log(value);
                 if (value) {
                   changePostTitleLength(value);
                 }

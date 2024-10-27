@@ -1,4 +1,3 @@
-import { useActionSheet } from "@expo/react-native-action-sheet";
 import { AntDesign, Octicons } from "@expo/vector-icons";
 import React, {
   useContext,
@@ -15,6 +14,7 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   Alert,
+  Share,
 } from "react-native";
 
 import {
@@ -33,6 +33,8 @@ import {
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import { LoadMoreCommentsFunc } from "../../../../pages/PostDetails";
+import RedditURL from "../../../../utils/RedditURL";
+import useContextMenu from "../../../../utils/useContextMenu";
 import RenderHtml from "../../../HTML/RenderHTML";
 import ContentEditor from "../../../Modals/ContentEditor";
 import Slideable from "../../../UI/Slideable";
@@ -60,7 +62,7 @@ export function CommentComponent({
   const history = useContext(HistoryFunctionsContext);
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
-  const { showActionSheetWithOptions } = useActionSheet();
+  const showContextMenu = useContextMenu();
 
   const commentRef = React.useRef<TouchableOpacity>(null);
 
@@ -132,33 +134,23 @@ export function CommentComponent({
     );
   };
 
-  const showCommentOptions = () => {
-    if (currentUser?.userName !== comment.author) {
-      /**
-       * Don't show options for comments that aren't the user's since the
-       * only options right now are for editing and deleting comments.
-       */
-      return;
+  const showCommentOptions = async () => {
+    const options = [
+      "Reply",
+      ...(currentUser?.userName === comment.author ? ["Edit", "Delete"] : []),
+      "Share",
+    ];
+    const result = await showContextMenu({ options });
+
+    if (result === "Reply") {
+      replyToComment();
+    } else if (result === "Edit") {
+      editComment();
+    } else if (result === "Delete") {
+      confirmDeleteComment();
+    } else if (result === "Share") {
+      Share.share({ url: new RedditURL(comment.link).toString() });
     }
-    const options = ["Edit Comment", "Delete Comment", "Cancel"];
-    const cancelButtonIndex = options.length - 1;
-    showActionSheetWithOptions(
-      {
-        options,
-        cancelButtonIndex,
-      },
-      (buttonIndex) => {
-        if (buttonIndex === undefined || buttonIndex === cancelButtonIndex) {
-          return;
-        }
-        if (options[buttonIndex] === "Edit Comment") {
-          editComment();
-        }
-        if (options[buttonIndex] === "Delete Comment") {
-          confirmDeleteComment();
-        }
-      },
-    );
   };
 
   return useMemo(

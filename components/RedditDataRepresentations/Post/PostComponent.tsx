@@ -1,6 +1,6 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Share } from "react-native";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
@@ -13,6 +13,7 @@ import {
   ThemeContext,
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
+import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
 
 type PostComponentProps = {
@@ -26,6 +27,8 @@ export default function PostComponent({
   const { theme } = useContext(ThemeContext);
   const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
     useContext(PostSettingsContext);
+
+  const openContextMenu = useContextMenu();
 
   const [post, setPost] = useState(initialPostState);
 
@@ -68,6 +71,14 @@ export default function PostComponent({
         })}
         onPress={() => {
           history.pushPath(post.link);
+        }}
+        onLongPress={async () => {
+          const result = await openContextMenu({
+            options: ["Share"],
+          });
+          if (result === "Share") {
+            Share.share({ url: post.link });
+          }
         }}
       >
         {postCompactMode && (
