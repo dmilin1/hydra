@@ -41,7 +41,7 @@ export function formatSubredditData(child: any): Subreddit {
     moderating: child.data.user_is_moderator,
     subscribed: child.data.user_is_subscriber,
     description: child.data.public_description,
-    iconURL: child.data.community_icon,
+    iconURL: child.data.community_icon?.split("?")?.[0] ?? child.data.icon_img,
     subscribers: child.data.subscribers,
     timeSinceCreation:
       new Time(child.data.created_utc * 1000).prettyTimeSince() + " old",

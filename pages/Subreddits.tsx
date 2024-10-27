@@ -1,4 +1,4 @@
-import { FontAwesome5, Feather } from "@expo/vector-icons";
+import { FontAwesome5, Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
 
 import {
@@ -152,13 +153,27 @@ export default function Subreddits() {
                         borderBottomColor: theme.tint,
                       })}
                     >
-                      <Text
-                        style={t(styles.subredditText, {
-                          color: theme.text,
-                        })}
-                      >
-                        {subreddit.name}
-                      </Text>
+                      <>
+                        {subreddit.iconURL ? (
+                          <Image
+                            source={{ uri: subreddit.iconURL }}
+                            style={styles.subredditIcon}
+                          />
+                        ) : (
+                          <FontAwesome
+                            name="reddit"
+                            size={30}
+                            color={theme.text}
+                          />
+                        )}
+                        <Text
+                          style={t(styles.subredditText, {
+                            color: theme.text,
+                          })}
+                        >
+                          {subreddit.name}
+                        </Text>
+                      </>
                     </TouchableHighlight>
                   </View>
                 ))}
@@ -201,9 +216,19 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {},
   subredditContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
+  },
+  subredditIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
   },
   subredditText: {
     fontSize: 16,
