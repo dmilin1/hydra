@@ -9,9 +9,7 @@ import {
   Image,
 } from "react-native";
 
-import {
-  Subreddits as SubredditsObj,
-} from "../api/Subreddits";
+import { Subreddits as SubredditsObj } from "../api/Subreddits";
 import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
@@ -97,12 +95,14 @@ export default function Subreddits() {
             </View>
           </TouchableOpacity>
         ))}
-        {([
-          'favorites',
-          'moderator',
-          'subscriber',
-          'trending'
-        ] as (keyof SubredditsObj)[])
+        {(
+          [
+            "favorites",
+            "moderator",
+            "subscriber",
+            "trending",
+          ] as (keyof SubredditsObj)[]
+        )
           .filter((key) => subreddits[key].length > 0)
           .map((key) => (
             <View style={styles.categoryContainer} key={key}>
@@ -153,16 +153,26 @@ export default function Subreddits() {
                         >
                           {subreddit.name}
                         </Text>
-                        <View
-                          style={styles.favoriteIconContainer}
-                        >
+                        <View style={styles.favoriteIconContainer}>
                           <TouchableOpacity
                             onPress={() => toggleFavorite(subreddit.name)}
                             hitSlop={10}
                           >
                             <FontAwesome
-                              name={subreddits['favorites'].find(sub => sub.name === subreddit.name) ? "star" : "star-o"}
-                              color={subreddits['favorites'].find(sub => sub.name === subreddit.name) ? theme.text : theme.subtleText}
+                              name={
+                                subreddits["favorites"].find(
+                                  (sub) => sub.name === subreddit.name,
+                                )
+                                  ? "star"
+                                  : "star-o"
+                              }
+                              color={
+                                subreddits["favorites"].find(
+                                  (sub) => sub.name === subreddit.name,
+                                )
+                                  ? theme.text
+                                  : theme.subtleText
+                              }
                               style={styles.favoriteIcon}
                             />
                           </TouchableOpacity>
@@ -210,7 +220,7 @@ const styles = StyleSheet.create({
   },
   categoryTitle: {
     marginVertical: 2,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   subredditContainer: {
     flexDirection: "row",

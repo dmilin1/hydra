@@ -52,7 +52,7 @@ export function formatSubredditData(child: any): Subreddit {
 
 export async function getSubreddits(
   options: GetSubredditsOptions = {},
-): Promise<Omit<Subreddits, 'favorites'>> {
+): Promise<Omit<Subreddits, "favorites">> {
   const searchParams = new URLSearchParams(options);
   const subredditsPromise = api(
     `https://www.reddit.com/subreddits/mine.json?limit=100&${searchParams.toString()}`,
@@ -95,7 +95,7 @@ export async function setSubscriptionStatus(
     sr_name: subreddit,
     action: subscribe ? "sub" : "unsub",
   });
-  const res = await api(
+  await api(
     `https://www.reddit.com/api/subscribe.json?${searchParams.toString()}`,
     { method: "POST" },
     { requireAuth: true },

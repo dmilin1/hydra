@@ -1,5 +1,7 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
+import { AccountContext } from "./AccountContext";
 import {
   Subreddit,
   Subreddits as SubredditsObj,
@@ -7,9 +9,6 @@ import {
   getTrending,
   setSubscriptionStatus,
 } from "../api/Subreddits";
-import { AccountContext } from "./AccountContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 
 type SubredditContextType = {
   subreddits: SubredditsObj;
@@ -47,12 +46,14 @@ export class NeedsSubscriptionToFavorite extends Error {
 export function SubredditProvider({ children }: React.PropsWithChildren) {
   const { currentUser } = useContext(AccountContext);
 
-  const [subreddits, setSubreddits] = useState(initialAccountContext.subreddits);
+  const [subreddits, setSubreddits] = useState(
+    initialAccountContext.subreddits,
+  );
 
   const getStorageKey = () => {
     if (!currentUser) {
-      alert('You must be logged in to favorite subreddits');
-      throw new NeedsLoginToFavorite;
+      alert("You must be logged in to favorite subreddits");
+      throw new NeedsLoginToFavorite();
     }
     return `favoriteSubreddits:${currentUser.id}`;
   };
@@ -64,7 +65,9 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
 
   const toggleFavorite = async (subredditName: string): Promise<void> => {
     try {
-      const subToFavorite = subreddits.subscriber.find(sub => sub.name === subredditName);
+      const subToFavorite = subreddits.subscriber.find(
+        (sub) => sub.name === subredditName,
+      );
       if (!subToFavorite) {
         throw new NeedsSubscriptionToFavorite();
       }
@@ -75,8 +78,12 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
       let newFavorites: string[];
       let newFavoriteSubs: Subreddit[];
       if (isFavorite) {
-        newFavorites = currentFavorites.filter(name => name !== subredditName);
-        newFavoriteSubs = subreddits.favorites.filter(fav => fav.name !== subredditName);
+        newFavorites = currentFavorites.filter(
+          (name) => name !== subredditName,
+        );
+        newFavoriteSubs = subreddits.favorites.filter(
+          (fav) => fav.name !== subredditName,
+        );
       } else {
         newFavorites = [...currentFavorites, subredditName];
         newFavoriteSubs = [...subreddits.favorites, subToFavorite];
@@ -100,7 +107,7 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
       const favoriteSubNames = await getFavoriteSubNames();
       const subreddits = await getSubreddits();
       const favorites = subreddits.subscriber.filter((sub) =>
-        favoriteSubNames.includes(sub.name)
+        favoriteSubNames.includes(sub.name),
       );
       setSubreddits({
         ...subreddits,
@@ -120,13 +127,13 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     await setSubscriptionStatus(subreddit, true);
     loadSubreddits();
     alert("Subscribed to " + subreddit);
-  }
+  };
 
   const unsubscribe = async (subreddit: string) => {
     await setSubscriptionStatus(subreddit, false);
     loadSubreddits();
     alert("Unsubscribed from " + subreddit);
-  }
+  };
 
   useEffect(() => {
     loadSubreddits();

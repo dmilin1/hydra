@@ -17,10 +17,10 @@ import {
   ThemeContext,
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
+import { SubredditContext } from "../../../../contexts/SubredditContext";
 import RedditURL, { PageType } from "../../../../utils/RedditURL";
 import useContextMenu from "../../../../utils/useContextMenu";
 import ContentEditor from "../../../Modals/ContentEditor";
-import { SubredditContext } from "../../../../contexts/SubredditContext";
 
 type SortTypes =
   | "Best"
@@ -32,7 +32,13 @@ type SortTypes =
   | "Old"
   | "Q&A";
 
-type ContextTypes = "Share" | "Subscribe" | "Unsubscribe" | "Favorite" | "Unfavorite" | "New Post";
+type ContextTypes =
+  | "Share"
+  | "Subscribe"
+  | "Unsubscribe"
+  | "Favorite"
+  | "Unfavorite"
+  | "New Post";
 
 type SortAndContextProps = {
   sortOptions?: SortTypes[];
@@ -49,7 +55,8 @@ export default function SortAndContext({
   };
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
-  const { subscribe, unsubscribe, toggleFavorite } = useContext(SubredditContext);
+  const { subscribe, unsubscribe, toggleFavorite } =
+    useContext(SubredditContext);
 
   const showContextMenu = useContextMenu();
 
