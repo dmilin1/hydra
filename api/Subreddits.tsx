@@ -52,8 +52,7 @@ export function formatSubredditData(child: any): Subreddit {
 
 export async function getSubreddits(
   options: GetSubredditsOptions = {},
-  favorites: string[] = [],
-): Promise<Subreddits> {
+): Promise<Omit<Subreddits, 'favorites'>> {
   const searchParams = new URLSearchParams(options);
   const subredditsPromise = api(
     `https://www.reddit.com/subreddits/mine.json?limit=100&${searchParams.toString()}`,
@@ -70,12 +69,9 @@ export async function getSubreddits(
     moderatorsPromise,
   ]);
 
-  const allSubreddits = subredditsData.map((child: any) => formatSubredditData(child));
-
   const subreddits = {
-    favorites: allSubreddits.filter((sub: Subreddit) => favorites.includes(sub.name)),
     moderator: moderatorsData.map((child: any) => formatSubredditData(child)),
-    subscriber: allSubreddits.filter((sub: Subreddit) => !favorites.includes(sub.name)),
+    subscriber: subredditsData.map((child: any) => formatSubredditData(child)),
     trending: [],
   };
   return subreddits;
@@ -89,4 +85,19 @@ export async function getTrending(
     `https://www.reddit.com/subreddits.json?${searchParams.toString()}`,
   );
   return data.data.children.map((child: any) => formatSubredditData(child));
+}
+
+export async function setSubscriptionStatus(
+  subreddit: string,
+  subscribe: boolean,
+): Promise<void> {
+  const searchParams = new URLSearchParams({
+    sr_name: subreddit,
+    action: subscribe ? "sub" : "unsub",
+  });
+  const res = await api(
+    `https://www.reddit.com/api/subscribe.json?${searchParams.toString()}`,
+    { method: "POST" },
+    { requireAuth: true },
+  );
 }

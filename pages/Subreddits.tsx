@@ -1,10 +1,9 @@
 import { FontAwesome5, Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import {
   StyleSheet,
   View,
   Text,
-  TouchableHighlight,
   TouchableOpacity,
   ScrollView,
   Image,
@@ -12,43 +11,15 @@ import {
 
 import {
   Subreddits as SubredditsObj,
-  getSubreddits,
-  getTrending,
 } from "../api/Subreddits";
-import { AccountContext } from "../contexts/AccountContext";
-import { FavoritesContext } from "../contexts/FavoritesContext";
 import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { SubredditContext } from "../contexts/SubredditContext";
 
 export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryFunctionsContext);
-  const { currentUser } = useContext(AccountContext);
-  const { favorites } = useContext(FavoritesContext);
-
-  const [subreddits, setSubreddits] = useState<SubredditsObj>({
-    favorites: [],
-    moderator: [],
-    subscriber: [],
-    trending: [],
-  });
-
-  const loadSubreddits = async () => {
-    if (currentUser) {
-      setSubreddits(await getSubreddits({}, favorites));
-    } else {
-      setSubreddits({
-        moderator: [],
-        subscriber: [],
-        trending: await getTrending({ limit: "30" }),
-        favorites: [],
-      });
-    }
-  };
-
-  useEffect(() => {
-    loadSubreddits();
-  }, [currentUser, favorites]);
+  const { subreddits, toggleFavorite } = useContext(SubredditContext);
 
   return (
     <View style={styles.subredditsContainer}>
@@ -126,7 +97,12 @@ export default function Subreddits() {
             </View>
           </TouchableOpacity>
         ))}
-        {(Object.keys(subreddits) as (keyof SubredditsObj)[])
+        {([
+          'favorites',
+          'moderator',
+          'subscriber',
+          'trending'
+        ] as (keyof SubredditsObj)[])
           .filter((key) => subreddits[key].length > 0)
           .map((key) => (
             <View style={styles.categoryContainer} key={key}>
@@ -137,10 +113,10 @@ export default function Subreddits() {
               >
                 <Text
                   style={t(styles.categoryTitle, {
-                    color: theme.text,
+                    color: theme.subtleText,
                   })}
                 >
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                  {key.toUpperCase()}
                 </Text>
               </View>
               {subreddits[key]
@@ -149,7 +125,7 @@ export default function Subreddits() {
                 )
                 .map((subreddit) => (
                   <View key={subreddit.name}>
-                    <TouchableHighlight
+                    <TouchableOpacity
                       key={subreddit.name}
                       onPress={() => history.pushPath(subreddit.url)}
                       activeOpacity={0.5}
@@ -177,8 +153,22 @@ export default function Subreddits() {
                         >
                           {subreddit.name}
                         </Text>
+                        <View
+                          style={styles.favoriteIconContainer}
+                        >
+                          <TouchableOpacity
+                            onPress={() => toggleFavorite(subreddit.name)}
+                            hitSlop={10}
+                          >
+                            <FontAwesome
+                              name={subreddits['favorites'].find(sub => sub.name === subreddit.name) ? "star" : "star-o"}
+                              color={subreddits['favorites'].find(sub => sub.name === subreddit.name) ? theme.text : theme.subtleText}
+                              style={styles.favoriteIcon}
+                            />
+                          </TouchableOpacity>
+                        </View>
                       </>
-                    </TouchableHighlight>
+                    </TouchableOpacity>
                   </View>
                 ))}
             </View>
@@ -200,8 +190,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   bigButtonIconContainer: {
-    width: 45,
-    height: 45,
+    width: 40,
+    height: 40,
     marginRight: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -218,7 +208,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
   },
-  categoryTitle: {},
+  categoryTitle: {
+    marginVertical: 2,
+    fontWeight: '500',
+  },
   subredditContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -240,5 +233,13 @@ const styles = StyleSheet.create({
   subredditDescription: {
     fontSize: 12,
     marginTop: 5,
+  },
+  favoriteIconContainer: {
+    flex: 1,
+    alignItems: "flex-end",
+    marginRight: 10,
+  },
+  favoriteIcon: {
+    fontSize: 22,
   },
 });

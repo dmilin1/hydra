@@ -20,6 +20,7 @@ import {
 import RedditURL, { PageType } from "../../../../utils/RedditURL";
 import useContextMenu from "../../../../utils/useContextMenu";
 import ContentEditor from "../../../Modals/ContentEditor";
+import { SubredditContext } from "../../../../contexts/SubredditContext";
 
 type SortTypes =
   | "Best"
@@ -31,7 +32,7 @@ type SortTypes =
   | "Old"
   | "Q&A";
 
-type ContextTypes = "Share" | "New Post";
+type ContextTypes = "Share" | "Subscribe" | "Unsubscribe" | "Favorite" | "Unfavorite" | "New Post";
 
 type SortAndContextProps = {
   sortOptions?: SortTypes[];
@@ -48,6 +49,7 @@ export default function SortAndContext({
   };
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
+  const { subscribe, unsubscribe, toggleFavorite } = useContext(SubredditContext);
 
   const showContextMenu = useContextMenu();
 
@@ -184,6 +186,12 @@ export default function SortAndContext({
                   contentSent={() => {}}
                 />,
               );
+            } else if (result === "Subscribe") {
+              subscribe(new RedditURL(currentPath).getSubreddit());
+            } else if (result === "Unsubscribe") {
+              unsubscribe(new RedditURL(currentPath).getSubreddit());
+            } else if (result === "Favorite" || result === "Unfavorite") {
+              toggleFavorite(new RedditURL(currentPath).getSubreddit());
             }
           }}
         >

@@ -1,16 +1,16 @@
 
 ### HARD
-- Mark subreddits as favorites (no official API that I can find)
 - Respond to inbox messages
 - Get polls working
 - Make subreddit title a search button
 - Image upload when making posts/comments
 - Make OTA updating smoother
 - Accessibility support
+- Make multireddits work
 
 
 ### Medium
-- Subscribe/unsubscribe to subreddit
+- Add option to blur NSFW
 
 
 ### Easy
