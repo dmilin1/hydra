@@ -16,6 +16,7 @@ import {
   getTrending,
 } from "../api/Subreddits";
 import { AccountContext } from "../contexts/AccountContext";
+import { FavoritesContext } from "../contexts/FavoritesContext";
 import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
@@ -23,8 +24,10 @@ export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
   const history = useContext(HistoryFunctionsContext);
   const { currentUser } = useContext(AccountContext);
+  const { favorites } = useContext(FavoritesContext);
 
   const [subreddits, setSubreddits] = useState<SubredditsObj>({
+    favorites: [],
     moderator: [],
     subscriber: [],
     trending: [],
@@ -32,19 +35,20 @@ export default function Subreddits() {
 
   const loadSubreddits = async () => {
     if (currentUser) {
-      setSubreddits(await getSubreddits());
+      setSubreddits(await getSubreddits({}, favorites));
     } else {
       setSubreddits({
         moderator: [],
         subscriber: [],
         trending: await getTrending({ limit: "30" }),
+        favorites: [],
       });
     }
   };
 
   useEffect(() => {
     loadSubreddits();
-  }, [currentUser]);
+  }, [currentUser, favorites]);
 
   return (
     <View style={styles.subredditsContainer}>

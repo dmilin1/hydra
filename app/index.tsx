@@ -18,6 +18,7 @@ import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
+import { FavoritesProvider } from "../contexts/FavoritesContext";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -45,9 +46,11 @@ export default function RootLayout() {
           <AccountProvider>
             <ActionSheetProvider>
               <InboxProvider>
-                <ModalProvider>
-                  <>{loaded && <Tabs />}</>
-                </ModalProvider>
+                <FavoritesProvider>
+                  <ModalProvider>
+                    <>{loaded && <Tabs />}</>
+                  </ModalProvider>
+                </FavoritesProvider>
               </InboxProvider>
             </ActionSheetProvider>
           </AccountProvider>

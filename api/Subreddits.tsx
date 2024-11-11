@@ -17,6 +17,7 @@ export type Subreddit = {
 };
 
 export type Subreddits = {
+  favorites: Subreddit[];
   moderator: Subreddit[];
   subscriber: Subreddit[];
   trending: Subreddit[];
@@ -51,6 +52,7 @@ export function formatSubredditData(child: any): Subreddit {
 
 export async function getSubreddits(
   options: GetSubredditsOptions = {},
+  favorites: string[] = [],
 ): Promise<Subreddits> {
   const searchParams = new URLSearchParams(options);
   const subredditsPromise = api(
@@ -67,9 +69,13 @@ export async function getSubreddits(
     subredditsPromise,
     moderatorsPromise,
   ]);
+
+  const allSubreddits = subredditsData.map((child: any) => formatSubredditData(child));
+
   const subreddits = {
+    favorites: allSubreddits.filter((sub: Subreddit) => favorites.includes(sub.name)),
     moderator: moderatorsData.map((child: any) => formatSubredditData(child)),
-    subscriber: subredditsData.map((child: any) => formatSubredditData(child)),
+    subscriber: allSubreddits.filter((sub: Subreddit) => !favorites.includes(sub.name)),
     trending: [],
   };
   return subreddits;
