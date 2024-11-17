@@ -7,10 +7,15 @@
 - Make OTA updating smoother
 - Accessibility support
 - Make multireddits work
+- Mark posts as seen/read
 
 
 ### Medium
 - Add option to blur NSFW
+- Collapse automod comments
 
 
 ### Easy
+- Fix accounts with special characters
+- Add upvote/downvote highlight bar on the side (https://www.reddit.com/r/HydraFeatureRequests/comments/1g9mnjx/comment/lwtnmiv/?context=3)
+- Change .tsx files in /api and /utils to .ts
