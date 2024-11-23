@@ -5,9 +5,11 @@ import {
   SimpleLineIcons,
   Entypo,
 } from "@expo/vector-icons";
+import { RouteProp } from "@react-navigation/native";
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
+import { StackParamsList, URLRoutes } from "../../../app/stack";
 import { ModalContext } from "../../../contexts/ModalContext";
 import {
   ThemeContext,
@@ -15,11 +17,9 @@ import {
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../../contexts/SubredditContext";
 import RedditURL, { PageType } from "../../../utils/RedditURL";
+import { useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import ContentEditor from "../../Modals/ContentEditor";
-import { RouteProp } from "@react-navigation/native";
-import { StackParamsList, URLRoutes } from "../../../app/stack";
-import { useURLNavigation } from "../../../utils/navigation";
 
 type SortTypes =
   | "Best"

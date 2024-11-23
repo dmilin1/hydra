@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
 import { User, UserContent, getUser, getUserContent } from "../api/User";
+import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import { CommentComponent } from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import List from "../components/UI/List";
@@ -11,10 +12,9 @@ import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../utils/Numbers";
 import Time from "../utils/Time";
 import URL from "../utils/URL";
-import { StackPageProps } from "../app/stack";
 import { useURLNavigation } from "../utils/navigation";
 
-export default function UserPage({ route, navigation }: StackPageProps<"UserPage">) {
+export default function UserPage({ route }: StackPageProps<"UserPage">) {
   const url = route.params.url;
 
   const { theme } = useContext(ThemeContext);
@@ -105,8 +105,7 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                         />
                       ),
                       text: "Posts",
-                      onPress: () =>
-                        pushURL(`/u/${user.userName}/submitted`),
+                      onPress: () => pushURL(`/u/${user.userName}/submitted`),
                     },
                     {
                       key: "comments",
@@ -118,64 +117,62 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                         />
                       ),
                       text: "Comments",
-                      onPress: () =>
-                        pushURL(`/u/${user.userName}/comments`),
+                      onPress: () => pushURL(`/u/${user.userName}/comments`),
                     },
                     ...(user.isLoggedInUser
                       ? [
-                        {
-                          key: "upvoted",
-                          icon: (
-                            <Feather
-                              name="thumbs-up"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Upvoted",
-                          onPress: () =>
-                            pushURL(`/u/${user.userName}/upvoted`),
-                        },
-                        {
-                          key: "downvoted",
-                          icon: (
-                            <Feather
-                              name="thumbs-down"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Downvoted",
-                          onPress: () =>
-                            pushURL(`/u/${user.userName}/downvoted`),
-                        },
-                        {
-                          key: "hidden",
-                          icon: (
-                            <Feather
-                              name="eye-off"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Hidden",
-                          onPress: () =>
-                            pushURL(`/u/${user.userName}/hidden`),
-                        },
-                        {
-                          key: "saved",
-                          icon: (
-                            <Feather
-                              name="bookmark"
-                              size={24}
-                              color={theme.iconPrimary}
-                            />
-                          ),
-                          text: "Saved",
-                          onPress: () =>
-                            pushURL(`/u/${user.userName}/saved`),
-                        },
-                      ]
+                          {
+                            key: "upvoted",
+                            icon: (
+                              <Feather
+                                name="thumbs-up"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Upvoted",
+                            onPress: () =>
+                              pushURL(`/u/${user.userName}/upvoted`),
+                          },
+                          {
+                            key: "downvoted",
+                            icon: (
+                              <Feather
+                                name="thumbs-down"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Downvoted",
+                            onPress: () =>
+                              pushURL(`/u/${user.userName}/downvoted`),
+                          },
+                          {
+                            key: "hidden",
+                            icon: (
+                              <Feather
+                                name="eye-off"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Hidden",
+                            onPress: () =>
+                              pushURL(`/u/${user.userName}/hidden`),
+                          },
+                          {
+                            key: "saved",
+                            icon: (
+                              <Feather
+                                name="bookmark"
+                                size={24}
+                                color={theme.iconPrimary}
+                              />
+                            ),
+                            text: "Saved",
+                            onPress: () => pushURL(`/u/${user.userName}/saved`),
+                          },
+                        ]
                       : []),
                   ]}
                 />

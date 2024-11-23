@@ -2,16 +2,17 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { getPosts, Post } from "../api/Posts";
+import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import Scroller from "../components/UI/Scroller";
 import SearchBar from "../components/UI/SearchBar";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../utils/RedditURL";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { StackPageProps, StackParamsList } from "../app/stack";
 
-
-export default function PostsPage({ route, navigation }: StackPageProps<"PostsPage" | "Home">) {
+export default function PostsPage({
+  route,
+  navigation,
+}: StackPageProps<"PostsPage" | "Home">) {
   const { theme } = useContext(ThemeContext);
 
   const [posts, setPosts] = useState<Post[]>([]);

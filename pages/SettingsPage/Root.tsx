@@ -47,8 +47,7 @@ export default function Root() {
               <Feather name="git-pull-request" size={24} color={theme.text} />
             ),
             text: "Request A Feature",
-            onPress: () =>
-              pushURL("/r/HydraFeatureRequests/top?t=all"),
+            onPress: () => pushURL("/r/HydraFeatureRequests/top?t=all"),
           },
         ]}
       />

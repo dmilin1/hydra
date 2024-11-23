@@ -5,7 +5,6 @@ import "expo-dev-client";
 
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { NavigationContainer } from "@react-navigation/native";
 import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
@@ -17,9 +16,9 @@ import Tabs from "./tabs";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
+import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
-import NavigationProvider from "../contexts/NavigationContext";
 
 LogBox.ignoreLogs([
   "Require cycle: ",

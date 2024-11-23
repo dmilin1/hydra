@@ -12,9 +12,9 @@ import {
   ThemeContext,
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
+import { useNavigation, useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
-import { useNavigation, useURLNavigation } from "../../../utils/navigation";
 
 type PostComponentProps = {
   initialPostState: Post;
@@ -97,7 +97,9 @@ export default function PostComponent({
               )}
               activeOpacity={0.5}
               onPress={() =>
-                navigation.push("PostsPage", { url: `https://www.reddit.com/r/${post.subreddit}` })
+                navigation.push("PostsPage", {
+                  url: `https://www.reddit.com/r/${post.subreddit}`,
+                })
               }
             >
               <SubredditIcon post={post} />
@@ -149,9 +151,7 @@ export default function PostComponent({
                       style={styles.subredditContainer}
                       activeOpacity={0.5}
                       onPress={() =>
-                        pushURL(
-                          `https://www.reddit.com/r/${post.subreddit}`,
-                        )
+                        pushURL(`https://www.reddit.com/r/${post.subreddit}`)
                       }
                     >
                       <SubredditIcon post={post} />
@@ -175,9 +175,7 @@ export default function PostComponent({
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() =>
-                    pushURL(
-                      `https://www.reddit.com/user/${post.author}`,
-                    )
+                    pushURL(`https://www.reddit.com/user/${post.author}`)
                   }
                 >
                   <Text

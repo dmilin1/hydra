@@ -33,11 +33,11 @@ import {
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import { LoadMoreCommentsFunc } from "../../../../pages/PostDetails";
 import RedditURL from "../../../../utils/RedditURL";
+import { useURLNavigation } from "../../../../utils/navigation";
 import useContextMenu from "../../../../utils/useContextMenu";
 import RenderHtml from "../../../HTML/RenderHTML";
 import ContentEditor from "../../../Modals/ContentEditor";
 import Slideable from "../../../UI/Slideable";
-import { useURLNavigation } from "../../../../utils/navigation";
 
 interface CommentProps {
   loadMoreComments?: LoadMoreCommentsFunc;
@@ -218,7 +218,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === 0 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                      (comment.depth - 1) % theme.postColorTint.length
+                        (comment.depth - 1) % theme.postColorTint.length
                       ],
                   },
                 )}
@@ -365,7 +365,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === -1 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                      comment.depth % theme.postColorTint.length
+                        comment.depth % theme.postColorTint.length
                       ],
                   })}
                 >

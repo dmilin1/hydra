@@ -17,8 +17,8 @@ import {
 
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../../utils/RedditURL";
-import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
 import { useURLNavigation } from "../../utils/navigation";
+import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
 
 type InheritedStyles = ViewStyle & TextStyle;
 

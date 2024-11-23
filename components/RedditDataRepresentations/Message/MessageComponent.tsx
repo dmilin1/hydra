@@ -10,9 +10,9 @@ import {
   ThemeContext,
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
+import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
-import { useURLNavigation } from "../../../utils/navigation";
 
 type MessageComponentProps = {
   initialMessageState: CommentReply;
@@ -122,9 +122,7 @@ export default function MessageComponent({
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() =>
-                  pushURL(
-                    `https://www.reddit.com/r/${message.subreddit}`,
-                  )
+                  pushURL(`https://www.reddit.com/r/${message.subreddit}`)
                 }
               >
                 <Text
@@ -146,9 +144,7 @@ export default function MessageComponent({
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
-                  pushURL(
-                    `https://www.reddit.com/user/${message.author}`,
-                  )
+                  pushURL(`https://www.reddit.com/user/${message.author}`)
                 }
               >
                 <Text

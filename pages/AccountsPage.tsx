@@ -16,7 +16,6 @@ import { AccountContext } from "../contexts/AccountContext";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
-
 export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, logIn, logOut, removeUser } =
@@ -40,18 +39,18 @@ export default function AccountsPage() {
                   account.username === "Logged Out"
                     ? undefined
                     : [
-                      {
-                        icon: (
-                          <Feather name="trash" style={{ fontSize: 24 }} />
-                        ),
-                        color: theme.delete,
-                        action: async () => {
-                          setLoading(true);
-                          await removeUser(account);
-                          setLoading(false);
+                        {
+                          icon: (
+                            <Feather name="trash" style={{ fontSize: 24 }} />
+                          ),
+                          color: theme.delete,
+                          action: async () => {
+                            setLoading(true);
+                            await removeUser(account);
+                            setLoading(false);
+                          },
                         },
-                      },
-                    ]
+                      ]
                 }
               >
                 <TouchableOpacity
@@ -86,21 +85,21 @@ export default function AccountsPage() {
                   </Text>
                   {(currentAcc?.username === account.username ||
                     (!currentAcc && account.username === "Logged Out")) && (
-                      <>
-                        {loading ? (
-                          <ActivityIndicator size="small" color={theme.text} />
-                        ) : (
-                          <Feather
-                            name="check"
-                            style={{
-                              fontSize: 24,
-                              color: theme.buttonText,
-                              marginVertical: -5,
-                            }}
-                          />
-                        )}
-                      </>
-                    )}
+                    <>
+                      {loading ? (
+                        <ActivityIndicator size="small" color={theme.text} />
+                      ) : (
+                        <Feather
+                          name="check"
+                          style={{
+                            fontSize: 24,
+                            color: theme.buttonText,
+                            marginVertical: -5,
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
                 </TouchableOpacity>
               </Slideable>
             ),

@@ -26,6 +26,7 @@ import {
   savePost,
 } from "../api/PostDetail";
 import { VoteOption } from "../api/Posts";
+import { StackPageProps } from "../app/stack";
 import ContentEditor from "../components/Modals/ContentEditor";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import PostMedia from "../components/RedditDataRepresentations/Post/PostParts/PostMedia";
@@ -34,7 +35,6 @@ import Scroller from "../components/UI/Scroller";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
-import { StackPageProps } from "../app/stack";
 import { useURLNavigation } from "../utils/navigation";
 
 export type LoadMoreCommentsFunc = (
@@ -43,7 +43,9 @@ export type LoadMoreCommentsFunc = (
   childStartIndex: number,
 ) => Promise<void>;
 
-export default function PostDetails({ route, navigation }: StackPageProps<"PostDetailsPage">) {
+export default function PostDetails({
+  route,
+}: StackPageProps<"PostDetailsPage">) {
   const url = route.params.url;
 
   const { theme } = useContext(ThemeContext);
@@ -234,9 +236,7 @@ export default function PostDetails({ route, navigation }: StackPageProps<"PostD
                       <TouchableOpacity
                         style={styles.subredditContainer}
                         activeOpacity={0.5}
-                        onPress={() =>
-                          pushURL(`/r/${postDetail.subreddit}`)
-                        }
+                        onPress={() => pushURL(`/r/${postDetail.subreddit}`)}
                       >
                         <SubredditIcon post={postDetail} />
                         <Text
@@ -256,9 +256,7 @@ export default function PostDetails({ route, navigation }: StackPageProps<"PostD
                       </Text>
                       <TouchableOpacity
                         activeOpacity={0.5}
-                        onPress={() =>
-                          pushURL(`/u/${postDetail.author}`)
-                        }
+                        onPress={() => pushURL(`/u/${postDetail.author}`)}
                       >
                         <Text
                           style={t(styles.boldedSmallText, {

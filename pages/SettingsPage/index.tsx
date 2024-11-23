@@ -5,11 +5,13 @@ import Appearance from "./Appearance";
 import DataUse from "./DataUse";
 import Root from "./Root";
 import Theme from "./Theme";
+import { StackPageProps } from "../../app/stack";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
-import { StackPageProps } from "../../app/stack";
 
-export default function SettingsPage({ route, navigation }: StackPageProps<"SettingsPage">) {
+export default function SettingsPage({
+  route,
+}: StackPageProps<"SettingsPage">) {
   const url = route.params.url;
 
   const { theme } = useContext(ThemeContext);
