@@ -10,15 +10,11 @@ import { SplashScreen } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Account from "./account";
-import Inbox from "./inbox";
-import Posts from "./posts";
-import Search from "./search";
-import Settings from "./settings";
 import LoadingSplash from "../../components/UI/LoadingSplash";
 import { AccountContext } from "../../contexts/AccountContext";
 import { InboxContext } from "../../contexts/InboxContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import Stack from "../stack";
 
 const Tab = createBottomTabNavigator();
 
@@ -65,8 +61,9 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Posts",
             }}
-            component={Posts}
-          />
+          >
+            {() => Stack()}
+          </Tab.Screen>
           <Tab.Screen
             name="Inbox"
             options={{
@@ -86,8 +83,9 @@ export default function Tabs() {
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
               unmountOnBlur: true,
             }}
-            component={Inbox}
-          />
+          >
+            {() => Stack()}
+          </Tab.Screen>
           <Tab.Screen
             name="Account"
             options={{
@@ -105,8 +103,9 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: currentUser?.userName ?? "Account",
             }}
-            component={Account}
-          />
+          >
+            {() => Stack()}
+          </Tab.Screen>
           <Tab.Screen
             name="Search"
             options={{
@@ -124,8 +123,9 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Search",
             }}
-            component={Search}
-          />
+          >
+            {() => Stack()}
+          </Tab.Screen>
           <Tab.Screen
             name="Settings"
             options={{
@@ -143,8 +143,9 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Settings",
             }}
-            component={Settings}
-          />
+          >
+            {() => Stack()}
+          </Tab.Screen>
         </Tab.Navigator>
       ) : (
         <LoadingSplash />

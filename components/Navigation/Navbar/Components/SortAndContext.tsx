@@ -21,6 +21,8 @@ import { SubredditContext } from "../../../../contexts/SubredditContext";
 import RedditURL, { PageType } from "../../../../utils/RedditURL";
 import useContextMenu from "../../../../utils/useContextMenu";
 import ContentEditor from "../../../Modals/ContentEditor";
+import { RouteProp } from "@react-navigation/native";
+import { StackParamsList, URLRoutes } from "../../../../app/stack";
 
 type SortTypes =
   | "Best"
@@ -41,11 +43,13 @@ type ContextTypes =
   | "New Post";
 
 type SortAndContextProps = {
+  route: RouteProp<StackParamsList, URLRoutes>;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
 };
 
 export default function SortAndContext({
+  route,
   sortOptions,
   contextOptions,
 }: SortAndContextProps) {
@@ -60,7 +64,7 @@ export default function SortAndContext({
 
   const showContextMenu = useContextMenu();
 
-  const currentPath = history.past.slice(-1)[0]?.elem.props.url;
+  const currentPath = route.params.url;
   const pageType = new RedditURL(currentPath).getPageType();
   const currentSort = currentPath ? new RedditURL(currentPath).getSort() : null;
 
@@ -206,7 +210,6 @@ export default function SortAndContext({
             name="dots-three-horizontal"
             size={24}
             color={theme.buttonText}
-            style={{ paddingRight: 15 }}
           />
         </TouchableOpacity>
       )}
@@ -216,7 +219,6 @@ export default function SortAndContext({
 
 const styles = StyleSheet.create({
   sectionContainer: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

@@ -15,6 +15,7 @@ import {
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
+import { useNavigation } from "../../../utils/navigation";
 
 type PostComponentProps = {
   initialPostState: Post;
@@ -27,6 +28,8 @@ export default function PostComponent({
   const { theme } = useContext(ThemeContext);
   const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
     useContext(PostSettingsContext);
+
+  const navigation = useNavigation();
 
   const openContextMenu = useContextMenu();
 
@@ -95,7 +98,7 @@ export default function PostComponent({
               )}
               activeOpacity={0.5}
               onPress={() =>
-                history.pushPath(`https://www.reddit.com/r/${post.subreddit}`)
+                navigation.push("PostsPage", { url: `https://www.reddit.com/r/${post.subreddit}` })
               }
             >
               <SubredditIcon post={post} />

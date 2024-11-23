@@ -38,10 +38,7 @@ import {
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
-
-type PostDetailsProps = {
-  url: string;
-};
+import { StackPageProps } from "../app/stack";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -49,7 +46,9 @@ export type LoadMoreCommentsFunc = (
   childStartIndex: number,
 ) => Promise<void>;
 
-export default function PostDetails({ url }: PostDetailsProps) {
+export default function PostDetails({ route, navigation }: StackPageProps<"PostDetailsPage">) {
+  const url = route.params.url;
+
   const { theme } = useContext(ThemeContext);
   const history = {
     ...useContext(HistoryContext),

@@ -7,8 +7,11 @@ import Root from "./Root";
 import Theme from "./Theme";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
+import { StackPageProps } from "../../app/stack";
 
-export default function SettingsPage({ url }: { url: string }) {
+export default function SettingsPage({ route, navigation }: StackPageProps<"SettingsPage">) {
+  const url = route.params.url;
+
   const { theme } = useContext(ThemeContext);
 
   const relativePath = new URL(url).getRelativePath();

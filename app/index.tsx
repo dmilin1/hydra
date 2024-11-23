@@ -19,6 +19,7 @@ import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
+import NavigationProvider from "../contexts/NavigationContext";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -41,9 +42,9 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <SettingsProvider>
-          <AccountProvider>
+      <SettingsProvider>
+        <AccountProvider>
+          <NavigationProvider>
             <ActionSheetProvider>
               <InboxProvider>
                 <ModalProvider>
@@ -53,9 +54,9 @@ export default function RootLayout() {
                 </ModalProvider>
               </InboxProvider>
             </ActionSheetProvider>
-          </AccountProvider>
-        </SettingsProvider>
-      </NavigationContainer>
+          </NavigationProvider>
+        </AccountProvider>
+      </SettingsProvider>
     </SafeAreaProvider>
   );
 }

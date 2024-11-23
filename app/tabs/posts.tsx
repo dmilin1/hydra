@@ -1,22 +1,23 @@
 import React from "react";
 
-import HistoryStack from "../../components/Navigation/HistoryStack";
+import HistoryStack from "../stack";
 import PostsPage from "../../pages/PostsPage";
 import Subreddits from "../../pages/Subreddits";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-export default function Posts() {
-  return (
-    <HistoryStack
-      initialPast={[
-        {
-          elem: <Subreddits />,
-          name: "Subreddits",
-        },
-        {
-          elem: <PostsPage url="https://www.reddit.com/best" />,
-          name: "Home",
-        },
-      ]}
-    />
-  );
+type PageParams = {
+  url: string;
 }
+
+type PageParamsList = {
+  PostsPage: PageParams;
+  Subreddits: PageParams;
+}
+
+export default () => HistoryStack({
+  initialParams: {
+    Home: {
+      url: "https://www.reddit.com/",
+    },
+  },
+});
