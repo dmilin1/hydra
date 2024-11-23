@@ -8,21 +8,18 @@ import {
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
-import {
-  HistoryContext,
-  HistoryFunctionsContext,
-} from "../../../../contexts/HistoryContext";
-import { ModalContext } from "../../../../contexts/ModalContext";
+import { ModalContext } from "../../../contexts/ModalContext";
 import {
   ThemeContext,
   t,
-} from "../../../../contexts/SettingsContexts/ThemeContext";
-import { SubredditContext } from "../../../../contexts/SubredditContext";
-import RedditURL, { PageType } from "../../../../utils/RedditURL";
-import useContextMenu from "../../../../utils/useContextMenu";
-import ContentEditor from "../../../Modals/ContentEditor";
+} from "../../../contexts/SettingsContexts/ThemeContext";
+import { SubredditContext } from "../../../contexts/SubredditContext";
+import RedditURL, { PageType } from "../../../utils/RedditURL";
+import useContextMenu from "../../../utils/useContextMenu";
+import ContentEditor from "../../Modals/ContentEditor";
 import { RouteProp } from "@react-navigation/native";
-import { StackParamsList, URLRoutes } from "../../../../app/stack";
+import { StackParamsList, URLRoutes } from "../../../app/stack";
+import { useURLNavigation } from "../../../utils/navigation";
 
 type SortTypes =
   | "Best"
@@ -53,14 +50,12 @@ export default function SortAndContext({
   sortOptions,
   contextOptions,
 }: SortAndContextProps) {
-  const history = {
-    ...useContext(HistoryContext),
-    ...useContext(HistoryFunctionsContext),
-  };
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
   const { subscribe, unsubscribe, toggleFavorite } =
     useContext(SubredditContext);
+
+  const { replaceURL } = useURLNavigation();
 
   const showContextMenu = useContextMenu();
 
@@ -70,7 +65,7 @@ export default function SortAndContext({
 
   const changeSort = (sort: string) => {
     const url = new RedditURL(currentPath).changeSort(sort).toString();
-    history.replace(url);
+    replaceURL(url);
   };
 
   const handleTopSort = async () => {
@@ -82,7 +77,7 @@ export default function SortAndContext({
         .changeSort("top")
         .changeQueryParam("t", topSort.toLowerCase())
         .toString();
-      history.replace(newUrl);
+      replaceURL(newUrl);
     }
   };
 

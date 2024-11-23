@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackParamsList } from "./index";
 import AccountsPage from "../../pages/AccountsPage";
-import IconButton from "../../components/Navigation/Navbar/Components/IconButton";
+import IconButton from "../../components/RedditDataRepresentations/Navbar/IconButton";
 import { Entypo } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ModalContext } from "../../contexts/ModalContext";

@@ -7,7 +7,6 @@ import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
 import { vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
-import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import {
   ThemeContext,
@@ -15,7 +14,7 @@ import {
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
-import { useNavigation } from "../../../utils/navigation";
+import { useNavigation, useURLNavigation } from "../../../utils/navigation";
 
 type PostComponentProps = {
   initialPostState: Post;
@@ -24,7 +23,7 @@ type PostComponentProps = {
 export default function PostComponent({
   initialPostState,
 }: PostComponentProps) {
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
   const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
     useContext(PostSettingsContext);
@@ -73,7 +72,7 @@ export default function PostComponent({
           flexDirection: postCompactMode ? "row" : "column",
         })}
         onPress={() => {
-          history.pushPath(post.link);
+          pushURL(post.link);
         }}
         onLongPress={async () => {
           const result = await openContextMenu({
@@ -150,7 +149,7 @@ export default function PostComponent({
                       style={styles.subredditContainer}
                       activeOpacity={0.5}
                       onPress={() =>
-                        history.pushPath(
+                        pushURL(
                           `https://www.reddit.com/r/${post.subreddit}`,
                         )
                       }
@@ -176,7 +175,7 @@ export default function PostComponent({
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() =>
-                    history.pushPath(
+                    pushURL(
                       `https://www.reddit.com/user/${post.author}`,
                     )
                   }

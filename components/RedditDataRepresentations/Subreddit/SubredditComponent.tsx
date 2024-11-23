@@ -3,19 +3,19 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { Subreddit } from "../../../api/Subreddits";
-import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
 import {
   ThemeContext,
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../../../utils/Numbers";
+import { useURLNavigation } from "../../../utils/navigation";
 
 export default function SubredditComponent({
   subreddit,
 }: {
   subreddit: Subreddit;
 }) {
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
 
   return (
@@ -26,7 +26,7 @@ export default function SubredditComponent({
           backgroundColor: theme.background,
         })}
         onPress={() => {
-          history.pushPath(subreddit.url);
+          pushURL(subreddit.url);
         }}
       >
         <Text

@@ -15,12 +15,12 @@ import UserComponent from "../components/RedditDataRepresentations/User/UserComp
 import List from "../components/UI/List";
 import Scroller from "../components/UI/Scroller";
 import SearchBar from "../components/UI/SearchBar";
-import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { useURLNavigation } from "../utils/navigation";
 
 export default function SearchPage() {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
 
   const [trending, setTrending] = useState<Subreddit[]>([]);
   const search = useRef<string>("");
@@ -110,7 +110,7 @@ export default function SearchPage() {
                   />
                 ),
                 text: sub.name,
-                onPress: () => history.pushPath(sub.url),
+                onPress: () => pushURL(sub.url),
               }))}
             />
           )

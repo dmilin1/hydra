@@ -2,7 +2,7 @@ import { TypedNavigator } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackParamsList } from "./index";
 import PostsPage from "../../pages/PostsPage";
-import SortAndContext from "../../components/Navigation/Navbar/Components/SortAndContext";
+import SortAndContext from "../../components/RedditDataRepresentations/Navbar/SortAndContext";
 import { useContext } from "react";
 import { SubredditContext } from "../../contexts/SubredditContext";
 import RedditURL from "../../utils/RedditURL";

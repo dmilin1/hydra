@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import {
   ThemeContext,
   t,
-} from "../../../../contexts/SettingsContexts/ThemeContext";
+} from "../../../contexts/SettingsContexts/ThemeContext";
 
 type TextButtonProps = {
   text: string;

@@ -26,7 +26,6 @@ import {
 } from "../../../../api/PostDetail";
 import { VoteOption } from "../../../../api/Posts";
 import { AccountContext } from "../../../../contexts/AccountContext";
-import { HistoryFunctionsContext } from "../../../../contexts/HistoryContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import {
   ThemeContext,
@@ -38,6 +37,7 @@ import useContextMenu from "../../../../utils/useContextMenu";
 import RenderHtml from "../../../HTML/RenderHTML";
 import ContentEditor from "../../../Modals/ContentEditor";
 import Slideable from "../../../UI/Slideable";
+import { useURLNavigation } from "../../../../utils/navigation";
 
 interface CommentProps {
   loadMoreComments?: LoadMoreCommentsFunc;
@@ -59,7 +59,7 @@ export function CommentComponent({
   deleteComment,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
   const showContextMenu = useContextMenu();
@@ -186,7 +186,7 @@ export function CommentComponent({
               onPress={() => {
                 if (displayInList) {
                   if (comment.type === "comment") {
-                    history.pushPath(comment.link);
+                    pushURL(comment.link);
                   }
                 } else {
                   commentRef.current?.measure(
@@ -218,7 +218,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === 0 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                        (comment.depth - 1) % theme.postColorTint.length
+                      (comment.depth - 1) % theme.postColorTint.length
                       ],
                   },
                 )}
@@ -237,7 +237,7 @@ export function CommentComponent({
                     />
                   )}
                   <TouchableOpacity
-                    onPress={() => history.pushPath(`/u/${comment.author}`)}
+                    onPress={() => pushURL(`/u/${comment.author}`)}
                   >
                     <Text
                       style={t(styles.author, {
@@ -304,7 +304,7 @@ export function CommentComponent({
                     style={t(styles.sourceContainer, {})}
                     activeOpacity={0.8}
                     onPress={() => {
-                      history.pushPath(comment.postLink);
+                      pushURL(comment.postLink);
                     }}
                   >
                     <Text
@@ -365,7 +365,7 @@ export function CommentComponent({
                     borderLeftWidth: comment.depth === -1 ? 0 : 1,
                     borderLeftColor:
                       theme.postColorTint[
-                        comment.depth % theme.postColorTint.length
+                      comment.depth % theme.postColorTint.length
                       ],
                   })}
                 >

@@ -5,7 +5,6 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { CommentReply, setMessageNewStatus } from "../../../api/Messages";
 import { vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
-import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
 import { InboxContext } from "../../../contexts/InboxContext";
 import {
   ThemeContext,
@@ -13,6 +12,7 @@ import {
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
+import { useURLNavigation } from "../../../utils/navigation";
 
 type MessageComponentProps = {
   initialMessageState: CommentReply;
@@ -21,7 +21,7 @@ type MessageComponentProps = {
 export default function MessageComponent({
   initialMessageState,
 }: MessageComponentProps) {
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
   const { inboxCount, setInboxCount } = useContext(InboxContext);
 
@@ -83,7 +83,7 @@ export default function MessageComponent({
             ...message,
             new: false,
           });
-          history.pushPath(message.contextLink);
+          pushURL(message.contextLink);
         }}
       >
         <View style={styles.messageTitleContainer}>
@@ -122,7 +122,7 @@ export default function MessageComponent({
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() =>
-                  history.pushPath(
+                  pushURL(
                     `https://www.reddit.com/r/${message.subreddit}`,
                   )
                 }
@@ -146,7 +146,7 @@ export default function MessageComponent({
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
-                  history.pushPath(
+                  pushURL(
                     `https://www.reddit.com/user/${message.author}`,
                   )
                 }

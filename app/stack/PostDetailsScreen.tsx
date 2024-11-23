@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackParamsList } from "./index";
-import SortAndContext from "../../components/Navigation/Navbar/Components/SortAndContext";
+import SortAndContext from "../../components/RedditDataRepresentations/Navbar/SortAndContext";
 import PostDetails from "../../pages/PostDetails";
 
 type PostDetailsScreenProps = {

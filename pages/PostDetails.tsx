@@ -31,14 +31,11 @@ import Comments from "../components/RedditDataRepresentations/Post/PostParts/Com
 import PostMedia from "../components/RedditDataRepresentations/Post/PostParts/PostMedia";
 import SubredditIcon from "../components/RedditDataRepresentations/Post/PostParts/SubredditIcon";
 import Scroller from "../components/UI/Scroller";
-import {
-  HistoryContext,
-  HistoryFunctionsContext,
-} from "../contexts/HistoryContext";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
 import { StackPageProps } from "../app/stack";
+import { useURLNavigation } from "../utils/navigation";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -50,10 +47,7 @@ export default function PostDetails({ route, navigation }: StackPageProps<"PostD
   const url = route.params.url;
 
   const { theme } = useContext(ThemeContext);
-  const history = {
-    ...useContext(HistoryContext),
-    ...useContext(HistoryFunctionsContext),
-  };
+  const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
 
   const scrollView = useRef<VirtualizedList<ReactNode>>(null);
@@ -241,7 +235,7 @@ export default function PostDetails({ route, navigation }: StackPageProps<"PostD
                         style={styles.subredditContainer}
                         activeOpacity={0.5}
                         onPress={() =>
-                          history.pushPath(`/r/${postDetail.subreddit}`)
+                          pushURL(`/r/${postDetail.subreddit}`)
                         }
                       >
                         <SubredditIcon post={postDetail} />
@@ -263,7 +257,7 @@ export default function PostDetails({ route, navigation }: StackPageProps<"PostD
                       <TouchableOpacity
                         activeOpacity={0.5}
                         onPress={() =>
-                          history.pushPath(`/u/${postDetail.author}`)
+                          pushURL(`/u/${postDetail.author}`)
                         }
                       >
                         <Text
@@ -380,9 +374,7 @@ export default function PostDetails({ route, navigation }: StackPageProps<"PostD
                 <TouchableOpacity
                   style={styles.buttonsContainer}
                   onPress={() => {
-                    const currentPath =
-                      history.past.slice(-1)[0]?.elem.props.url;
-                    Share.share({ url: new RedditURL(currentPath).toString() });
+                    Share.share({ url: new RedditURL(url).toString() });
                   }}
                 >
                   <Feather name="share" size={28} color={theme.iconPrimary} />

@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackParamsList } from "./index";
-import SortAndContext from "../../components/Navigation/Navbar/Components/SortAndContext";
+import SortAndContext from "../../components/RedditDataRepresentations/Navbar/SortAndContext";
 import UserPage from "../../pages/UserPage";
 import { useContext } from "react";
 import { AccountContext } from "../../contexts/AccountContext";
 import URL from "../../utils/URL";
-import TextButton from "../../components/Navigation/Navbar/Components/TextButton";
+import TextButton from "../../components/RedditDataRepresentations/Navbar/TextButton";
 
 type UserScreenProps = {
     StackNavigator: ReturnType<typeof createNativeStackNavigator<StackParamsList>>;

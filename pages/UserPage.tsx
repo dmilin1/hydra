@@ -7,18 +7,18 @@ import PostComponent from "../components/RedditDataRepresentations/Post/PostComp
 import { CommentComponent } from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import List from "../components/UI/List";
 import Scroller from "../components/UI/Scroller";
-import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../utils/Numbers";
 import Time from "../utils/Time";
 import URL from "../utils/URL";
 import { StackPageProps } from "../app/stack";
+import { useURLNavigation } from "../utils/navigation";
 
 export default function UserPage({ route, navigation }: StackPageProps<"UserPage">) {
   const url = route.params.url;
 
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
 
   const [user, setUser] = useState<User>();
   const [userContent, setUserContent] = useState<UserContent[]>([]);
@@ -106,7 +106,7 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                       ),
                       text: "Posts",
                       onPress: () =>
-                        history.pushPath(`/u/${user.userName}/submitted`),
+                        pushURL(`/u/${user.userName}/submitted`),
                     },
                     {
                       key: "comments",
@@ -119,7 +119,7 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                       ),
                       text: "Comments",
                       onPress: () =>
-                        history.pushPath(`/u/${user.userName}/comments`),
+                        pushURL(`/u/${user.userName}/comments`),
                     },
                     ...(user.isLoggedInUser
                       ? [
@@ -134,7 +134,7 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                           ),
                           text: "Upvoted",
                           onPress: () =>
-                            history.pushPath(`/u/${user.userName}/upvoted`),
+                            pushURL(`/u/${user.userName}/upvoted`),
                         },
                         {
                           key: "downvoted",
@@ -147,7 +147,7 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                           ),
                           text: "Downvoted",
                           onPress: () =>
-                            history.pushPath(`/u/${user.userName}/downvoted`),
+                            pushURL(`/u/${user.userName}/downvoted`),
                         },
                         {
                           key: "hidden",
@@ -160,7 +160,7 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                           ),
                           text: "Hidden",
                           onPress: () =>
-                            history.pushPath(`/u/${user.userName}/hidden`),
+                            pushURL(`/u/${user.userName}/hidden`),
                         },
                         {
                           key: "saved",
@@ -173,7 +173,7 @@ export default function UserPage({ route, navigation }: StackPageProps<"UserPage
                           ),
                           text: "Saved",
                           onPress: () =>
-                            history.pushPath(`/u/${user.userName}/saved`),
+                            pushURL(`/u/${user.userName}/saved`),
                         },
                       ]
                       : []),

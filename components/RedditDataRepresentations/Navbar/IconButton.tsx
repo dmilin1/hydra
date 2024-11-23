@@ -4,7 +4,7 @@ import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import {
   ThemeContext,
   t,
-} from "../../../../contexts/SettingsContexts/ThemeContext";
+} from "../../../contexts/SettingsContexts/ThemeContext";
 
 type IconButtonProps = {
   icon: ReactNode;

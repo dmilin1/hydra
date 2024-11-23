@@ -27,7 +27,9 @@ export type StackParamsList = {
     UserPage: {
         url: string;
     };
-    Accounts: {};
+    Accounts: {
+        url: string;
+    };
     SettingsPage: {
         url: string;
     };
@@ -35,7 +37,7 @@ export type StackParamsList = {
     ErrorPage: {};
 };
 
-export type URLRoutes = 'Home' | 'PostsPage' | 'PostDetailsPage' | 'UserPage' | 'SettingsPage';
+export type URLRoutes = 'Home' | 'PostsPage' | 'PostDetailsPage' | 'UserPage' | 'Accounts' | 'SettingsPage';
 
 export type StackPageProps<Pages extends keyof StackParamsList> = NativeStackScreenProps<StackParamsList, Pages>
 
