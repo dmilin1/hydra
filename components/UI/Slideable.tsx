@@ -68,7 +68,7 @@ export default function Slideable({
         if (
           touchStart.current &&
           Math.abs(e.nativeEvent.pageX - touchStart.current?.x) >
-          (xScrollToEngage ?? 20) &&
+            (xScrollToEngage ?? 20) &&
           Math.abs(e.nativeEvent.pageY - touchStart.current?.y) < 10
         ) {
           touchStart.current = {

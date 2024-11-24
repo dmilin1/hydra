@@ -42,7 +42,6 @@ type ScrollerProps = {
   beforeLoad?: ReactNode | ReactNode[];
   children: ReactNode | ReactNode[];
   scrollViewRef?: React.RefObject<VirtualizedList<ReactNode>>;
-  maintainVisibleContentPosition?: boolean;
 } & (ScrollerWithRefresh | ScrollerWithLoadMore);
 
 function Scroller({
@@ -51,7 +50,6 @@ function Scroller({
   loadMore,
   refresh,
   scrollViewRef,
-  maintainVisibleContentPosition,
   headerComponent,
 }: ScrollerProps) {
   const { theme } = useContext(ThemeContext);
@@ -101,14 +99,6 @@ function Scroller({
             }
           }}
         />
-      }
-      maintainVisibleContentPosition={
-        maintainVisibleContentPosition
-          ? {
-              minIndexForVisible: 0,
-              autoscrollToTopThreshold: 0,
-            }
-          : undefined
       }
       scrollEventThrottle={100}
       onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {

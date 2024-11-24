@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { getPosts, Post } from "../api/Posts";
@@ -11,7 +11,6 @@ import RedditURL, { PageType } from "../utils/RedditURL";
 
 export default function PostsPage({
   route,
-  navigation,
 }: StackPageProps<"PostsPage" | "Home">) {
   const { theme } = useContext(ThemeContext);
 
@@ -19,12 +18,6 @@ export default function PostsPage({
   const search = useRef<string>("");
 
   const { url } = route.params;
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: new RedditURL(url).getPageName() ?? "Posts",
-    });
-  });
 
   const isSubredditPage =
     new RedditURL(url).getPageType() === PageType.SUBREDDIT;
@@ -49,7 +42,6 @@ export default function PostsPage({
     >
       <Scroller
         loadMore={loadMorePosts}
-        maintainVisibleContentPosition={!!posts.length}
         headerComponent={
           isSubredditPage && (
             <SearchBar

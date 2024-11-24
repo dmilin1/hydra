@@ -20,6 +20,7 @@ export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
       name="PostsPage"
       component={PostsPage}
       options={({ route }) => ({
+        title: new RedditURL(route.params.url).getSubreddit() ?? "Posts",
         headerRight: () => {
           const subreddit = new RedditURL(route.params.url).getSubreddit();
           return (
