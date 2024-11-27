@@ -7,11 +7,14 @@ import Scroller from "../components/UI/Scroller";
 import { AccountContext } from "../contexts/AccountContext";
 import { InboxContext } from "../contexts/InboxContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function MessagesPage() {
   const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
   const { inboxCount } = useContext(InboxContext);
+
+  const isFocused = useIsFocused();
 
   const [messages, setMessages] = useState<CommentReply[]>([]);
 
@@ -28,8 +31,9 @@ export default function MessagesPage() {
   };
 
   useEffect(() => {
+    if (!isFocused) return;
     loadMoreMessages(true);
-  }, [inboxCount]);
+  }, [inboxCount, isFocused]);
 
   return (
     <View

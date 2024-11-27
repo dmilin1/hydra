@@ -42,7 +42,6 @@ export default function Tabs() {
       {loginInitialized ? (
         <Tab.Navigator
           initialRouteName="Posts"
-          sceneContainerStyle={{ backgroundColor: theme.background }}
         >
           <Tab.Screen
             name="Posts"
@@ -60,10 +59,10 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Posts",
+              animation: 'fade',
             }}
-          >
-            {() => <Stack />}
-          </Tab.Screen>
+            component={Stack}
+          />
           <Tab.Screen
             name="Inbox"
             options={{
@@ -81,11 +80,10 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Inbox",
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
-              unmountOnBlur: true,
+              animation: 'fade',
             }}
-          >
-            {() => Stack()}
-          </Tab.Screen>
+            component={Stack}
+          />
           <Tab.Screen
             name="Account"
             options={{
@@ -102,10 +100,10 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: currentUser?.userName ?? "Account",
+              animation: 'fade',
             }}
-          >
-            {() => Stack()}
-          </Tab.Screen>
+            component={Stack}
+          />
           <Tab.Screen
             name="Search"
             options={{
@@ -122,10 +120,10 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Search",
+              animation: 'fade',
             }}
-          >
-            {() => Stack()}
-          </Tab.Screen>
+            component={Stack}
+          />
           <Tab.Screen
             name="Settings"
             options={{
@@ -142,10 +140,10 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Settings",
+              animation: 'fade',
             }}
-          >
-            {() => Stack()}
-          </Tab.Screen>
+            component={Stack}
+          />
         </Tab.Navigator>
       ) : (
         <LoadingSplash />
