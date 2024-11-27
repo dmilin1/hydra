@@ -64,10 +64,19 @@ export async function formatPostData(child: any): Promise<Post> {
       }),
       {},
     ) ?? {};
+
+  const galleryThumbnails = Object.values(child.data.media_metadata ?? {})
+    .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
+    .map((data: any) => data.p?.[0]?.u)
+    .filter((img) => img !== undefined)
+    .map((img: string) => decode(img));
+
   let images = Object.values(child.data.media_metadata ?? {})
     .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
-    .map((data: any) => data.s?.u?.replace(/&amp;/g, "&"))
-    .filter((img) => img !== undefined);
+    .map((data: any) => data.s?.u)
+    .filter((img) => img !== undefined)
+    .map((img: string) => decode(img));
+
   if (images.length === 0 && child.data.post_hint === "image") {
     images = [child.data.url];
   }
@@ -100,6 +109,12 @@ export async function formatPostData(child: any): Promise<Post> {
     child.data.preview?.images[0]?.resolutions?.slice(-1)?.[0]?.url;
   if (video && videoThumbnail) {
     imageThumbnail = decode(videoThumbnail);
+  }
+  if (imageThumbnail === 'spoiler') {
+    // if the thumbnail is a spoiler, reddit doesn't give it to us...
+    const imgPreviewThumbnail = decode(child.data.preview?.images[0]?.resolutions?.[0]?.url);
+    // try to get the first image in the gallery, else the smallest preview image
+    imageThumbnail = galleryThumbnails[0] ?? imgPreviewThumbnail;
   }
 
   let poll = undefined;
