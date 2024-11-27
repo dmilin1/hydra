@@ -177,9 +177,11 @@ export default function PostDetails({
     const currentScrollHeight = (
       await asyncMeasure(innerViewRef, "measureInWindow")
     )[1];
-    const childComments = (commentsView.current as any)._children[0]._children;
-    for (const comment of childComments) {
-      const commentMeasures = await asyncMeasure(comment, "measureInWindow");
+    const childComments = (commentsView.current as any).__internalInstanceHandle
+      .child.child.child.child.child.child.memoizedProps[0];
+    for (const commentView of childComments) {
+      const commentRef = commentView.props.commentPropRef.current;
+      const commentMeasures = await asyncMeasure(commentRef, "measureInWindow");
       const commentY = commentMeasures[1];
       const delta = commentY - currentScrollHeight;
       if (commentY > scrollY) {

@@ -6,6 +6,8 @@ import React, {
   Suspense,
   forwardRef,
   ForwardedRef,
+  useRef,
+  ElementRef,
 } from "react";
 import {
   StyleSheet,
@@ -47,6 +49,11 @@ interface CommentProps {
   displayInList?: boolean; // Changes render style for use in something like a list of user comments,
   changeComment: (comment: Comment) => void;
   deleteComment: (comment: Comment) => void;
+
+  // This comment prop ref thing is horrific. Don't do it. We're using it so
+  // the post details page can reach into the comments inside of it to get to
+  // the element it needs to scroll to.
+  commentPropRef?: { current: ElementRef<typeof TouchableHighlight> | null };
 }
 
 export function CommentComponent({
@@ -57,6 +64,7 @@ export function CommentComponent({
   displayInList,
   changeComment,
   deleteComment,
+  commentPropRef,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
@@ -64,7 +72,11 @@ export function CommentComponent({
   const { currentUser } = useContext(AccountContext);
   const showContextMenu = useContextMenu();
 
-  const commentRef = React.useRef<TouchableOpacity>(null);
+  const commentRef = useRef<ElementRef<typeof TouchableHighlight>>(null);
+
+  if (commentPropRef) {
+    commentPropRef.current = commentRef.current;
+  }
 
   const [collapsed, setCollapsed] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -180,7 +192,13 @@ export function CommentComponent({
             ]}
           >
             <TouchableHighlight
-              ref={commentRef}
+              ref={(ref) => {
+                // @ts-ignore: Need to mutate this ref here because we need to set 2 refs which you'd never normally do
+                commentRef.current = ref;
+                if (commentPropRef) {
+                  commentPropRef.current = ref;
+                }
+              }}
               activeOpacity={1}
               underlayColor={theme.tint}
               onPress={() => {
@@ -339,6 +357,7 @@ export function CommentComponent({
                   scrollChange={scrollChange}
                   changeComment={changeComment}
                   deleteComment={deleteComment}
+                  commentPropRef={{ current: null }}
                 />
               ))}
             {comment.loadMore && comment.loadMore.childIds.length > 0 && (
