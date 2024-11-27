@@ -40,9 +40,7 @@ export default function Tabs() {
       edges={["right", "top", "left"]}
     >
       {loginInitialized ? (
-        <Tab.Navigator
-          initialRouteName="Posts"
-        >
+        <Tab.Navigator initialRouteName="Posts">
           <Tab.Screen
             name="Posts"
             options={{
@@ -59,7 +57,7 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Posts",
-              animation: 'fade',
+              animation: "fade",
             }}
             component={Stack}
           />
@@ -80,7 +78,7 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Inbox",
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
-              animation: 'fade',
+              animation: "fade",
             }}
             component={Stack}
           />
@@ -100,7 +98,7 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: currentUser?.userName ?? "Account",
-              animation: 'fade',
+              animation: "fade",
             }}
             component={Stack}
           />
@@ -120,7 +118,7 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Search",
-              animation: 'fade',
+              animation: "fade",
             }}
             component={Stack}
           />
@@ -140,7 +138,7 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Settings",
-              animation: 'fade',
+              animation: "fade",
             }}
             component={Stack}
           />

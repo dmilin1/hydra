@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -7,7 +8,6 @@ import Scroller from "../components/UI/Scroller";
 import { AccountContext } from "../contexts/AccountContext";
 import { InboxContext } from "../contexts/InboxContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
-import { useIsFocused } from "@react-navigation/native";
 
 export default function MessagesPage() {
   const { theme } = useContext(ThemeContext);
