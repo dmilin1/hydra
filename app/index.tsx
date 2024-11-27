@@ -11,6 +11,7 @@ import { SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
 import { LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { enableFreeze } from 'react-native-screens';
 
 import Tabs from "./tabs";
 import { AccountProvider } from "../contexts/AccountContext";
@@ -27,6 +28,8 @@ LogBox.ignoreLogs([
 ]);
 
 SplashScreen.preventAutoHideAsync();
+
+enableFreeze(true);
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
