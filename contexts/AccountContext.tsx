@@ -8,8 +8,12 @@ import {
   login,
   logout,
   Needs2FA,
+  RateLimited,
+  UserAuth,
 } from "../api/Authentication";
 import { User, getUser } from "../api/User";
+import CookieManager from "@react-native-cookies/cookies";
+import RedditCookies from "../utils/RedditCookies";
 
 export type Account = {
   username: string;
@@ -48,7 +52,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     useState<AccountContextType["currentUser"]>(null);
   const [accounts, setAccounts] = useState<AccountContextType["accounts"]>([]);
 
-  const logInContext = async (account: Account): Promise<void> => {
+  const logInContext = async (account: Account, attempt = 1): Promise<void> => {
     try {
       const currentUser = await getCurrentUser();
       if (currentUser?.data?.name !== account.username) {
@@ -59,6 +63,13 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       setCurrentAcc(account);
       setCurrentUser(user);
     } catch (e) {
+      if (e instanceof RateLimited && attempt === 1) {
+        // This error seems to happen when the session cookies are stale, but
+        // I'm not sure why that's the case. Clearing the cookies and trying
+        // again seems to fix it.
+        RedditCookies.clearSessionCookies();
+        return logInContext(account, attempt + 1);
+      }
       if (!(e instanceof Needs2FA) && !(e instanceof IncorrectCredentials)) {
         alert("Unexpected error logging in:" + e);
       }
@@ -111,6 +122,9 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   };
 
   const loadSavedData = async () => {
+    const cookies = await CookieManager.get("https://www.reddit.com");
+    console.log(cookies);
+    console.log(UserAuth.modhash);
     const usernamesJSON = await AsyncStorage.getItem("usernames");
     const accs: AccountContextType["accounts"] = [];
     if (usernamesJSON) {
