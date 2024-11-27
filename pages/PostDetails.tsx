@@ -26,22 +26,16 @@ import {
   savePost,
 } from "../api/PostDetail";
 import { VoteOption } from "../api/Posts";
+import { StackPageProps } from "../app/stack";
 import ContentEditor from "../components/Modals/ContentEditor";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import PostMedia from "../components/RedditDataRepresentations/Post/PostParts/PostMedia";
 import SubredditIcon from "../components/RedditDataRepresentations/Post/PostParts/SubredditIcon";
 import Scroller from "../components/UI/Scroller";
-import {
-  HistoryContext,
-  HistoryFunctionsContext,
-} from "../contexts/HistoryContext";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
-
-type PostDetailsProps = {
-  url: string;
-};
+import { useURLNavigation } from "../utils/navigation";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -49,12 +43,13 @@ export type LoadMoreCommentsFunc = (
   childStartIndex: number,
 ) => Promise<void>;
 
-export default function PostDetails({ url }: PostDetailsProps) {
+export default function PostDetails({
+  route,
+}: StackPageProps<"PostDetailsPage">) {
+  const url = route.params.url;
+
   const { theme } = useContext(ThemeContext);
-  const history = {
-    ...useContext(HistoryContext),
-    ...useContext(HistoryFunctionsContext),
-  };
+  const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
 
   const scrollView = useRef<VirtualizedList<ReactNode>>(null);
@@ -182,9 +177,11 @@ export default function PostDetails({ url }: PostDetailsProps) {
     const currentScrollHeight = (
       await asyncMeasure(innerViewRef, "measureInWindow")
     )[1];
-    const childComments = (commentsView.current as any)._children[0]._children;
-    for (const comment of childComments) {
-      const commentMeasures = await asyncMeasure(comment, "measureInWindow");
+    const childComments = (commentsView.current as any).__internalInstanceHandle
+      .child.child.child.child.child.child.memoizedProps[0];
+    for (const commentView of childComments) {
+      const commentRef = commentView.props.commentPropRef.current;
+      const commentMeasures = await asyncMeasure(commentRef, "measureInWindow");
       const commentY = commentMeasures[1];
       const delta = commentY - currentScrollHeight;
       if (commentY > scrollY) {
@@ -241,9 +238,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
                       <TouchableOpacity
                         style={styles.subredditContainer}
                         activeOpacity={0.5}
-                        onPress={() =>
-                          history.pushPath(`/r/${postDetail.subreddit}`)
-                        }
+                        onPress={() => pushURL(`/r/${postDetail.subreddit}`)}
                       >
                         <SubredditIcon post={postDetail} />
                         <Text
@@ -263,9 +258,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
                       </Text>
                       <TouchableOpacity
                         activeOpacity={0.5}
-                        onPress={() =>
-                          history.pushPath(`/u/${postDetail.author}`)
-                        }
+                        onPress={() => pushURL(`/u/${postDetail.author}`)}
                       >
                         <Text
                           style={t(styles.boldedSmallText, {
@@ -381,9 +374,7 @@ export default function PostDetails({ url }: PostDetailsProps) {
                 <TouchableOpacity
                   style={styles.buttonsContainer}
                   onPress={() => {
-                    const currentPath =
-                      history.past.slice(-1)[0]?.elem.props.url;
-                    Share.share({ url: new RedditURL(currentPath).toString() });
+                    Share.share({ url: new RedditURL(url).toString() });
                   }}
                 >
                   <Feather name="share" size={28} color={theme.iconPrimary} />

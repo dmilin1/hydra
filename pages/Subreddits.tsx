@@ -10,14 +10,15 @@ import {
 } from "react-native";
 
 import { Subreddits as SubredditsObj } from "../api/Subreddits";
-import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
+import { useURLNavigation } from "../utils/navigation";
 
 export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
   const { subreddits, toggleFavorite } = useContext(SubredditContext);
+
+  const { pushURL } = useURLNavigation();
 
   return (
     <View style={styles.subredditsContainer}>
@@ -57,7 +58,7 @@ export default function Subreddits() {
         ].map((link) => (
           <TouchableOpacity
             key={link.title}
-            onPress={() => history.pushPath(link.path)}
+            onPress={() => pushURL(link.path)}
             activeOpacity={0.5}
             style={t(styles.bigButtonContainer, {
               borderBottomColor: theme.tint,
@@ -127,7 +128,7 @@ export default function Subreddits() {
                   <View key={subreddit.name}>
                     <TouchableOpacity
                       key={subreddit.name}
-                      onPress={() => history.pushPath(subreddit.url)}
+                      onPress={() => pushURL(subreddit.url)}
                       activeOpacity={0.5}
                       style={t(styles.subredditContainer, {
                         borderBottomColor: theme.tint,

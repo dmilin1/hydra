@@ -3,23 +3,22 @@ import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
 import { User, UserContent, getUser, getUserContent } from "../api/User";
+import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import { CommentComponent } from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import List from "../components/UI/List";
 import Scroller from "../components/UI/Scroller";
-import { HistoryFunctionsContext } from "../contexts/HistoryContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../utils/Numbers";
 import Time from "../utils/Time";
 import URL from "../utils/URL";
+import { useURLNavigation } from "../utils/navigation";
 
-type UserPageProps = {
-  url: string;
-};
+export default function UserPage({ route }: StackPageProps<"UserPage">) {
+  const url = route.params.url;
 
-export default function UserPage({ url }: UserPageProps) {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
 
   const [user, setUser] = useState<User>();
   const [userContent, setUserContent] = useState<UserContent[]>([]);
@@ -106,8 +105,7 @@ export default function UserPage({ url }: UserPageProps) {
                         />
                       ),
                       text: "Posts",
-                      onPress: () =>
-                        history.pushPath(`/u/${user.userName}/submitted`),
+                      onPress: () => pushURL(`/u/${user.userName}/submitted`),
                     },
                     {
                       key: "comments",
@@ -119,8 +117,7 @@ export default function UserPage({ url }: UserPageProps) {
                         />
                       ),
                       text: "Comments",
-                      onPress: () =>
-                        history.pushPath(`/u/${user.userName}/comments`),
+                      onPress: () => pushURL(`/u/${user.userName}/comments`),
                     },
                     ...(user.isLoggedInUser
                       ? [
@@ -135,7 +132,7 @@ export default function UserPage({ url }: UserPageProps) {
                             ),
                             text: "Upvoted",
                             onPress: () =>
-                              history.pushPath(`/u/${user.userName}/upvoted`),
+                              pushURL(`/u/${user.userName}/upvoted`),
                           },
                           {
                             key: "downvoted",
@@ -148,7 +145,7 @@ export default function UserPage({ url }: UserPageProps) {
                             ),
                             text: "Downvoted",
                             onPress: () =>
-                              history.pushPath(`/u/${user.userName}/downvoted`),
+                              pushURL(`/u/${user.userName}/downvoted`),
                           },
                           {
                             key: "hidden",
@@ -161,7 +158,7 @@ export default function UserPage({ url }: UserPageProps) {
                             ),
                             text: "Hidden",
                             onPress: () =>
-                              history.pushPath(`/u/${user.userName}/hidden`),
+                              pushURL(`/u/${user.userName}/hidden`),
                           },
                           {
                             key: "saved",
@@ -173,8 +170,7 @@ export default function UserPage({ url }: UserPageProps) {
                               />
                             ),
                             text: "Saved",
-                            onPress: () =>
-                              history.pushPath(`/u/${user.userName}/saved`),
+                            onPress: () => pushURL(`/u/${user.userName}/saved`),
                           },
                         ]
                       : []),

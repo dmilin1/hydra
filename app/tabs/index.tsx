@@ -10,15 +10,11 @@ import { SplashScreen } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import Account from "./account";
-import Inbox from "./inbox";
-import Posts from "./posts";
-import Search from "./search";
-import Settings from "./settings";
 import LoadingSplash from "../../components/UI/LoadingSplash";
 import { AccountContext } from "../../contexts/AccountContext";
 import { InboxContext } from "../../contexts/InboxContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import Stack from "../stack";
 
 const Tab = createBottomTabNavigator();
 
@@ -44,10 +40,7 @@ export default function Tabs() {
       edges={["right", "top", "left"]}
     >
       {loginInitialized ? (
-        <Tab.Navigator
-          initialRouteName="Posts"
-          sceneContainerStyle={{ backgroundColor: theme.background }}
-        >
+        <Tab.Navigator initialRouteName="Posts">
           <Tab.Screen
             name="Posts"
             options={{
@@ -64,8 +57,9 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Posts",
+              animation: "fade",
             }}
-            component={Posts}
+            component={Stack}
           />
           <Tab.Screen
             name="Inbox"
@@ -84,9 +78,9 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Inbox",
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
-              unmountOnBlur: true,
+              animation: "fade",
             }}
-            component={Inbox}
+            component={Stack}
           />
           <Tab.Screen
             name="Account"
@@ -104,8 +98,9 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: currentUser?.userName ?? "Account",
+              animation: "fade",
             }}
-            component={Account}
+            component={Stack}
           />
           <Tab.Screen
             name="Search"
@@ -123,8 +118,9 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Search",
+              animation: "fade",
             }}
-            component={Search}
+            component={Stack}
           />
           <Tab.Screen
             name="Settings"
@@ -142,8 +138,9 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.buttonText as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Settings",
+              animation: "fade",
             }}
-            component={Settings}
+            component={Stack}
           />
         </Tab.Navigator>
       ) : (

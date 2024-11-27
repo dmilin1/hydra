@@ -82,22 +82,23 @@ export default function Slideable({
       onResponderMove={(e) => {
         if (touchStart.current) {
           const delta = e.nativeEvent.pageX - touchStart.current?.x;
+          touchX.setValue(delta);
+
           let item = null;
           if (delta > 0 && left) {
             item = calcItem(left, delta);
-            setSlideItem({
-              side: "left",
-              ...item,
-            });
-            touchX.setValue(e.nativeEvent.pageX - touchStart.current?.x);
           }
           if (delta < 0 && right) {
             item = calcItem(right, delta);
+          }
+          if (item && item.color !== slideItem?.color) {
             setSlideItem({
-              side: "right",
+              side: delta > 0 ? "left" : "right",
               ...item,
             });
-            touchX.setValue(e.nativeEvent.pageX - touchStart.current?.x);
+          }
+          if (!item && slideItem) {
+            setSlideItem(undefined);
           }
           if (item && item.color !== slideItem?.color) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

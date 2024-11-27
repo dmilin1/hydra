@@ -8,6 +8,7 @@ module.exports = {
     name: "Hydra",
     slug: "hydra",
     version: packageJson.version,
+    newArchEnabled: true,
     runtimeVersion: {
       policy: 'appVersion',
     },

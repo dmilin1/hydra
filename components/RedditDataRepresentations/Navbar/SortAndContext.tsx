@@ -5,22 +5,22 @@ import {
   SimpleLineIcons,
   Entypo,
 } from "@expo/vector-icons";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
-import {
-  HistoryContext,
-  HistoryFunctionsContext,
-} from "../../../../contexts/HistoryContext";
-import { ModalContext } from "../../../../contexts/ModalContext";
+import { StackParamsList, URLRoutes } from "../../../app/stack";
+import { ModalContext } from "../../../contexts/ModalContext";
 import {
   ThemeContext,
   t,
-} from "../../../../contexts/SettingsContexts/ThemeContext";
-import { SubredditContext } from "../../../../contexts/SubredditContext";
-import RedditURL, { PageType } from "../../../../utils/RedditURL";
-import useContextMenu from "../../../../utils/useContextMenu";
-import ContentEditor from "../../../Modals/ContentEditor";
+} from "../../../contexts/SettingsContexts/ThemeContext";
+import { SubredditContext } from "../../../contexts/SubredditContext";
+import RedditURL, { PageType } from "../../../utils/RedditURL";
+import { useURLNavigation } from "../../../utils/navigation";
+import useContextMenu from "../../../utils/useContextMenu";
+import ContentEditor from "../../Modals/ContentEditor";
 
 type SortTypes =
   | "Best"
@@ -41,32 +41,34 @@ type ContextTypes =
   | "New Post";
 
 type SortAndContextProps = {
+  route: RouteProp<StackParamsList, URLRoutes>;
+  navigation: NativeStackNavigationProp<StackParamsList, URLRoutes, undefined>;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
 };
 
 export default function SortAndContext({
+  navigation,
+  route,
   sortOptions,
   contextOptions,
 }: SortAndContextProps) {
-  const history = {
-    ...useContext(HistoryContext),
-    ...useContext(HistoryFunctionsContext),
-  };
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
   const { subscribe, unsubscribe, toggleFavorite } =
     useContext(SubredditContext);
 
+  const { replaceURL } = useURLNavigation(navigation);
+
   const showContextMenu = useContextMenu();
 
-  const currentPath = history.past.slice(-1)[0]?.elem.props.url;
+  const currentPath = route.params.url;
   const pageType = new RedditURL(currentPath).getPageType();
   const currentSort = currentPath ? new RedditURL(currentPath).getSort() : null;
 
   const changeSort = (sort: string) => {
     const url = new RedditURL(currentPath).changeSort(sort).toString();
-    history.replace(url);
+    replaceURL(url);
   };
 
   const handleTopSort = async () => {
@@ -78,7 +80,7 @@ export default function SortAndContext({
         .changeSort("top")
         .changeQueryParam("t", topSort.toLowerCase())
         .toString();
-      history.replace(newUrl);
+      replaceURL(newUrl);
     }
   };
 
@@ -206,7 +208,6 @@ export default function SortAndContext({
             name="dots-three-horizontal"
             size={24}
             color={theme.buttonText}
-            style={{ paddingRight: 15 }}
           />
         </TouchableOpacity>
       )}
@@ -216,7 +217,6 @@ export default function SortAndContext({
 
 const styles = StyleSheet.create({
   sectionContainer: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

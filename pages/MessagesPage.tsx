@@ -1,3 +1,4 @@
+import { useIsFocused } from "@react-navigation/native";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -12,6 +13,8 @@ export default function MessagesPage() {
   const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
   const { inboxCount } = useContext(InboxContext);
+
+  const isFocused = useIsFocused();
 
   const [messages, setMessages] = useState<CommentReply[]>([]);
 
@@ -28,8 +31,9 @@ export default function MessagesPage() {
   };
 
   useEffect(() => {
+    if (!isFocused) return;
     loadMoreMessages(true);
-  }, [inboxCount]);
+  }, [inboxCount, isFocused]);
 
   return (
     <View

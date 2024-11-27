@@ -3,15 +3,15 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { User } from "../../../api/User";
-import { HistoryFunctionsContext } from "../../../contexts/HistoryContext";
 import {
   ThemeContext,
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../../../utils/Numbers";
+import { useURLNavigation } from "../../../utils/navigation";
 
 export default function UserComponent({ user }: { user: User }) {
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
 
   return (
@@ -22,7 +22,7 @@ export default function UserComponent({ user }: { user: User }) {
           backgroundColor: theme.background,
         })}
         onPress={() => {
-          history.pushPath(`/u/${user.userName}`);
+          pushURL(`/u/${user.userName}`);
         }}
       >
         <Text

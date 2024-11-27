@@ -16,11 +16,7 @@ import { AccountContext } from "../contexts/AccountContext";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
-type AccountsPageProps = {
-  url: string;
-};
-
-export default function AccountsPage(_: AccountsPageProps) {
+export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);

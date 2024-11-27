@@ -15,9 +15,9 @@ import {
   ViewStyle,
 } from "react-native";
 
-import { HistoryFunctionsContext } from "../../contexts/HistoryContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../../utils/RedditURL";
+import { useURLNavigation } from "../../utils/navigation";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -49,7 +49,7 @@ function makeChildNodeKey(node: AnyNode, index: number): string {
 
 export function Element({ element, index, inheritedStyles }: ElementProps) {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
 
   const [showSpoiler, setShowSpoiler] = useState(false);
 
@@ -152,7 +152,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     wrapperProps.onPress = () => {
       const url = element.attribs.href;
       try {
-        history.pushPath(new RedditURL(url).toString());
+        pushURL(new RedditURL(url).toString());
       } catch {
         WebBrowser.openBrowserAsync(element.attribs.href);
       }

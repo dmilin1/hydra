@@ -5,18 +5,19 @@ import "expo-dev-client";
 
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { NavigationContainer } from "@react-navigation/native";
 import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
 import { LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { enableFreeze } from "react-native-screens";
 
 import Tabs from "./tabs";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
+import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
 
@@ -27,6 +28,8 @@ LogBox.ignoreLogs([
 ]);
 
 SplashScreen.preventAutoHideAsync();
+
+enableFreeze(true);
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -41,9 +44,9 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <SettingsProvider>
-          <AccountProvider>
+      <SettingsProvider>
+        <AccountProvider>
+          <NavigationProvider>
             <ActionSheetProvider>
               <InboxProvider>
                 <ModalProvider>
@@ -53,9 +56,9 @@ export default function RootLayout() {
                 </ModalProvider>
               </InboxProvider>
             </ActionSheetProvider>
-          </AccountProvider>
-        </SettingsProvider>
-      </NavigationContainer>
+          </NavigationProvider>
+        </AccountProvider>
+      </SettingsProvider>
     </SafeAreaProvider>
   );
 }

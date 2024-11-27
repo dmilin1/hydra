@@ -5,12 +5,12 @@ import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import List from "../../components/UI/List";
-import { HistoryFunctionsContext } from "../../contexts/HistoryContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { useURLNavigation } from "../../utils/navigation";
 
 export default function Root() {
   const { theme } = useContext(ThemeContext);
-  const history = useContext(HistoryFunctionsContext);
+  const { pushURL } = useURLNavigation();
 
   return (
     <>
@@ -21,25 +21,25 @@ export default function Root() {
             key: "theme",
             icon: <Feather name="moon" size={24} color={theme.text} />,
             text: "Theme",
-            onPress: () => history.pushPath("hydra://settings/theme"),
+            onPress: () => pushURL("hydra://settings/theme"),
           },
           {
             key: "appearance",
             icon: <Octicons name="paintbrush" size={24} color={theme.text} />,
             text: "Appearance",
-            onPress: () => history.pushPath("hydra://settings/appearance"),
+            onPress: () => pushURL("hydra://settings/appearance"),
           },
           {
             key: "account",
             icon: <FontAwesome5 name="user" size={24} color={theme.text} />,
             text: "Account",
-            onPress: () => history.pushPath("hydra://accounts"),
+            onPress: () => pushURL("hydra://accounts"),
           },
           {
             key: "dataUse",
             icon: <Feather name="activity" size={24} color={theme.text} />,
             text: "Data Use",
-            onPress: () => history.pushPath("hydra://settings/dataUse"),
+            onPress: () => pushURL("hydra://settings/dataUse"),
           },
           {
             key: "requestFeature",
@@ -47,8 +47,7 @@ export default function Root() {
               <Feather name="git-pull-request" size={24} color={theme.text} />
             ),
             text: "Request A Feature",
-            onPress: () =>
-              history.pushPath("/r/HydraFeatureRequests/top?t=all"),
+            onPress: () => pushURL("/r/HydraFeatureRequests/top?t=all"),
           },
         ]}
       />
