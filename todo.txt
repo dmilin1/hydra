@@ -18,6 +18,3 @@
 ### Easy
 - Fix accounts with special characters
 - Add upvote/downvote highlight bar on the side (https://www.reddit.com/r/HydraFeatureRequests/comments/1g9mnjx/comment/lwtnmiv/?context=3)
-- Change .tsx files in /api and /utils to .ts
-- Try removing react-native-gesture-handler. It doesn't seem to be used anywhere.
-- Update to Expo 52 with new architecture
