@@ -62,7 +62,7 @@ export default function Tabs() {
               tabBarLabel: "Posts",
             }}
           >
-            {() => Stack()}
+            {() => <Stack />}
           </Tab.Screen>
           <Tab.Screen
             name="Inbox"

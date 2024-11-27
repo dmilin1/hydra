@@ -4,9 +4,11 @@ import {
   useRoute as useRouteUntyped,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useContext } from "react";
 
 import RedditURL, { PageType } from "./RedditURL";
 import { StackParamsList } from "../app/stack";
+import { StackFutureContext } from "../contexts/StackFutureContext";
 
 export function useNavigation() {
   return useNavigationUntyped<NativeStackNavigationProp<StackParamsList>>();
@@ -22,6 +24,7 @@ type NavFunctionsWithURL = "push" | "replace";
 
 export function useURLNavigation() {
   const navigation = useNavigation();
+  const { clearFuture } = useContext(StackFutureContext);
 
   const doNavigationAction = (url: string, func: NavFunctionsWithURL) => {
     const pageType = new RedditURL(url).getPageType();
@@ -38,6 +41,7 @@ export function useURLNavigation() {
     } else if (pageType === PageType.SETTINGS) {
       navigation.push("SettingsPage", { url });
     }
+    clearFuture();
   };
 
   return {

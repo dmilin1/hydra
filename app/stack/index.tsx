@@ -1,8 +1,9 @@
+import { NavigationRoute } from "@react-navigation/native";
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
-import React, { Fragment, useContext } from "react";
+import React, { Fragment, useContext, useRef } from "react";
 
 import AccountsScreen from "./AccountsScreen";
 import ErrorScreen from "./ErrorScreen";
@@ -15,6 +16,7 @@ import SettingsScreen from "./SettingsScreen";
 import SubredditsScreen from "./SubredditsScreen";
 import UserScreen from "./UserScreen";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { StackFutureProvider } from "../../contexts/StackFutureContext";
 
 export type StackParamsList = {
   Subreddits: object;
@@ -56,6 +58,10 @@ export default function Stack() {
   const StackNavigator = createNativeStackNavigator<StackParamsList>();
   const { theme } = useContext(ThemeContext);
 
+  const futureRoutes = useRef<
+    NavigationRoute<StackParamsList, keyof StackParamsList>[]
+  >([]);
+
   const screens = [
     SubredditsScreen,
     HomeScreen,
@@ -83,6 +89,9 @@ export default function Stack() {
           color: theme.text.toString(),
         },
       }}
+      screenLayout={(props) => (
+        <StackFutureProvider {...props} futureRoutes={futureRoutes} />
+      )}
     >
       {screens}
     </StackNavigator.Navigator>

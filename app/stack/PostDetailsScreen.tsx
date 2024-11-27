@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackParamsList } from "./index";
 import SortAndContext from "../../components/RedditDataRepresentations/Navbar/SortAndContext";
 import PostDetails from "../../pages/PostDetails";
+import RedditURL from "../../utils/RedditURL";
 
 type PostDetailsScreenProps = {
   StackNavigator: ReturnType<
@@ -18,6 +19,7 @@ export default function PostDetailsScreen({
       name="PostDetailsPage"
       component={PostDetails}
       options={({ route }) => ({
+        title: new RedditURL(route.params.url).getSubreddit() ?? "Details",
         headerRight: () => {
           return (
             <SortAndContext

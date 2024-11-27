@@ -26,6 +26,7 @@ export default function HomeScreen({ StackNavigator }: HomeScreenProps) {
           );
         },
         headerBackTitle: "Subreddits",
+        freezeOnBlur: true,
       })}
     />
   );
