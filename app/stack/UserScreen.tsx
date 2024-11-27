@@ -4,7 +4,7 @@ import { StackParamsList } from "./index";
 import SortAndContext from "../../components/RedditDataRepresentations/Navbar/SortAndContext";
 import TextButton from "../../components/RedditDataRepresentations/Navbar/TextButton";
 import UserPage from "../../pages/UserPage";
-import URL from "../../utils/URL";
+import RedditURL from "../../utils/RedditURL";
 
 type UserScreenProps = {
   StackNavigator: ReturnType<
@@ -34,10 +34,11 @@ export default function UserScreen({ StackNavigator }: UserScreenProps) {
         title: route.params.url.split("/")[4] ?? "User",
         headerRight: () => {
           const url = route.params.url;
-          const section = new URL(url).getRelativePath().split("/")[3];
+          const section = new RedditURL(url).getRelativePath().split("/")[3];
           return (
             <SortAndContext
               route={route}
+              navigation={navigation}
               sortOptions={
                 section === "submitted" || section === "comments"
                   ? ["New", "Hot", "Top"]

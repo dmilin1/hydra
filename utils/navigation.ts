@@ -22,8 +22,11 @@ export function useRoute<
 
 type NavFunctionsWithURL = "push" | "replace";
 
-export function useURLNavigation() {
-  const navigation = useNavigation();
+export function useURLNavigation(
+  overrideNav?: NativeStackNavigationProp<StackParamsList>,
+) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- We want to be able to use this in places that can't access the context
+  const navigation = overrideNav ?? useNavigation();
   const { clearFuture } = useContext(StackFutureContext);
 
   const doNavigationAction = (url: string, func: NavFunctionsWithURL) => {
@@ -31,15 +34,15 @@ export function useURLNavigation() {
     if (pageType === PageType.HOME) {
       navigation[func]("Home", { url });
     } else if (pageType === PageType.SUBREDDIT) {
-      navigation.push("PostsPage", { url });
+      navigation[func]("PostsPage", { url });
     } else if (pageType === PageType.POST_DETAILS) {
-      navigation.push("PostDetailsPage", { url });
+      navigation[func]("PostDetailsPage", { url });
     } else if (pageType === PageType.USER) {
-      navigation.push("UserPage", { url });
+      navigation[func]("UserPage", { url });
     } else if (pageType === PageType.ACCOUNTS) {
-      navigation.push("Accounts", { url });
+      navigation[func]("Accounts", { url });
     } else if (pageType === PageType.SETTINGS) {
-      navigation.push("SettingsPage", { url });
+      navigation[func]("SettingsPage", { url });
     }
     clearFuture();
   };

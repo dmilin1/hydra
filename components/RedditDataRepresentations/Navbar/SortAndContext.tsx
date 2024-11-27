@@ -6,6 +6,7 @@ import {
   Entypo,
 } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
@@ -41,11 +42,13 @@ type ContextTypes =
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
+  navigation: NativeStackNavigationProp<StackParamsList, URLRoutes, undefined>;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
 };
 
 export default function SortAndContext({
+  navigation,
   route,
   sortOptions,
   contextOptions,
@@ -55,7 +58,7 @@ export default function SortAndContext({
   const { subscribe, unsubscribe, toggleFavorite } =
     useContext(SubredditContext);
 
-  const { replaceURL } = useURLNavigation();
+  const { replaceURL } = useURLNavigation(navigation);
 
   const showContextMenu = useContextMenu();
 

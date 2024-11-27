@@ -19,13 +19,14 @@ export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
     <StackNavigator.Screen<"PostsPage">
       name="PostsPage"
       component={PostsPage}
-      options={({ route }) => ({
+      options={({ route, navigation }) => ({
         title: new RedditURL(route.params.url).getSubreddit() ?? "Posts",
         headerRight: () => {
           const subreddit = new RedditURL(route.params.url).getSubreddit();
           return (
             <SortAndContext
               route={route}
+              navigation={navigation}
               sortOptions={["Hot", "New", "Top", "Rising"]}
               contextOptions={[
                 "New Post",

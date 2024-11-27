@@ -15,11 +15,12 @@ export default function HomeScreen({ StackNavigator }: HomeScreenProps) {
     <StackNavigator.Screen<"Home">
       name="Home"
       component={PostsPage}
-      options={({ route }) => ({
+      options={({ route, navigation }) => ({
         headerRight: () => {
           return (
             <SortAndContext
               route={route}
+              navigation={navigation}
               sortOptions={["Best", "Hot", "New", "Top", "Rising"]}
               contextOptions={["Share"]}
             />

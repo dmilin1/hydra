@@ -18,12 +18,13 @@ export default function PostDetailsScreen({
     <StackNavigator.Screen<"PostDetailsPage">
       name="PostDetailsPage"
       component={PostDetails}
-      options={({ route }) => ({
+      options={({ route, navigation }) => ({
         title: new RedditURL(route.params.url).getSubreddit() ?? "Details",
         headerRight: () => {
           return (
             <SortAndContext
               route={route}
+              navigation={navigation}
               sortOptions={[
                 "Best",
                 "New",
