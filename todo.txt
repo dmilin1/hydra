@@ -1,5 +1,8 @@
+### Unlikely
+- Make top/bottom bars fade or disappear when scrolling
 
-### HARD
+
+### Hard
 - Respond to inbox messages
 - Get polls working
 - Make subreddit title a search button
@@ -8,11 +11,17 @@
 - Accessibility support
 - Mark posts as seen/read
 - Endpoint caching and future navigation stack state caching
+- Fix HTML rendering when bullet points contain styling
 
 
 ### Medium
 - Collapse automod comments
+- Load favicons when sites don't support the Open Graph Protocol
+- Crossposted media isn't loading
+- Ask users to join the Hydra subreddit
+- Fix weird scroll overflow bug when making long posts and comments 
 
 
 ### Easy
 - Fix accounts with special characters
+- Add option to start the app on a different page (https://www.reddit.com/r/HydraApp/comments/1gq5p0m/hydra_160_update_7693c8bc_is_out_now/)
