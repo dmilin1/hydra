@@ -1,10 +1,7 @@
 import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 type TextButtonProps = {
   text: string;

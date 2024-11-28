@@ -7,20 +7,16 @@ import PostComponent from "../components/RedditDataRepresentations/Post/PostComp
 import Scroller from "../components/UI/Scroller";
 import SearchBar from "../components/UI/SearchBar";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
-import RedditURL, { PageType } from "../utils/RedditURL";
 
 export default function PostsPage({
   route,
-}: StackPageProps<"PostsPage" | "Home">) {
+}: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
   const { theme } = useContext(ThemeContext);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const search = useRef<string>("");
 
   const { url } = route.params;
-
-  const isSubredditPage =
-    new RedditURL(url).getPageType() === PageType.SUBREDDIT;
 
   const loadMorePosts = async (refresh = false) => {
     const newPosts = await getPosts(url, {
@@ -43,7 +39,7 @@ export default function PostsPage({
       <Scroller
         loadMore={loadMorePosts}
         headerComponent={
-          isSubredditPage && (
+          route.name === "PostsPage" && (
             <SearchBar
               onSearch={(text) => {
                 search.current = text;

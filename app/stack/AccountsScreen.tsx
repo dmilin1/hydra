@@ -4,7 +4,7 @@ import { useContext } from "react";
 
 import { StackParamsList } from "./index";
 import Login from "../../components/Modals/Login";
-import IconButton from "../../components/RedditDataRepresentations/Navbar/IconButton";
+import IconButton from "../../components/Navbar/IconButton";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import AccountsPage from "../../pages/AccountsPage";

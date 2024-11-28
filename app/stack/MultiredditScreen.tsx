@@ -3,31 +3,33 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackParamsList } from "./index";
 import SortAndContext from "../../components/Navbar/SortAndContext";
 import PostsPage from "../../pages/PostsPage";
+import RedditURL from "../../utils/RedditURL";
 
-type HomeScreenProps = {
+type MultiredditScreenProps = {
   StackNavigator: ReturnType<
     typeof createNativeStackNavigator<StackParamsList>
   >;
 };
 
-export default function HomeScreen({ StackNavigator }: HomeScreenProps) {
+export default function MultiredditScreen({
+  StackNavigator,
+}: MultiredditScreenProps) {
   return (
-    <StackNavigator.Screen<"Home">
-      name="Home"
+    <StackNavigator.Screen<"MultiredditPage">
+      name="MultiredditPage"
       component={PostsPage}
       options={({ route, navigation }) => ({
+        title: new RedditURL(route.params.url).getPageName(),
         headerRight: () => {
           return (
             <SortAndContext
               route={route}
               navigation={navigation}
-              sortOptions={["Best", "Hot", "New", "Top", "Rising"]}
+              sortOptions={["Hot", "New", "Top", "Rising", "Controversial"]}
               contextOptions={["Share"]}
             />
           );
         },
-        headerBackTitle: "Subreddits",
-        freezeOnBlur: true,
       })}
     />
   );

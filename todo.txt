@@ -6,8 +6,8 @@
 - Image upload when making posts/comments
 - Make OTA updating smoother
 - Accessibility support
-- Make multireddits work
 - Mark posts as seen/read
+- Endpoint caching and future navigation stack state caching
 
 
 ### Medium

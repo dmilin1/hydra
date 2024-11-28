@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { StackParamsList } from "./index";
 import SettingsPage from "../../pages/SettingsPage";
+import RedditURL from "../../utils/RedditURL";
 
 type SettingsScreenProps = {
   StackNavigator: ReturnType<
@@ -16,9 +17,9 @@ export default function SettingsScreen({
     <StackNavigator.Screen<"SettingsPage">
       name="SettingsPage"
       component={SettingsPage}
-      options={{
-        headerTitle: "Settings",
-      }}
+      options={({ route }) => ({
+        title: new RedditURL(route.params.url).getPageName(),
+      })}
     />
   );
 }

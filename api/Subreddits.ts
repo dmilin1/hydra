@@ -35,7 +35,7 @@ type GetTrendingOptions = {
 
 export function formatSubredditData(child: any): Subreddit {
   return {
-    id: child.data.id,
+    id: child.data.id ?? child.data.name?.split("_")?.[1],
     type: "subreddit",
     name: child.data.display_name,
     url: `https://www.reddit.com${child.data.url}`,
@@ -69,9 +69,15 @@ export async function getSubreddits(
     moderatorsPromise,
   ]);
 
+  const sorter = (a: Subreddit, b: Subreddit) => a.name.localeCompare(b.name);
+
   const subreddits = {
-    moderator: moderatorsData.map((child: any) => formatSubredditData(child)),
-    subscriber: subredditsData.map((child: any) => formatSubredditData(child)),
+    moderator: moderatorsData
+      .map((child: any) => formatSubredditData(child))
+      .sort(sorter),
+    subscriber: subredditsData
+      .map((child: any) => formatSubredditData(child))
+      .sort(sorter),
     trending: [],
   };
   return subreddits;

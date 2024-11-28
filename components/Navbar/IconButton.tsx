@@ -1,10 +1,7 @@
 import React, { ReactNode, useContext } from "react";
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 type IconButtonProps = {
   icon: ReactNode;

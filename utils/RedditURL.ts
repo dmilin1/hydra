@@ -4,6 +4,7 @@ export enum PageType {
   HOME,
   POST_DETAILS,
   SUBREDDIT,
+  MULTIREDDIT,
   USER,
   SEARCH,
   MESSAGE,
@@ -78,6 +79,10 @@ export default class RedditURL extends URL {
       this.url = `https://www.reddit.com/r/${subreddit}/${sort.toLowerCase()}/?${urlParams}`;
     } else if (pageType === PageType.POST_DETAILS) {
       this.changeQueryParam("sort", sort.toLowerCase());
+    } else if (pageType === PageType.MULTIREDDIT) {
+      const pathParts = this.getRelativePath().split("/");
+      pathParts[5] = sort.toLowerCase();
+      this.url = `https://www.reddit.com${pathParts.join("/")}?${urlParams}`;
     } else if (pageType === PageType.USER) {
       this.changeQueryParam("sort", sort.toLowerCase());
     }
@@ -117,6 +122,8 @@ export default class RedditURL extends URL {
       return PageType.SUBREDDIT;
     } else if (relativePath.startsWith("/message/")) {
       return PageType.MESSAGE;
+    } else if (relativePath.match(/\/(user|u)\/.*\/m\/.*/)) {
+      return PageType.MULTIREDDIT;
     } else if (
       relativePath.startsWith("/u/") ||
       relativePath.startsWith("/user/")

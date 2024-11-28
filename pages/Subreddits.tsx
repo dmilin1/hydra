@@ -1,4 +1,4 @@
-import { FontAwesome5, Feather, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5, Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import {
   StyleSheet,
@@ -6,17 +6,37 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  Image,
 } from "react-native";
 
-import { Subreddits as SubredditsObj } from "../api/Subreddits";
+import MultiredditLink from "../components/RedditDataRepresentations/Multireddit/MultiredditLink";
+import SubredditCompactLink from "../components/RedditDataRepresentations/Subreddit/SubredditCompactLink";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
 import { useURLNavigation } from "../utils/navigation";
 
+function SectionHeading({ title }: { title: string }) {
+  const { theme } = useContext(ThemeContext);
+
+  return (
+    <View
+      style={t(styles.categoryTitleContainer, {
+        backgroundColor: theme.tint,
+      })}
+    >
+      <Text
+        style={t(styles.categoryTitle, {
+          color: theme.subtleText,
+        })}
+      >
+        {title.toUpperCase()}
+      </Text>
+    </View>
+  );
+}
+
 export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
-  const { subreddits, toggleFavorite } = useContext(SubredditContext);
+  const { subreddits, multis } = useContext(SubredditContext);
 
   const { pushURL } = useURLNavigation();
 
@@ -96,94 +116,46 @@ export default function Subreddits() {
             </View>
           </TouchableOpacity>
         ))}
-        {(
-          [
-            "favorites",
-            "moderator",
-            "subscriber",
-            "trending",
-          ] as (keyof SubredditsObj)[]
-        )
-          .filter((key) => subreddits[key].length > 0)
-          .map((key) => (
-            <View style={styles.categoryContainer} key={key}>
-              <View
-                style={t(styles.categoryTitleContainer, {
-                  backgroundColor: theme.tint,
-                })}
-              >
-                <Text
-                  style={t(styles.categoryTitle, {
-                    color: theme.subtleText,
-                  })}
-                >
-                  {key.toUpperCase()}
-                </Text>
-              </View>
-              {subreddits[key]
-                .sort((a, b) =>
-                  a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1,
-                )
-                .map((subreddit) => (
-                  <View key={subreddit.name}>
-                    <TouchableOpacity
-                      key={subreddit.name}
-                      onPress={() => pushURL(subreddit.url)}
-                      activeOpacity={0.5}
-                      style={t(styles.subredditContainer, {
-                        borderBottomColor: theme.tint,
-                      })}
-                    >
-                      <>
-                        {subreddit.iconURL ? (
-                          <Image
-                            source={{ uri: subreddit.iconURL }}
-                            style={styles.subredditIcon}
-                          />
-                        ) : (
-                          <FontAwesome
-                            name="reddit"
-                            size={30}
-                            color={theme.text}
-                          />
-                        )}
-                        <Text
-                          style={t(styles.subredditText, {
-                            color: theme.text,
-                          })}
-                        >
-                          {subreddit.name}
-                        </Text>
-                        <View style={styles.favoriteIconContainer}>
-                          <TouchableOpacity
-                            onPress={() => toggleFavorite(subreddit.name)}
-                            hitSlop={10}
-                          >
-                            <FontAwesome
-                              name={
-                                subreddits["favorites"].find(
-                                  (sub) => sub.name === subreddit.name,
-                                )
-                                  ? "star"
-                                  : "star-o"
-                              }
-                              color={
-                                subreddits["favorites"].find(
-                                  (sub) => sub.name === subreddit.name,
-                                )
-                                  ? theme.text
-                                  : theme.subtleText
-                              }
-                              style={styles.favoriteIcon}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      </>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-            </View>
-          ))}
+        {subreddits["favorites"].length > 0 && (
+          <>
+            <SectionHeading title="favorites" />
+            {subreddits["favorites"].map((sub) => (
+              <SubredditCompactLink key={sub.name} subreddit={sub} />
+            ))}
+          </>
+        )}
+        {multis.length > 0 && (
+          <>
+            <SectionHeading title="multireddits" />
+            {multis.map((multi) => (
+              <MultiredditLink key={multi.name} multi={multi} />
+            ))}
+          </>
+        )}
+        {subreddits["moderator"].length > 0 && (
+          <>
+            <SectionHeading title="moderator" />
+            {subreddits["moderator"].map((sub) => (
+              <SubredditCompactLink key={sub.name} subreddit={sub} />
+            ))}
+          </>
+        )}
+        {subreddits["subscriber"].length > 0 && (
+          <>
+            <SectionHeading title="subscriber" />
+            {subreddits["subscriber"].map((sub) => (
+              <SubredditCompactLink key={sub.name} subreddit={sub} />
+            ))}
+          </>
+        )}
+        {subreddits["trending"].length > 0 && (
+          <>
+            <SectionHeading title="trending" />
+            {subreddits["trending"].map((sub) => (
+              <SubredditCompactLink key={sub.name} subreddit={sub} />
+            ))}
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -223,34 +195,11 @@ const styles = StyleSheet.create({
     marginVertical: 2,
     fontWeight: "500",
   },
-  subredditContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-  },
-  subredditIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 100,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  subredditText: {
-    fontSize: 16,
-  },
   subredditDescription: {
     fontSize: 12,
     marginTop: 5,
   },
-  favoriteIconContainer: {
-    flex: 1,
-    alignItems: "flex-end",
-    marginRight: 10,
-  },
-  favoriteIcon: {
-    fontSize: 22,
+  subredditText: {
+    fontSize: 16,
   },
 });

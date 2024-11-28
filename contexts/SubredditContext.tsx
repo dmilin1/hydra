@@ -3,6 +3,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { AccountContext } from "./AccountContext";
 import {
+  addToMulti,
+  getMyMultis,
+  Multi,
+  removeFromMulti,
+} from "../api/Multireddit";
+import {
   Subreddit,
   Subreddits as SubredditsObj,
   getSubreddits,
@@ -12,9 +18,18 @@ import {
 
 type SubredditContextType = {
   subreddits: SubredditsObj;
-  subscribe: (subreddit: string) => void;
-  unsubscribe: (subreddit: string) => void;
-  toggleFavorite: (subreddit: string) => void;
+  multis: Multi[];
+  subscribe: (subreddit: string) => Promise<void>;
+  unsubscribe: (subreddit: string) => Promise<void>;
+  toggleFavorite: (subreddit: string) => Promise<void>;
+  addSubToMulti: (
+    multi: Multi,
+    subredditName: Subreddit["name"],
+  ) => Promise<void>;
+  deleteSubFromMulti: (
+    multi: Multi,
+    subredditName: Subreddit["name"],
+  ) => Promise<void>;
 };
 
 const initialAccountContext: SubredditContextType = {
@@ -24,9 +39,12 @@ const initialAccountContext: SubredditContextType = {
     subscriber: [],
     trending: [],
   },
-  subscribe: () => {},
-  unsubscribe: () => {},
-  toggleFavorite: () => {},
+  multis: [],
+  subscribe: async () => {},
+  unsubscribe: async () => {},
+  toggleFavorite: async () => {},
+  addSubToMulti: async () => {},
+  deleteSubFromMulti: async () => {},
 };
 
 export const SubredditContext = createContext(initialAccountContext);
@@ -49,6 +67,8 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
   const [subreddits, setSubreddits] = useState(
     initialAccountContext.subreddits,
   );
+
+  const [multis, setMultis] = useState<Multi[]>([]);
 
   const getStorageKey = () => {
     if (!currentUser) {
@@ -123,6 +143,15 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  const loadMultis = async () => {
+    if (currentUser) {
+      const multis = await getMyMultis();
+      setMultis(multis);
+    } else {
+      setMultis([]);
+    }
+  };
+
   const subscribe = async (subreddit: string) => {
     await setSubscriptionStatus(subreddit, true);
     loadSubreddits();
@@ -135,17 +164,47 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     alert("Unsubscribed from " + subreddit);
   };
 
+  const addSubToMulti = async (
+    multi: Multi,
+    subredditName: Subreddit["name"],
+  ) => {
+    try {
+      await addToMulti(multi, subredditName);
+      loadMultis();
+      alert(`Added ${subredditName} to ${multi.name}`);
+    } catch (e) {
+      alert("Something went wrong: " + e);
+    }
+  };
+
+  const deleteSubFromMulti = async (
+    multi: Multi,
+    subredditName: Subreddit["name"],
+  ) => {
+    try {
+      await removeFromMulti(multi, subredditName);
+      loadMultis();
+      alert(`Removed ${subredditName} from ${multi.name}`);
+    } catch (e) {
+      alert("Something went wrong: " + e);
+    }
+  };
+
   useEffect(() => {
     loadSubreddits();
+    loadMultis();
   }, [currentUser]);
 
   return (
     <SubredditContext.Provider
       value={{
         subreddits,
+        multis,
         subscribe,
         unsubscribe,
         toggleFavorite,
+        addSubToMulti,
+        deleteSubFromMulti,
       }}
     >
       {children}

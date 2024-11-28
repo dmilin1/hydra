@@ -15,7 +15,7 @@ export default function SearchScreen({ StackNavigator }: SearchScreenProps) {
       name="SearchPage"
       component={SearchPage}
       options={{
-        headerTitle: "Search",
+        title: "Search",
       }}
     />
   );

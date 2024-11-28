@@ -10,17 +10,14 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
-import { StackParamsList, URLRoutes } from "../../../app/stack";
-import { ModalContext } from "../../../contexts/ModalContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
-import { SubredditContext } from "../../../contexts/SubredditContext";
-import RedditURL, { PageType } from "../../../utils/RedditURL";
-import { useURLNavigation } from "../../../utils/navigation";
-import useContextMenu from "../../../utils/useContextMenu";
-import ContentEditor from "../../Modals/ContentEditor";
+import { StackParamsList, URLRoutes } from "../../app/stack";
+import { ModalContext } from "../../contexts/ModalContext";
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { SubredditContext } from "../../contexts/SubredditContext";
+import RedditURL, { PageType } from "../../utils/RedditURL";
+import { useURLNavigation } from "../../utils/navigation";
+import useContextMenu from "../../utils/useContextMenu";
+import ContentEditor from "../Modals/ContentEditor";
 
 type SortTypes =
   | "Best"
@@ -38,7 +35,8 @@ type ContextTypes =
   | "Unsubscribe"
   | "Favorite"
   | "Unfavorite"
-  | "New Post";
+  | "New Post"
+  | "Add to Multireddit";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
@@ -55,7 +53,7 @@ export default function SortAndContext({
 }: SortAndContextProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
-  const { subscribe, unsubscribe, toggleFavorite } =
+  const { subscribe, unsubscribe, toggleFavorite, multis, addSubToMulti } =
     useContext(SubredditContext);
 
   const { replaceURL } = useURLNavigation(navigation);
@@ -95,9 +93,12 @@ export default function SortAndContext({
             });
             if (
               sort === "Top" &&
-              [PageType.HOME, PageType.SUBREDDIT, PageType.USER].includes(
-                pageType,
-              )
+              [
+                PageType.HOME,
+                PageType.SUBREDDIT,
+                PageType.MULTIREDDIT,
+                PageType.USER,
+              ].includes(pageType)
             ) {
               handleTopSort();
             } else if (sort) {
@@ -201,6 +202,22 @@ export default function SortAndContext({
               unsubscribe(new RedditURL(currentPath).getSubreddit());
             } else if (result === "Favorite" || result === "Unfavorite") {
               toggleFavorite(new RedditURL(currentPath).getSubreddit());
+            } else if (result === "Add to Multireddit") {
+              if (multis.length === 0) {
+                alert(
+                  "You have no multireddits created yet. Please create one first.",
+                );
+              }
+              const multi = await showContextMenu({
+                options: multis.map((multi) => multi.name),
+              });
+              const selectedMulti = multis.find((m) => m.name === multi);
+              if (selectedMulti) {
+                addSubToMulti(
+                  selectedMulti,
+                  new RedditURL(currentPath).getSubreddit(),
+                );
+              }
             }
           }}
         >

@@ -9,6 +9,7 @@ import AccountsScreen from "./AccountsScreen";
 import ErrorScreen from "./ErrorScreen";
 import HomeScreen from "./HomeScreen";
 import MessagesScreen from "./MessagesScreen";
+import MultiredditScreen from "./MultiredditScreen";
 import PostDetailsScreen from "./PostDetailsScreen";
 import PostsScreen from "./PostsScreen";
 import SearchScreen from "./SearchScreen";
@@ -30,6 +31,9 @@ export type StackParamsList = {
   PostDetailsPage: {
     url: string;
   };
+  MultiredditPage: {
+    url: string;
+  };
   UserPage: {
     url: string;
   };
@@ -47,6 +51,7 @@ export type URLRoutes =
   | "Home"
   | "PostsPage"
   | "PostDetailsPage"
+  | "MultiredditPage"
   | "UserPage"
   | "Accounts"
   | "SettingsPage";
@@ -68,6 +73,7 @@ export default function Stack() {
     MessagesScreen,
     PostsScreen,
     PostDetailsScreen,
+    MultiredditScreen,
     UserScreen,
     AccountsScreen,
     SettingsScreen,

@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useContext } from "react";
 
 import { StackParamsList } from "./index";
-import SortAndContext from "../../components/RedditDataRepresentations/Navbar/SortAndContext";
+import SortAndContext from "../../components/Navbar/SortAndContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
 import PostsPage from "../../pages/PostsPage";
 import RedditURL from "../../utils/RedditURL";
@@ -20,7 +20,7 @@ export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
       name="PostsPage"
       component={PostsPage}
       options={({ route, navigation }) => ({
-        title: new RedditURL(route.params.url).getSubreddit() ?? "Posts",
+        title: new RedditURL(route.params.url).getPageName(),
         headerRight: () => {
           const subreddit = new RedditURL(route.params.url).getSubreddit();
           return (
@@ -36,6 +36,7 @@ export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
                 subreddits.favorites.find((sub) => sub.name === subreddit)
                   ? "Unfavorite"
                   : "Favorite",
+                "Add to Multireddit",
                 "Share",
               ]}
             />

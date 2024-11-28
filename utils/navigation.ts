@@ -37,6 +37,8 @@ export function useURLNavigation(
       navigation[func]("PostsPage", { url });
     } else if (pageType === PageType.POST_DETAILS) {
       navigation[func]("PostDetailsPage", { url });
+    } else if (pageType === PageType.MULTIREDDIT) {
+      navigation[func]("MultiredditPage", { url });
     } else if (pageType === PageType.USER) {
       navigation[func]("UserPage", { url });
     } else if (pageType === PageType.ACCOUNTS) {
