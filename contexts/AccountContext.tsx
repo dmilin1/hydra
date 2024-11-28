@@ -122,9 +122,6 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   };
 
   const loadSavedData = async () => {
-    const cookies = await CookieManager.get("https://www.reddit.com");
-    console.log(cookies);
-    console.log(UserAuth.modhash);
     const usernamesJSON = await AsyncStorage.getItem("usernames");
     const accs: AccountContextType["accounts"] = [];
     if (usernamesJSON) {
