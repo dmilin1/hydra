@@ -27,6 +27,10 @@ export default function Appearance() {
     changePostTitleLength,
     postTextLength,
     changePostTextLength,
+    blurNSFW,
+    toggleBlurNSFW,
+    blurSpoilers,
+    toggleBlurSpoilers,
   } = useContext(PostSettingsContext);
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
@@ -152,6 +156,40 @@ export default function Appearance() {
           text: "Post text max lines",
           onPress: () => postTextLengthRef.current?.togglePicker(true),
         },
+        {
+          key: "blurSpoilers",
+          icon: (
+            <FontAwesome name="eye-slash" size={24} color={theme.text} />
+          ),
+          rightIcon: (
+            <Switch
+              trackColor={{
+                false: theme.iconSecondary as ColorValue,
+                true: theme.iconPrimary as ColorValue,
+              }}
+              value={blurSpoilers}
+              onValueChange={() => toggleBlurSpoilers()}
+            />
+          ),
+          text: "Blur spoilers",
+          onPress: () => toggleBlurSpoilers(),
+        },
+        {
+          key: "blurNSFW",
+          icon: <MaterialIcons name="work-outline" size={24} color={theme.text} />,
+          rightIcon: (
+            <Switch
+              trackColor={{
+                false: theme.iconSecondary as ColorValue,
+                true: theme.iconPrimary as ColorValue,
+              }}
+              value={blurNSFW}
+              onValueChange={() => toggleBlurNSFW()}
+            />
+          ),
+          text: "Blur NSFW",
+          onPress: () => toggleBlurNSFW(),
+        }
       ]}
     />
   );

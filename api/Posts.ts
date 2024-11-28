@@ -28,6 +28,8 @@ export type Post = {
   subredditIcon: string;
   isModerator: boolean;
   isStickied: boolean;
+  isNSFW: boolean;
+  isSpoiler: boolean;
   text: string;
   html: string;
   commentCount: number;
@@ -148,6 +150,8 @@ export async function formatPostData(child: any): Promise<Post> {
       child.data.sr_detail?.icon_img,
     isModerator: child.data.distinguished === "moderator",
     isStickied: child.data.stickied,
+    isNSFW: child.data.over_18,
+    isSpoiler: child.data.spoiler,
     text: decode(child.data.selftext),
     html: decode(child.data.selftext_html),
     commentCount: child.data.num_comments,

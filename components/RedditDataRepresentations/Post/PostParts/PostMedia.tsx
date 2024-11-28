@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Text, StyleSheet, View } from "react-native";
 
 import ImageViewer from "./PostMediaParts/ImageViewer";
@@ -12,6 +12,10 @@ import {
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import RenderHtml from "../../../HTML/RenderHTML";
+import { BlurView } from "expo-blur";
+import { TouchableOpacity } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
 
 type PostMediaProps = {
   post: Post | PostDetail;
@@ -25,6 +29,11 @@ export default function PostMedia({
   maxLines,
 }: PostMediaProps) {
   const { theme } = useContext(ThemeContext);
+  const { blurNSFW, blurSpoilers } = useContext(PostSettingsContext);
+
+  const isBlurable = (blurNSFW && post.isNSFW) || (blurSpoilers && post.isSpoiler);
+
+  const [blur, setBlur] = useState(isBlurable);
 
   return (
     <>
@@ -48,28 +57,53 @@ export default function PostMedia({
       )}
       {renderHTML
         ? post.html && (
-            <View style={styles.bodyHTMLContainer}>
-              <RenderHtml html={post.html} />
-            </View>
-          )
+          <View style={styles.bodyHTMLContainer}>
+            <RenderHtml html={post.html} />
+          </View>
+        )
         : post.text && (
-            <View style={styles.bodyTextContainer}>
-              <Text
-                numberOfLines={maxLines}
-                style={t(styles.bodyText, {
-                  color: theme.subtleText,
-                })}
-              >
-                {post.text.trim()}
-              </Text>
-            </View>
-          )}
+          <View style={styles.bodyTextContainer}>
+            <Text
+              numberOfLines={maxLines}
+              style={t(styles.bodyText, {
+                color: theme.subtleText,
+              })}
+            >
+              {post.text.trim()}
+            </Text>
+          </View>
+        )}
       {post.poll && (
         <View style={styles.pollContainer}>
           <PollViewer poll={post.poll} />
         </View>
       )}
       {post.externalLink && <Link link={post.externalLink} />}
+      {isBlurable && blur && (
+        <TouchableOpacity
+          style={styles.blurContainer}
+          onPress={() => setBlur(false)}
+          activeOpacity={1}
+        >
+          <BlurView intensity={80} style={styles.blur} />
+          <View style={styles.blurIconContainer}>
+            <View style={t(styles.blurIconBox, {
+              backgroundColor: theme.background,
+            })}>
+              <AntDesign name="eye" size={22} color={theme.subtleText} />
+              <Text style={{ color: theme.subtleText }}>
+                {
+                  post.isNSFW ?
+                    "NSFW"
+                    : post.isSpoiler ?
+                      "Spoiler"
+                      : ""
+                }
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      )}
     </>
   );
 }
@@ -106,4 +140,30 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
   },
+  blurContainer: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    height: '100%',
+  },
+  blur: {
+    width: '100%',
+    height: '100%',
+  },
+  blurIconContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blurIconBox: {
+    flexDirection: 'row',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    backgroundColor: 'pink',
+    alignItems: 'center',
+  }
 });

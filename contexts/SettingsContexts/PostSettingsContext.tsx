@@ -12,6 +12,10 @@ type PostSettingsContextType = {
   changePostTitleLength: (newValue: number) => void;
   postTextLength: number;
   changePostTextLength: (newValue: number) => void;
+  blurSpoilers: boolean;
+  toggleBlurSpoilers: (newValue?: boolean) => void;
+  blurNSFW: boolean;
+  toggleBlurNSFW: (newValue?: boolean) => void;
 };
 
 const initialValues = {
@@ -20,6 +24,8 @@ const initialValues = {
   showSubredditIcon: true,
   postTitleLength: 2,
   postTextLength: 3,
+  blurSpoilers: true,
+  blurNSFW: true,
 };
 
 const initialPostSettingsContext: PostSettingsContextType = {
@@ -29,6 +35,8 @@ const initialPostSettingsContext: PostSettingsContextType = {
   toggleSubredditIcon: () => {},
   changePostTitleLength: () => {},
   changePostTextLength: () => {},
+  toggleBlurSpoilers: () => {},
+  toggleBlurNSFW: () => {},
 };
 
 type SettingsLoaders = {
@@ -56,6 +64,13 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [postTextLength, setPostTextLength] = useState(
     initialPostSettingsContext.postTextLength,
   );
+  const [blurSpoilers, setBlurSpoilers] = useState(
+    initialPostSettingsContext.blurSpoilers,
+  );
+  const [blurNSFW, setBlurNSFW] = useState(
+    initialPostSettingsContext.blurNSFW
+  );
+
 
   const togglePostCompactMode = (newValue = !postCompactMode) => {
     setPostCompactMode((prev) => !prev);
@@ -82,6 +97,16 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     AsyncStorage.setItem("postTextLength", JSON.stringify(newValue));
   };
 
+  const toggleBlurSpoilers = (newValue = !blurSpoilers) => {
+    setBlurSpoilers((prev) => !prev);
+    AsyncStorage.setItem("blurSpoilers", JSON.stringify(newValue));
+  };
+
+  const toggleBlurNSFW = (newValue = !blurNSFW) => {
+    setBlurNSFW((prev) => !prev);
+    AsyncStorage.setItem("blurNSFW", JSON.stringify(newValue));
+  };
+
   const loadSavedData = () => {
     const settingsLoaders: SettingsLoaders = [
       {
@@ -103,6 +128,14 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
       {
         key: "postTextLength",
         setFn: setPostTextLength,
+      },
+      {
+        key: "blurSpoilers",
+        setFn: setBlurSpoilers,
+      },
+      {
+        key: "blurNSFW",
+        setFn: setBlurNSFW,
       },
     ];
     settingsLoaders.forEach(({ key, setFn }) => {
@@ -133,6 +166,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         changePostTitleLength,
         postTextLength,
         changePostTextLength,
+        blurSpoilers,
+        toggleBlurSpoilers,
+        blurNSFW,
+        toggleBlurNSFW,
       }}
     >
       {children}
