@@ -9,10 +9,8 @@ import {
   logout,
   Needs2FA,
   RateLimited,
-  UserAuth,
 } from "../api/Authentication";
 import { User, getUser } from "../api/User";
-import CookieManager from "@react-native-cookies/cookies";
 import RedditCookies from "../utils/RedditCookies";
 
 export type Account = {

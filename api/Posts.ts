@@ -112,9 +112,11 @@ export async function formatPostData(child: any): Promise<Post> {
   if (video && videoThumbnail) {
     imageThumbnail = decode(videoThumbnail);
   }
-  if (imageThumbnail === 'spoiler') {
+  if (imageThumbnail === "spoiler") {
     // if the thumbnail is a spoiler, reddit doesn't give it to us...
-    const imgPreviewThumbnail = decode(child.data.preview?.images[0]?.resolutions?.[0]?.url);
+    const imgPreviewThumbnail = decode(
+      child.data.preview?.images[0]?.resolutions?.[0]?.url,
+    );
     // try to get the first image in the gallery, else the smallest preview image
     imageThumbnail = galleryThumbnails[0] ?? imgPreviewThumbnail;
   }

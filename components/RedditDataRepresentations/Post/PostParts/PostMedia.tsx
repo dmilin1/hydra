@@ -1,5 +1,7 @@
+import { AntDesign } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 
 import ImageViewer from "./PostMediaParts/ImageViewer";
 import Link from "./PostMediaParts/Link";
@@ -7,15 +9,12 @@ import PollViewer from "./PostMediaParts/PollViewer";
 import VideoPlayer from "./PostMediaParts/VideoPlayer";
 import { PostDetail } from "../../../../api/PostDetail";
 import { Post } from "../../../../api/Posts";
+import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
 import {
   ThemeContext,
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import RenderHtml from "../../../HTML/RenderHTML";
-import { BlurView } from "expo-blur";
-import { TouchableOpacity } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
 
 type PostMediaProps = {
   post: Post | PostDetail;
@@ -31,7 +30,8 @@ export default function PostMedia({
   const { theme } = useContext(ThemeContext);
   const { blurNSFW, blurSpoilers } = useContext(PostSettingsContext);
 
-  const isBlurable = (blurNSFW && post.isNSFW) || (blurSpoilers && post.isSpoiler);
+  const isBlurable =
+    (blurNSFW && post.isNSFW) || (blurSpoilers && post.isSpoiler);
 
   const [blur, setBlur] = useState(isBlurable);
 
@@ -57,22 +57,22 @@ export default function PostMedia({
       )}
       {renderHTML
         ? post.html && (
-          <View style={styles.bodyHTMLContainer}>
-            <RenderHtml html={post.html} />
-          </View>
-        )
+            <View style={styles.bodyHTMLContainer}>
+              <RenderHtml html={post.html} />
+            </View>
+          )
         : post.text && (
-          <View style={styles.bodyTextContainer}>
-            <Text
-              numberOfLines={maxLines}
-              style={t(styles.bodyText, {
-                color: theme.subtleText,
-              })}
-            >
-              {post.text.trim()}
-            </Text>
-          </View>
-        )}
+            <View style={styles.bodyTextContainer}>
+              <Text
+                numberOfLines={maxLines}
+                style={t(styles.bodyText, {
+                  color: theme.subtleText,
+                })}
+              >
+                {post.text.trim()}
+              </Text>
+            </View>
+          )}
       {post.poll && (
         <View style={styles.pollContainer}>
           <PollViewer poll={post.poll} />
@@ -87,18 +87,14 @@ export default function PostMedia({
         >
           <BlurView intensity={80} style={styles.blur} />
           <View style={styles.blurIconContainer}>
-            <View style={t(styles.blurIconBox, {
-              backgroundColor: theme.background,
-            })}>
+            <View
+              style={t(styles.blurIconBox, {
+                backgroundColor: theme.background,
+              })}
+            >
               <AntDesign name="eye" size={22} color={theme.subtleText} />
               <Text style={{ color: theme.subtleText }}>
-                {
-                  post.isNSFW ?
-                    "NSFW"
-                    : post.isSpoiler ?
-                      "Spoiler"
-                      : ""
-                }
+                {post.isNSFW ? "NSFW" : post.isSpoiler ? "Spoiler" : ""}
               </Text>
             </View>
           </View>
@@ -141,29 +137,29 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   blurContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   blur: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   blurIconContainer: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   blurIconBox: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 5,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 10,
-    backgroundColor: 'pink',
-    alignItems: 'center',
-  }
+    backgroundColor: "pink",
+    alignItems: "center",
+  },
 });

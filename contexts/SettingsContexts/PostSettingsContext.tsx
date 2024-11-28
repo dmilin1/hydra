@@ -67,10 +67,7 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [blurSpoilers, setBlurSpoilers] = useState(
     initialPostSettingsContext.blurSpoilers,
   );
-  const [blurNSFW, setBlurNSFW] = useState(
-    initialPostSettingsContext.blurNSFW
-  );
-
+  const [blurNSFW, setBlurNSFW] = useState(initialPostSettingsContext.blurNSFW);
 
   const togglePostCompactMode = (newValue = !postCompactMode) => {
     setPostCompactMode((prev) => !prev);

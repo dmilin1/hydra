@@ -29,6 +29,7 @@ import {
 import { VoteOption } from "../../../../api/Posts";
 import { AccountContext } from "../../../../contexts/AccountContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
+import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/CommentSettingsContext";
 import {
   ThemeContext,
   t,
@@ -67,6 +68,7 @@ export function CommentComponent({
   commentPropRef,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
+  const { voteIndicator } = useContext(CommentSettingsContext);
   const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
@@ -238,6 +240,14 @@ export function CommentComponent({
                       theme.postColorTint[
                         (comment.depth - 1) % theme.postColorTint.length
                       ],
+                    borderRightColor:
+                      comment.userVote === VoteOption.UpVote
+                        ? theme.upvote
+                        : theme.downvote,
+                    borderRightWidth:
+                      voteIndicator && comment.userVote !== VoteOption.NoVote
+                        ? 1
+                        : 0,
                   },
                 )}
               >

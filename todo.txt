@@ -16,4 +16,3 @@
 
 ### Easy
 - Fix accounts with special characters
-- Add upvote/downvote highlight bar on the side (https://www.reddit.com/r/HydraFeatureRequests/comments/1g9mnjx/comment/lwtnmiv/?context=3)
