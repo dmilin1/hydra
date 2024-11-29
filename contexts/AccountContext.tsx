@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Sentry from "@sentry/react-native";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
 
@@ -60,6 +61,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       await AsyncStorage.setItem("currentUser", account.username);
       setCurrentAcc(account);
       setCurrentUser(user);
+      Sentry.setUser({ username: user.userName });
     } catch (e) {
       if (e instanceof RateLimited && attempt === 1) {
         // This error seems to happen when the session cookies are stale, but
@@ -80,6 +82,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     await AsyncStorage.removeItem("currentUser");
     setCurrentAcc(null);
     setCurrentUser(null);
+    Sentry.setUser(null);
   };
 
   const addUser = async (account: Account, twoFACode: string) => {

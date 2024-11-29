@@ -3,9 +3,9 @@
 import "@expo/metro-runtime";
 import "expo-dev-client";
 
-import * as Sentry from '@sentry/react-native';
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import * as Sentry from "@sentry/react-native";
 import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
@@ -29,9 +29,10 @@ LogBox.ignoreLogs([
 ]);
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  debug: true,
-})
+  dsn: "https://0a53bc725058aa44bf7aa771f5bcda05@o4508377723174912.ingest.us.sentry.io/4508377726582784",
+  debug: false,
+  enabled: !__DEV__,
+});
 
 SplashScreen.preventAutoHideAsync();
 
