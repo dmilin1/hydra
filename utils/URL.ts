@@ -65,6 +65,14 @@ export default class URL {
     return this;
   }
 
+  deleteQueryParam(key: string): URL {
+    const urlParams = this.getURLParams();
+    const urlParamsObject = new URLSearchParams(urlParams);
+    urlParamsObject.delete(key);
+    this.url = this.url.split("?")[0] + "?" + urlParamsObject.toString();
+    return this;
+  }
+
   async getOpenGraphData(): Promise<OpenGraphData> {
     const res = await fetch(this.url);
     const html = await res.text();

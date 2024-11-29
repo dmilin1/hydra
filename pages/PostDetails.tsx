@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   VirtualizedList,
   Share,
+  TouchableHighlight,
 } from "react-native";
 
 import {
@@ -57,6 +58,8 @@ export default function PostDetails({
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
+
+  const contextDepth = Number(new RedditURL(url).getQueryParam("context") ?? 0);
 
   const asyncMeasure = (
     ref: any,
@@ -380,6 +383,24 @@ export default function PostDetails({
                   <Feather name="share" size={28} color={theme.iconPrimary} />
                 </TouchableOpacity>
               </View>
+              {contextDepth > 0 && postDetail.comments.length > 0 && (
+                <TouchableHighlight
+                  onPress={() => {
+                    pushURL(
+                      new RedditURL(
+                        `https://www.reddit.com/r/${postDetail.subreddit}/comments/${postDetail.id}/`,
+                      ).toString(),
+                    );
+                  }}
+                  style={t(styles.showContextContainer, {
+                    borderTopColor: theme.divider,
+                  })}
+                >
+                  <Text style={{ color: theme.buttonText }}>
+                    This is a comment thread. Click here to view all comments.
+                  </Text>
+                </TouchableHighlight>
+              )}
               {postDetail.comments.length > 0 ? (
                 <Comments
                   ref={commentsView}
@@ -467,6 +488,11 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     padding: 3,
     borderRadius: 5,
+  },
+  showContextContainer: {
+    borderTopWidth: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
   noCommentsContainer: {
     marginVertical: 25,

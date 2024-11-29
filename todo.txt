@@ -10,7 +10,7 @@
 - Make OTA updating smoother
 - Accessibility support
 - Mark posts as seen/read
-- Endpoint caching and future navigation stack state caching
+- Endpoint caching, future navigation stack state caching, remember subreddit sort (https://www.reddit.com/r/HydraFeatureRequests/comments/1h0rddj/couple_of_requests/)
 - Fix HTML rendering when bullet points contain styling
 
 
@@ -18,6 +18,7 @@
 - Collapse automod comments
 - Load favicons when sites don't support the Open Graph Protocol
 - Crossposted media isn't loading
+- One image posts not displaying image (https://www.reddit.com/r/HydraFeatureRequests/comments/1h2hmie/one_image_posts_not_displaying_image/)
 - Ask users to join the Hydra subreddit
 - Fix weird scroll overflow bug when making long posts and comments 
 
@@ -25,3 +26,4 @@
 ### Easy
 - Fix accounts with special characters
 - Add option to start the app on a different page (https://www.reddit.com/r/HydraApp/comments/1gq5p0m/hydra_160_update_7693c8bc_is_out_now/)
+- Add opt out of error logging
