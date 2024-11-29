@@ -5,6 +5,7 @@ import "expo-dev-client";
 
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import * as Sentry from "@sentry/react-native";
 import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
@@ -27,11 +28,17 @@ LogBox.ignoreLogs([
   `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`,
 ]);
 
+Sentry.init({
+  dsn: "https://0a53bc725058aa44bf7aa771f5bcda05@o4508377723174912.ingest.us.sentry.io/4508377726582784",
+  debug: false,
+  enabled: !__DEV__,
+});
+
 SplashScreen.preventAutoHideAsync();
 
 enableFreeze(true);
 
-export default function RootLayout() {
+function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
@@ -63,4 +70,8 @@ export default function RootLayout() {
   );
 }
 
-registerRootComponent(RootLayout);
+const App = Sentry.wrap(RootLayout);
+
+export default App;
+
+registerRootComponent(App);

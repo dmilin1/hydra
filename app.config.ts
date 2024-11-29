@@ -50,7 +50,8 @@ module.exports = {
         'expo-media-library', {
           savePhotosPermission: 'Allow $(PRODUCT_NAME) to save photos and videos to your library.',
         }
-      ]
+      ],
+      "@sentry/react-native/expo",
     ],
     updates: {
       url: `https://u.expo.dev/${projectId}`
