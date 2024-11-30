@@ -3,7 +3,6 @@ import React, {
   useContext,
   useState,
   useMemo,
-  Suspense,
   forwardRef,
   ForwardedRef,
   useRef,
@@ -453,23 +452,15 @@ const Comments = forwardRef(
         })}
         ref={ref}
       >
-        <Suspense
-          fallback={
-            <View>
-              <Text>Loading</Text>
-            </View>
-          }
-        >
-          <CommentComponent
-            key={postDetail.id}
-            loadMoreComments={loadMoreComments}
-            comment={postDetail}
-            index={0}
-            scrollChange={scrollChange}
-            changeComment={changeComment}
-            deleteComment={deleteComment}
-          />
-        </Suspense>
+        <CommentComponent
+          key={postDetail.id}
+          loadMoreComments={loadMoreComments}
+          comment={postDetail}
+          index={0}
+          scrollChange={scrollChange}
+          changeComment={changeComment}
+          deleteComment={deleteComment}
+        />
       </View>
     );
   },

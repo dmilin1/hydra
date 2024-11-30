@@ -1,4 +1,4 @@
-import { AntDesign, Feather, FontAwesome, Octicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import React, {
   useContext,
   useCallback,
@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState,
   ReactNode,
+  useDeferredValue,
 } from "react";
 import {
   StyleSheet,
@@ -14,8 +15,6 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   VirtualizedList,
-  Share,
-  TouchableHighlight,
 } from "react-native";
 
 import {
@@ -23,20 +22,12 @@ import {
   loadMoreComments,
   PostDetail,
   Comment,
-  vote,
-  savePost,
 } from "../api/PostDetail";
-import { VoteOption } from "../api/Posts";
 import { StackPageProps } from "../app/stack";
-import ContentEditor from "../components/Modals/ContentEditor";
+import PostDetailsComponent from "../components/RedditDataRepresentations/Post/PostDetailsComponent";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
-import PostMedia from "../components/RedditDataRepresentations/Post/PostParts/PostMedia";
-import SubredditIcon from "../components/RedditDataRepresentations/Post/PostParts/SubredditIcon";
 import Scroller from "../components/UI/Scroller";
-import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
-import RedditURL from "../utils/RedditURL";
-import { useURLNavigation } from "../utils/navigation";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -50,16 +41,13 @@ export default function PostDetails({
   const url = route.params.url;
 
   const { theme } = useContext(ThemeContext);
-  const { pushURL } = useURLNavigation();
-  const { setModal } = useContext(ModalContext);
 
   const scrollView = useRef<VirtualizedList<ReactNode>>(null);
   const commentsView = React.useRef<View>(null);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
-  const [mediaCollapsed, setMediaCollapsed] = useState(false);
 
-  const contextDepth = Number(new RedditURL(url).getQueryParam("context") ?? 0);
+  const deferredPostDetail = useDeferredValue(postDetail);
 
   const asyncMeasure = (
     ref: any,
@@ -159,17 +147,6 @@ export default function PostDetails({
     });
   };
 
-  const voteOnPost = async (voteOption: VoteOption) => {
-    if (postDetail) {
-      const result = await vote(postDetail, voteOption);
-      setPostDetail({
-        ...postDetail,
-        upvotes: postDetail.upvotes - postDetail.userVote + result,
-        userVote: result,
-      });
-    }
-  };
-
   const scrollToNextComment = async () => {
     if (!scrollView.current || !commentsView.current) return;
     const scrollRef = scrollView.current.getScrollRef();
@@ -211,217 +188,42 @@ export default function PostDetails({
         <Scroller
           scrollViewRef={scrollView}
           refresh={async () => await loadPostDetails()}
+          headerComponent={
+            <PostDetailsComponent
+              key={postDetail.id}
+              postDetail={postDetail}
+              loadPostDetails={loadPostDetails}
+              setPostDetail={setPostDetail}
+            />
+          }
         >
-          {postDetail && (
-            <>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => setMediaCollapsed(!mediaCollapsed)}
-              >
-                <View style={styles.postDetailsContainer}>
-                  <Text
-                    style={t(styles.title, {
-                      color: theme.text,
-                    })}
-                  >
-                    {postDetail.title}
-                  </Text>
-
-                  {!mediaCollapsed && <PostMedia post={postDetail} />}
-                  <View style={styles.metadataContainer}>
-                    <View style={styles.metadataRow}>
-                      {postDetail.isStickied && (
-                        <AntDesign
-                          name="pushpin"
-                          style={t(styles.stickiedIcon, {
-                            color: theme.moderator,
-                          })}
-                        />
-                      )}
-                      <TouchableOpacity
-                        style={styles.subredditContainer}
-                        activeOpacity={0.5}
-                        onPress={() => pushURL(`/r/${postDetail.subreddit}`)}
-                      >
-                        <SubredditIcon post={postDetail} />
-                        <Text
-                          style={t(styles.boldedSmallText, {
-                            color: theme.subtleText,
-                          })}
-                        >
-                          {`r/${postDetail.subreddit}`}
-                        </Text>
-                      </TouchableOpacity>
-                      <Text
-                        style={t(styles.smallText, {
-                          color: theme.subtleText,
-                        })}
-                      >
-                        {" by "}
-                      </Text>
-                      <TouchableOpacity
-                        activeOpacity={0.5}
-                        onPress={() => pushURL(`/u/${postDetail.author}`)}
-                      >
-                        <Text
-                          style={t(styles.boldedSmallText, {
-                            color: postDetail.isModerator
-                              ? theme.moderator
-                              : theme.subtleText,
-                          })}
-                        >
-                          {`u/${postDetail.author}`}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={[styles.metadataRow, { marginTop: 5 }]}>
-                      <AntDesign
-                        name="arrowup"
-                        size={15}
-                        color={theme.subtleText}
-                      />
-                      <Text
-                        style={t(styles.smallText, {
-                          color: theme.subtleText,
-                        })}
-                      >
-                        {postDetail.upvotes}
-                      </Text>
-                      <Text
-                        style={t(styles.smallText, {
-                          color: theme.subtleText,
-                        })}
-                      >
-                        {"  •  "}
-                        {postDetail.timeSince}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
-              <View
-                style={t(styles.buttonsBarContainer, {
-                  borderTopColor: theme.divider,
+          {deferredPostDetail && deferredPostDetail.comments.length > 0 ? (
+            <Comments
+              key={`${deferredPostDetail.id}-comments`}
+              ref={commentsView}
+              loadMoreComments={loadMoreCommentsFunc}
+              postDetail={deferredPostDetail}
+              scrollChange={scrollChange}
+              changeComment={(comment: Comment) => changeComment(comment)}
+              deleteComment={(comment: Comment) => deleteComment(comment)}
+            />
+          ) : postDetail !== deferredPostDetail ? (
+            <View
+              key="loading-comments"
+              style={styles.loadingCommentsContainer}
+            >
+              <ActivityIndicator size="small" />
+            </View>
+          ) : (
+            <View key="no-comments" style={styles.noCommentsContainer}>
+              <Text
+                style={t(styles.noCommentsText, {
+                  color: theme.text,
                 })}
               >
-                <TouchableOpacity
-                  style={t(styles.buttonsContainer, {
-                    backgroundColor:
-                      postDetail.userVote === VoteOption.UpVote
-                        ? theme.upvote
-                        : undefined,
-                  })}
-                  onPress={() => voteOnPost(VoteOption.UpVote)}
-                >
-                  <AntDesign
-                    name="arrowup"
-                    size={28}
-                    color={
-                      postDetail.userVote === VoteOption.UpVote
-                        ? theme.text
-                        : theme.iconPrimary
-                    }
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={t(styles.buttonsContainer, {
-                    backgroundColor:
-                      postDetail.userVote === VoteOption.DownVote
-                        ? theme.downvote
-                        : undefined,
-                  })}
-                  onPress={() => voteOnPost(VoteOption.DownVote)}
-                >
-                  <AntDesign
-                    name="arrowdown"
-                    size={28}
-                    color={
-                      postDetail.userVote === VoteOption.DownVote
-                        ? theme.text
-                        : theme.iconPrimary
-                    }
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={t(styles.buttonsContainer, {
-                    backgroundColor: undefined,
-                  })}
-                  onPress={async () => {
-                    await savePost(postDetail, !postDetail.saved);
-                    setPostDetail({
-                      ...postDetail,
-                      saved: !postDetail.saved,
-                    });
-                  }}
-                >
-                  <FontAwesome
-                    name={postDetail.saved ? "bookmark" : "bookmark-o"}
-                    size={28}
-                    color={theme.iconPrimary}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.buttonsContainer}
-                  onPress={() =>
-                    setModal(
-                      <ContentEditor
-                        mode="makeComment"
-                        parent={postDetail}
-                        contentSent={async () => await loadPostDetails()}
-                      />,
-                    )
-                  }
-                >
-                  <Octicons name="reply" size={28} color={theme.iconPrimary} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.buttonsContainer}
-                  onPress={() => {
-                    Share.share({ url: new RedditURL(url).toString() });
-                  }}
-                >
-                  <Feather name="share" size={28} color={theme.iconPrimary} />
-                </TouchableOpacity>
-              </View>
-              {contextDepth > 0 && postDetail.comments.length > 0 && (
-                <TouchableHighlight
-                  onPress={() => {
-                    pushURL(
-                      new RedditURL(
-                        `https://www.reddit.com/r/${postDetail.subreddit}/comments/${postDetail.id}/`,
-                      ).toString(),
-                    );
-                  }}
-                  style={t(styles.showContextContainer, {
-                    borderTopColor: theme.divider,
-                  })}
-                >
-                  <Text style={{ color: theme.buttonText }}>
-                    This is a comment thread. Click here to view all comments.
-                  </Text>
-                </TouchableHighlight>
-              )}
-              {postDetail.comments.length > 0 ? (
-                <Comments
-                  ref={commentsView}
-                  loadMoreComments={loadMoreCommentsFunc}
-                  postDetail={postDetail}
-                  scrollChange={scrollChange}
-                  changeComment={(comment: Comment) => changeComment(comment)}
-                  deleteComment={(comment: Comment) => deleteComment(comment)}
-                />
-              ) : (
-                <View style={styles.noCommentsContainer}>
-                  <Text
-                    style={t(styles.noCommentsText, {
-                      color: theme.text,
-                    })}
-                  >
-                    No comments
-                  </Text>
-                </View>
-              )}
-            </>
+                No comments
+              </Text>
+            </View>
           )}
         </Scroller>
       ) : (
@@ -493,6 +295,11 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     paddingHorizontal: 15,
     paddingVertical: 10,
+  },
+  loadingCommentsContainer: {
+    marginVertical: 25,
+    justifyContent: "center",
+    alignItems: "center",
   },
   noCommentsContainer: {
     marginVertical: 25,

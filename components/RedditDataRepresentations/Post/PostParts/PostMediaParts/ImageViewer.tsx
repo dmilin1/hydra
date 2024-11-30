@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   Text,
   StyleSheet,
@@ -36,29 +36,21 @@ export default function ImageViewer({
   const [visible, setVisible] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [dimensions, setDimensions] = useState({ width: 300, height: 200 });
+  const [dimensionsCalculated, setDimensionsCalculated] =
+    useState(!resizeDynamically);
 
   const { theme } = useContext(ThemeContext);
 
   const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
 
+  let displayImgs = images;
+  if ((loadLowData || isGif) && thumbnail) {
+    displayImgs = [thumbnail];
+  }
+
   const imgRatio = dimensions.width / dimensions.height;
   const heightIfFullSize = DEVICE_WIDTH / imgRatio;
   const imgHeight = Math.min(DEVICE_HEIGHT * 0.5, heightIfFullSize);
-
-  const getDimensions = async (uri: string) => {
-    Image.getSize(uri, (width, height) => {
-      setDimensions({ width, height });
-    });
-  };
-
-  useEffect(() => {
-    if (!resizeDynamically) {
-    } else if (loadLowData && thumbnail) {
-      getDimensions(thumbnail);
-    } else if (!loadLowData) {
-      getDimensions(images[0]);
-    }
-  }, []);
 
   return (
     <View style={styles.imageViewerContainer}>
@@ -75,9 +67,9 @@ export default function ImageViewer({
           delayLongPress={500}
         />
       )}
-      {images.slice(0, loadLowData ? 1 : 2).map((image, index) => (
+      {displayImgs.map((displayImg, index) => (
         <TouchableHighlight
-          key={`${image}-${index}`}
+          key={`${displayImg}-${index}`}
           onPress={() => {
             setLoadLowData(false);
             setImageIndex(index);
@@ -90,14 +82,24 @@ export default function ImageViewer({
             style={[
               styles.img,
               {
-                height: images.length >= 2 ? imgHeight / 2 : imgHeight,
+                height: displayImgs.length >= 2 ? imgHeight / 2 : imgHeight,
+                opacity: dimensionsCalculated ? 1 : 0,
               },
             ]}
             resizeMode="contain"
             source={{
-              uri: (isGif || loadLowData) && thumbnail ? thumbnail : image,
+              uri: displayImg,
             }}
             alt="image failed to load"
+            onLoad={(e) => {
+              if (resizeDynamically) {
+                setDimensions({
+                  width: e.nativeEvent.source.width,
+                  height: e.nativeEvent.source.height,
+                });
+                setDimensionsCalculated(true);
+              }
+            }}
           />
         </TouchableHighlight>
       ))}
