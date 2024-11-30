@@ -16,11 +16,14 @@ import { enableFreeze } from "react-native-screens";
 
 import Tabs from "./tabs";
 import { AccountProvider } from "../contexts/AccountContext";
+import DataMigrator from "../contexts/DataMigrator";
 import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
+import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
+import KeyStore from "../utils/KeyStore";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -28,14 +31,19 @@ LogBox.ignoreLogs([
   `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`,
 ]);
 
+// Default to true if not set
+const reportingAllowed =
+  KeyStore.getBoolean(ERROR_REPORTING_STORAGE_KEY) !== false;
+
 Sentry.init({
   dsn: "https://0a53bc725058aa44bf7aa771f5bcda05@o4508377723174912.ingest.us.sentry.io/4508377726582784",
   debug: false,
-  enabled: !__DEV__,
+  enabled: !__DEV__ && reportingAllowed,
 });
 
 SplashScreen.preventAutoHideAsync();
 
+// Tells non visble tabs and screens to not rerender in the background
 enableFreeze(true);
 
 function RootLayout() {
@@ -51,21 +59,23 @@ function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <SettingsProvider>
-        <AccountProvider>
-          <NavigationProvider>
-            <ActionSheetProvider>
-              <InboxProvider>
-                <ModalProvider>
-                  <SubredditProvider>
-                    <>{loaded && <Tabs />}</>
-                  </SubredditProvider>
-                </ModalProvider>
-              </InboxProvider>
-            </ActionSheetProvider>
-          </NavigationProvider>
-        </AccountProvider>
-      </SettingsProvider>
+      <DataMigrator>
+        <SettingsProvider>
+          <AccountProvider>
+            <NavigationProvider>
+              <ActionSheetProvider>
+                <InboxProvider>
+                  <ModalProvider>
+                    <SubredditProvider>
+                      <>{loaded && <Tabs />}</>
+                    </SubredditProvider>
+                  </ModalProvider>
+                </InboxProvider>
+              </ActionSheetProvider>
+            </NavigationProvider>
+          </AccountProvider>
+        </SettingsProvider>
+      </DataMigrator>
     </SafeAreaProvider>
   );
 }

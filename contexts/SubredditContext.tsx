@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { AccountContext } from "./AccountContext";
@@ -15,6 +14,7 @@ import {
   getTrending,
   setSubscriptionStatus,
 } from "../api/Subreddits";
+import KeyStore from "../utils/KeyStore";
 
 type SubredditContextType = {
   subreddits: SubredditsObj;
@@ -79,7 +79,7 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
   };
 
   const getFavoriteSubNames = async (): Promise<string[]> => {
-    const favs = await AsyncStorage.getItem(getStorageKey());
+    const favs = KeyStore.getString(getStorageKey());
     return favs ? JSON.parse(favs) : [];
   };
 
@@ -109,7 +109,7 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
         newFavoriteSubs = [...subreddits.favorites, subToFavorite];
       }
 
-      await AsyncStorage.setItem(getStorageKey(), JSON.stringify(newFavorites));
+      KeyStore.set(getStorageKey(), JSON.stringify(newFavorites));
       setSubreddits({
         ...subreddits,
         favorites: newFavoriteSubs,

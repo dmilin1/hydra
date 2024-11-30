@@ -109,9 +109,9 @@ export default function Appearance() {
             rightIcon: (
               <Picker
                 ref={postTitleLengthRef}
-                onValueChange={(value) => {
+                onValueChange={(value: string | number) => {
                   if (value) {
-                    changePostTitleLength(value);
+                    changePostTitleLength(Number(value));
                   }
                 }}
                 items={[...Array(5).keys()].map((i) => ({
@@ -139,9 +139,9 @@ export default function Appearance() {
             rightIcon: (
               <Picker
                 ref={postTextLengthRef}
-                onValueChange={(value) => {
+                onValueChange={(value: string | number) => {
                   if (value) {
-                    changePostTextLength(value);
+                    changePostTextLength(Number(value));
                   }
                 }}
                 items={[...Array(10).keys()].map((i) => ({

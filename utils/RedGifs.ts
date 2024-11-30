@@ -1,9 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import KeyStore from "./KeyStore";
+
+const REDGIFS_TOKEN_STORAGE_KEY = "redgifsToken";
 
 export default class Redgifs {
   static async getMediaURL(url: string, attemptsLeft = 1): Promise<string> {
     const videoId = url.split(/watch\/|\?|#/)[1];
-    let token = await Redgifs.getStoredToken();
+    let token = Redgifs.getStoredToken();
     if (!token) {
       token = await Redgifs.refreshStoredToken();
     }
@@ -25,8 +27,8 @@ export default class Redgifs {
     return url;
   }
 
-  static async getStoredToken(): Promise<string | null> {
-    return await AsyncStorage.getItem("redgifsToken");
+  static getStoredToken() {
+    return KeyStore.getString(REDGIFS_TOKEN_STORAGE_KEY);
   }
 
   static async refreshStoredToken(): Promise<string> {
@@ -37,7 +39,7 @@ export default class Redgifs {
     })
       .then((res) => res.json())
       .then((json) => json.token);
-    await AsyncStorage.setItem("redgifsToken", token);
+    KeyStore.set(REDGIFS_TOKEN_STORAGE_KEY, token);
     return token;
   }
 }

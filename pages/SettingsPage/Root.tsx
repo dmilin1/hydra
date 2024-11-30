@@ -42,6 +42,12 @@ export default function Root() {
             onPress: () => pushURL("hydra://settings/dataUse"),
           },
           {
+            key: "privacy",
+            icon: <Feather name="lock" size={24} color={theme.text} />,
+            text: "Privacy",
+            onPress: () => pushURL("hydra://settings/privacy"),
+          },
+          {
             key: "requestFeature",
             icon: (
               <Feather name="git-pull-request" size={24} color={theme.text} />

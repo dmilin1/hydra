@@ -1,70 +1,33 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createContext, useEffect, useState } from "react";
-
-type CommentSettingsContextType = {
-  voteIndicator: boolean;
-  toggleVoteIndicator: (newValue?: boolean) => void;
-};
+import { createContext } from "react";
+import { useMMKVBoolean } from "react-native-mmkv";
 
 const initialValues = {
   voteIndicator: false,
 };
 
-const initialCommentSettingsContext: CommentSettingsContextType = {
+const initialCommentSettingsContext = {
   ...initialValues,
-  toggleVoteIndicator: () => {},
+  toggleVoteIndicator: (_newValue?: boolean) => {},
 };
-
-type SettingsLoaders = {
-  [Key in keyof typeof initialValues]: {
-    key: Key;
-    setFn: React.Dispatch<React.SetStateAction<(typeof initialValues)[Key]>>;
-  };
-}[keyof typeof initialValues][];
 
 export const CommentSettingsContext = createContext(
   initialCommentSettingsContext,
 );
 
 export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
-  const [voteIndicator, setVoteIndicator] = useState(
-    initialCommentSettingsContext.voteIndicator,
-  );
+  const [voteIndicator, setVoteIndicator] = useMMKVBoolean("voteIndicator");
 
   const toggleVoteIndicator = (newValue = !voteIndicator) => {
-    setVoteIndicator((prev) => !prev);
-    AsyncStorage.setItem("voteIndicator", JSON.stringify(newValue));
+    setVoteIndicator(newValue);
     alert(
       "Existing pages may need to be refreshed for this change to take effect.",
     );
   };
 
-  const loadSavedData = () => {
-    const settingsLoaders: SettingsLoaders = [
-      {
-        key: "voteIndicator",
-        setFn: setVoteIndicator,
-      },
-    ];
-    settingsLoaders.forEach(({ key, setFn }) => {
-      AsyncStorage.getItem(key).then((str) => {
-        if (str) {
-          let val = JSON.parse(str);
-          if (typeof initialCommentSettingsContext[key] === "number") {
-            val = Number(val);
-          }
-          setFn(JSON.parse(val));
-        }
-      });
-    });
-  };
-
-  useEffect(() => loadSavedData(), []);
-
   return (
     <CommentSettingsContext.Provider
       value={{
-        voteIndicator,
+        voteIndicator: voteIndicator ?? initialValues.voteIndicator,
         toggleVoteIndicator,
       }}
     >

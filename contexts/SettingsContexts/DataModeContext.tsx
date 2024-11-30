@@ -1,9 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo, {
   NetInfoState,
   NetInfoStateType,
 } from "@react-native-community/netinfo";
 import { createContext, useEffect, useState } from "react";
+import { useMMKVObject } from "react-native-mmkv";
 
 export type DataMode = "normal" | "lowData";
 
@@ -34,9 +34,12 @@ export function DataModeProvider({ children }: React.PropsWithChildren) {
   const [connectionType, setConnectionType] = useState<NetInfoState["type"]>(
     NetInfoStateType.wifi,
   );
-  const [dataModeSettings, setDataModeSettings] = useState(
-    initialDataModeContext.dataModeSettings,
-  );
+
+  const [storedDataModeSettings, setDataModeSettings] =
+    useMMKVObject<DataModeContextType["dataModeSettings"]>("dataMode");
+
+  const dataModeSettings =
+    storedDataModeSettings ?? initialDataModeContext.dataModeSettings;
 
   const currentDataMode =
     dataModeSettings[
@@ -52,7 +55,6 @@ export function DataModeProvider({ children }: React.PropsWithChildren) {
       [setting]: value,
     };
     setDataModeSettings(newSettings);
-    AsyncStorage.setItem("dataMode", JSON.stringify(newSettings));
   };
 
   useEffect(() => {
@@ -60,14 +62,6 @@ export function DataModeProvider({ children }: React.PropsWithChildren) {
       setConnectionType(state.type);
     });
     return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    AsyncStorage.getItem("dataMode").then((dataMode) => {
-      if (dataMode) {
-        setDataModeSettings(JSON.parse(dataMode));
-      }
-    });
   }, []);
 
   return (

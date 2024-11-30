@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Sentry from "@sentry/react-native";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
@@ -12,6 +11,7 @@ import {
   RateLimited,
 } from "../api/Authentication";
 import { User, getUser } from "../api/User";
+import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
 
 export type Account = {
@@ -58,7 +58,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
         await login(account);
       }
       const user = await getUser("/user/me");
-      await AsyncStorage.setItem("currentUser", account.username);
+      KeyStore.set("currentUser", account.username);
       setCurrentAcc(account);
       setCurrentUser(user);
       Sentry.setUser({ username: user.userName });
@@ -79,7 +79,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const logOutContext = async () => {
     await logout();
-    await AsyncStorage.removeItem("currentUser");
+    KeyStore.delete("currentUser");
     setCurrentAcc(null);
     setCurrentUser(null);
     Sentry.setUser(null);
@@ -111,10 +111,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   };
 
   const saveAccounts = async (accs: Account[]) => {
-    await AsyncStorage.setItem(
-      "usernames",
-      JSON.stringify(accs.map((acc) => acc.username)),
-    );
+    KeyStore.set("usernames", JSON.stringify(accs.map((acc) => acc.username)));
     await Promise.all(
       accs.map(async (acc) =>
         SecureStore.setItemAsync(`password-${acc.username}`, acc.password),
@@ -123,7 +120,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   };
 
   const loadSavedData = async () => {
-    const usernamesJSON = await AsyncStorage.getItem("usernames");
+    const usernamesJSON = KeyStore.getString("usernames");
     const accs: AccountContextType["accounts"] = [];
     if (usernamesJSON) {
       const usernames: string[] = JSON.parse(usernamesJSON);
@@ -136,7 +133,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
           }),
         ),
       );
-      const currentUsername = await AsyncStorage.getItem("currentUser");
+      const currentUsername = KeyStore.getString("currentUser");
       const currentAccount = accs.find(
         (acc) => acc.username === currentUsername,
       );
