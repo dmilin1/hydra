@@ -39,6 +39,10 @@ Sentry.init({
   dsn: "https://0a53bc725058aa44bf7aa771f5bcda05@o4508377723174912.ingest.us.sentry.io/4508377726582784",
   debug: false,
   enabled: !__DEV__ && reportingAllowed,
+
+  // Disable app hang tracking because it's bugged when asking for permissions
+  // https://stackoverflow.com/a/79085057
+  enableAppHangTracking: false,
 });
 
 SplashScreen.preventAutoHideAsync();
