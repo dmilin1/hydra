@@ -7,11 +7,11 @@
 - Get polls working
 - Make subreddit title a search button
 - Image upload when making posts/comments
+- Fix weird scroll overflow bug when making long posts and comments 
 - Make OTA updating smoother
 - Accessibility support
 - Mark posts as seen/read
 - Endpoint caching, future navigation stack state caching, remember subreddit sort (https://www.reddit.com/r/HydraFeatureRequests/comments/1h0rddj/couple_of_requests/)
-- Fix HTML rendering when bullet points contain styling
 
 
 ### Medium
@@ -20,7 +20,6 @@
 - Crossposted media isn't loading
 - One image posts not displaying image (https://www.reddit.com/r/HydraFeatureRequests/comments/1h2hmie/one_image_posts_not_displaying_image/)
 - Ask users to join the Hydra subreddit
-- Fix weird scroll overflow bug when making long posts and comments 
 
 
 ### Easy

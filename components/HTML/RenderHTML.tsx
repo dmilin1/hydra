@@ -169,6 +169,21 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     inheritedStyles.fontStyle = "italic";
   } else if (["ol", "ul"].includes(element.name)) {
     Wrapper = View;
+  } else if (element.name === "li") {
+    Wrapper = (props) => (
+      <View style={styles.liContainer}>
+        <View style={styles.liIconContainer}>
+          <Text style={{ fontSize: styles.basicText.fontSize }}>
+            {(element.parent as ElementNode | null)?.name === "ol"
+              ? `${index + 1}. `
+              : "• "}
+          </Text>
+        </View>
+        <View style={styles.liChildrenContainer}>
+          <Text>{props.children}</Text>
+        </View>
+      </View>
+    );
   } else if (element.name === "img") {
     Wrapper = (props) => (
       <View onStartShouldSetResponder={() => true}>
@@ -193,7 +208,11 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     >
       {element.children
         .filter(
-          (c: any) => !(typeof c.data === "string" && c.data.trim() === ""),
+          (c: any) =>
+            !(
+              typeof c.data === "string" &&
+              (c.data === "\n" || c.data === "\n\n")
+            ),
         )
         .map((c, i) => (
           <Node
@@ -220,20 +239,6 @@ export function TextNodeElem({
 }: TextNodeProps) {
   const { theme } = useContext(ThemeContext);
 
-  const parent = textNode.parent as ElementNode;
-  const grandParent = parent?.parent as ElementNode;
-  let text = textNode.data;
-
-  if (parent.name === "li") {
-    if (grandParent.name === "ol") {
-      // @ts-ignore comment
-      text = `${parent.index + 1}. ${text}`;
-    }
-    if (grandParent.name === "ul") {
-      text = `• ${text}`;
-    }
-  }
-
   return (
     <Text
       key={index}
@@ -242,7 +247,7 @@ export function TextNodeElem({
         ...inheritedStyles,
       })}
     >
-      {text}
+      {textNode.data}
     </Text>
   );
 }
@@ -256,9 +261,6 @@ type NodeProps = {
 export function Node({ node, index, inheritedStyles }: NodeProps) {
   switch (node.type) {
     case ElementType.Text:
-      if (node.data.trim() === "") {
-        return null;
-      }
       return (
         <TextNodeElem
           textNode={node}
@@ -296,9 +298,19 @@ export default function RenderHtml({ html }: { html: string }) {
 
 const styles = StyleSheet.create({
   basicText: {
-    fontSize: 15.5,
-    lineHeight: lineHeight(15.5),
+    fontSize: 16,
+    lineHeight: lineHeight(16),
     marginVertical: 5,
+  },
+  liContainer: {
+    flexDirection: "row",
+    marginVertical: 3,
+  },
+  liIconContainer: {
+    marginLeft: 5,
+  },
+  liChildrenContainer: {
+    flex: 1,
   },
   imageContainer: {
     height: 200,
