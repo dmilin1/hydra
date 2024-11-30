@@ -1,4 +1,5 @@
 import { SplashScreen } from "expo-router";
+import { useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -7,13 +8,22 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+
+const splash = require("./../../assets/images/splash.png");
+const splashInverted = require("./../../assets/images/splashInverted.png");
+
 export default function LoadingSplash() {
+  const { theme } = useContext(ThemeContext);
+
   return (
     <>
       <View style={styles.splashContainer}>
         <Image
-          style={styles.image}
-          source={require("./../../assets/images/splash.png")}
+          style={t(styles.image, {
+            backgroundColor: theme.background,
+          })}
+          source={theme.systemModeStyle === "dark" ? splash : splashInverted}
           onLoadEnd={SplashScreen.hideAsync}
         />
       </View>

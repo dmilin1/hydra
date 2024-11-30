@@ -24,4 +24,5 @@
 
 ### Easy
 - Fix accounts with special characters
+- Hide subreddit name when on a specific subreddit page
 - Remove DataMigrator.tsx and AsyncStorage in a month. Added on 11/29/24.
