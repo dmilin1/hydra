@@ -12,8 +12,24 @@ import {
 
 import { AccountContext } from "./AccountContext";
 import { StackParamsList } from "../app/stack";
+import KeyStore from "../utils/KeyStore";
+
+export const INITIAL_TAB_STORAGE_KEY = "initialTab";
+
+export const TabIndices = {
+  Posts: 0,
+  Inbox: 1,
+  Account: 2,
+  Search: 3,
+  Settings: 4,
+};
+
+const initialTabName = KeyStore.getString(INITIAL_TAB_STORAGE_KEY);
+const initialTabIndex =
+  TabIndices[initialTabName as keyof typeof TabIndices] ?? 0;
 
 const INITIAL_STATE = {
+  index: initialTabIndex,
   routes: [
     {
       name: "Posts",

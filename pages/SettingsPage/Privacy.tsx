@@ -11,12 +11,14 @@ export const ERROR_REPORTING_STORAGE_KEY = "allowErrorReporting";
 export default function Privacy() {
   const { theme } = useContext(ThemeContext);
 
-  const [allowErrorReporting, setAllowErrorReporting] = useMMKVBoolean(
+  const [storedAllowErrorReporting, setAllowErrorReporting] = useMMKVBoolean(
     ERROR_REPORTING_STORAGE_KEY,
   );
 
+  const allowErrorReporting = storedAllowErrorReporting ?? true;
+
   const toggleErrorReporting = () => {
-    setAllowErrorReporting(!(allowErrorReporting ?? true));
+    setAllowErrorReporting(!allowErrorReporting);
     alert("Hydra must be restarted for this change to take effect.");
   };
 
@@ -34,7 +36,7 @@ export default function Privacy() {
                   false: theme.iconSecondary as ColorValue,
                   true: theme.iconPrimary as ColorValue,
                 }}
-                value={allowErrorReporting !== false}
+                value={allowErrorReporting}
                 onValueChange={() => toggleErrorReporting()}
               />
             ),

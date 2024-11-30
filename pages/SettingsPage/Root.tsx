@@ -1,4 +1,4 @@
-import { Feather, FontAwesome5, Octicons } from "@expo/vector-icons";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
 import * as Application from "expo-application";
 import * as Updates from "expo-updates";
 import React, { useContext } from "react";
@@ -18,6 +18,12 @@ export default function Root() {
         title="General"
         items={[
           {
+            key: "general",
+            icon: <Feather name="settings" size={24} color={theme.text} />,
+            text: "General",
+            onPress: () => pushURL("hydra://settings/general"),
+          },
+          {
             key: "theme",
             icon: <Feather name="moon" size={24} color={theme.text} />,
             text: "Theme",
@@ -25,7 +31,7 @@ export default function Root() {
           },
           {
             key: "appearance",
-            icon: <Octicons name="paintbrush" size={24} color={theme.text} />,
+            icon: <Feather name="eye" size={24} color={theme.text} />,
             text: "Appearance",
             onPress: () => pushURL("hydra://settings/appearance"),
           },

@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView } from "react-native";
 
 import Appearance from "./Appearance";
 import DataUse from "./DataUse";
+import General from "./General";
 import Privacy from "./Privacy";
 import Root from "./Root";
 import Theme from "./Theme";
@@ -32,6 +33,7 @@ export default function SettingsPage({
         }}
       >
         {relativePath === "settings" && <Root />}
+        {relativePath === "settings/general" && <General />}
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/appearance" && <Appearance />}
         {relativePath === "settings/dataUse" && <DataUse />}

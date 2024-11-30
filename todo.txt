@@ -25,5 +25,4 @@
 
 ### Easy
 - Fix accounts with special characters
-- Add option to start the app on a different page (https://www.reddit.com/r/HydraApp/comments/1gq5p0m/hydra_160_update_7693c8bc_is_out_now/)
 - Remove DataMigrator.tsx and AsyncStorage in a month. Added on 11/29/24.

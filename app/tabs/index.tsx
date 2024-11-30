@@ -40,7 +40,7 @@ export default function Tabs() {
       edges={["right", "top", "left"]}
     >
       {loginInitialized ? (
-        <Tab.Navigator initialRouteName="Posts">
+        <Tab.Navigator>
           <Tab.Screen
             name="Posts"
             options={{
