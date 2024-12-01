@@ -1,50 +1,54 @@
+import { Image, useImage } from "expo-image";
 import * as WebBrowser from "expo-web-browser";
-import React, { useContext, useEffect, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import React, { useContext } from "react";
+import { Text, StyleSheet, TouchableOpacity } from "react-native";
 
+import { PostDetail } from "../../../../../api/PostDetail";
+import { Post } from "../../../../../api/Posts";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
   ThemeContext,
   t,
 } from "../../../../../contexts/SettingsContexts/ThemeContext";
-import URL, { OpenGraphData } from "../../../../../utils/URL";
 
-export default function Link({ link }: { link: string }) {
+export default function Link({ post }: { post: Post | PostDetail }) {
   const { theme } = useContext(ThemeContext);
-  const [openGraphData, setOpenGraphData] = useState<OpenGraphData>();
 
   const { currentDataMode } = useContext(DataModeContext);
 
-  const fetchOpenGraphData = async () => {
-    const data = await new URL(link).getOpenGraphData();
-    setOpenGraphData(data);
-  };
-
-  useEffect(() => {
-    fetchOpenGraphData();
-  }, []);
+  const imgRef = useImage(
+    {
+      uri: post.openGraphData?.image,
+    },
+    {
+      onError: () => {
+        /* This image might not exist */
+      },
+    },
+  );
 
   return (
     <TouchableOpacity
       style={t(styles.externalLinkContainer, {
         borderColor: theme.tint,
       })}
-      activeOpacity={openGraphData?.image ? 0.8 : 0.5}
+      activeOpacity={post.openGraphData?.image ? 0.8 : 0.5}
       onPress={() => {
-        if (link) {
-          WebBrowser.openBrowserAsync(link);
+        if (post.link) {
+          WebBrowser.openBrowserAsync(post.link);
         }
       }}
     >
-      {openGraphData?.image &&
-      openGraphData?.title &&
-      openGraphData?.description ? (
+      {post.openGraphData?.image &&
+      post.openGraphData?.title &&
+      post.openGraphData?.description ? (
         <>
           {currentDataMode === "normal" && (
             <Image
-              source={{ uri: openGraphData.image }}
-              resizeMode="cover"
+              source={imgRef}
+              contentFit="cover"
               style={{ height: 200, borderRadius: 10 }}
+              transition={250}
             />
           )}
           <Text
@@ -53,14 +57,14 @@ export default function Link({ link }: { link: string }) {
               color: theme.text,
             })}
           >
-            {openGraphData.title}
+            {post.openGraphData.title}
           </Text>
           <Text
             style={t(styles.descriptionText, {
               color: theme.subtleText,
             })}
           >
-            {openGraphData.description}
+            {post.openGraphData.description}
           </Text>
           <Text
             numberOfLines={1}
@@ -68,7 +72,7 @@ export default function Link({ link }: { link: string }) {
               color: theme.subtleText,
             })}
           >
-            {link}
+            {post.link}
           </Text>
         </>
       ) : (
@@ -78,7 +82,7 @@ export default function Link({ link }: { link: string }) {
             color: theme.text,
           })}
         >
-          {link}
+          {post.link}
         </Text>
       )}
     </TouchableOpacity>

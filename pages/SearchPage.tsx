@@ -1,6 +1,12 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 
 import {
   SearchResult,
@@ -13,10 +19,11 @@ import PostComponent from "../components/RedditDataRepresentations/Post/PostComp
 import SubredditComponent from "../components/RedditDataRepresentations/Subreddit/SubredditComponent";
 import UserComponent from "../components/RedditDataRepresentations/User/UserComponent";
 import List from "../components/UI/List";
-import Scroller from "../components/UI/Scroller";
+import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../utils/navigation";
+import useRedditDataState from "../utils/useRedditDataState";
 
 export default function SearchPage() {
   const { theme } = useContext(ThemeContext);
@@ -25,20 +32,31 @@ export default function SearchPage() {
   const [trending, setTrending] = useState<Subreddit[]>([]);
   const search = useRef<string>("");
   const [searchType, setSearchType] = useState<SearchType>("posts");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>();
+  const [loading, setLoading] = useState(false);
+
+  const {
+    data: searchResults,
+    setData: setSearchResults,
+    modifyData: modifySearchResults,
+    fullyLoaded,
+  } = useRedditDataState<SearchResult>();
 
   const loadSearch = async (refresh = false) => {
     if (!search.current) {
-      setSearchResults(undefined);
+      if (searchResults.length) {
+        setSearchResults([]);
+      }
       return;
     }
     if (!refresh && searchType === "users") {
       // API only allows 1 page of search for users
       return;
     }
+    setLoading(true);
     const newResults = await getSearchResults(searchType, search.current, {
       after: refresh ? undefined : searchResults?.slice(-1)[0]?.after,
     });
+    setLoading(false);
     if (refresh) {
       setSearchResults(newResults);
     } else {
@@ -94,10 +112,29 @@ export default function SearchPage() {
           loadSearch(true);
         }}
       />
-      <Scroller
+      <RedditDataScroller<SearchResult>
         loadMore={loadSearch}
-        beforeLoad={
-          !searchResults && (
+        fullyLoaded={fullyLoaded}
+        data={searchResults}
+        renderItem={({ item }) => {
+          if (item.type === "post")
+            return (
+              <PostComponent
+                post={item}
+                setPost={(newPost) => modifySearchResults([newPost])}
+              />
+            );
+          if (item.type === "subreddit")
+            return <SubredditComponent subreddit={item} />;
+          if (item.type === "user") return <UserComponent user={item} />;
+          return null;
+        }}
+        ListEmptyComponent={
+          loading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="small" color={theme.text} />
+            </View>
+          ) : (
             <List
               title="Trending Subreddits"
               items={trending.map((sub) => ({
@@ -115,19 +152,7 @@ export default function SearchPage() {
             />
           )
         }
-      >
-        {searchResults &&
-          searchResults.map((result) => {
-            if (result.type === "post")
-              return (
-                <PostComponent key={result.id} initialPostState={result} />
-              );
-            if (result.type === "subreddit")
-              return <SubredditComponent key={result.id} subreddit={result} />;
-            if (result.type === "user")
-              return <UserComponent key={result.id} user={result} />;
-          })}
-      </Scroller>
+      />
     </View>
   );
 }

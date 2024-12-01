@@ -1,13 +1,14 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { CommentReply, getMessages } from "../api/Messages";
 import MessageComponent from "../components/RedditDataRepresentations/Message/MessageComponent";
-import Scroller from "../components/UI/Scroller";
+import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
 import { InboxContext } from "../contexts/InboxContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import useRedditDataState from "../utils/useRedditDataState";
 
 export default function MessagesPage() {
   const { theme } = useContext(ThemeContext);
@@ -16,7 +17,12 @@ export default function MessagesPage() {
 
   const isFocused = useIsFocused();
 
-  const [messages, setMessages] = useState<CommentReply[]>([]);
+  const {
+    data: messages,
+    setData: setMessages,
+    modifyData: modifyMessages,
+    fullyLoaded,
+  } = useRedditDataState<CommentReply>();
 
   const loadMoreMessages = async (refresh = false) => {
     if (!currentUser) return;
@@ -41,11 +47,17 @@ export default function MessagesPage() {
         backgroundColor: theme.background,
       })}
     >
-      <Scroller loadMore={loadMoreMessages}>
-        {messages.map((message) => (
-          <MessageComponent key={message.id} initialMessageState={message} />
-        ))}
-      </Scroller>
+      <RedditDataScroller<CommentReply>
+        loadMore={loadMoreMessages}
+        fullyLoaded={fullyLoaded}
+        data={messages}
+        renderItem={({ item }) => (
+          <MessageComponent
+            message={item}
+            setMessage={(newMessage) => modifyMessages([newMessage])}
+          />
+        )}
+      />
     </View>
   );
 }

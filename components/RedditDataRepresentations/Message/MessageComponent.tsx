@@ -1,5 +1,5 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { CommentReply, setMessageNewStatus } from "../../../api/Messages";
@@ -15,17 +15,17 @@ import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
 
 type MessageComponentProps = {
-  initialMessageState: CommentReply;
+  message: CommentReply;
+  setMessage: (message: CommentReply) => void;
 };
 
 export default function MessageComponent({
-  initialMessageState,
+  message,
+  setMessage,
 }: MessageComponentProps) {
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
   const { inboxCount, setInboxCount } = useContext(InboxContext);
-
-  const [message, setMessage] = useState(initialMessageState);
 
   const currentVoteColor =
     message.userVote === VoteOption.UpVote

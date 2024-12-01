@@ -5,6 +5,7 @@ import { api } from "./RedditApi";
 import Redgifs from "../utils/RedGifs";
 import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
+import URL, { OpenGraphData } from "../utils/URL";
 
 export type Poll = {
   voteCount: number;
@@ -36,10 +37,12 @@ export type Post = {
   link: string;
   images: string[];
   imageThumbnail: string;
+  imageAspectRatio: number;
   video: string | undefined;
   redditAudioSource?: string;
   poll: Poll | undefined;
   externalLink: string | undefined;
+  openGraphData: OpenGraphData | undefined;
   createdAt: number;
   timeSince: string;
   after: string;
@@ -83,12 +86,24 @@ export async function formatPostData(child: any): Promise<Post> {
     images = [child.data.url];
   }
 
+  // default in case we can't get the aspect ratio
+  let imageAspectRatio = 0.75;
+  if (child.data.preview?.images[0]?.source) {
+    const { width, height } = child.data.preview.images[0].source;
+    imageAspectRatio = width / height;
+  } else if (child.data.gallery_data?.items?.[0]?.media_id) {
+    const firstMediaId = child.data.gallery_data.items[0].media_id;
+    const { x, y } = child.data.media_metadata[firstMediaId].s;
+    imageAspectRatio = x / y;
+  }
+
   let video = child.data.media?.reddit_video?.fallback_url;
   let redditAudioSource;
   if (video) {
     redditAudioSource = video.replace(/DASH_\d+/, "DASH_AUDIO_128");
   }
 
+  let openGraphData = undefined;
   let externalLink = undefined;
   try {
     new RedditURL(child.data.url);
@@ -96,12 +111,16 @@ export async function formatPostData(child: any): Promise<Post> {
     externalLink = child.data.url;
     if (externalLink.includes("imgur.com") && externalLink.endsWith(".gifv")) {
       video = externalLink.replace(".gifv", ".mp4");
-    }
-    if (externalLink.includes("gfycat.com")) {
+    } else if (externalLink.includes("gfycat.com")) {
       video = `https://web.archive.org/web/0if_/thumbs.${externalLink.split("https://")[1]}-mobile.mp4`;
-    }
-    if (externalLink.includes("redgifs.com")) {
+    } else if (externalLink.includes("redgifs.com")) {
       video = await Redgifs.getMediaURL(externalLink);
+    } else if (externalLink) {
+      try {
+        openGraphData = await new URL(externalLink).getOpenGraphData();
+      } catch (_) {
+        // Might not have open graph data
+      }
     }
   }
 
@@ -160,10 +179,12 @@ export async function formatPostData(child: any): Promise<Post> {
     link: `https://www.reddit.com${child.data.permalink}`,
     images,
     imageThumbnail,
+    imageAspectRatio,
     video,
     redditAudioSource,
     poll,
     externalLink,
+    openGraphData,
     createdAt: child.data.created,
     timeSince: new Time(child.data.created * 1000).prettyTimeSince() + " ago",
     after: child.data.name,

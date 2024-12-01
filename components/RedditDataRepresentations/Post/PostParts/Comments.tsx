@@ -208,10 +208,10 @@ export function CommentComponent({
                     pushURL(comment.link);
                   }
                 } else {
-                  commentRef.current?.measure(
-                    (_fx, _fy, _width, _height, _px, py) => {
+                  commentRef.current?.measureInWindow(
+                    (_x, y, _width_, _height) => {
                       if (!collapsed && scrollChange) {
-                        scrollChange(py);
+                        scrollChange(y);
                       }
                     },
                   );
@@ -328,7 +328,9 @@ export function CommentComponent({
                 ) : null}
                 {displayInList && (
                   <TouchableOpacity
-                    style={t(styles.sourceContainer, {})}
+                    style={t(styles.sourceContainer, {
+                      borderColor: theme.tint,
+                    })}
                     activeOpacity={0.8}
                     onPress={() => {
                       pushURL(comment.postLink);
@@ -511,10 +513,11 @@ const styles = StyleSheet.create({
     marginVertical: -10,
   },
   sourceContainer: {
+    borderWidth: 3,
     marginTop: 15,
     marginBottom: 5,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   sourcePostTitle: {
     marginBottom: 10,

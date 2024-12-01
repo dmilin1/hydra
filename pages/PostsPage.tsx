@@ -1,19 +1,26 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { getPosts, Post } from "../api/Posts";
 import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
-import Scroller from "../components/UI/Scroller";
+import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import useRedditDataState from "../utils/useRedditDataState";
 
 export default function PostsPage({
   route,
 }: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
   const { theme } = useContext(ThemeContext);
 
-  const [posts, setPosts] = useState<Post[]>([]);
+  const {
+    data: posts,
+    setData: setPosts,
+    addData: addPosts,
+    fullyLoaded,
+  } = useRedditDataState<Post>();
+
   const search = useRef<string>("");
 
   const { url } = route.params;
@@ -26,7 +33,7 @@ export default function PostsPage({
     if (refresh) {
       setPosts(newPosts);
     } else {
-      setPosts([...posts, ...newPosts]);
+      addPosts(newPosts);
     }
   };
 
@@ -36,23 +43,31 @@ export default function PostsPage({
         backgroundColor: theme.background,
       })}
     >
-      <Scroller
-        loadMore={loadMorePosts}
-        headerComponent={
-          route.name === "PostsPage" && (
+      <RedditDataScroller<Post>
+        ListHeaderComponent={
+          route.name === "PostsPage" ? (
             <SearchBar
               onSearch={(text) => {
                 search.current = text;
                 loadMorePosts(true);
               }}
             />
-          )
+          ) : null
         }
-      >
-        {posts.map((post, index) => (
-          <PostComponent key={`${post.id}-${index}`} initialPostState={post} />
-        ))}
-      </Scroller>
+        loadMore={loadMorePosts}
+        fullyLoaded={fullyLoaded}
+        data={posts}
+        renderItem={({ item }) => (
+          <PostComponent
+            post={item}
+            setPost={(newPost) => {
+              setPosts(
+                posts.map((post) => (post.id === newPost.id ? newPost : post)),
+              );
+            }}
+          />
+        )}
+      />
     </View>
   );
 }

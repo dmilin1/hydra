@@ -51,7 +51,7 @@ export default function PostMedia({
           <ImageViewer
             images={post.images}
             thumbnail={post.imageThumbnail}
-            resizeDynamically
+            aspectRatio={post.imageAspectRatio}
           />
         </View>
       )}
@@ -78,7 +78,7 @@ export default function PostMedia({
           <PollViewer poll={post.poll} />
         </View>
       )}
-      {post.externalLink && <Link link={post.externalLink} />}
+      {post.externalLink && <Link post={post} />}
       {isBlurable && blur && (
         <TouchableOpacity
           style={styles.blurContainer}

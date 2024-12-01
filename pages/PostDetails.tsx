@@ -5,7 +5,6 @@ import React, {
   useRef,
   useEffect,
   useState,
-  ReactNode,
   useDeferredValue,
 } from "react";
 import {
@@ -14,7 +13,8 @@ import {
   Text,
   ActivityIndicator,
   TouchableOpacity,
-  VirtualizedList,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 
 import {
@@ -26,7 +26,6 @@ import {
 import { StackPageProps } from "../app/stack";
 import PostDetailsComponent from "../components/RedditDataRepresentations/Post/PostDetailsComponent";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
-import Scroller from "../components/UI/Scroller";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
 export type LoadMoreCommentsFunc = (
@@ -42,10 +41,12 @@ export default function PostDetails({
 
   const { theme } = useContext(ThemeContext);
 
-  const scrollView = useRef<VirtualizedList<ReactNode>>(null);
+  const topOfScroll = useRef<View>(null);
+  const scrollView = useRef<ScrollView>(null);
   const commentsView = React.useRef<View>(null);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
+  const [refreshing, setRefreshing] = useState(false);
 
   const deferredPostDetail = useDeferredValue(postDetail);
 
@@ -63,15 +64,12 @@ export default function PostDetails({
   const scrollChange = useCallback(
     async (changeY: number) => {
       if (!scrollView.current) return;
-      const scrollRef = scrollView.current.getScrollRef();
-      const scrollY = (await asyncMeasure(scrollRef))[5];
-      if (changeY < scrollY) {
-        const innerView = (scrollView.current as any)
-          .getScrollRef()
-          ?.getInnerViewRef();
-        const viewY = (await asyncMeasure(innerView))[5];
-        (scrollView.current as any)?.scrollToOffset({
-          offset: changeY - viewY,
+      const scrollRef = scrollView.current;
+      const scrollWindowTop = (await asyncMeasure(scrollRef))[5];
+      if (changeY < scrollWindowTop) {
+        const scrollDepth = (await asyncMeasure(topOfScroll.current))[5];
+        scrollView.current.scrollTo({
+          y: scrollWindowTop - scrollDepth + (changeY - scrollWindowTop),
           animated: true,
         });
       }
@@ -80,8 +78,10 @@ export default function PostDetails({
   );
 
   const loadPostDetails = async () => {
+    setRefreshing(true);
     const postDetail = await getPostsDetail(url);
     setPostDetail(postDetail);
+    setRefreshing(false);
   };
 
   const getCommentFromPath = (
@@ -149,24 +149,21 @@ export default function PostDetails({
 
   const scrollToNextComment = async () => {
     if (!scrollView.current || !commentsView.current) return;
-    const scrollRef = scrollView.current.getScrollRef();
-    const innerViewRef = (scrollView.current as any)
-      .getScrollRef()
-      ?.getInnerViewRef();
+    const scrollRef = scrollView.current;
     const scrollY = (await asyncMeasure(scrollRef, "measureInWindow"))[1];
     const currentScrollHeight = (
-      await asyncMeasure(innerViewRef, "measureInWindow")
+      await asyncMeasure(topOfScroll.current, "measureInWindow")
     )[1];
     const childComments = (commentsView.current as any).__internalInstanceHandle
-      .child.child.child.child.child.child.memoizedProps[0];
+      .child.child.child.child.memoizedProps[0];
     for (const commentView of childComments) {
       const commentRef = commentView.props.commentPropRef.current;
       const commentMeasures = await asyncMeasure(commentRef, "measureInWindow");
       const commentY = commentMeasures[1];
       const delta = commentY - currentScrollHeight;
       if (commentY > scrollY) {
-        (scrollView.current as any)?.scrollToOffset({
-          offset: delta + 1 /* scroll a bit over to fix bug */,
+        scrollView.current.scrollTo({
+          y: delta + 1 /* scroll a bit over to fix bug */,
           animated: true,
         });
         break;
@@ -185,18 +182,22 @@ export default function PostDetails({
       })}
     >
       {postDetail ? (
-        <Scroller
-          scrollViewRef={scrollView}
-          refresh={async () => await loadPostDetails()}
-          headerComponent={
-            <PostDetailsComponent
-              key={postDetail.id}
-              postDetail={postDetail}
-              loadPostDetails={loadPostDetails}
-              setPostDetail={setPostDetail}
+        <ScrollView
+          ref={scrollView}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => loadPostDetails()}
             />
           }
         >
+          <View ref={topOfScroll} />
+          <PostDetailsComponent
+            key={postDetail.id}
+            postDetail={postDetail}
+            loadPostDetails={loadPostDetails}
+            setPostDetail={setPostDetail}
+          />
           {deferredPostDetail && deferredPostDetail.comments.length > 0 ? (
             <Comments
               key={`${deferredPostDetail.id}-comments`}
@@ -225,7 +226,7 @@ export default function PostDetails({
               </Text>
             </View>
           )}
-        </Scroller>
+        </ScrollView>
       ) : (
         <ActivityIndicator size="small" />
       )}

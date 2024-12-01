@@ -1,8 +1,8 @@
+import { Image, useImage } from "expo-image";
 import React, { useState, useContext } from "react";
 import {
   Text,
   StyleSheet,
-  Image,
   View,
   TouchableHighlight,
   Dimensions,
@@ -23,11 +23,11 @@ const DEVICE_WIDTH = Dimensions.get("window").width;
 export default function ImageViewer({
   images,
   thumbnail,
-  resizeDynamically,
+  aspectRatio,
 }: {
   images: string[];
   thumbnail?: string;
-  resizeDynamically?: boolean;
+  aspectRatio?: number;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
   const saveImage = useSaveImage();
@@ -35,25 +35,43 @@ export default function ImageViewer({
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
-  const [dimensions, setDimensions] = useState({ width: 300, height: 200 });
-  const [dimensionsCalculated, setDimensionsCalculated] =
-    useState(!resizeDynamically);
 
   const { theme } = useContext(ThemeContext);
 
   const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
 
-  let displayImgs = images;
+  let displayImgs = images.slice(0, 2);
   if ((loadLowData || isGif) && thumbnail) {
     displayImgs = [thumbnail];
   }
 
-  const imgRatio = dimensions.width / dimensions.height;
+  const img1 = useImage({
+    uri: displayImgs[0],
+  });
+
+  const img2 = useImage(
+    {
+      uri: displayImgs[1],
+    },
+    {
+      onError: () => {
+        /* This image might not exist */
+      },
+    },
+  );
+
+  const imgRefs = [img1, ...(displayImgs.length === 2 ? [img2] : [])];
+
+  const imgRatio = aspectRatio ?? (img1 ? img1.width / img1.height : 0);
   const heightIfFullSize = DEVICE_WIDTH / imgRatio;
   const imgHeight = Math.min(DEVICE_HEIGHT * 0.5, heightIfFullSize);
 
   return (
-    <View style={styles.imageViewerContainer}>
+    <View
+      style={t(styles.imageViewerContainer, {
+        height: imgRefs.length >= 2 ? imgHeight / 2 : imgHeight,
+      })}
+    >
       {!loadLowData && (
         <ImageView
           images={images.map((image) => ({ uri: image }))}
@@ -67,9 +85,9 @@ export default function ImageViewer({
           delayLongPress={500}
         />
       )}
-      {displayImgs.map((displayImg, index) => (
+      {imgRefs.map((img, index, imgs) => (
         <TouchableHighlight
-          key={`${displayImg}-${index}`}
+          key={index}
           onPress={() => {
             setLoadLowData(false);
             setImageIndex(index);
@@ -82,24 +100,12 @@ export default function ImageViewer({
             style={[
               styles.img,
               {
-                height: displayImgs.length >= 2 ? imgHeight / 2 : imgHeight,
-                opacity: dimensionsCalculated ? 1 : 0,
+                height: imgs.length >= 2 ? imgHeight / 2 : imgHeight,
               },
             ]}
-            resizeMode="contain"
-            source={{
-              uri: displayImg,
-            }}
-            alt="image failed to load"
-            onLoad={(e) => {
-              if (resizeDynamically) {
-                setDimensions({
-                  width: e.nativeEvent.source.width,
-                  height: e.nativeEvent.source.height,
-                });
-                setDimensionsCalculated(true);
-              }
-            }}
+            contentFit="contain"
+            source={img}
+            transition={250}
           />
         </TouchableHighlight>
       ))}

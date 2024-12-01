@@ -1,5 +1,5 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Share } from "react-native";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
@@ -17,12 +17,11 @@ import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
 
 type PostComponentProps = {
-  initialPostState: Post;
+  post: Post;
+  setPost: (post: Post) => void;
 };
 
-export default function PostComponent({
-  initialPostState,
-}: PostComponentProps) {
+export default function PostComponent({ post, setPost }: PostComponentProps) {
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
   const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
@@ -31,8 +30,6 @@ export default function PostComponent({
   const navigation = useNavigation();
 
   const openContextMenu = useContextMenu();
-
-  const [post, setPost] = useState(initialPostState);
 
   const currentVoteColor =
     post.userVote === VoteOption.UpVote
