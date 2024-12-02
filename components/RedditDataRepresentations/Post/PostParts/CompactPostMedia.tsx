@@ -1,6 +1,6 @@
 import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Text,
   StyleSheet,
@@ -20,7 +20,7 @@ import {
   ThemeContext,
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
-import URL, { OpenGraphData } from "../../../../utils/URL";
+import URL from "../../../../utils/URL";
 import useSaveImage from "../../../../utils/useSaveImage";
 
 type CompactPostMediaProps = {
@@ -43,17 +43,6 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
 
   const [mediaOpen, setMediaOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
-  const [openGraphData, setOpenGraphData] = useState<OpenGraphData>();
-
-  const fetchOpenGraphData = async () => {
-    if (!post.externalLink) return;
-    const data = await new URL(post.externalLink).getOpenGraphData();
-    setOpenGraphData(data);
-  };
-
-  useEffect(() => {
-    fetchOpenGraphData();
-  }, []);
 
   let isGif = false;
   if (post.images.length > 0) {
@@ -137,9 +126,9 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               color={theme.subtleText}
             />
           </View>
-          {openGraphData && currentDataMode !== "lowData" && (
+          {post.openGraphData && currentDataMode !== "lowData" && (
             <Image
-              source={{ uri: openGraphData.image }}
+              source={{ uri: post.openGraphData.image }}
               resizeMode="cover"
               style={styles.image}
             />
