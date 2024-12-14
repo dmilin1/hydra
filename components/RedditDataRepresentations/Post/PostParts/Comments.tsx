@@ -264,7 +264,7 @@ export function CommentComponent({
                     />
                   )}
                   <TouchableOpacity
-                    onPress={() => pushURL(`/u/${comment.author}`)}
+                    onPress={() => pushURL(`/user/${comment.author}`)}
                   >
                     <Text
                       style={t(styles.author, {

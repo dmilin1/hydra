@@ -5,6 +5,8 @@
 
 
 ### Hard
+- Android support
+
 - Respond to inbox messages
 
 - Get polls working
@@ -52,3 +54,5 @@
 - Remove DataMigrator.tsx and AsyncStorage in a month. Added on 11/29/24.
 
 - Editing a comment on the user page then clicking the link causes a crash
+
+- Fix audio from RedGifs links requiring ringer to be on

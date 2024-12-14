@@ -43,7 +43,8 @@ export default class RedditURL extends URL {
       !this.url.startsWith("hydra://") &&
       !this.url.startsWith("https://www.reddit.com") &&
       !this.url.startsWith("https://i.redd.it") &&
-      !this.url.startsWith("https://v.redd.it")
+      !this.url.startsWith("https://v.redd.it") &&
+      !this.url.startsWith("https://redd.it")
     ) {
       throw new Error("Not a reddit URL");
     }
@@ -162,5 +163,24 @@ export default class RedditURL extends URL {
       name = "Error";
     }
     return name;
+  }
+
+  /**
+   * Properly formats shortened URLs and forwarded URLs
+   */
+  async resolveURL(): Promise<string> {
+    if (this.getRelativePath().startsWith("/u/")) {
+      this.url = this.url.replace("/u/", "/user/");
+      return this.url;
+    }
+    if (this.getPageType() !== PageType.UNKNOWN) {
+      return this.url;
+    }
+    const response = await fetch(this.url, {
+      method: "HEAD",
+      redirect: "follow",
+    });
+    const finalURL = response.url;
+    return new RedditURL(finalURL).url;
   }
 }

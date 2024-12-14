@@ -66,7 +66,7 @@ export default function UserDetailsComponent({
                 <Feather name="file-text" size={24} color={theme.iconPrimary} />
               ),
               text: "Posts",
-              onPress: () => pushURL(`/u/${user.userName}/submitted`),
+              onPress: () => pushURL(`/user/${user.userName}/submitted`),
             },
             {
               key: "comments",
@@ -78,7 +78,7 @@ export default function UserDetailsComponent({
                 />
               ),
               text: "Comments",
-              onPress: () => pushURL(`/u/${user.userName}/comments`),
+              onPress: () => pushURL(`/user/${user.userName}/comments`),
             },
             ...(user.isLoggedInUser
               ? [
@@ -92,7 +92,7 @@ export default function UserDetailsComponent({
                       />
                     ),
                     text: "Upvoted",
-                    onPress: () => pushURL(`/u/${user.userName}/upvoted`),
+                    onPress: () => pushURL(`/user/${user.userName}/upvoted`),
                   },
                   {
                     key: "downvoted",
@@ -104,7 +104,7 @@ export default function UserDetailsComponent({
                       />
                     ),
                     text: "Downvoted",
-                    onPress: () => pushURL(`/u/${user.userName}/downvoted`),
+                    onPress: () => pushURL(`/user/${user.userName}/downvoted`),
                   },
                   {
                     key: "hidden",
@@ -116,7 +116,7 @@ export default function UserDetailsComponent({
                       />
                     ),
                     text: "Hidden",
-                    onPress: () => pushURL(`/u/${user.userName}/hidden`),
+                    onPress: () => pushURL(`/user/${user.userName}/hidden`),
                   },
                   {
                     key: "saved",
@@ -128,7 +128,7 @@ export default function UserDetailsComponent({
                       />
                     ),
                     text: "Saved",
-                    onPress: () => pushURL(`/u/${user.userName}/saved`),
+                    onPress: () => pushURL(`/user/${user.userName}/saved`),
                   },
                 ]
               : []),

@@ -44,7 +44,9 @@ export type StackParamsList = {
     url: string;
   };
   SearchPage: object;
-  ErrorPage: object;
+  ErrorPage: {
+    url?: string;
+  };
 };
 
 export type URLRoutes =

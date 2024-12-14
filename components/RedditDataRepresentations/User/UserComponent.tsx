@@ -22,7 +22,7 @@ export default function UserComponent({ user }: { user: User }) {
           backgroundColor: theme.background,
         })}
         onPress={() => {
-          pushURL(`/u/${user.userName}`);
+          pushURL(`/user/${user.userName}`);
         }}
       >
         <Text

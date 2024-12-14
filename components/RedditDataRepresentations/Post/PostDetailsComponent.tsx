@@ -103,7 +103,7 @@ export default function PostDetailsComponent({
               </Text>
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => pushURL(`/u/${postDetail.author}`)}
+                onPress={() => pushURL(`/user/${postDetail.author}`)}
               >
                 <Text
                   style={t(styles.boldedSmallText, {

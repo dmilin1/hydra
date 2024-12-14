@@ -14,6 +14,9 @@ export default function ErrorScreen({ StackNavigator }: ErrorScreenProps) {
     <StackNavigator.Screen<"ErrorPage">
       name="ErrorPage"
       component={ErrorPage}
+      options={{
+        headerTitle: "Error",
+      }}
     />
   );
 }

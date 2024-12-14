@@ -29,22 +29,25 @@ export function useURLNavigation(
   const navigation = overrideNav ?? useNavigation();
   const { clearFuture } = useContext(StackFutureContext);
 
-  const doNavigationAction = (url: string, func: NavFunctionsWithURL) => {
-    const pageType = new RedditURL(url).getPageType();
+  const doNavigationAction = async (url: string, func: NavFunctionsWithURL) => {
+    const resolvedURL = await new RedditURL(url).resolveURL();
+    const pageType = new RedditURL(resolvedURL).getPageType();
     if (pageType === PageType.HOME) {
-      navigation[func]("Home", { url });
+      navigation[func]("Home", { url: resolvedURL });
     } else if (pageType === PageType.SUBREDDIT) {
-      navigation[func]("PostsPage", { url });
+      navigation[func]("PostsPage", { url: resolvedURL });
     } else if (pageType === PageType.POST_DETAILS) {
-      navigation[func]("PostDetailsPage", { url });
+      navigation[func]("PostDetailsPage", { url: resolvedURL });
     } else if (pageType === PageType.MULTIREDDIT) {
-      navigation[func]("MultiredditPage", { url });
+      navigation[func]("MultiredditPage", { url: resolvedURL });
     } else if (pageType === PageType.USER) {
-      navigation[func]("UserPage", { url });
+      navigation[func]("UserPage", { url: resolvedURL });
     } else if (pageType === PageType.ACCOUNTS) {
-      navigation[func]("Accounts", { url });
+      navigation[func]("Accounts", { url: resolvedURL });
     } else if (pageType === PageType.SETTINGS) {
-      navigation[func]("SettingsPage", { url });
+      navigation[func]("SettingsPage", { url: resolvedURL });
+    } else {
+      navigation[func]("ErrorPage", { url: resolvedURL });
     }
     clearFuture();
   };
