@@ -313,6 +313,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageContainer: {
-    height: 200,
+    height: 150,
+    width: 200,
   },
 });
