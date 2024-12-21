@@ -26,6 +26,7 @@ import {
 import { StackPageProps } from "../app/stack";
 import PostDetailsComponent from "../components/RedditDataRepresentations/Post/PostDetailsComponent";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
+import { ScrollerContext, ScrollerProvider } from "../contexts/ScrollerContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
 
 export type LoadMoreCommentsFunc = (
@@ -34,12 +35,13 @@ export type LoadMoreCommentsFunc = (
   childStartIndex: number,
 ) => Promise<void>;
 
-export default function PostDetails({
-  route,
-}: StackPageProps<"PostDetailsPage">) {
+type PostDetailsProps = StackPageProps<"PostDetailsPage">;
+
+function PostDetails({ route }: PostDetailsProps) {
   const url = route.params.url;
 
   const { theme } = useContext(ThemeContext);
+  const { scrollDisabled } = useContext(ScrollerContext);
 
   const topOfScroll = useRef<View>(null);
   const scrollView = useRef<ScrollView>(null);
@@ -190,6 +192,7 @@ export default function PostDetails({
               onRefresh={() => loadPostDetails()}
             />
           }
+          scrollEnabled={!scrollDisabled}
         >
           <View ref={topOfScroll} />
           <PostDetailsComponent
@@ -242,6 +245,14 @@ export default function PostDetails({
     </View>
   );
 }
+
+export default (props: PostDetailsProps) => {
+  return (
+    <ScrollerProvider>
+      <PostDetails {...props} />
+    </ScrollerProvider>
+  );
+};
 
 const styles = StyleSheet.create({
   postDetailsOuterContainer: {
