@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import React, { useCallback, useRef, useState } from "react";
 import {
   Animated,
@@ -7,7 +8,6 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   TouchableWithoutFeedback,
-  Image,
 } from "react-native";
 
 import { ImageLoading } from "./ImageLoading";
