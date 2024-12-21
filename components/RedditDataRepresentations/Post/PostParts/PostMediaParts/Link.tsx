@@ -34,8 +34,8 @@ export default function Link({ post }: { post: Post | PostDetail }) {
       })}
       activeOpacity={post.openGraphData?.image ? 0.8 : 0.5}
       onPress={() => {
-        if (post.link) {
-          WebBrowser.openBrowserAsync(post.link);
+        if (post.externalLink) {
+          WebBrowser.openBrowserAsync(post.externalLink);
         }
       }}
     >
@@ -72,7 +72,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
               color: theme.subtleText,
             })}
           >
-            {post.link}
+            {post.externalLink}
           </Text>
         </>
       ) : (
@@ -82,7 +82,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
             color: theme.text,
           })}
         >
-          {post.link}
+          {post.externalLink}
         </Text>
       )}
     </TouchableOpacity>
