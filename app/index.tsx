@@ -16,7 +16,6 @@ import { enableFreeze } from "react-native-screens";
 
 import Tabs from "./tabs";
 import { AccountProvider } from "../contexts/AccountContext";
-import DataMigrator from "../contexts/DataMigrator";
 import { InboxProvider } from "../contexts/InboxContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import NavigationProvider from "../contexts/NavigationContext";
@@ -63,23 +62,21 @@ function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <DataMigrator>
-        <SettingsProvider>
-          <AccountProvider>
-            <NavigationProvider>
-              <ActionSheetProvider>
-                <InboxProvider>
-                  <ModalProvider>
-                    <SubredditProvider>
-                      <>{loaded && <Tabs />}</>
-                    </SubredditProvider>
-                  </ModalProvider>
-                </InboxProvider>
-              </ActionSheetProvider>
-            </NavigationProvider>
-          </AccountProvider>
-        </SettingsProvider>
-      </DataMigrator>
+      <SettingsProvider>
+        <AccountProvider>
+          <NavigationProvider>
+            <ActionSheetProvider>
+              <InboxProvider>
+                <ModalProvider>
+                  <SubredditProvider>
+                    <>{loaded && <Tabs />}</>
+                  </SubredditProvider>
+                </ModalProvider>
+              </InboxProvider>
+            </ActionSheetProvider>
+          </NavigationProvider>
+        </AccountProvider>
+      </SettingsProvider>
     </SafeAreaProvider>
   );
 }

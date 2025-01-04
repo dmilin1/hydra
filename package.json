@@ -1,6 +1,6 @@
 {
   "name": "hydra",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "main": "./app/index.tsx",
   "scripts": {
     "start": "expo start",
@@ -17,7 +17,6 @@
   "dependencies": {
     "@expo/react-native-action-sheet": "^4.0.1",
     "@expo/vector-icons": "^14.0.2",
-    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-picker/picker": "2.9.0",

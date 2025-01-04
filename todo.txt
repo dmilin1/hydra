@@ -1,56 +1,53 @@
 ### Unlikely
-- Make top/bottom bars fade or disappear when scrolling
+- 🚀 Make top/bottom bars fade or disappear when scrolling
 
-- Full multiple pane iPad support
+- 🚀 Full multiple pane iPad support
 
 
 ### Hard
-- Android support
+- 🚀 Android support
 
-- Respond to inbox messages
+- ⭐🚀 Respond to inbox messages
 
-- Get polls working
+- 🚀 Get polls working
 
-- Make subreddit title a search button
+- 🚀 Make subreddit title a search button
 
-- Image upload when making posts/comments
+- ⭐🚀 Image upload when making posts/comments
 
-- Fix weird scroll overflow bug when making long posts and comments
-- Message drafts
+- ⭐🐛 Fix weird scroll overflow bug when making long posts and comments
+- 🚀 Message drafts
 
-- Make OTA updating smoother
+- ⭐🚀 Make OTA updating smoother
 
-- Accessibility support
+- 🚀 Accessibility support
 
-- Mark posts as seen/read
-- Endpoint caching, future navigation stack state caching, remember subreddit sort (https://www.reddit.com/r/HydraFeatureRequests/comments/1h0rddj/couple_of_requests/)
-- Make posts grayed out when you’ve read them 
+- 🚀 Mark posts as seen/read
+- 🚀 Endpoint caching, future navigation stack state caching, remember subreddit sort (https://www.reddit.com/r/HydraFeatureRequests/comments/1h0rddj/couple_of_requests/)
+- 🚀 Make posts grayed out when you’ve read them 
 
-- User flairs
+- 🚀 User flairs
 
-- Fully customizable themeing with shareability
+- 🚀 Fully customizable themeing with shareability
 
-- Notifications
+- 🚀 Notifications
 
-- Fancy bookmarks with folders and categories
+- 🚀 Fancy bookmarks with folders and categories
+
+- ⭐🐛 Fix wrong audio playing when clicking multiple videos on the same page
 
 
 ### Medium
-- Collapse automod comments
+- 🚀 Collapse automod comments
 
-- Load favicons when sites don't support the Open Graph Protocol
+- 🚀 Load favicons when sites don't support the Open Graph Protocol
 
-- Crossposted media isn't loading
-- One image posts not displaying image (https://www.reddit.com/r/HydraFeatureRequests/comments/1h2hmie/one_image_posts_not_displaying_image/)
-
-- Ask users to join the Hydra subreddit
+- ⭐🚀 Ask users to join the Hydra subreddit
 
 
 ### Easy
-- Hide subreddit name when on a specific subreddit page
+- 🚀 Hide subreddit name when on a specific subreddit page
 
-- Remove DataMigrator.tsx and AsyncStorage in a month. Added on 11/29/24.
+- 🐛 Editing a comment on the user page then clicking the link causes a crash
 
-- Editing a comment on the user page then clicking the link causes a crash
-
-- Fix audio from RedGifs links requiring ringer to be on
+- 🐛 Fix audio from RedGifs links requiring ringer to be on
