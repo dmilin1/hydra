@@ -14,15 +14,17 @@ import { useMMKVString } from "react-native-mmkv";
 import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const update = {
-  updateKey: "2.1.2-1",
+  updateKey: "2.2.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   features: [
     "Completed transition to new data storage library which allows for much faster loads. If you haven't opened Hydra in over a month, your settings may have been lost.",
     "Over the air updates try to download and update immediately when you open the app without a restart being required. Falls back to previous behavior if it takes more than 5 seconds.",
+    "Added this modal to show what's new when an update is released",
+    "Added a prompt asking if you want to subscribe to the /r/HydraApp subreddit if you aren't already subscribed",
   ],
   bugfixes: [
-    "Fixes wrong audio playing when scrolling subreddits with many videos",
+    "Fixed wrong audio playing when scrolling subreddits with many videos",
   ],
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "hydra",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "main": "./app/index.tsx",
   "scripts": {
     "start": "expo start",
