@@ -54,7 +54,8 @@ module.exports = {
       "@sentry/react-native/expo",
     ],
     updates: {
-      url: `https://u.expo.dev/${projectId}`
+      url: `https://u.expo.dev/${projectId}`,
+      fallbackToCacheTimeout: 5000,
     }
   }
 }

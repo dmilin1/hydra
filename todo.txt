@@ -18,8 +18,6 @@
 - ⭐🐛 Fix weird scroll overflow bug when making long posts and comments
 - 🚀 Message drafts
 
-- ⭐🚀 Make OTA updating smoother
-
 - 🚀 Accessibility support
 
 - 🚀 Mark posts as seen/read
