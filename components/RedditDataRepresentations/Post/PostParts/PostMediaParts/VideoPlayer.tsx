@@ -48,6 +48,16 @@ export default function VideoPlayer({
   const [fullscreen, setFullscreen] = useState(false);
   const [failedToLoad, setFailedToLoad] = useState(false);
 
+  const lastLoadedVideo = useRef(source);
+  if (lastLoadedVideo.current !== source) {
+    // Component was recycled by FlashList. Need to reset state.
+    // https://shopify.github.io/flash-list/docs/recycling
+    lastLoadedVideo.current = source;
+    setDontRenderYet(currentDataMode === "lowData");
+    setFullscreen(false);
+    setFailedToLoad(false);
+  }
+
   const video = useRef<Video>(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const lastProgress = useRef(0);
@@ -80,7 +90,7 @@ export default function VideoPlayer({
     return () => {
       audio.current?.sound.unloadAsync();
     };
-  }, []);
+  }, [redditAudioSource]);
 
   return (
     <View style={styles.videoPlayerContainer}>

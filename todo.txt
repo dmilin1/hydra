@@ -32,8 +32,6 @@
 
 - 🚀 Fancy bookmarks with folders and categories
 
-- ⭐🐛 Fix wrong audio playing when clicking multiple videos on the same page
-
 
 ### Medium
 - 🚀 Collapse automod comments
@@ -47,5 +45,3 @@
 - 🚀 Hide subreddit name when on a specific subreddit page
 
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
-
-- 🐛 Fix audio from RedGifs links requiring ringer to be on

@@ -1,6 +1,6 @@
 import { AntDesign } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 
 import ImageViewer from "./PostMediaParts/ImageViewer";
@@ -34,6 +34,14 @@ export default function PostMedia({
     (blurNSFW && post.isNSFW) || (blurSpoilers && post.isSpoiler);
 
   const [blur, setBlur] = useState(isBlurable);
+
+  const lastLoadedPost = useRef(post.id);
+  if (lastLoadedPost.current !== post.id) {
+    // Component was recycled by FlashList. Need to reset state.
+    // https://shopify.github.io/flash-list/docs/recycling
+    lastLoadedPost.current = post.id;
+    setBlur(isBlurable);
+  }
 
   return (
     <>

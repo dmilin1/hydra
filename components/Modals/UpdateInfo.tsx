@@ -21,7 +21,9 @@ const update = {
     "Completed transition to new data storage library which allows for much faster loads. If you haven't opened Hydra in over a month, your settings may have been lost.",
     "Over the air updates try to download and update immediately when you open the app without a restart being required. Falls back to previous behavior if it takes more than 5 seconds.",
   ],
-  bugfixes: [],
+  bugfixes: [
+    "Fixes wrong audio playing when scrolling subreddits with many videos",
+  ],
 };
 
 export default function UpdateInfo() {
