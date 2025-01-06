@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
     width: Dimensions.get("window").width,
     backgroundColor: "black",
-    opacity: 0.5,
+    opacity: 0.7,
     zIndex: 1,
   },
   updateInfoSubContainer: {

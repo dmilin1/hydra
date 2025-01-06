@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 import { AccountContext } from "./AccountContext";
 import {
@@ -17,6 +18,7 @@ import {
 import KeyStore from "../utils/KeyStore";
 
 type SubredditContextType = {
+  isLoadingSubreddits: boolean;
   subreddits: SubredditsObj;
   multis: Multi[];
   subscribe: (subreddit: string) => Promise<void>;
@@ -33,6 +35,7 @@ type SubredditContextType = {
 };
 
 const initialAccountContext: SubredditContextType = {
+  isLoadingSubreddits: true,
   subreddits: {
     favorites: [],
     moderator: [],
@@ -67,6 +70,7 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
   const [subreddits, setSubreddits] = useState(
     initialAccountContext.subreddits,
   );
+  const [isLoadingSubreddits, setIsLoadingSubreddits] = useState(true);
 
   const [multis, setMultis] = useState<Multi[]>([]);
 
@@ -155,7 +159,10 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
   const subscribe = async (subreddit: string) => {
     await setSubscriptionStatus(subreddit, true);
     loadSubreddits();
-    alert("Subscribed to " + subreddit);
+    Alert.alert(
+      "Subscribed!",
+      "You've successfully subscribed to " + subreddit,
+    );
   };
 
   const unsubscribe = async (subreddit: string) => {
@@ -190,14 +197,21 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  const loadData = async () => {
+    setIsLoadingSubreddits(true);
+    await loadSubreddits();
+    await loadMultis();
+    setIsLoadingSubreddits(false);
+  };
+
   useEffect(() => {
-    loadSubreddits();
-    loadMultis();
+    loadData();
   }, [currentUser]);
 
   return (
     <SubredditContext.Provider
       value={{
+        isLoadingSubreddits,
         subreddits,
         multis,
         subscribe,

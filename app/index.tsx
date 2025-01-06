@@ -15,6 +15,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableFreeze } from "react-native-screens";
 
 import Tabs from "./tabs";
+import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
 import UpdateInfo from "../components/Modals/UpdateInfo";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
@@ -71,6 +72,7 @@ function RootLayout() {
                 <ModalProvider>
                   <SubredditProvider>
                     <UpdateInfo />
+                    <SubscribeToHydra />
                     <>{loaded && <Tabs />}</>
                   </SubredditProvider>
                 </ModalProvider>
