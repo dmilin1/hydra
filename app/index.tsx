@@ -19,6 +19,7 @@ import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
 import UpdateInfo from "../components/Modals/UpdateInfo";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
+import { MediaViewerProvider } from "../contexts/MediaViewerContext";
 import { ModalProvider } from "../contexts/ModalContext";
 import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
@@ -70,11 +71,13 @@ function RootLayout() {
             <ActionSheetProvider>
               <InboxProvider>
                 <ModalProvider>
-                  <SubredditProvider>
-                    <UpdateInfo />
-                    <SubscribeToHydra />
-                    <>{loaded && <Tabs />}</>
-                  </SubredditProvider>
+                  <MediaViewerProvider>
+                    <SubredditProvider>
+                      <UpdateInfo />
+                      <SubscribeToHydra />
+                      <>{loaded && <Tabs />}</>
+                    </SubredditProvider>
+                  </MediaViewerProvider>
                 </ModalProvider>
               </InboxProvider>
             </ActionSheetProvider>

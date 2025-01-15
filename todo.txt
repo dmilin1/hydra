@@ -38,8 +38,6 @@
 
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
-- ⭐🚀 Ask users to join the Hydra subreddit
-
 
 ### Easy
 - 🚀 Hide subreddit name when on a specific subreddit page

@@ -16,7 +16,7 @@ import {
 } from "react-native";
 
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
-import RedditURL from "../../utils/RedditURL";
+import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
 
@@ -152,7 +152,12 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     wrapperProps.onPress = () => {
       const url = element.attribs.href;
       try {
-        pushURL(new RedditURL(url).toString());
+        const redditURL = new RedditURL(url);
+        if (redditURL.getPageType() === PageType.UNKNOWN) {
+          throw Error("Unknown page type");
+        } else {
+          pushURL(new RedditURL(url).toString());
+        }
       } catch {
         WebBrowser.openBrowserAsync(element.attribs.href);
       }

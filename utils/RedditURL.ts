@@ -12,6 +12,8 @@ export enum PageType {
   ACCOUNTS,
   SETTINGS,
 
+  IMAGE,
+
   UNKNOWN,
 }
 
@@ -132,6 +134,8 @@ export default class RedditURL extends URL {
       return PageType.USER;
     } else if (relativePath.startsWith("/search")) {
       return PageType.SEARCH;
+    } else if (this.url.startsWith("https://i.redd.it")) {
+      return PageType.IMAGE;
     } else {
       return PageType.UNKNOWN;
     }

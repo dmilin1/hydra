@@ -8,6 +8,7 @@ import { useContext } from "react";
 
 import RedditURL, { PageType } from "./RedditURL";
 import { StackParamsList } from "../app/stack";
+import { MediaViewerContext } from "../contexts/MediaViewerContext";
 import { StackFutureContext } from "../contexts/StackFutureContext";
 
 export function useNavigation() {
@@ -28,6 +29,7 @@ export function useURLNavigation(
   // eslint-disable-next-line react-hooks/rules-of-hooks -- We want to be able to use this in places that can't access the context
   const navigation = overrideNav ?? useNavigation();
   const { clearFuture } = useContext(StackFutureContext);
+  const { displayMedia } = useContext(MediaViewerContext);
 
   const doNavigationAction = async (url: string, func: NavFunctionsWithURL) => {
     const resolvedURL = await new RedditURL(url).resolveURL();
@@ -46,6 +48,8 @@ export function useURLNavigation(
       navigation[func]("Accounts", { url: resolvedURL });
     } else if (pageType === PageType.SETTINGS) {
       navigation[func]("SettingsPage", { url: resolvedURL });
+    } else if (pageType === PageType.IMAGE) {
+      displayMedia(resolvedURL);
     } else {
       navigation[func]("ErrorPage", { url: resolvedURL });
     }
