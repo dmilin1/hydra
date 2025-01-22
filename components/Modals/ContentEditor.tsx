@@ -183,6 +183,7 @@ export default function ContentEditor(props: ContentEditorProps) {
                   placeholderTextColor={theme.verySubtleText}
                   value={title}
                   onChangeText={setTitle}
+                  scrollEnabled={false}
                 />
                 <TouchableOpacity
                   style={t(styles.postTypeBtn, {
@@ -207,6 +208,7 @@ export default function ContentEditor(props: ContentEditorProps) {
               onSelectionChange={({ nativeEvent }) => {
                 selection.current = nativeEvent.selection;
               }}
+              scrollEnabled={false}
             />
             <View
               style={t(styles.previewTypeContainer, {
@@ -252,7 +254,7 @@ export default function ContentEditor(props: ContentEditorProps) {
                 html={
                   parent && viewMode === "parent"
                     ? parent.html
-                    : Snudown.markdown(text)
+                    : Snudown.markdown(text).replaceAll(/>\s+</g, "><") // Remove whitespace between tags
                 }
               />
             </View>

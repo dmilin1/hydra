@@ -15,7 +15,6 @@
 
 - ⭐🚀 Image upload when making posts/comments
 
-- ⭐🐛 Fix weird scroll overflow bug when making long posts and comments
 - 🚀 Message drafts
 
 - 🚀 Accessibility support
@@ -31,6 +30,8 @@
 - 🚀 Notifications
 
 - 🚀 Fancy bookmarks with folders and categories
+
+- 🚀 Keyword filters
 
 
 ### Medium
