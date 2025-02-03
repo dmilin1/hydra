@@ -38,7 +38,8 @@ import RedditURL from "../../../../utils/RedditURL";
 import { useURLNavigation } from "../../../../utils/navigation";
 import useContextMenu from "../../../../utils/useContextMenu";
 import RenderHtml from "../../../HTML/RenderHTML";
-import ContentEditor from "../../../Modals/ContentEditor";
+import EditComment from "../../../Modals/EditComment";
+import NewComment from "../../../Modals/NewComment";
 import Slideable from "../../../UI/Slideable";
 
 interface CommentProps {
@@ -96,13 +97,14 @@ export function CommentComponent({
 
   const replyToComment = () => {
     setModal(
-      <ContentEditor
-        mode="makeComment"
+      <NewComment
         parent={comment}
-        contentSent={async () => {
-          const reloadedComment = await reloadComment(comment);
-          changeComment?.(reloadedComment);
-        }}
+        contentSent={() =>
+          setTimeout(async () => {
+            const reloadedComment = await reloadComment(comment);
+            changeComment?.(reloadedComment);
+          }, 5_000)
+        }
       />,
     );
   };
@@ -110,8 +112,7 @@ export function CommentComponent({
   const editComment = () => {
     if (comment.type !== "comment") return;
     setModal(
-      <ContentEditor
-        mode="editComment"
+      <EditComment
         edit={comment}
         contentSent={async () => {
           const reloadedComment = await reloadComment(comment);

@@ -13,8 +13,6 @@
 
 - 🚀 Make subreddit title a search button
 
-- ⭐🚀 Image upload when making posts/comments
-
 - 🚀 Message drafts
 
 - 🚀 Accessibility support
@@ -33,6 +31,8 @@
 
 - 🚀 Keyword filters
 
+- 🚀 Maintain session cookies so log in isn't required every time the app is opened. Will prevent 2FA from being required when switching accounts.
+
 
 ### Medium
 - 🚀 Collapse automod comments
@@ -42,5 +42,7 @@
 
 ### Easy
 - 🚀 Hide subreddit name when on a specific subreddit page
+
+- 🚀 Disable minimizing post by tapping (@Em)
 
 - 🐛 Editing a comment on the user page then clicking the link causes a crash

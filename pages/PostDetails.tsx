@@ -24,10 +24,19 @@ import {
   Comment,
 } from "../api/PostDetail";
 import { StackPageProps } from "../app/stack";
+import {
+  PostDetailsScreenContextOptions,
+  PostDetailsScreenSortOptions,
+} from "../app/stack/PostDetailsScreen";
+import SortAndContext, {
+  ContextTypes,
+} from "../components/Navbar/SortAndContext";
 import PostDetailsComponent from "../components/RedditDataRepresentations/Post/PostDetailsComponent";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
+import { AccountContext } from "../contexts/AccountContext";
 import { ScrollerContext, ScrollerProvider } from "../contexts/ScrollerContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { useURLNavigation } from "../utils/navigation";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -40,8 +49,11 @@ type PostDetailsProps = StackPageProps<"PostDetailsPage">;
 function PostDetails({ route }: PostDetailsProps) {
   const url = route.params.url;
 
+  const navigation = useURLNavigation();
+
   const { theme } = useContext(ThemeContext);
   const { scrollDisabled } = useContext(ScrollerContext);
+  const { currentUser } = useContext(AccountContext);
 
   const topOfScroll = useRef<View>(null);
   const scrollView = useRef<ScrollView>(null);
@@ -84,6 +96,30 @@ function PostDetails({ route }: PostDetailsProps) {
     const postDetail = await getPostsDetail(url);
     setPostDetail(postDetail);
     setRefreshing(false);
+
+    if (currentUser?.userName === postDetail.author) {
+      const newOptions: ContextTypes[] = [];
+      if (postDetail.text) {
+        newOptions.push("Edit");
+      }
+      newOptions.push("Delete");
+      navigation.setOptions({
+        headerRight: () => {
+          return (
+            <SortAndContext
+              route={route}
+              navigation={navigation}
+              sortOptions={PostDetailsScreenSortOptions}
+              contextOptions={[
+                ...newOptions,
+                ...PostDetailsScreenContextOptions,
+              ]}
+              pageData={postDetail}
+            />
+          );
+        },
+      });
+    }
   };
 
   const getCommentFromPath = (

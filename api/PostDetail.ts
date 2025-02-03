@@ -192,12 +192,12 @@ export async function reloadComment(
 
 export async function submitPost(
   subreddit: string,
-  kind: "self" | "link",
+  kind: "self" | "link" | "image",
   title: string,
   content: string,
-): Promise<boolean> {
+): Promise<{ url?: string; success: boolean }> {
   const response = await api(
-    "https://www.reddit.com/api/submit",
+    "https://www.reddit.com/api/submit?api_type=json",
     {
       method: "POST",
     },
@@ -207,11 +207,17 @@ export async function submitPost(
         sr: subreddit,
         kind,
         title,
-        [kind === "link" ? "url" : "text"]: content,
+        [kind === "self" ? "text" : "url"]: content,
+        extension: "json",
       },
     },
   );
-  return response?.success ?? false;
+  const errors = response?.json?.errors;
+  const data = response?.json?.data;
+  return {
+    url: data?.url,
+    success: Array.isArray(errors) && errors.length === 0,
+  };
 }
 
 export async function submitComment(

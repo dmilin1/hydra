@@ -52,6 +52,11 @@ module.exports = {
         }
       ],
       "@sentry/react-native/expo",
+      [
+        'expo-image-picker', {
+          "photosPermission": "$(PRODUCT_NAME) accesses your photos to upload images.",
+        }
+      ]
     ],
     updates: {
       url: `https://u.expo.dev/${projectId}`,

@@ -10,6 +10,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
+import { deleteUserContent, PostDetail } from "../../api/PostDetail";
 import { StackParamsList, URLRoutes } from "../../app/stack";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
@@ -17,9 +18,10 @@ import { SubredditContext } from "../../contexts/SubredditContext";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import useContextMenu from "../../utils/useContextMenu";
-import ContentEditor from "../Modals/ContentEditor";
+import EditPost from "../Modals/EditPost";
+import NewPost from "../Modals/NewPost";
 
-type SortTypes =
+export type SortTypes =
   | "Best"
   | "Hot"
   | "New"
@@ -29,20 +31,23 @@ type SortTypes =
   | "Old"
   | "Q&A";
 
-type ContextTypes =
+export type ContextTypes =
   | "Share"
   | "Subscribe"
   | "Unsubscribe"
   | "Favorite"
   | "Unfavorite"
   | "New Post"
-  | "Add to Multireddit";
+  | "Add to Multireddit"
+  | "Edit"
+  | "Delete";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
   navigation: NativeStackNavigationProp<StackParamsList, URLRoutes, undefined>;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
+  pageData?: PostDetail;
 };
 
 export default function SortAndContext({
@@ -50,13 +55,14 @@ export default function SortAndContext({
   route,
   sortOptions,
   contextOptions,
+  pageData,
 }: SortAndContextProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
   const { subscribe, unsubscribe, toggleFavorite, multis, addSubToMulti } =
     useContext(SubredditContext);
 
-  const { replaceURL } = useURLNavigation(navigation);
+  const { replaceURL, pushURL } = useURLNavigation(navigation);
 
   const showContextMenu = useContextMenu();
 
@@ -190,10 +196,9 @@ export default function SortAndContext({
               Share.share({ url: new RedditURL(currentPath).toString() });
             } else if (result === "New Post") {
               setModal(
-                <ContentEditor
+                <NewPost
                   subreddit={new RedditURL(currentPath).getSubreddit()}
-                  mode="makePost"
-                  contentSent={() => {}}
+                  contentSent={(newPostURL) => pushURL(newPostURL)}
                 />,
               );
             } else if (result === "Subscribe") {
@@ -217,6 +222,21 @@ export default function SortAndContext({
                   selectedMulti,
                   new RedditURL(currentPath).getSubreddit(),
                 );
+              }
+            } else if (result === "Edit" && pageData?.type === "postDetail") {
+              setModal(
+                <EditPost
+                  edit={pageData}
+                  contentSent={() => replaceURL(pageData.link)}
+                />,
+              );
+            } else if (result === "Delete" && pageData?.type === "postDetail") {
+              try {
+                await deleteUserContent(pageData);
+                alert("Post deleted");
+                navigation.goBack();
+              } catch (_e) {
+                alert("Failed to delete post");
               }
             }
           }}

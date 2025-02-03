@@ -20,7 +20,7 @@ import {
 } from "../../../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
-import ContentEditor from "../../Modals/ContentEditor";
+import NewComment from "../../Modals/NewComment";
 
 type PostDetailsComponentProps = {
   postDetail: PostDetail;
@@ -202,10 +202,9 @@ export default function PostDetailsComponent({
           style={styles.buttonsContainer}
           onPress={() =>
             setModal(
-              <ContentEditor
-                mode="makeComment"
+              <NewComment
                 parent={postDetail}
-                contentSent={async () => await loadPostDetails()}
+                contentSent={() => setTimeout(() => loadPostDetails(), 5_000)}
               />,
             )
           }
