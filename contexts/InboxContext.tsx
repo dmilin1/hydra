@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { AccountContext } from "./AccountContext";
-import { getMessages } from "../api/Messages";
+import { getInboxItems } from "../api/Messages";
 
 type InboxContextType = {
   inboxCount: number;
@@ -23,7 +23,7 @@ export function InboxProvider({ children }: React.PropsWithChildren) {
   const [inboxCount, setInboxCount] = useState(initialInboxContext.inboxCount);
 
   const checkForMessages = async () => {
-    const messages = await getMessages();
+    const messages = await getInboxItems();
     const newMessages = messages.filter((m) => m.new);
     setInboxCount(newMessages.length);
   };

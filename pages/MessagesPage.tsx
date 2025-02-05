@@ -1,70 +1,169 @@
-import { useIsFocused } from "@react-navigation/native";
-import React, { useContext, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 
-import { CommentReply, getMessages } from "../api/Messages";
-import MessageComponent from "../components/RedditDataRepresentations/Message/MessageComponent";
-import RedditDataScroller from "../components/UI/RedditDataScroller";
+import { getConversationMessages, Message } from "../api/Messages";
+import { StackPageProps } from "../app/stack";
+import RenderHtml from "../components/HTML/RenderHTML";
+import ReplyToMessage from "../components/Modals/ReplyToMessage";
 import { AccountContext } from "../contexts/AccountContext";
-import { InboxContext } from "../contexts/InboxContext";
+import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
-import useRedditDataState from "../utils/useRedditDataState";
+import RedditURL from "../utils/RedditURL";
+import Time from "../utils/Time";
 
-export default function MessagesPage() {
+export default function MessagesPage({
+  route,
+}: StackPageProps<"MessagesPage">) {
   const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
-  const { inboxCount } = useContext(InboxContext);
+  const { setModal } = useContext(ModalContext);
 
-  const isFocused = useIsFocused();
+  const { url } = route.params;
 
-  const {
-    data: messages,
-    setData: setMessages,
-    modifyData: modifyMessages,
-    fullyLoaded,
-  } = useRedditDataState<CommentReply>();
+  const messageId = new RedditURL(url).getRelativePath().split("/")[3];
 
-  const loadMoreMessages = async (refresh = false) => {
+  const scrollView = useRef<ScrollView>(null);
+
+  const [loading, setLoading] = useState(true);
+  const [messages, setMessages] = useState<Message[]>();
+
+  const otherUser = currentUser
+    ? messages?.find((message) => message.author !== currentUser?.userName)
+        ?.author
+    : null;
+
+  const lastOtherUserMessage = messages?.findLast(
+    (message) => message.author === otherUser,
+  );
+
+  const loadMessages = async () => {
     if (!currentUser) return;
-    const newMessages = await getMessages({
-      after: refresh ? undefined : messages.slice(-1)[0]?.after,
-    });
-    if (refresh) {
-      setMessages(newMessages);
-    } else {
-      setMessages([...messages, ...newMessages]);
-    }
+    setLoading(true);
+    const newMessages = await getConversationMessages(messageId);
+    setMessages(newMessages);
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (!isFocused) return;
-    loadMoreMessages(true);
-  }, [inboxCount, isFocused]);
+    loadMessages();
+  }, [messageId]);
+
+  useEffect(() => {
+    scrollView.current?.scrollToEnd();
+  }, [messages?.length]);
 
   return (
-    <View
-      style={t(styles.postsContainer, {
-        backgroundColor: theme.background,
-      })}
-    >
-      <RedditDataScroller<CommentReply>
-        loadMore={loadMoreMessages}
-        fullyLoaded={fullyLoaded}
-        data={messages}
-        renderItem={({ item }) => (
-          <MessageComponent
-            message={item}
-            setMessage={(newMessage) => modifyMessages([newMessage])}
-          />
+    currentUser && (
+      <View
+        style={t(styles.messagesContainer, {
+          backgroundColor: theme.background,
+        })}
+      >
+        <ScrollView ref={scrollView} contentContainerStyle={{ flexGrow: 1 }}>
+          {!loading ? (
+            messages?.map((message) => (
+              <View
+                key={message.id}
+                style={t(styles.messageBubble, {
+                  backgroundColor:
+                    message.author === currentUser.userName
+                      ? theme.iconPrimary
+                      : theme.tint,
+                  alignSelf:
+                    message.author === currentUser.userName
+                      ? "flex-end"
+                      : "flex-start",
+                })}
+              >
+                <View style={styles.details}>
+                  <Text style={{ color: theme.subtleText }}>
+                    {message.author}
+                  </Text>
+                  <Text style={{ color: theme.subtleText }}>
+                    {new Time(message.createdAt * 1_000).shortPrettyTimeSince()}
+                  </Text>
+                </View>
+                <RenderHtml html={message.html} />
+              </View>
+            ))
+          ) : (
+            <ActivityIndicator
+              style={styles.activityIndicator}
+              color={theme.text}
+            />
+          )}
+        </ScrollView>
+        {otherUser && lastOtherUserMessage && (
+          <View style={t(styles.replyContainer)}>
+            <TouchableOpacity
+              style={t(styles.replyButton, {
+                backgroundColor: theme.divider,
+              })}
+              activeOpacity={0.8}
+              onPress={() =>
+                setModal(
+                  <ReplyToMessage
+                    contentSent={() => loadMessages()}
+                    previousMsg={lastOtherUserMessage}
+                  />,
+                )
+              }
+            >
+              <Text
+                style={t(styles.replyButtonText, {
+                  color: theme.text,
+                })}
+              >
+                Reply
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
-      />
-    </View>
+      </View>
+    )
   );
 }
 
 const styles = StyleSheet.create({
-  postsContainer: {
+  messagesContainer: {
     flex: 1,
     justifyContent: "center",
+  },
+  messageBubble: {
+    padding: 12,
+    borderRadius: 12,
+    margin: 12,
+    maxWidth: "60%",
+  },
+  details: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  activityIndicator: {
+    flex: 1,
+  },
+  replyContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    padding: 12,
+  },
+  replyButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+  },
+  replyButtonText: {
+    fontSize: 16,
   },
 });

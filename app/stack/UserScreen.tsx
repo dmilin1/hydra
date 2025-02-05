@@ -32,22 +32,9 @@ export default function UserScreen({ StackNavigator }: UserScreenProps) {
           );
         },
         title: new RedditURL(route.params.url).getPageName(),
-        headerRight: () => {
-          const url = route.params.url;
-          const section = new RedditURL(url).getRelativePath().split("/")[3];
-          return (
-            <SortAndContext
-              route={route}
-              navigation={navigation}
-              sortOptions={
-                section === "submitted" || section === "comments"
-                  ? ["New", "Hot", "Top"]
-                  : undefined
-              }
-              contextOptions={["Share"]}
-            />
-          );
-        },
+        headerRight: () => (
+          <SortAndContext route={route} navigation={navigation} />
+        ),
       })}
     />
   );

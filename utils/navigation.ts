@@ -46,6 +46,8 @@ export function useURLNavigation(
       navigation[func]("UserPage", { url: resolvedURL });
     } else if (pageType === PageType.ACCOUNTS) {
       navigation[func]("Accounts", { url: resolvedURL });
+    } else if (pageType === PageType.MESSAGES) {
+      navigation[func]("MessagesPage", { url: resolvedURL });
     } else if (pageType === PageType.SETTINGS) {
       navigation[func]("SettingsPage", { url: resolvedURL });
     } else if (pageType === PageType.IMAGE) {

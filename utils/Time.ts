@@ -28,4 +28,28 @@ export default class Time {
       return `${diffYears} year${diffYears === 1 ? "" : "s"}`;
     }
   }
+
+  shortPrettyTimeSince(): string {
+    const now = new Date();
+    const diff = Math.abs(now.getTime() - this.time.getTime());
+    const diffSeconds = Math.floor(diff / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.floor(diffDays / 365);
+    if (diffSeconds < 60) {
+      return `${diffSeconds}s`;
+    } else if (diffMinutes < 60) {
+      return `${diffMinutes}m`;
+    } else if (diffHours < 24) {
+      return `${diffHours}h`;
+    } else if (diffDays < 30) {
+      return `${diffDays}d`;
+    } else if (diffMonths < 12) {
+      return `${diffMonths}mo`;
+    } else {
+      return `${diffYears}y`;
+    }
+  }
 }

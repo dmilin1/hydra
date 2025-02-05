@@ -1,10 +1,8 @@
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
-import { CommentReply, setMessageNewStatus } from "../../../api/Messages";
-import { vote } from "../../../api/PostDetail";
-import { VoteOption } from "../../../api/Posts";
+import { Message, setInboxItemNewStatus } from "../../../api/Messages";
 import { InboxContext } from "../../../contexts/InboxContext";
 import {
   ThemeContext,
@@ -15,8 +13,8 @@ import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
 
 type MessageComponentProps = {
-  message: CommentReply;
-  setMessage: (message: CommentReply) => void;
+  message: Message;
+  setMessage: (message: Message) => void;
 };
 
 export default function MessageComponent({
@@ -27,42 +25,14 @@ export default function MessageComponent({
   const { theme } = useContext(ThemeContext);
   const { inboxCount, setInboxCount } = useContext(InboxContext);
 
-  const currentVoteColor =
-    message.userVote === VoteOption.UpVote
-      ? theme.upvote
-      : message.userVote === VoteOption.DownVote
-        ? theme.downvote
-        : theme.subtleText;
-
-  const voteOnMessage = async (voteOption: VoteOption) => {
-    const result = await vote(message, voteOption);
-    setMessage({
-      ...message,
-      upvotes: message.upvotes - message.userVote + result,
-      userVote: result,
-    });
-  };
-
   return (
     <Slideable
-      left={[
-        {
-          icon: <AntDesign name="arrowup" />,
-          color: theme.upvote,
-          action: async () => voteOnMessage(VoteOption.UpVote),
-        },
-        {
-          icon: <AntDesign name="arrowdown" />,
-          color: theme.downvote,
-          action: async () => voteOnMessage(VoteOption.DownVote),
-        },
-      ]}
       right={[
         {
           icon: <Feather name="mail" size={18} color={theme.subtleText} />,
           color: theme.iconPrimary,
           action: async () => {
-            await setMessageNewStatus(message, !message.new);
+            await setInboxItemNewStatus(message, !message.new);
             setInboxCount(inboxCount + (message.new ? -1 : 1));
             setMessage({
               ...message,
@@ -78,17 +48,17 @@ export default function MessageComponent({
           backgroundColor: theme.background,
         })}
         onPress={() => {
-          setMessageNewStatus(message, false);
+          setInboxItemNewStatus(message, false);
           setMessage({
             ...message,
             new: false,
           });
-          pushURL(message.contextLink);
+          pushURL(`https://www.reddit.com/message/messages/${message.id}`);
         }}
       >
         <View style={styles.messageTitleContainer}>
           <Feather
-            name="message-square"
+            name="mail"
             size={18}
             color={message.new ? theme.iconPrimary : theme.subtleText}
           />
@@ -96,13 +66,10 @@ export default function MessageComponent({
             <Text
               numberOfLines={2}
               style={t(styles.messageTitle, {
-                color: theme.verySubtleText,
+                color: theme.text,
               })}
             >
-              <Text style={{ color: theme.text }}>
-                Reply to your comment in{" "}
-              </Text>
-              {message.postTitle}
+              {message.subject}
             </Text>
           </View>
         </View>
@@ -117,29 +84,7 @@ export default function MessageComponent({
                   color: theme.subtleText,
                 })}
               >
-                in{" "}
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={() =>
-                  pushURL(`https://www.reddit.com/r/${message.subreddit}`)
-                }
-              >
-                <Text
-                  style={t(styles.boldedSmallText, {
-                    color: theme.subtleText,
-                  })}
-                >
-                  {message.subreddit}
-                </Text>
-              </TouchableOpacity>
-              <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
-              >
-                {" "}
-                by{" "}
+                from{" "}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.8}
@@ -157,22 +102,6 @@ export default function MessageComponent({
               </TouchableOpacity>
             </View>
             <View style={styles.metadataContainer}>
-              <Feather
-                name={
-                  message.userVote === VoteOption.DownVote
-                    ? "arrow-down"
-                    : "arrow-up"
-                }
-                size={18}
-                color={currentVoteColor}
-              />
-              <Text
-                style={t(styles.metadataText, {
-                  color: currentVoteColor,
-                })}
-              >
-                {message.upvotes}
-              </Text>
               <Feather name="clock" size={18} color={theme.subtleText} />
               <Text
                 style={t(styles.metadataText, {

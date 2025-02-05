@@ -52,7 +52,7 @@ const INITIAL_STATE = {
         type: "stack",
         routes: [
           {
-            name: "MessagesPage",
+            name: "InboxPage",
           },
         ],
       },

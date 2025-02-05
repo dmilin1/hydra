@@ -8,6 +8,7 @@ import React, { Fragment, useContext, useRef } from "react";
 import AccountsScreen from "./AccountsScreen";
 import ErrorScreen from "./ErrorScreen";
 import HomeScreen from "./HomeScreen";
+import InboxScreen from "./InboxScreen";
 import MessagesScreen from "./MessagesScreen";
 import MultiredditScreen from "./MultiredditScreen";
 import PostDetailsScreen from "./PostDetailsScreen";
@@ -24,7 +25,10 @@ export type StackParamsList = {
   Home: {
     url: string;
   };
-  MessagesPage: object;
+  InboxPage: object;
+  MessagesPage: {
+    url: string;
+  };
   PostsPage: {
     url: string;
   };
@@ -72,6 +76,7 @@ export default function Stack() {
   const screens = [
     SubredditsScreen,
     HomeScreen,
+    InboxScreen,
     MessagesScreen,
     PostsScreen,
     PostDetailsScreen,

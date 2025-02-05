@@ -7,7 +7,9 @@ export enum PageType {
   MULTIREDDIT,
   USER,
   SEARCH,
-  MESSAGE,
+  INBOX,
+
+  MESSAGES,
 
   ACCOUNTS,
   SETTINGS,
@@ -123,8 +125,10 @@ export default class RedditURL extends URL {
       return PageType.POST_DETAILS;
     } else if (relativePath.startsWith("/r/")) {
       return PageType.SUBREDDIT;
-    } else if (relativePath.startsWith("/message/")) {
-      return PageType.MESSAGE;
+    } else if (relativePath.startsWith("/message/inbox")) {
+      return PageType.INBOX;
+    } else if (relativePath.startsWith("/message/messages")) {
+      return PageType.MESSAGES;
     } else if (relativePath.match(/\/(user|u)\/.*\/m\/.*/)) {
       return PageType.MULTIREDDIT;
     } else if (

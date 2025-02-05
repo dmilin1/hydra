@@ -11,6 +11,7 @@ import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
+import { User } from "../../api/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
@@ -19,6 +20,7 @@ import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import useContextMenu from "../../utils/useContextMenu";
 import EditPost from "../Modals/EditPost";
+import NewMessage from "../Modals/NewMessage";
 import NewPost from "../Modals/NewPost";
 
 export type SortTypes =
@@ -40,14 +42,15 @@ export type ContextTypes =
   | "New Post"
   | "Add to Multireddit"
   | "Edit"
-  | "Delete";
+  | "Delete"
+  | "Message";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
   navigation: NativeStackNavigationProp<StackParamsList, URLRoutes, undefined>;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
-  pageData?: PostDetail;
+  pageData?: PostDetail | User;
 };
 
 export default function SortAndContext({
@@ -238,6 +241,13 @@ export default function SortAndContext({
               } catch (_e) {
                 alert("Failed to delete post");
               }
+            } else if (result === "Message" && pageData?.type === "user") {
+              setModal(
+                <NewMessage
+                  recipient={pageData}
+                  contentSent={() => setModal(undefined)}
+                />,
+              );
             }
           }}
         >
