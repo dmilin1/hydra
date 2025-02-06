@@ -14,17 +14,38 @@ import { useMMKVString } from "react-native-mmkv";
 import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const update = {
-  updateKey: "2.2.0-1",
+  updateKey: "2.3.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   features: [
-    "Completed transition to new data storage library which allows for much faster loads. If you haven't opened Hydra in over a month, your settings may have been lost.",
-    "Over the air updates try to download and update immediately when you open the app without a restart being required. Falls back to previous behavior if it takes more than 5 seconds.",
-    "Added this modal to show what's new when an update is released",
-    "Added a prompt asking if you want to subscribe to the /r/HydraApp subreddit if you aren't already subscribed",
+    {
+      title: "Private Messages",
+      description: "You can send and reply to private messages. Private messages will appear in your inbox. Initial private messages can be sent by pressing the \"...\" in the top right of a user page",
+    },
+    {
+      title: "Post Editing",
+      description: "Post can be edited. To edit a post, press the \"...\" in the top right of a post",
+    },
+    {
+      title: "Post Deletion",
+      description: "Post can be deleted. To delete a post, press the \"...\" in the top right of a post",
+    },
+    {
+      title: "Image Posts",
+      description: "Image posts are supported. Click post type button twice when making a post to select image post",
+    }
+
   ],
   bugfixes: [
-    "Fixed wrong audio playing when scrolling subreddits with many videos",
+    {
+      description: "Fixed scroll bug in the content editor",
+    },
+    {
+      description: "Fixed paragraph spacing rendering bug in the content editor's preview",
+    },
+    {
+      description: "Fixed i.reddit.it links not opening",
+    },
   ],
 };
 
@@ -69,25 +90,46 @@ export default function UpdateInfo() {
               {update.subtitle}
             </Text>
             <ScrollView contentContainerStyle={{ paddingBottom: 20, gap: 20 }}>
+              <Text
+                style={t(styles.heading, {
+                  color: theme.text,
+                })}
+              >
+                🚀 Features
+              </Text>
               {update.features.map((feature) => (
-                <View key={feature}>
+                <View key={feature.title}>
                   <Text
-                    style={t(styles.changeItem, {
+                    style={t(styles.featureTitle, {
                       color: theme.text,
                     })}
                   >
-                    🚀 {feature}
+                    • {feature.title}
+                  </Text>
+                  <Text
+                    style={t(styles.featureDescription, {
+                      color: theme.subtleText,
+                    })}
+                  >
+                    {feature.description}
                   </Text>
                 </View>
               ))}
+              <Text
+                style={t(styles.heading, {
+                  color: theme.text,
+                })}
+              >
+                🐛 Bugfixes
+              </Text>
               {update.bugfixes.map((bugfix) => (
-                <View key={bugfix}>
+                <View key={bugfix.description}>
                   <Text
-                    style={t(styles.changeItem, {
+                    style={t(styles.bugfixDescription, {
                       color: theme.text,
                     })}
                   >
-                    🐛 {bugfix}
+                    • {bugfix.description}
                   </Text>
                 </View>
               ))}
@@ -182,8 +224,22 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  changeItem: {
-    fontSize: 16,
+  heading: {
+    textAlign: "center",
+    fontSize: 18,
+    marginHorizontal: 20,
+  },
+  featureTitle: {
+    fontSize: 18,
+    marginHorizontal: 20,
+  },
+  featureDescription: {
+    fontSize: 12,
+    marginTop: 5,
+    marginHorizontal: 32,
+  },
+  bugfixDescription: {
+    fontSize: 14,
     marginHorizontal: 20,
   },
   helpContainer: {
