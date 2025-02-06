@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { StackParamsList } from "./index";
-import SortAndContext from "../../components/Navbar/SortAndContext";
 import TextButton from "../../components/Navbar/TextButton";
 import UserPage from "../../pages/UserPage";
 import RedditURL from "../../utils/RedditURL";
@@ -32,9 +31,6 @@ export default function UserScreen({ StackNavigator }: UserScreenProps) {
           );
         },
         title: new RedditURL(route.params.url).getPageName(),
-        headerRight: () => (
-          <SortAndContext route={route} navigation={navigation} />
-        ),
       })}
     />
   );

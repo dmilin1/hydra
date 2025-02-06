@@ -7,8 +7,6 @@
 ### Hard
 - 🚀 Android support
 
-- ⭐🚀 Respond to inbox messages
-
 - 🚀 Get polls working
 
 - 🚀 Make subreddit title a search button
@@ -39,6 +37,9 @@
 
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
+- 🚀 Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
+
+- 🚀 Automatic theme switching (https://www.reddit.com/r/HydraFeatureRequests/comments/1ig308c/automatic_theme/)
 
 ### Easy
 - 🚀 Hide subreddit name when on a specific subreddit page

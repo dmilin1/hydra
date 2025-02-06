@@ -24,18 +24,16 @@ import {
   Comment,
 } from "../api/PostDetail";
 import { StackPageProps } from "../app/stack";
-import {
-  PostDetailsScreenContextOptions,
-  PostDetailsScreenSortOptions,
-} from "../app/stack/PostDetailsScreen";
 import SortAndContext, {
   ContextTypes,
+  SortTypes,
 } from "../components/Navbar/SortAndContext";
 import PostDetailsComponent from "../components/RedditDataRepresentations/Post/PostDetailsComponent";
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import { AccountContext } from "../contexts/AccountContext";
 import { ScrollerContext, ScrollerProvider } from "../contexts/ScrollerContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 
 export type LoadMoreCommentsFunc = (
@@ -97,29 +95,37 @@ function PostDetails({ route }: PostDetailsProps) {
     setPostDetail(postDetail);
     setRefreshing(false);
 
-    if (currentUser?.userName === postDetail.author) {
-      const newOptions: ContextTypes[] = [];
-      if (postDetail.text) {
-        newOptions.push("Edit");
-      }
-      newOptions.push("Delete");
-      navigation.setOptions({
-        headerRight: () => {
-          return (
-            <SortAndContext
-              route={route}
-              navigation={navigation}
-              sortOptions={PostDetailsScreenSortOptions}
-              contextOptions={[
-                ...newOptions,
-                ...PostDetailsScreenContextOptions,
-              ]}
-              pageData={postDetail}
-            />
-          );
-        },
-      });
-    }
+    const contextOptions: ContextTypes[] = [
+      ...(currentUser?.userName === postDetail.author && postDetail.text
+        ? ["Edit" as ContextTypes]
+        : []),
+      ...(currentUser?.userName === postDetail.author
+        ? ["Delete" as ContextTypes]
+        : []),
+      "Share",
+    ];
+    const contextSort: SortTypes[] = [
+      "Best",
+      "New",
+      "Top",
+      "Controversial",
+      "Old",
+      "Q&A",
+    ];
+    navigation.setOptions({
+      title: new RedditURL(route.params.url).getPageName(),
+      headerRight: () => {
+        return (
+          <SortAndContext
+            route={route}
+            navigation={navigation}
+            sortOptions={contextSort}
+            contextOptions={contextOptions}
+            pageData={postDetail}
+          />
+        );
+      },
+    });
   };
 
   const getCommentFromPath = (
