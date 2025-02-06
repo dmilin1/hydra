@@ -26,7 +26,10 @@ module.exports = {
     ],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: IS_DEV ? 'com.dmilin.hydra-dev' : "com.dmilin.hydra"
+      bundleIdentifier: IS_DEV ? 'com.dmilin.hydra-dev' : "com.dmilin.hydra",
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
     },
     android: {
       adaptiveIcon: {
