@@ -24,11 +24,11 @@ const update = {
     },
     {
       title: "Post Editing",
-      description: "Post can be edited. To edit a post, press the \"...\" in the top right of a post",
+      description: "Posts can be edited. To edit a post, press the \"...\" in the top right of a post",
     },
     {
       title: "Post Deletion",
-      description: "Post can be deleted. To delete a post, press the \"...\" in the top right of a post",
+      description: "Posts can be deleted. To delete a post, press the \"...\" in the top right of a post",
     },
     {
       title: "Image Posts",
