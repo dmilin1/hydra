@@ -47,3 +47,5 @@
 - 🚀 Disable minimizing post by tapping (@Em)
 
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
+
+- 🐛 Favorite subreddits you aren't subscribed to
