@@ -1,4 +1,4 @@
-import { Feather, FontAwesome5 } from "@expo/vector-icons";
+import { Feather, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import * as Application from "expo-application";
 import * as Updates from "expo-updates";
 import React, { useContext } from "react";
@@ -52,6 +52,12 @@ export default function Root() {
             icon: <Feather name="lock" size={24} color={theme.text} />,
             text: "Privacy",
             onPress: () => pushURL("hydra://settings/privacy"),
+          },
+          {
+            key: "advanced",
+            icon: <FontAwesome name="wrench" size={24} color={theme.text} />,
+            text: "Advanced",
+            onPress: () => pushURL("hydra://settings/advanced"),
           },
           {
             key: "requestFeature",

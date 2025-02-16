@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { StyleSheet, View, ScrollView } from "react-native";
 
+import Advanced from "./Advanced";
 import Appearance from "./Appearance";
 import DataUse from "./DataUse";
 import GeneralRoot from "./General/GeneralRoot";
@@ -44,6 +45,7 @@ export default function SettingsPage({
         {relativePath === "settings/appearance" && <Appearance />}
         {relativePath === "settings/dataUse" && <DataUse />}
         {relativePath === "settings/privacy" && <Privacy />}
+        {relativePath === "settings/advanced" && <Advanced />}
       </ScrollView>
     </View>
   );
