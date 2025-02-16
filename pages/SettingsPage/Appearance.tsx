@@ -6,7 +6,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import React, { useContext, useRef } from "react";
-import { ColorValue, Switch, Text, View } from "react-native";
+import { ColorValue, Switch, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 import List from "../../components/UI/List";
@@ -119,16 +119,7 @@ export default function Appearance() {
                   value: i + 1,
                 }))}
                 value={postTitleLength}
-              >
-                <Text
-                  style={{
-                    fontSize: 18,
-                    color: theme.subtleText,
-                  }}
-                >
-                  {postTitleLength}
-                </Text>
-              </Picker>
+              />
             ),
             text: "Post title max lines",
             onPress: () => postTitleLengthRef.current?.togglePicker(true),
@@ -149,16 +140,7 @@ export default function Appearance() {
                   value: i + 1,
                 }))}
                 value={postTextLength}
-              >
-                <Text
-                  style={{
-                    fontSize: 18,
-                    color: theme.subtleText,
-                  }}
-                >
-                  {postTextLength}
-                </Text>
-              </Picker>
+              />
             ),
             text: "Post text max lines",
             onPress: () => postTextLengthRef.current?.togglePicker(true),

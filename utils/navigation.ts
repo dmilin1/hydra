@@ -31,29 +31,35 @@ export function useURLNavigation(
   const { clearFuture } = useContext(StackFutureContext);
   const { displayMedia } = useContext(MediaViewerContext);
 
-  const doNavigationAction = async (url: string, func: NavFunctionsWithURL) => {
-    const resolvedURL = await new RedditURL(url).resolveURL();
-    const pageType = new RedditURL(resolvedURL).getPageType();
+  const doNavigationAction = async (
+    link: string,
+    func: NavFunctionsWithURL,
+  ) => {
+    const redditURL = (
+      await new RedditURL(link).resolveURL()
+    ).applyPreferredSorts();
+    const pageType = redditURL.getPageType();
+    const url = redditURL.url;
     if (pageType === PageType.HOME) {
-      navigation[func]("Home", { url: resolvedURL });
+      navigation[func]("Home", { url });
     } else if (pageType === PageType.SUBREDDIT) {
-      navigation[func]("PostsPage", { url: resolvedURL });
+      navigation[func]("PostsPage", { url });
     } else if (pageType === PageType.POST_DETAILS) {
-      navigation[func]("PostDetailsPage", { url: resolvedURL });
+      navigation[func]("PostDetailsPage", { url });
     } else if (pageType === PageType.MULTIREDDIT) {
-      navigation[func]("MultiredditPage", { url: resolvedURL });
+      navigation[func]("MultiredditPage", { url });
     } else if (pageType === PageType.USER) {
-      navigation[func]("UserPage", { url: resolvedURL });
+      navigation[func]("UserPage", { url });
     } else if (pageType === PageType.ACCOUNTS) {
-      navigation[func]("Accounts", { url: resolvedURL });
+      navigation[func]("Accounts", { url });
     } else if (pageType === PageType.MESSAGES) {
-      navigation[func]("MessagesPage", { url: resolvedURL });
+      navigation[func]("MessagesPage", { url });
     } else if (pageType === PageType.SETTINGS) {
-      navigation[func]("SettingsPage", { url: resolvedURL });
+      navigation[func]("SettingsPage", { url });
     } else if (pageType === PageType.IMAGE) {
-      displayMedia(resolvedURL);
+      displayMedia(url);
     } else {
-      navigation[func]("ErrorPage", { url: resolvedURL });
+      navigation[func]("ErrorPage", { url });
     }
     clearFuture();
   };

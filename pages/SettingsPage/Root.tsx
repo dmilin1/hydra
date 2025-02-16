@@ -15,7 +15,7 @@ export default function Root() {
   return (
     <>
       <List
-        title="General"
+        title="Settings"
         items={[
           {
             key: "general",

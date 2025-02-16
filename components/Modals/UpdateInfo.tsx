@@ -20,28 +20,32 @@ const update = {
   features: [
     {
       title: "Private Messages",
-      description: "You can send and reply to private messages. Private messages will appear in your inbox. Initial private messages can be sent by pressing the \"...\" in the top right of a user page",
+      description:
+        'You can send and reply to private messages. Private messages will appear in your inbox. Initial private messages can be sent by pressing the "..." in the top right of a user page',
     },
     {
       title: "Post Editing",
-      description: "Posts can be edited. To edit a post, press the \"...\" in the top right of a post",
+      description:
+        'Posts can be edited. To edit a post, press the "..." in the top right of a post',
     },
     {
       title: "Post Deletion",
-      description: "Posts can be deleted. To delete a post, press the \"...\" in the top right of a post",
+      description:
+        'Posts can be deleted. To delete a post, press the "..." in the top right of a post',
     },
     {
       title: "Image Posts",
-      description: "Image posts are supported. Click post type button twice when making a post to select image post",
-    }
-
+      description:
+        "Image posts are supported. Click post type button twice when making a post to select image post",
+    },
   ],
   bugfixes: [
     {
       description: "Fixed scroll bug in the content editor",
     },
     {
-      description: "Fixed paragraph spacing rendering bug in the content editor's preview",
+      description:
+        "Fixed paragraph spacing rendering bug in the content editor's preview",
     },
     {
       description: "Fixed i.reddit.it links not opening",

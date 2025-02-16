@@ -27,7 +27,7 @@ export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
             <SortAndContext
               route={route}
               navigation={navigation}
-              sortOptions={["Hot", "New", "Top", "Rising"]}
+              sortOptions={["Best", "Hot", "New", "Top", "Rising"]}
               contextOptions={[
                 "New Post",
                 subreddits.subscriber.find((sub) => sub.name === subreddit)

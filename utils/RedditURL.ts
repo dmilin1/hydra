@@ -1,4 +1,15 @@
+import KeyStore from "./KeyStore";
 import URL from "./URL";
+import {
+  DEFAULT_COMMENT_SORT_KEY,
+  DEFAULT_POST_SORT_KEY,
+  DEFAULT_POST_SORT_TOP_KEY,
+  makeCommentSubredditSortKey,
+  makePostSubredditSortKey,
+  makePostSubredditSortTopKey,
+  REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+  REMEMBER_POST_SUBREDDIT_SORT_KEY,
+} from "../constants/SettingsKeys";
 
 export enum PageType {
   HOME,
@@ -64,14 +75,14 @@ export default class RedditURL extends URL {
         }
       }
     } else if (pageType === PageType.POST_DETAILS) {
-      return this.getQueryParam("sort") ?? "best";
+      return this.getQueryParam("sort");
     } else if (pageType === PageType.USER) {
       return this.getQueryParam("sort") ?? "new";
     }
     return null;
   }
 
-  changeSort(sort: string): RedditURL {
+  changeSort(sort: string, time?: string): RedditURL {
     const subreddit = this.getSubreddit();
     const urlParams = this.getURLParams();
     const pageType = this.getPageType();
@@ -90,6 +101,9 @@ export default class RedditURL extends URL {
       this.url = `https://www.reddit.com${pathParts.join("/")}?${urlParams}`;
     } else if (pageType === PageType.USER) {
       this.changeQueryParam("sort", sort.toLowerCase());
+    }
+    if (time) {
+      this.changeQueryParam("t", time.toLowerCase());
     }
     return this;
   }
@@ -176,19 +190,71 @@ export default class RedditURL extends URL {
   /**
    * Properly formats shortened URLs and forwarded URLs
    */
-  async resolveURL(): Promise<string> {
+  async resolveURL(): Promise<RedditURL> {
     if (this.getRelativePath().startsWith("/u/")) {
       this.url = this.url.replace("/u/", "/user/");
-      return this.url;
+      return this;
     }
     if (this.getPageType() !== PageType.UNKNOWN) {
-      return this.url;
+      return this;
     }
     const response = await fetch(this.url, {
       method: "HEAD",
       redirect: "follow",
     });
-    const finalURL = response.url;
-    return new RedditURL(finalURL).url;
+    this.url = response.url;
+    return this;
+  }
+
+  applyPreferredSorts(): RedditURL {
+    const pageType = this.getPageType();
+    const existingSort = this.getSort();
+    if (existingSort) return this;
+
+    if (pageType === PageType.SUBREDDIT) {
+      const subreddit = this.getSubreddit();
+      const subredditSpecificSort = KeyStore.getBoolean(
+        REMEMBER_POST_SUBREDDIT_SORT_KEY,
+      )
+        ? KeyStore.getString(makePostSubredditSortKey(subreddit))
+        : null;
+      const preferredSort =
+        subredditSpecificSort ??
+        KeyStore.getString(DEFAULT_POST_SORT_KEY) ??
+        "default";
+      if (preferredSort !== "default") {
+        let time = undefined;
+        if (preferredSort === "top") {
+          const subredditSpecificTime = KeyStore.getBoolean(
+            REMEMBER_POST_SUBREDDIT_SORT_KEY,
+          )
+            ? KeyStore.getString(makePostSubredditSortTopKey(subreddit))
+            : null;
+          time =
+            subredditSpecificTime ??
+            KeyStore.getString(DEFAULT_POST_SORT_TOP_KEY) ??
+            "all";
+        }
+        this.changeSort(preferredSort, time);
+      }
+    }
+
+    if (pageType === PageType.POST_DETAILS) {
+      const subreddit = this.getSubreddit();
+      const subredditSpecificSort = KeyStore.getBoolean(
+        REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+      )
+        ? KeyStore.getString(makeCommentSubredditSortKey(subreddit))
+        : null;
+      const preferredSort =
+        subredditSpecificSort ??
+        KeyStore.getString(DEFAULT_COMMENT_SORT_KEY) ??
+        "default";
+      if (preferredSort !== "default") {
+        this.changeSort(preferredSort);
+      }
+    }
+
+    return this;
   }
 }

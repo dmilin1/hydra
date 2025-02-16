@@ -41,7 +41,12 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
   const isDeepPath = !!new URL(url).getBasePath().split("/")[5]; // More than just /user/username like /user/username/comments
 
   const loadUser = async () => {
-    const userData = await getUser(url);
+    const userUrl = new RedditURL(url)
+      .getRelativePath()
+      .split("/")
+      .slice(0, 3)
+      .join("/");
+    const userData = await getUser(`https://www.reddit.com${userUrl}`);
     setUser(userData);
     const contextOptions: ContextTypes[] = ["Share"];
     if (currentUser?.userName !== userData.userName) {
@@ -78,9 +83,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
   };
 
   useEffect(() => {
-    if (!isDeepPath) {
-      loadUser();
-    }
+    loadUser();
   }, []);
 
   return (
@@ -90,7 +93,9 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
       })}
     >
       <RedditDataScroller
-        ListHeaderComponent={() => user && <UserDetailsComponent user={user} />}
+        ListHeaderComponent={() =>
+          !isDeepPath && user && <UserDetailsComponent user={user} />
+        }
         loadMore={loadUserContent}
         fullyLoaded={fullyLoaded}
         data={userContent}

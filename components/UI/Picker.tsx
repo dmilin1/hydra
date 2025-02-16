@@ -28,7 +28,7 @@ export default forwardRef(function Picker(
           color: theme.subtleText,
         })}
       >
-        {props.value}
+        {props.items.find((item) => item.value === props.value)?.label}
       </Text>
     </RNPickerSelect>
   );

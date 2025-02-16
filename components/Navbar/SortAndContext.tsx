@@ -13,9 +13,17 @@ import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
 import { User } from "../../api/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
+import {
+  makeCommentSubredditSortKey,
+  makePostSubredditSortKey,
+  makePostSubredditSortTopKey,
+  REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+  REMEMBER_POST_SUBREDDIT_SORT_KEY,
+} from "../../constants/SettingsKeys";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
+import KeyStore from "../../utils/KeyStore";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import useContextMenu from "../../utils/useContextMenu";
@@ -73,9 +81,29 @@ export default function SortAndContext({
   const pageType = new RedditURL(currentPath).getPageType();
   const currentSort = currentPath ? new RedditURL(currentPath).getSort() : null;
 
-  const changeSort = (sort: string) => {
-    const url = new RedditURL(currentPath).changeSort(sort).toString();
-    replaceURL(url);
+  const changeSort = (sort: string, time?: string) => {
+    const redditUrl = new RedditURL(currentPath).changeSort(sort, time);
+    const pageType = redditUrl.getPageType();
+    const subreddit = redditUrl.getSubreddit();
+    replaceURL(redditUrl.toString());
+    if (
+      pageType === PageType.SUBREDDIT &&
+      KeyStore.getBoolean(REMEMBER_POST_SUBREDDIT_SORT_KEY)
+    ) {
+      KeyStore.set(makePostSubredditSortKey(subreddit), sort.toLowerCase());
+      if (sort === "top" && time) {
+        KeyStore.set(
+          makePostSubredditSortTopKey(subreddit),
+          time.toLowerCase(),
+        );
+      }
+    }
+    if (
+      pageType === PageType.POST_DETAILS &&
+      KeyStore.getBoolean(REMEMBER_COMMENT_SUBREDDIT_SORT_KEY)
+    ) {
+      KeyStore.set(makeCommentSubredditSortKey(subreddit), sort.toLowerCase());
+    }
   };
 
   const handleTopSort = async () => {
@@ -83,11 +111,7 @@ export default function SortAndContext({
       options: ["Hour", "Day", "Week", "Month", "Year", "All"],
     });
     if (topSort) {
-      const newUrl = new RedditURL(currentPath)
-        .changeSort("top")
-        .changeQueryParam("t", topSort.toLowerCase())
-        .toString();
-      replaceURL(newUrl);
+      changeSort("top", topSort);
     }
   };
 

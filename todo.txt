@@ -15,8 +15,8 @@
 
 - 🚀 Accessibility support
 
-- 🚀 Mark posts as seen/read
-- 🚀 Endpoint caching, future navigation stack state caching, remember subreddit sort (https://www.reddit.com/r/HydraFeatureRequests/comments/1h0rddj/couple_of_requests/)
+- 🚀⭐ Mark posts as seen/read
+- 🚀 Endpoint caching, future navigation stack state caching
 - 🚀 Make posts grayed out when you’ve read them 
 
 - 🚀 User flairs
