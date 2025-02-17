@@ -48,7 +48,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
       .join("/");
     const userData = await getUser(`https://www.reddit.com${userUrl}`);
     setUser(userData);
-    const contextOptions: ContextTypes[] = ["Share"];
+    const contextOptions: ContextTypes[] = ["Block", "Share"];
     if (currentUser?.userName !== userData.userName) {
       contextOptions.unshift("Message");
     }

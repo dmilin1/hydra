@@ -24,6 +24,7 @@ export enum PageType {
 
   ACCOUNTS,
   SETTINGS,
+  WEBVIEW,
 
   IMAGE,
 
@@ -125,6 +126,8 @@ export default class RedditURL extends URL {
       return PageType.ACCOUNTS;
     } else if (this.url.startsWith("hydra://settings")) {
       return PageType.SETTINGS;
+    } else if (this.url.startsWith("hydra://webview")) {
+      return PageType.WEBVIEW;
     } else if (
       relativePath === "" ||
       relativePath === "/" ||

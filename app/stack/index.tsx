@@ -17,6 +17,7 @@ import SearchScreen from "./SearchScreen";
 import SettingsScreen from "./SettingsScreen";
 import SubredditsScreen from "./SubredditsScreen";
 import UserScreen from "./UserScreen";
+import WebviewScreen from "./WebviewScreen";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { StackFutureProvider } from "../../contexts/StackFutureContext";
 
@@ -48,6 +49,9 @@ export type StackParamsList = {
     url: string;
   };
   SearchPage: object;
+  WebviewPage: {
+    url: string;
+  };
   ErrorPage: {
     url?: string;
   };
@@ -60,7 +64,8 @@ export type URLRoutes =
   | "MultiredditPage"
   | "UserPage"
   | "Accounts"
-  | "SettingsPage";
+  | "SettingsPage"
+  | "WebviewPage";
 
 export type StackPageProps<Pages extends keyof StackParamsList> =
   NativeStackScreenProps<StackParamsList, Pages>;
@@ -85,6 +90,7 @@ export default function Stack() {
     AccountsScreen,
     SettingsScreen,
     SearchScreen,
+    WebviewScreen,
     ErrorScreen,
   ].map((screen) => (
     <Fragment key={screen.name}>{screen({ StackNavigator })}</Fragment>

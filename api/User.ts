@@ -77,3 +77,20 @@ export async function getUserContent(
   );
   return overview;
 }
+
+export async function blockUser(user: User): Promise<void> {
+  const redditURL = new RedditURL(`https://www.reddit.com/api/block_user`);
+  redditURL.setQueryParams({
+    account_id: `t2_${user.id}`,
+  });
+  redditURL.jsonify();
+  await api(
+    redditURL.toString(),
+    {
+      method: "POST",
+    },
+    {
+      requireAuth: true,
+    },
+  );
+}

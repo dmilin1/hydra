@@ -8,10 +8,10 @@ import {
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useContext } from "react";
-import { Share, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Share, StyleSheet, View, TouchableOpacity, Alert } from "react-native";
 
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
-import { User } from "../../api/User";
+import { blockUser, User } from "../../api/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
 import {
   makeCommentSubredditSortKey,
@@ -51,7 +51,9 @@ export type ContextTypes =
   | "Add to Multireddit"
   | "Edit"
   | "Delete"
-  | "Message";
+  | "Message"
+  | "Block"
+  | "Report";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
@@ -272,6 +274,29 @@ export default function SortAndContext({
                   contentSent={() => setModal(undefined)}
                 />,
               );
+            } else if (result === "Block" && pageData?.type === "user") {
+              Alert.alert(
+                "Block User",
+                "Are you sure you want to block this user?",
+                [
+                  {
+                    text: "Cancel",
+                    style: "cancel",
+                  },
+                  {
+                    text: "Block",
+                    onPress: async () => {
+                      await blockUser(pageData);
+                      Alert.alert(
+                        "User Blocked",
+                        "Content from this user will be hidden",
+                      );
+                    },
+                  },
+                ],
+              );
+            } else if (result === "Report") {
+              pushURL("hydra://webview/?url=https://www.reddit.com/report");
             }
           }}
         >

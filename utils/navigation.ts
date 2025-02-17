@@ -56,6 +56,8 @@ export function useURLNavigation(
       navigation[func]("MessagesPage", { url });
     } else if (pageType === PageType.SETTINGS) {
       navigation[func]("SettingsPage", { url });
+    } else if (pageType === PageType.WEBVIEW) {
+      navigation[func]("WebviewPage", { url });
     } else if (pageType === PageType.IMAGE) {
       displayMedia(url);
     } else {

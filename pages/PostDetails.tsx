@@ -102,6 +102,7 @@ function PostDetails({ route }: PostDetailsProps) {
       ...(currentUser?.userName === postDetail.author
         ? ["Delete" as ContextTypes]
         : []),
+      "Report",
       "Share",
     ];
     const contextSort: SortTypes[] = [
