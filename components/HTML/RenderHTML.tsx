@@ -178,7 +178,9 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     Wrapper = (props) => (
       <View style={styles.liContainer}>
         <View style={styles.liIconContainer}>
-          <Text style={{ fontSize: styles.basicText.fontSize }}>
+          <Text
+            style={{ fontSize: styles.basicText.fontSize, color: theme.text }}
+          >
             {(element.parent as ElementNode | null)?.name === "ol"
               ? `${index + 1}. `
               : "• "}
