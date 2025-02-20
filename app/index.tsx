@@ -26,6 +26,11 @@ import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
 import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import migrations from "../drizzle/migrations";
+import db, { expoDb } from "../db";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import { SeenPosts } from "../db/schema";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -53,7 +58,10 @@ SplashScreen.preventAutoHideAsync();
 enableFreeze(true);
 
 function RootLayout() {
-  const [loaded, error] = useFonts({
+  useDrizzleStudio(expoDb);
+  const { success, error } = useMigrations(db, migrations);
+
+  const [fontsLoaded, fontsError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
@@ -63,7 +71,7 @@ function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  return (
+  return success && fontsLoaded && (
     <SafeAreaProvider>
       <SettingsProvider>
         <AccountProvider>
@@ -75,7 +83,7 @@ function RootLayout() {
                     <SubredditProvider>
                       <UpdateInfo />
                       <SubscribeToHydra />
-                      <>{loaded && <Tabs />}</>
+                      <Tabs />
                     </SubredditProvider>
                   </MediaViewerProvider>
                 </ModalProvider>
