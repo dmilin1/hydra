@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
 import React, { useState, useContext } from "react";
 import {
   StyleSheet,
@@ -142,6 +143,39 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
             />
           </View>
         )}
+        <View style={styles.legaleseContainer}>
+          <Text
+            style={t(styles.legaleseText, {
+              color: theme.text,
+            })}
+          >
+            By logging in you are agreeing to the
+            <Text
+              style={{ color: theme.buttonText }}
+              onPress={() =>
+                WebBrowser.openBrowserAsync(
+                  "https://www.redditinc.com/policies/user-agreement",
+                )
+              }
+            >
+              {" "}
+              Reddit User Agreement{" "}
+            </Text>
+            and the
+            <Text
+              style={{ color: theme.buttonText }}
+              onPress={() =>
+                WebBrowser.openBrowserAsync(
+                  "https://www.redditinc.com/policies/reddit-rules",
+                )
+              }
+            >
+              {" "}
+              Reddit Rules
+            </Text>
+            .
+          </Text>
+        </View>
         <View style={styles.buttonContainer}>
           {loading ? (
             <ActivityIndicator size="small" color={theme.text} />
@@ -227,6 +261,10 @@ const styles = StyleSheet.create({
     maxWidth: 175,
     padding: 5,
   },
+  legaleseContainer: {
+    marginTop: 10,
+  },
+  legaleseText: {},
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",

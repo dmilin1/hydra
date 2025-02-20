@@ -6,7 +6,9 @@ import "expo-dev-client";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Sentry from "@sentry/react-native";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { registerRootComponent } from "expo";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
@@ -24,13 +26,10 @@ import { ModalProvider } from "../contexts/ModalContext";
 import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
+import db, { expoDb } from "../db";
+import migrations from "../drizzle/migrations";
 import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import migrations from "../drizzle/migrations";
-import db, { expoDb } from "../db";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import { SeenPosts } from "../db/schema";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -61,7 +60,7 @@ function RootLayout() {
   useDrizzleStudio(expoDb);
   const { success, error } = useMigrations(db, migrations);
 
-  const [fontsLoaded, fontsError] = useFonts({
+  const [fontsLoaded, _fontsError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
@@ -71,28 +70,31 @@ function RootLayout() {
     if (error) throw error;
   }, [error]);
 
-  return success && fontsLoaded && (
-    <SafeAreaProvider>
-      <SettingsProvider>
-        <AccountProvider>
-          <NavigationProvider>
-            <ActionSheetProvider>
-              <InboxProvider>
-                <ModalProvider>
-                  <MediaViewerProvider>
-                    <SubredditProvider>
-                      <UpdateInfo />
-                      <SubscribeToHydra />
-                      <Tabs />
-                    </SubredditProvider>
-                  </MediaViewerProvider>
-                </ModalProvider>
-              </InboxProvider>
-            </ActionSheetProvider>
-          </NavigationProvider>
-        </AccountProvider>
-      </SettingsProvider>
-    </SafeAreaProvider>
+  return (
+    success &&
+    fontsLoaded && (
+      <SafeAreaProvider>
+        <SettingsProvider>
+          <AccountProvider>
+            <NavigationProvider>
+              <ActionSheetProvider>
+                <InboxProvider>
+                  <ModalProvider>
+                    <MediaViewerProvider>
+                      <SubredditProvider>
+                        <UpdateInfo />
+                        <SubscribeToHydra />
+                        <Tabs />
+                      </SubredditProvider>
+                    </MediaViewerProvider>
+                  </ModalProvider>
+                </InboxProvider>
+              </ActionSheetProvider>
+            </NavigationProvider>
+          </AccountProvider>
+        </SettingsProvider>
+      </SafeAreaProvider>
+    )
   );
 }
 
