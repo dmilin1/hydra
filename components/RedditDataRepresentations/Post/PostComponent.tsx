@@ -1,5 +1,5 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Share } from "react-native";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
@@ -12,7 +12,12 @@ import {
   ThemeContext,
   t,
 } from "../../../contexts/SettingsContexts/ThemeContext";
-import { useNavigation, useURLNavigation } from "../../../utils/navigation";
+import {
+  isPostSeen,
+  markPostSeen,
+  markPostUnseen,
+} from "../../../db/functions/SeenPosts";
+import { useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
 
@@ -27,7 +32,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
   const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
     useContext(PostSettingsContext);
 
-  const navigation = useNavigation();
+  const [seen, setSeen] = useState(false);
 
   const openContextMenu = useContextMenu();
 
@@ -47,6 +52,10 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
     });
   };
 
+  useEffect(() => {
+    isPostSeen(post).then(setSeen);
+  }, [post.id]);
+
   return (
     <Slideable
       left={[
@@ -61,14 +70,32 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
           action: async () => await voteOnPost(VoteOption.DownVote),
         },
       ]}
+      right={[
+        {
+          icon: <Feather name={seen ? "eye-off" : "eye"} />,
+          color: theme.buttonText,
+          action: async () => {
+            if (seen) {
+              setSeen(false);
+              markPostUnseen(post);
+            } else {
+              setSeen(true);
+              markPostSeen(post);
+            }
+          },
+        },
+      ]}
     >
       <TouchableOpacity
         activeOpacity={0.8}
         style={t(styles.postContainer, {
           backgroundColor: theme.background,
           flexDirection: postCompactMode ? "row" : "column",
+          opacity: seen ? 0.75 : 1,
         })}
         onPress={() => {
+          setSeen(true);
+          markPostSeen(post);
           pushURL(post.link);
         }}
         onLongPress={async () => {
@@ -94,9 +121,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
               )}
               activeOpacity={0.5}
               onPress={() =>
-                navigation.push("PostsPage", {
-                  url: `https://www.reddit.com/r/${post.subreddit}`,
-                })
+                pushURL(`https://www.reddit.com/r/${post.subreddit}`)
               }
             >
               <SubredditIcon post={post} />

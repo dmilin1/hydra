@@ -11,7 +11,7 @@ import { registerRootComponent } from "expo";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableFreeze } from "react-native-screens";
@@ -27,6 +27,7 @@ import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
 import db, { expoDb } from "../db";
+import { doDBMaintenance } from "../db/functions/Maintenance";
 import migrations from "../drizzle/migrations";
 import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
@@ -58,7 +59,7 @@ enableFreeze(true);
 
 function RootLayout() {
   useDrizzleStudio(expoDb);
-  const { success, error } = useMigrations(db, migrations);
+  const { success: migrationsComplete, error } = useMigrations(db, migrations);
 
   const [fontsLoaded, _fontsError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -70,9 +71,21 @@ function RootLayout() {
     if (error) throw error;
   }, [error]);
 
+  const [dbMaintenanceDone, setDbMaintenanceDone] = useState(false);
+
+  const doDBMaintenanceAsync = async () => {
+    await doDBMaintenance();
+    setDbMaintenanceDone(true);
+  };
+
+  useEffect(() => {
+    doDBMaintenanceAsync();
+  }, [migrationsComplete]);
+
   return (
-    success &&
-    fontsLoaded && (
+    migrationsComplete &&
+    fontsLoaded &&
+    dbMaintenanceDone && (
       <SafeAreaProvider>
         <SettingsProvider>
           <AccountProvider>

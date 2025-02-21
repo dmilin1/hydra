@@ -14,41 +14,49 @@ import { useMMKVString } from "react-native-mmkv";
 import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const update = {
-  updateKey: "2.3.0-1",
+  updateKey: "2.3.2-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   features: [
     {
-      title: "Private Messages",
+      title: "Mark Posts as Read",
       description:
-        'You can send and reply to private messages. Private messages will appear in your inbox. Initial private messages can be sent by pressing the "..." in the top right of a user page',
+        "Clicking a post will now mark it as read, leaving it subtly greyed out. You can manually mark a post as read or unread with a left swipe gesture. Filtering for read posts is coming soon.",
     },
     {
-      title: "Post Editing",
+      title: "Default Sort",
       description:
-        'Posts can be edited. To edit a post, press the "..." in the top right of a post',
+        "You can set a default sort setting for posts and comments across all subreddits. Go to Settings => General => Post & Comment Sorting => Default Sort to set this up.",
     },
     {
-      title: "Post Deletion",
+      title: "Remember Subreddit Sort",
       description:
-        'Posts can be deleted. To delete a post, press the "..." in the top right of a post',
+        "Hydra can now remember your post and comment sort setting for each subreddit. When you change the sort setting in a subreddit, Hydra will remember this setting for the next time you visit the subreddit. Go to Settings => General => Post & Comment Sorting => Remember Subreddit Sort to enable this setting.",
     },
     {
-      title: "Image Posts",
+      title: "Block Users",
       description:
-        "Image posts are supported. Click post type button twice when making a post to select image post",
+        "You can now block users. To block a user, go to their profile, press the three dots in the top right, and click Block.",
+    },
+    {
+      title: "Report Posts",
+      description:
+        "You can now report posts. To report a post, press the three dots in the top right of a post and click Report.",
+    },
+    {
+      title: "Clear Image Cache",
+      description:
+        "You can now manually trigger a clear of the image cache. Go to Settings => Advanced => Clear Image Cache to clear the cache. You may need to restart your device to see the additional space freed.",
     },
   ],
   bugfixes: [
     {
-      description: "Fixed scroll bug in the content editor",
+      description:
+        "Fixed bullet points in posts and comments not appearing when using a dark theme",
     },
     {
       description:
-        "Fixed paragraph spacing rendering bug in the content editor's preview",
-    },
-    {
-      description: "Fixed i.reddit.it links not opening",
+        "Fixed a bug that broke the ability to sort a user's posts and comments",
     },
   ],
 };

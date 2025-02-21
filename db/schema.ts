@@ -3,6 +3,7 @@ import {
   integer,
   sqliteTable,
   text,
+  index,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
@@ -19,5 +20,9 @@ export const SeenPosts = sqliteTable(
       .default(sql`(CURRENT_TIMESTAMP)`)
       .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
   },
-  (table) => [uniqueIndex("postId_idx").on(table.postId)],
+  (table) => [
+    uniqueIndex("postId_idx").on(table.postId),
+    index("createdAt_idx").on(table.createdAt),
+    index("updatedAt_idx").on(table.updatedAt),
+  ],
 );
