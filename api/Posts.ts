@@ -85,6 +85,14 @@ export async function formatPostData(child: any): Promise<Post> {
   if (images.length === 0 && child.data.post_hint === "image") {
     images = [child.data.url];
   }
+  if (
+    images.length === 0 &&
+    child.data.is_reddit_media_domain &&
+    child.data?.url?.match(/\.(png|jpe?g|gif)$/i)
+  ) {
+    // I think these are posts that are image + text. They don't appear in the gallery
+    images = [child.data.url];
+  }
 
   // default in case we can't get the aspect ratio
   let imageAspectRatio = 0.75;
@@ -131,13 +139,21 @@ export async function formatPostData(child: any): Promise<Post> {
   if (video && videoThumbnail) {
     imageThumbnail = decode(videoThumbnail);
   }
-  if (imageThumbnail === "spoiler") {
+  if (
+    imageThumbnail === "spoiler" ||
+    imageThumbnail === "nsfw" ||
+    (images.length > 0 && !imageThumbnail)
+  ) {
     // if the thumbnail is a spoiler, reddit doesn't give it to us...
-    const imgPreviewThumbnail = decode(
+    // and sometimes they don't give us a thumbnail anyway for reasons I can't figure out
+    let imgPreviewThumbnail: string | null = decode(
       child.data.preview?.images[0]?.resolutions?.[0]?.url,
     );
-    // try to get the first image in the gallery, else the smallest preview image
-    imageThumbnail = galleryThumbnails[0] ?? imgPreviewThumbnail;
+    if (!imgPreviewThumbnail) {
+      imgPreviewThumbnail = null;
+    }
+    // try to get the first image in the gallery, else the smallest preview image, else the first image
+    imageThumbnail = galleryThumbnails[0] ?? imgPreviewThumbnail ?? images[0];
   }
 
   let poll = undefined;

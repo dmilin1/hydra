@@ -67,7 +67,16 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           <View style={styles.iconContainer}>
             <AntDesign name="play" style={styles.icon} />
           </View>
-          <Image src={post.imageThumbnail} style={styles.image} />
+          {post.imageThumbnail && (
+            <Image src={post.imageThumbnail} style={styles.image} />
+          )}
+          {!post.imageThumbnail && !mediaOpen && (
+            <FontAwesome5
+              name="video"
+              style={styles.videoIcon}
+              color={theme.subtleText}
+            />
+          )}
           {mediaOpen && (
             <VideoPlayer
               source={post.video}
@@ -89,7 +98,16 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               <Text style={styles.imageCount}>{post.images.length}</Text>
             )}
           </View>
-          <Image src={post.imageThumbnail} style={styles.image} />
+          {post.imageThumbnail && (
+            <Image src={post.imageThumbnail} style={styles.image} />
+          )}
+          {!post.imageThumbnail && (
+            <FontAwesome5
+              name="image"
+              style={styles.videoIcon}
+              color={theme.subtleText}
+            />
+          )}
           {mediaOpen && (
             <ImageView
               images={post.images.map((image) => ({ uri: image }))}
@@ -209,6 +227,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0.5, height: 1 },
     textShadowRadius: 3,
   },
+  videoIcon: {
+    fontSize: 18,
+  },
   bigIconContainer: {
     position: "absolute",
     zIndex: 1,
@@ -244,6 +265,8 @@ const styles = StyleSheet.create({
   },
   videoContainer: {
     height: MEDIA_SQUARE_SIZE,
+    alignItems: "center",
+    justifyContent: "center",
   },
   blurContainer: {
     position: "absolute",

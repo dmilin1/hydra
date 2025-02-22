@@ -37,7 +37,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
     useContext(PostSettingsContext);
 
   const isSubredditPage =
-    !!params.url &&
+    !!params?.url &&
     new RedditURL(params.url).getPageType() === PageType.SUBREDDIT;
 
   const [seen, setSeen] = useState(false);
