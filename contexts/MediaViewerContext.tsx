@@ -1,7 +1,7 @@
 import { createContext, useState } from "react";
 
 import ImageView from "../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView";
-import useSaveImage from "../utils/useSaveImage";
+import useImageMenu from "../utils/useImageMenu";
 
 const initialMediaViewerContext = {
   displayMedia: (_url: string) => {},
@@ -12,7 +12,7 @@ export const MediaViewerContext = createContext(initialMediaViewerContext);
 export function MediaViewerProvider({ children }: React.PropsWithChildren) {
   const [url, setUrl] = useState<string>();
 
-  const saveImage = useSaveImage();
+  const showImageMenu = useImageMenu();
 
   return (
     <MediaViewerContext.Provider
@@ -28,7 +28,7 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
           animationType="none"
           visible
           onRequestClose={() => setUrl(undefined)}
-          onLongPress={() => saveImage(url)}
+          onLongPress={() => showImageMenu(url)}
           delayLongPress={500}
         />
       )}

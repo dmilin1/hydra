@@ -15,7 +15,7 @@ import {
   t,
 } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../../utils/URL";
-import useSaveImage from "../../../../../utils/useSaveImage";
+import useImageMenu from "../../../../../utils/useImageMenu";
 
 const DEVICE_HEIGHT = Dimensions.get("window").height;
 const DEVICE_WIDTH = Dimensions.get("window").width;
@@ -30,7 +30,7 @@ export default function ImageViewer({
   aspectRatio?: number;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
-  const saveImage = useSaveImage();
+  const showImageMenu = useImageMenu();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
@@ -80,7 +80,7 @@ export default function ImageViewer({
           animationType="none"
           visible={visible}
           onRequestClose={() => setVisible(false)}
-          onLongPress={() => saveImage(images[imageIndex])}
+          onLongPress={() => showImageMenu(images[imageIndex])}
           onImageIndexChange={(index) => setImageIndex(index)}
           delayLongPress={500}
         />
@@ -94,7 +94,7 @@ export default function ImageViewer({
             setVisible(true);
           }}
           style={styles.touchableZone}
-          onLongPress={() => saveImage(images[imageIndex])}
+          onLongPress={() => showImageMenu(images[imageIndex])}
         >
           <Image
             style={[

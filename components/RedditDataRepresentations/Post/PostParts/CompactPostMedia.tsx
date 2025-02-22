@@ -23,7 +23,7 @@ import {
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../utils/URL";
-import useSaveImage from "../../../../utils/useSaveImage";
+import useImageMenu from "../../../../utils/useImageMenu";
 
 type CompactPostMediaProps = {
   post: Post | PostDetail;
@@ -42,7 +42,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
     (blurNSFW && post.isNSFW) || (blurSpoilers && post.isSpoiler);
   const [blur, setBlur] = useState(isBlurable);
 
-  const saveImage = useSaveImage();
+  const showImageMenu = useImageMenu();
 
   const [mediaOpen, setMediaOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
@@ -98,7 +98,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               animationType="none"
               visible
               onRequestClose={() => setMediaOpen(false)}
-              onLongPress={() => saveImage(post.images[imageIndex])}
+              onLongPress={() => showImageMenu(post.images[imageIndex])}
               onImageIndexChange={(index) => setImageIndex(index)}
               delayLongPress={500}
             />
