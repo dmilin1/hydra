@@ -17,35 +17,32 @@
 
 - 🚀 Endpoint caching, future navigation stack state caching
 
-- 🚀 User flairs
+- 🚀⭐ User flairs
 
 - 🚀 Fully customizable themeing with shareability
 
-- 🚀 Notifications
+- 🚀⭐ Notifications
 
 - 🚀 Fancy bookmarks with folders and categories
 
-- 🚀 Keyword filters
+- 🚀⭐ Keyword filters
 
 - 🚀 Maintain session cookies so log in isn't required every time the app is opened. Will prevent 2FA from being required when switching accounts.
 
+- 🚀⭐ Support deep linking and open from Safari
 
 ### Medium
-- 🚀 Collapse automod comments
+- 🚀⭐ Collapse automod comments
 
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
-- 🚀 Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
+- 🚀⭐ Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
 
-- 🚀 Automatic theme switching (https://www.reddit.com/r/HydraFeatureRequests/comments/1ig308c/automatic_theme/)
+- 🚀⭐ Automatic theme switching (https://www.reddit.com/r/HydraFeatureRequests/comments/1ig308c/automatic_theme/)
 
 ### Easy
-- 🚀 Hide subreddit name when on a specific subreddit page
-
-- 🚀 Disable minimizing post by tapping (@Em)
-
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
 - 🐛 Favorite subreddits you aren't subscribed to
 
-- 🐛 NSFW gif thumbnails aren't loading correctly
+- 🐛⭐ NSFW gif thumbnails aren't loading correctly

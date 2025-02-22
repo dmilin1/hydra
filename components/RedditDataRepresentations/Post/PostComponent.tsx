@@ -7,6 +7,7 @@ import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
 import { vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
+import { URLRoutes } from "../../../app/stack";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import {
   ThemeContext,
@@ -17,7 +18,8 @@ import {
   markPostSeen,
   markPostUnseen,
 } from "../../../db/functions/SeenPosts";
-import { useURLNavigation } from "../../../utils/navigation";
+import RedditURL, { PageType } from "../../../utils/RedditURL";
+import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
 
@@ -27,10 +29,15 @@ type PostComponentProps = {
 };
 
 export default function PostComponent({ post, setPost }: PostComponentProps) {
+  const { params } = useRoute<URLRoutes>();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
   const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
     useContext(PostSettingsContext);
+
+  const isSubredditPage =
+    !!params.url &&
+    new RedditURL(params.url).getPageType() === PageType.SUBREDDIT;
 
   const [seen, setSeen] = useState(false);
 
@@ -113,7 +120,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
           </View>
         )}
         <View style={styles.bodyContainer}>
-          {subredditAtTop && (
+          {subredditAtTop && !isSubredditPage && (
             <TouchableOpacity
               style={t(
                 styles.subredditAtTopContainer,
@@ -167,7 +174,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                     })}
                   />
                 )}
-                {!subredditAtTop && (
+                {!subredditAtTop && !isSubredditPage && (
                   <>
                     <TouchableOpacity
                       style={styles.subredditContainer}
