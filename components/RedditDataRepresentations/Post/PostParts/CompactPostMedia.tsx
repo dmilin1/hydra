@@ -1,5 +1,6 @@
 import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
+import * as WebBrowser from "expo-web-browser";
 import React, { useContext, useState } from "react";
 import {
   Text,
@@ -14,6 +15,7 @@ import { default as ImageView } from "./PostMediaParts/ImageView/ImageViewing";
 import VideoPlayer from "./PostMediaParts/VideoPlayer";
 import { PostDetail } from "../../../../api/PostDetail";
 import { Post } from "../../../../api/Posts";
+import { PostInteractionContext } from "../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../contexts/SettingsContexts/DataModeContext";
 import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
 import {
@@ -33,6 +35,7 @@ const MEDIA_SQUARE_SIZE = 60;
 export default function CompactPostMedia({ post }: CompactPostMediaProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
+  const { interactedWithPost } = useContext(PostInteractionContext);
 
   const { blurNSFW, blurSpoilers } = useContext(PostSettingsContext);
   const isBlurable =
@@ -110,7 +113,15 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           />
         </View>
       ) : post.externalLink ? (
-        <View style={styles.externalLinkContainer}>
+        <TouchableOpacity
+          style={styles.externalLinkContainer}
+          onPress={() => {
+            if (post.externalLink) {
+              interactedWithPost();
+              WebBrowser.openBrowserAsync(post.externalLink);
+            }
+          }}
+        >
           <View
             style={
               currentDataMode === "lowData"
@@ -133,7 +144,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               style={styles.image}
             />
           )}
-        </View>
+        </TouchableOpacity>
       ) : (
         <View style={styles.bigIconContainer}>
           <Entypo name="text" style={styles.bigIcon} color={theme.subtleText} />

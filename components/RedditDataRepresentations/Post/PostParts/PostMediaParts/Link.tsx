@@ -5,6 +5,7 @@ import { Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import { PostDetail } from "../../../../../api/PostDetail";
 import { Post } from "../../../../../api/Posts";
+import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
   ThemeContext,
@@ -15,6 +16,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
   const { theme } = useContext(ThemeContext);
 
   const { currentDataMode } = useContext(DataModeContext);
+  const { interactedWithPost } = useContext(PostInteractionContext);
 
   const imgRef = useImage(
     {
@@ -35,6 +37,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
       activeOpacity={post.openGraphData?.image ? 0.8 : 0.5}
       onPress={() => {
         if (post.externalLink) {
+          interactedWithPost();
           WebBrowser.openBrowserAsync(post.externalLink);
         }
       }}

@@ -1,4 +1,10 @@
-import React, { ComponentType, useCallback, useRef, useEffect } from "react";
+import React, {
+  ComponentType,
+  useCallback,
+  useRef,
+  useEffect,
+  useContext,
+} from "react";
 import {
   Animated,
   Dimensions,
@@ -16,6 +22,7 @@ import StatusBarManager from "./components/StatusBarManager";
 import useAnimatedComponents from "./hooks/useAnimatedComponents";
 import useImageIndexChange from "./hooks/useImageIndexChange";
 import useRequestClose from "./hooks/useRequestClose";
+import { PostInteractionContext } from "../../../../../../contexts/PostInteractionContext";
 
 type Props = {
   images: ImageSource[];
@@ -56,6 +63,8 @@ function ImageViewing({
   HeaderComponent,
   FooterComponent,
 }: Props) {
+  const { interactedWithPost } = useContext(PostInteractionContext);
+
   const imageList = useRef<VirtualizedList<ImageSource>>(null);
   const [_opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
   const [currentImageIndex, onScroll] = useImageIndexChange(imageIndex, SCREEN);
@@ -67,6 +76,10 @@ function ImageViewing({
       onImageIndexChange(currentImageIndex);
     }
   }, [currentImageIndex]);
+
+  useEffect(() => {
+    if (visible) interactedWithPost();
+  }, [visible]);
 
   const onZoom = useCallback(
     (isScaled: boolean) => {

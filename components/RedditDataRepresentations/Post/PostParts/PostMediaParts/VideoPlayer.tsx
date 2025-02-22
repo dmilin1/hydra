@@ -18,6 +18,7 @@ import {
 } from "react-native";
 
 import ImageViewer from "./ImageViewer";
+import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import {
   ThemeContext,
@@ -41,6 +42,7 @@ export default function VideoPlayer({
 }: VideoPlayerProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
+  const { interactedWithPost } = useContext(PostInteractionContext);
 
   const [dontRenderYet, setDontRenderYet] = useState(
     currentDataMode === "lowData",
@@ -91,6 +93,12 @@ export default function VideoPlayer({
       audio.current?.sound.unloadAsync();
     };
   }, [redditAudioSource]);
+
+  useEffect(() => {
+    if (fullscreen || straightToFullscreen) {
+      interactedWithPost();
+    }
+  }, [fullscreen, straightToFullscreen]);
 
   return (
     <View style={styles.videoPlayerContainer}>
