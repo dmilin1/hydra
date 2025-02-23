@@ -15,6 +15,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 
 import ImageViewer from "./ImageViewer";
@@ -31,7 +32,11 @@ type VideoPlayerProps = {
   redditAudioSource?: string;
   straightToFullscreen?: boolean;
   exitedFullScreenCallback?: () => void;
+  aspectRatio?: number;
 };
+
+const DEVICE_HEIGHT = Dimensions.get("window").height;
+const DEVICE_WIDTH = Dimensions.get("window").width;
 
 export default function VideoPlayer({
   source,
@@ -39,6 +44,7 @@ export default function VideoPlayer({
   redditAudioSource,
   straightToFullscreen,
   exitedFullScreenCallback,
+  aspectRatio,
 }: VideoPlayerProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
@@ -59,6 +65,10 @@ export default function VideoPlayer({
     setFullscreen(false);
     setFailedToLoad(false);
   }
+
+  const videoRatio = aspectRatio ?? 1;
+  const heightIfFullSize = DEVICE_WIDTH / videoRatio;
+  const videoHeight = Math.min(DEVICE_HEIGHT * 0.6, heightIfFullSize);
 
   const video = useRef<Video>(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -101,10 +111,17 @@ export default function VideoPlayer({
   }, [fullscreen, straightToFullscreen]);
 
   return (
-    <View style={styles.videoPlayerContainer}>
+    <View
+      style={t(styles.videoPlayerContainer, {
+        height: videoHeight,
+      })}
+    >
       {dontRenderYet ? (
         <TouchableOpacity
-          style={styles.imgContainer}
+          activeOpacity={0.8}
+          style={t(styles.imgContainer, {
+            height: videoHeight,
+          })}
           onPress={() => setDontRenderYet(false)}
         >
           {/* Have to put an invisible layer on top of the ImageViewer to keep it from stealing clicks */}
@@ -277,7 +294,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imgContainer: {
-    height: 200,
     marginVertical: 10,
   },
   invisibleLayer: {

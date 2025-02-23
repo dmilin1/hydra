@@ -64,7 +64,7 @@ export default function ImageViewer({
 
   const imgRatio = aspectRatio ?? (img1 ? img1.width / img1.height : 0);
   const heightIfFullSize = DEVICE_WIDTH / imgRatio;
-  const imgHeight = Math.min(DEVICE_HEIGHT * 0.5, heightIfFullSize);
+  const imgHeight = Math.min(DEVICE_HEIGHT * 0.6, heightIfFullSize);
 
   return (
     <View

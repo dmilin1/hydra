@@ -37,7 +37,7 @@ export type Post = {
   link: string;
   images: string[];
   imageThumbnail: string;
-  imageAspectRatio: number;
+  mediaAspectRatio: number;
   video: string | undefined;
   redditAudioSource?: string;
   poll: Poll | undefined;
@@ -95,14 +95,14 @@ export async function formatPostData(child: any): Promise<Post> {
   }
 
   // default in case we can't get the aspect ratio
-  let imageAspectRatio = 0.75;
+  let mediaAspectRatio = 0.75;
   if (child.data.preview?.images[0]?.source) {
     const { width, height } = child.data.preview.images[0].source;
-    imageAspectRatio = width / height;
+    mediaAspectRatio = width / height;
   } else if (child.data.gallery_data?.items?.[0]?.media_id) {
     const firstMediaId = child.data.gallery_data.items[0].media_id;
     const { x, y } = child.data.media_metadata[firstMediaId].s;
-    imageAspectRatio = x / y;
+    mediaAspectRatio = x / y;
   }
 
   let video = child.data.media?.reddit_video?.fallback_url;
@@ -195,7 +195,7 @@ export async function formatPostData(child: any): Promise<Post> {
     link: `https://www.reddit.com${child.data.permalink}`,
     images,
     imageThumbnail,
-    imageAspectRatio,
+    mediaAspectRatio,
     video,
     redditAudioSource,
     poll,

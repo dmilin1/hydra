@@ -51,6 +51,7 @@ export default function PostMedia({
             source={post.video}
             redditAudioSource={post.redditAudioSource}
             thumbnail={post.imageThumbnail}
+            aspectRatio={post.mediaAspectRatio}
           />
         </View>
       )}
@@ -59,7 +60,7 @@ export default function PostMedia({
           <ImageViewer
             images={post.images}
             thumbnail={post.imageThumbnail}
-            aspectRatio={post.imageAspectRatio}
+            aspectRatio={post.mediaAspectRatio}
           />
         </View>
       )}
@@ -135,7 +136,6 @@ const styles = StyleSheet.create({
   },
   videoContainer: {
     marginVertical: 10,
-    height: 200,
   },
   video: {
     flex: 1,
