@@ -42,5 +42,7 @@ const styles = StyleSheet.create({
   touchableContainer: {
     marginRight: -10,
     paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingLeft: 20,
   },
 });
