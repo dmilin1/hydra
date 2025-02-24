@@ -184,3 +184,16 @@ export async function replyToMessage(
   const errors = response?.json?.errors;
   return Array.isArray(errors) && errors.length === 0;
 }
+
+export async function markAllMessagesRead(): Promise<void> {
+  await api(
+    "https://www.reddit.com/api/read_all_messages",
+    {
+      method: "POST",
+    },
+    {
+      requireAuth: true,
+      dontJsonifyResponse: true,
+    },
+  );
+}

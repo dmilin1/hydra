@@ -41,8 +41,6 @@
 - 🚀⭐ Automatic theme switching (https://www.reddit.com/r/HydraFeatureRequests/comments/1ig308c/automatic_theme/)
 
 ### Easy
-- 🚀⭐ Mark all inbox notifications as read
-
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
 - 🐛 Favorite subreddits you aren't subscribed to
