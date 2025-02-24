@@ -25,6 +25,7 @@ import {
   ThemeContext,
   t,
 } from "../../../../../contexts/SettingsContexts/ThemeContext";
+import useVideoMenu from "../../../../../utils/useVideoMenu";
 
 type VideoPlayerProps = {
   source: string;
@@ -49,6 +50,8 @@ export default function VideoPlayer({
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
+
+  const showVideoMenu = useVideoMenu();
 
   const [dontRenderYet, setDontRenderYet] = useState(
     currentDataMode === "lowData",
@@ -145,6 +148,7 @@ export default function VideoPlayer({
         <>
           <TouchableWithoutFeedback
             onPress={() => video.current?.presentFullscreenPlayer()}
+            onLongPress={() => showVideoMenu(source)}
           >
             {failedToLoad ? (
               <View
