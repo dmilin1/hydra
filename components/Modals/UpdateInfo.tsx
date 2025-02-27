@@ -14,49 +14,55 @@ import { useMMKVString } from "react-native-mmkv";
 import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const update = {
-  updateKey: "2.3.2-1",
+  updateKey: "2.4.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   features: [
     {
-      title: "Mark Posts as Read",
+      title: "Filter Seen Posts",
       description:
-        "Clicking a post will now mark it as read, leaving it subtly greyed out. You can manually mark a post as read or unread with a left swipe gesture. Filtering for read posts is coming soon.",
+        "You can now hide posts you've already seen. To enable this setting, go to Settings => General => Filters => Hide Seen Posts",
     },
     {
-      title: "Default Sort",
+      title: "Share Images",
       description:
-        "You can set a default sort setting for posts and comments across all subreddits. Go to Settings => General => Post & Comment Sorting => Default Sort to set this up.",
+        "Long press on an image, then click \"Share\" to open the share menu",
     },
     {
-      title: "Remember Subreddit Sort",
+      title: "Share Videos",
       description:
-        "Hydra can now remember your post and comment sort setting for each subreddit. When you change the sort setting in a subreddit, Hydra will remember this setting for the next time you visit the subreddit. Go to Settings => General => Post & Comment Sorting => Remember Subreddit Sort to enable this setting.",
+        "Long press on a video when not in fullscreen, then click \"Share\" to open the share menu",
     },
     {
-      title: "Block Users",
+      title: "Download Videos",
       description:
-        "You can now block users. To block a user, go to their profile, press the three dots in the top right, and click Block.",
+        "Long press on a video when not in fullscreen, click \"Share\", then click \"Save Video\" or \"Save to Files\" to download the video",
     },
     {
-      title: "Report Posts",
-      description:
-        "You can now report posts. To report a post, press the three dots in the top right of a post and click Report.",
+      title: "Smarter Video Post Sizing",
+      description: "Video posts now size themselves better (like image posts do). That means no more black bars! I also slightly bumped up the max height of tall images and videos to fill the screen better.",
     },
     {
-      title: "Clear Image Cache",
-      description:
-        "You can now manually trigger a clear of the image cache. Go to Settings => Advanced => Clear Image Cache to clear the cache. You may need to restart your device to see the additional space freed.",
-    },
+      title: "Mark All Messages as Read",
+      description: "You can now mark all messages as read in the Inbox tab by tapping the button in the top right corner",
+    }
   ],
   bugfixes: [
     {
-      description:
-        "Fixed bullet points in posts and comments not appearing when using a dark theme",
+      description: "Opening links, images, and videos marks a post as read",
+    },
+    {
+      description: "NSFW posts and hybrid posts (image or video posts with text) properly load thumbnails in compact mode",
+    },
+    {
+      description: "Clicking link post thumbnails when in compact mode opens the browser",
+    },
+    {
+      description: "Increased the hitbox size of the + button when adding an account to make it easier to tap",
     },
     {
       description:
-        "Fixed a bug that broke the ability to sort a user's posts and comments",
+        "The subreddit name is no longer shown redundantly on every post when in a specific subreddit",
     },
   ],
 };
