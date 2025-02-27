@@ -37,9 +37,11 @@ type OverridableFlashListProps<T> = Omit<
 
 type RedditDataScrollerProps<T> = OverridableFlashListProps<T> & {
   scrollViewRef?: React.RefObject<FlashList<T>>;
-  loadMore: (refresh: boolean) => Promise<void>;
+  loadMore: () => Promise<void>;
+  refresh: () => Promise<void>;
   data: T[];
   fullyLoaded: boolean;
+  hitFilterLimit: boolean;
 };
 
 function RedditDataScroller<T extends RedditDataObject>(
@@ -52,11 +54,13 @@ function RedditDataScroller<T extends RedditDataObject>(
   const [isLoadingMore, setIsLoadingMore] = useState(!!props.loadMore);
 
   const loadMoreData = async (refresh = false) => {
-    if (!props.loadMore || props.fullyLoaded) return;
+    if (props.fullyLoaded && !refresh) return;
     setIsLoadingMore(true);
-    await props.loadMore(refresh);
     if (refresh) {
+      await props.refresh();
       setRefreshing(false);
+    } else {
+      await props.loadMore();
     }
     setIsLoadingMore(false);
   };
@@ -92,13 +96,23 @@ function RedditDataScroller<T extends RedditDataObject>(
       ListFooterComponent={
         <View style={styles.endOfListContainer}>
           {isLoadingMore && <ActivityIndicator size="small" />}
-          {!isLoadingMore && !!props.data.length && (
+          {!isLoadingMore && props.fullyLoaded && !!props.data.length && (
             <Text
               style={t(styles.endOfListText, {
                 color: theme.text,
               })}
             >
               {`Wow. You've reached the bottom.`}
+            </Text>
+          )}
+          {!isLoadingMore && props.hitFilterLimit && (
+            <Text
+              style={t(styles.endOfListText, {
+                color: theme.text,
+              })}
+            >
+              The filter limit has been reached. Your filters may be too strict
+              to show anything.
             </Text>
           )}
         </View>
@@ -125,5 +139,6 @@ const styles = StyleSheet.create({
   },
   endOfListText: {
     fontSize: 14,
+    marginHorizontal: 10,
   },
 });

@@ -94,5 +94,7 @@ const styles = StyleSheet.create({
   iconMargin: {
     marginVertical: -100,
     width: 24,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

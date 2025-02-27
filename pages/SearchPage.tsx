@@ -36,33 +36,32 @@ export default function SearchPage() {
 
   const {
     data: searchResults,
-    setData: setSearchResults,
+    loadMoreData: loadMoreSearchResults,
+    refreshData: refreshSearchResults,
     modifyData: modifySearchResults,
+    deleteData: deleteSearchResults,
     fullyLoaded,
-  } = useRedditDataState<SearchResult>();
-
-  const loadSearch = async (refresh = false) => {
-    if (!search.current) {
-      if (searchResults.length) {
-        setSearchResults([]);
+    hitFilterLimit,
+  } = useRedditDataState<SearchResult>({
+    loadData: async (after) => {
+      if (!search.current) {
+        if (searchResults.length) {
+          deleteSearchResults();
+        }
+        return [];
       }
-      return;
-    }
-    if (!refresh && searchType === "users") {
-      // API only allows 1 page of search for users
-      return;
-    }
-    setLoading(true);
-    const newResults = await getSearchResults(searchType, search.current, {
-      after: refresh ? undefined : searchResults?.slice(-1)[0]?.after,
-    });
-    setLoading(false);
-    if (refresh) {
-      setSearchResults(newResults);
-    } else {
-      setSearchResults([...(searchResults ?? []), ...newResults]);
-    }
-  };
+      if (after && searchType === "users") {
+        // API only allows 1 page of search for users
+        return [];
+      }
+      setLoading(true);
+      const newResults = await getSearchResults(searchType, search.current, {
+        after,
+      });
+      setLoading(false);
+      return newResults;
+    },
+  });
 
   const loadTrending = async () => {
     const newTrending = await getTrending();
@@ -76,7 +75,7 @@ export default function SearchPage() {
   }, []);
 
   useEffect(() => {
-    loadSearch(true);
+    refreshSearchResults();
   }, [searchType]);
 
   return (
@@ -109,12 +108,14 @@ export default function SearchPage() {
       <SearchBar
         onSearch={(text) => {
           search.current = text;
-          loadSearch(true);
+          refreshSearchResults();
         }}
       />
       <RedditDataScroller<SearchResult>
-        loadMore={loadSearch}
+        loadMore={loadMoreSearchResults}
+        refresh={refreshSearchResults}
         fullyLoaded={fullyLoaded}
+        hitFilterLimit={hitFilterLimit}
         data={searchResults}
         renderItem={({ item }) => {
           if (item.type === "post")

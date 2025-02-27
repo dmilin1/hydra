@@ -7,6 +7,7 @@ import PostComponent from "../components/RedditDataRepresentations/Post/PostComp
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
 
 export default function PostsPage({
@@ -16,26 +17,23 @@ export default function PostsPage({
 
   const {
     data: posts,
-    setData: setPosts,
-    addData: addPosts,
+    loadMoreData: loadMorePosts,
+    refreshData: refreshPosts,
+    modifyData: modifyPosts,
     fullyLoaded,
-  } = useRedditDataState<Post>();
+    hitFilterLimit,
+  } = useRedditDataState<Post>({
+    loadData: async (after) =>
+      await getPosts(url, {
+        after,
+        search: search.current,
+      }),
+    filterRules: [filterSeenItems],
+  });
 
   const search = useRef<string>("");
 
   const { url } = route.params;
-
-  const loadMorePosts = async (refresh = false) => {
-    const newPosts = await getPosts(url, {
-      after: refresh ? undefined : posts.slice(-1)[0]?.after,
-      search: search.current,
-    });
-    if (refresh) {
-      setPosts(newPosts);
-    } else {
-      addPosts(newPosts);
-    }
-  };
 
   return (
     <View
@@ -49,21 +47,21 @@ export default function PostsPage({
             <SearchBar
               onSearch={(text) => {
                 search.current = text;
-                loadMorePosts(true);
+                refreshPosts();
               }}
             />
           ) : null
         }
         loadMore={loadMorePosts}
+        refresh={refreshPosts}
         fullyLoaded={fullyLoaded}
+        hitFilterLimit={hitFilterLimit}
         data={posts}
         renderItem={({ item }) => (
           <PostComponent
             post={item}
             setPost={(newPost) => {
-              setPosts(
-                posts.map((post) => (post.id === newPost.id ? newPost : post)),
-              );
+              modifyPosts([newPost]);
             }}
           />
         )}

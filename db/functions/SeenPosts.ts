@@ -1,11 +1,11 @@
-import { eq, lt } from "drizzle-orm";
+import { eq, inArray, lt } from "drizzle-orm";
 
 import db from "..";
 import { Post } from "../../api/Posts";
 import { SeenPosts } from "../schema";
 
 export async function maintainSeenPosts() {
-  const MAX_SEEN_POSTS = 1_000;
+  const MAX_SEEN_POSTS = 5_000;
   const seenPostCount = await db.$count(SeenPosts);
   if (seenPostCount > MAX_SEEN_POSTS) {
     const oldestSeenPost = await db
@@ -38,4 +38,19 @@ export async function isPostSeen(post: Post): Promise<boolean> {
     .where(eq(SeenPosts.postId, post.id))
     .limit(1);
   return result.length > 0;
+}
+
+export async function arePostsSeen(posts: Post[]): Promise<boolean[]> {
+  const seenPosts = await db
+    .select()
+    .from(SeenPosts)
+    .where(
+      inArray(
+        SeenPosts.postId,
+        posts.map((post) => post.id),
+      ),
+    );
+  return posts.map((post) =>
+    seenPosts.some((seenPost) => seenPost.postId === post.id),
+  );
 }

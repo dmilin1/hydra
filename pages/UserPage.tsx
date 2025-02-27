@@ -32,11 +32,15 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
 
   const {
     data: userContent,
-    setData: setUserContent,
+    loadMoreData: loadMoreUserContent,
+    refreshData: refreshUserContent,
     modifyData: modifyUserContent,
     deleteData: deleteUserContent,
     fullyLoaded,
-  } = useRedditDataState<UserContent>();
+    hitFilterLimit,
+  } = useRedditDataState<UserContent>({
+    loadData: async (after) => await getUserContent(url, { after }),
+  });
 
   const isDeepPath = !!new URL(url).getBasePath().split("/")[5]; // More than just /user/username like /user/username/comments
 
@@ -71,17 +75,6 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     });
   };
 
-  const loadUserContent = async (refresh = false) => {
-    const newContent = await getUserContent(url, {
-      after: refresh ? undefined : userContent.slice(-1)[0]?.after,
-    });
-    if (refresh) {
-      setUserContent(newContent);
-    } else {
-      setUserContent([...userContent, ...newContent]);
-    }
-  };
-
   useEffect(() => {
     loadUser();
   }, []);
@@ -92,12 +85,14 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
         backgroundColor: theme.background,
       })}
     >
-      <RedditDataScroller
+      <RedditDataScroller<UserContent>
         ListHeaderComponent={() =>
           !isDeepPath && user && <UserDetailsComponent user={user} />
         }
-        loadMore={loadUserContent}
+        loadMore={loadMoreUserContent}
+        refresh={refreshUserContent}
         fullyLoaded={fullyLoaded}
+        hitFilterLimit={hitFilterLimit}
         data={userContent}
         renderItem={({ item: content }) => {
           if (content.type === "post") {

@@ -20,26 +20,21 @@ export default function InboxPage() {
 
   const {
     data: messages,
-    setData: setMessages,
+    loadMoreData: loadMoreMessages,
+    refreshData: refreshMessages,
     modifyData: modifyMessages,
     fullyLoaded,
-  } = useRedditDataState<InboxItem>();
-
-  const loadMoreMessages = async (refresh = false) => {
-    if (!currentUser) return;
-    const newMessages = await getInboxItems({
-      after: refresh ? undefined : messages.slice(-1)[0]?.after,
-    });
-    if (refresh) {
-      setMessages(newMessages);
-    } else {
-      setMessages([...messages, ...newMessages]);
-    }
-  };
+    hitFilterLimit,
+  } = useRedditDataState<InboxItem>({
+    loadData: async (after) => {
+      if (!currentUser) return [];
+      return await getInboxItems({ after });
+    },
+  });
 
   useEffect(() => {
     if (!isFocused) return;
-    loadMoreMessages(true);
+    refreshMessages();
   }, [inboxCount, isFocused]);
 
   return (
@@ -50,7 +45,9 @@ export default function InboxPage() {
     >
       <RedditDataScroller<InboxItem>
         loadMore={loadMoreMessages}
+        refresh={refreshMessages}
         fullyLoaded={fullyLoaded}
+        hitFilterLimit={hitFilterLimit}
         data={messages}
         renderItem={({ item }) =>
           item.type === "message" ? (

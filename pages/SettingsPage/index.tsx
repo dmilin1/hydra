@@ -4,6 +4,7 @@ import { StyleSheet, View, ScrollView } from "react-native";
 import Advanced from "./Advanced";
 import Appearance from "./Appearance";
 import DataUse from "./DataUse";
+import Filters from "./General/Filters";
 import GeneralRoot from "./General/GeneralRoot";
 import Sorting from "./General/Sorting";
 import Startup from "./General/Startup";
@@ -40,6 +41,7 @@ export default function SettingsPage({
         {relativePath === "settings/general" && <GeneralRoot />}
         {relativePath === "settings/general/sorting" && <Sorting />}
         {relativePath === "settings/general/startup" && <Startup />}
+        {relativePath === "settings/general/filters" && <Filters />}
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/appearance" && <Appearance />}

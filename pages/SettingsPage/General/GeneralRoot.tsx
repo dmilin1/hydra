@@ -1,4 +1,8 @@
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  FontAwesome,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import React, { useContext } from "react";
 
 import List from "../../../components/UI/List";
@@ -19,6 +23,12 @@ export default function GeneralRoot() {
             icon: <FontAwesome name="sort" size={24} color={theme.text} />,
             text: "Post & Comment Sorting",
             onPress: () => pushURL("hydra://settings/general/sorting"),
+          },
+          {
+            key: "filters",
+            icon: <AntDesign name="filter" size={24} color={theme.text} />,
+            text: "Filters",
+            onPress: () => pushURL("hydra://settings/general/filters"),
           },
           {
             key: "startup",

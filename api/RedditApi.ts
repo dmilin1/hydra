@@ -4,7 +4,7 @@ import { UserAuth } from "./Authentication";
 import RedditCookies from "../utils/RedditCookies";
 import RedditURL from "../utils/RedditURL";
 
-export type RedditDataObject = { id: string; type: string };
+export type RedditDataObject = { id: string; type: string; after: string };
 
 type ApiOptions = {
   depaginate?: boolean;
