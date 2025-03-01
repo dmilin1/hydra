@@ -36,9 +36,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
   const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
     useContext(PostSettingsContext);
 
-  const isSubredditPage =
-    !!params?.url &&
-    new RedditURL(params.url).getPageType() === PageType.SUBREDDIT;
+  const redditURL = params?.url ? new RedditURL(params.url) : null;
+
+  const shouldShowSubreddits =
+    !redditURL ||
+    redditURL.getPageType() !== PageType.SUBREDDIT ||
+    ["popular", "all"].includes(redditURL.getSubreddit());
 
   const [seen, setSeen] = useState(false);
 
@@ -128,7 +131,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
             </View>
           )}
           <View style={styles.bodyContainer}>
-            {subredditAtTop && !isSubredditPage && (
+            {subredditAtTop && shouldShowSubreddits && (
               <TouchableOpacity
                 style={t(
                   styles.subredditAtTopContainer,
@@ -182,7 +185,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                       })}
                     />
                   )}
-                  {!subredditAtTop && !isSubredditPage && (
+                  {!subredditAtTop && shouldShowSubreddits && (
                     <>
                       <TouchableOpacity
                         style={styles.subredditContainer}
