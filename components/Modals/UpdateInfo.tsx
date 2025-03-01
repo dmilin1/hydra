@@ -14,7 +14,7 @@ import { useMMKVString } from "react-native-mmkv";
 import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const update = {
-  updateKey: "2.4.0-1",
+  updateKey: "2.4.1-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   features: [
@@ -26,43 +26,52 @@ const update = {
     {
       title: "Share Images",
       description:
-        "Long press on an image, then click \"Share\" to open the share menu",
+        'Long press on an image, then click "Share" to open the share menu',
     },
     {
       title: "Share Videos",
       description:
-        "Long press on a video when not in fullscreen, then click \"Share\" to open the share menu",
+        'Long press on a video when not in fullscreen, then click "Share" to open the share menu',
     },
     {
       title: "Download Videos",
       description:
-        "Long press on a video when not in fullscreen, click \"Share\", then click \"Save Video\" or \"Save to Files\" to download the video",
+        'Long press on a video when not in fullscreen, click "Share", then click "Save Video" or "Save to Files" to download the video',
     },
     {
       title: "Smarter Video Post Sizing",
-      description: "Video posts now size themselves better (like image posts do). That means no more black bars! I also slightly bumped up the max height of tall images and videos to fill the screen better.",
+      description:
+        "Video posts now size themselves better (like image posts do). That means no more black bars! I also slightly bumped up the max height of tall images and videos to fill the screen better.",
     },
     {
       title: "Mark All Messages as Read",
-      description: "You can now mark all messages as read in the Inbox tab by tapping the button in the top right corner",
-    }
+      description:
+        "You can now mark all messages as read in the Inbox tab by tapping the button in the top right corner",
+    },
   ],
   bugfixes: [
     {
       description: "Opening links, images, and videos marks a post as read",
     },
     {
-      description: "NSFW posts and hybrid posts (image or video posts with text) properly load thumbnails in compact mode",
+      description:
+        "NSFW posts and hybrid posts (image or video posts with text) properly load thumbnails in compact mode",
     },
     {
-      description: "Clicking link post thumbnails when in compact mode opens the browser",
+      description:
+        "Clicking link post thumbnails when in compact mode opens the browser",
     },
     {
-      description: "Increased the hitbox size of the + button when adding an account to make it easier to tap",
+      description:
+        "Increased the hitbox size of the + button when adding an account to make it easier to tap",
     },
     {
       description:
         "The subreddit name is no longer shown redundantly on every post when in a specific subreddit",
+    },
+    {
+      description:
+        "Loading link images that are certain SVGs would cause a crash due to a bug in the underlying image rendering library. SVG links will no longer be rendered until the bug is fixed",
     },
   ],
 };

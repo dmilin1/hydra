@@ -111,7 +111,7 @@ export async function formatPostData(child: any): Promise<Post> {
     redditAudioSource = video.replace(/DASH_\d+/, "DASH_AUDIO_128");
   }
 
-  let openGraphData = undefined;
+  let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
   try {
     new RedditURL(child.data.url);

@@ -82,6 +82,17 @@ export default class URL {
         onopentag(name, attribs) {
           if (name === "meta" && attribs.property?.startsWith("og:")) {
             const key = attribs.property.split("og:")[1] as keyof OpenGraphData;
+            if (key === "image" && attribs.content?.includes(".svg")) {
+              /**
+               * Certain SVGs cause a crash in expo-image. Unfortunately,
+               * that means we can't load any SVGs until it gets fixed.
+               * https://github.com/expo/expo/issues/24885
+               *
+               * Example SVG that causes the crash:
+               * https://www.telegraph.co.uk/etc.clientlibs/settings/wcm/designs/telegraph/core/clientlibs/core/resources/icons/tmg-share-img.svg
+               */
+              return;
+            }
             results[key] = attribs.content;
           }
         },
