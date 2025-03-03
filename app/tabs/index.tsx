@@ -16,6 +16,14 @@ import { InboxContext } from "../../contexts/InboxContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import Stack from "../stack";
 
+export type TabParamsList = {
+  Posts: undefined;
+  Inbox: undefined;
+  Account: undefined;
+  Search: undefined;
+  Settings: undefined;
+};
+
 const Tab = createBottomTabNavigator();
 
 export default function Tabs() {

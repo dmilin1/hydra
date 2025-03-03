@@ -1,4 +1,6 @@
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import {
+  CompositeNavigationProp,
   RouteProp,
   useNavigation as useNavigationUntyped,
   useRoute as useRouteUntyped,
@@ -8,11 +10,17 @@ import { useContext } from "react";
 
 import RedditURL, { PageType } from "./RedditURL";
 import { StackParamsList } from "../app/stack";
+import { TabParamsList } from "../app/tabs";
 import { MediaViewerContext } from "../contexts/MediaViewerContext";
 import { StackFutureContext } from "../contexts/StackFutureContext";
 
 export function useNavigation() {
-  return useNavigationUntyped<NativeStackNavigationProp<StackParamsList>>();
+  return useNavigationUntyped<
+    CompositeNavigationProp<
+      BottomTabNavigationProp<TabParamsList>,
+      NativeStackNavigationProp<StackParamsList>
+    >
+  >();
 }
 
 export function useRoute<
@@ -24,7 +32,10 @@ export function useRoute<
 type NavFunctionsWithURL = "push" | "replace";
 
 export function useURLNavigation(
-  overrideNav?: NativeStackNavigationProp<StackParamsList>,
+  overrideNav?: CompositeNavigationProp<
+    BottomTabNavigationProp<TabParamsList>,
+    NativeStackNavigationProp<StackParamsList>
+  >,
 ) {
   // eslint-disable-next-line react-hooks/rules-of-hooks -- We want to be able to use this in places that can't access the context
   const navigation = overrideNav ?? useNavigation();

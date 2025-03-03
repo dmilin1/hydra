@@ -1,5 +1,6 @@
 import {
   AntDesign,
+  Feather,
   FontAwesome,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
@@ -29,6 +30,12 @@ export default function GeneralRoot() {
             icon: <AntDesign name="filter" size={24} color={theme.text} />,
             text: "Filters",
             onPress: () => pushURL("hydra://settings/general/filters"),
+          },
+          {
+            key: "openInHydra",
+            icon: <Feather name="external-link" size={24} color={theme.text} />,
+            text: "Open in Hydra",
+            onPress: () => pushURL("hydra://settings/general/openInHydra"),
           },
           {
             key: "startup",

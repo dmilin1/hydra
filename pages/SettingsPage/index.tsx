@@ -6,6 +6,7 @@ import Appearance from "./Appearance";
 import DataUse from "./DataUse";
 import Filters from "./General/Filters";
 import GeneralRoot from "./General/GeneralRoot";
+import OpenInHydra from "./General/OpenInHydra";
 import Sorting from "./General/Sorting";
 import Startup from "./General/Startup";
 import Privacy from "./Privacy";
@@ -40,8 +41,9 @@ export default function SettingsPage({
 
         {relativePath === "settings/general" && <GeneralRoot />}
         {relativePath === "settings/general/sorting" && <Sorting />}
-        {relativePath === "settings/general/startup" && <Startup />}
+        {relativePath === "settings/general/openInHydra" && <OpenInHydra />}
         {relativePath === "settings/general/filters" && <Filters />}
+        {relativePath === "settings/general/startup" && <Startup />}
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/appearance" && <Appearance />}

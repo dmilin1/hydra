@@ -59,7 +59,9 @@
     "react-native-screens": "~4.4.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.13",
-    "react-native-webview": "13.12.5"
+    "react-native-webview": "13.12.5",
+    "expo-clipboard": "~7.0.1",
+    "expo-notifications": "~0.29.13"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
