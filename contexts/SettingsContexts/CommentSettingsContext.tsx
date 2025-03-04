@@ -3,11 +3,13 @@ import { useMMKVBoolean } from "react-native-mmkv";
 
 const initialValues = {
   voteIndicator: false,
+  collapseAutoModerator: true,
 };
 
 const initialCommentSettingsContext = {
   ...initialValues,
   toggleVoteIndicator: (_newValue?: boolean) => {},
+  toggleCollapseAutoModerator: (_newValue?: boolean) => {},
 };
 
 export const CommentSettingsContext = createContext(
@@ -16,6 +18,9 @@ export const CommentSettingsContext = createContext(
 
 export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
   const [voteIndicator, setVoteIndicator] = useMMKVBoolean("voteIndicator");
+  const [collapseAutoModerator, setCollapseAutoModerator] = useMMKVBoolean(
+    "collapseAutoModerator",
+  );
 
   const toggleVoteIndicator = (newValue = !voteIndicator) => {
     setVoteIndicator(newValue);
@@ -29,6 +34,11 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
       value={{
         voteIndicator: voteIndicator ?? initialValues.voteIndicator,
         toggleVoteIndicator,
+
+        collapseAutoModerator:
+          collapseAutoModerator ?? initialValues.collapseAutoModerator,
+        toggleCollapseAutoModerator: (newValue = !collapseAutoModerator) =>
+          setCollapseAutoModerator(newValue),
       }}
     >
       {children}

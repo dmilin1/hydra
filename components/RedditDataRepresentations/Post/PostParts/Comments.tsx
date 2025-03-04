@@ -68,7 +68,9 @@ export function CommentComponent({
   commentPropRef,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
-  const { voteIndicator } = useContext(CommentSettingsContext);
+  const { voteIndicator, collapseAutoModerator } = useContext(
+    CommentSettingsContext,
+  );
   const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
@@ -80,7 +82,9 @@ export function CommentComponent({
     commentPropRef.current = commentRef.current;
   }
 
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(
+    collapseAutoModerator && comment.author === "AutoModerator",
+  );
   const [loadingMore, setLoadingMore] = useState(false);
 
   const voteOnComment = async (voteOption: VoteOption) => {

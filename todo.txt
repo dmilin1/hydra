@@ -34,8 +34,6 @@
 - 🚀 Auto translation of posts and comments to another language
 
 ### Medium
-- 🚀⭐ Collapse automod comments
-
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
 - 🚀 Start app on a different page than Home

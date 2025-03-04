@@ -35,9 +35,12 @@ export default function Appearance() {
     toggleBlurSpoilers,
   } = useContext(PostSettingsContext);
 
-  const { voteIndicator, toggleVoteIndicator } = useContext(
-    CommentSettingsContext,
-  );
+  const {
+    voteIndicator,
+    toggleVoteIndicator,
+    collapseAutoModerator,
+    toggleCollapseAutoModerator,
+  } = useContext(CommentSettingsContext);
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
   const postTextLengthRef = useRef<RNPickerSelect>(null);
@@ -200,6 +203,28 @@ export default function Appearance() {
             ),
             text: "Right side vote indicators",
             onPress: () => toggleVoteIndicator(),
+          },
+          {
+            key: "collapseAutoModerator",
+            icon: (
+              <MaterialCommunityIcons
+                name="robot-angry-outline"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary as ColorValue,
+                  true: theme.iconPrimary as ColorValue,
+                }}
+                value={collapseAutoModerator}
+                onValueChange={() => toggleCollapseAutoModerator()}
+              />
+            ),
+            text: "Collapse AutoModerator",
+            onPress: () => toggleCollapseAutoModerator(),
           },
         ]}
       />
