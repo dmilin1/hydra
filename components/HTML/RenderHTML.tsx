@@ -145,6 +145,21 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     inheritedStyles.fontSize = 11;
   } else if (
     element.name === "a" &&
+    element.children[0]?.type === ElementType.Text &&
+    element.attribs.href &&
+    RedditURL.getPageType(element.attribs.href) === PageType.IMAGE
+  ) {
+    Wrapper = () => (
+      <View>
+        <View style={styles.imageContainer}>
+          <ImageViewer images={[element.attribs.href]} />
+        </View>
+      </View>
+    );
+    wrapperStyles.marginVertical = 10;
+    inheritedStyles.textAlign = "center";
+  } else if (
+    element.name === "a" &&
     element.children[0]?.type === ElementType.Text
   ) {
     Wrapper = Text;

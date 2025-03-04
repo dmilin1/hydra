@@ -60,9 +60,19 @@ export default class RedditURL extends URL {
       !this.url.startsWith("https://www.reddit.com") &&
       !this.url.startsWith("https://i.redd.it") &&
       !this.url.startsWith("https://v.redd.it") &&
+      !this.url.startsWith("https://preview.redd.it") &&
       !this.url.startsWith("https://redd.it")
     ) {
       throw new Error("Not a reddit URL");
+    }
+  }
+
+  static getPageType(url: string): PageType {
+    try {
+      const redditURL = new RedditURL(url);
+      return redditURL.getPageType();
+    } catch (_e) {
+      return PageType.UNKNOWN;
     }
   }
 
@@ -156,6 +166,8 @@ export default class RedditURL extends URL {
     } else if (relativePath.startsWith("/search")) {
       return PageType.SEARCH;
     } else if (this.url.startsWith("https://i.redd.it")) {
+      return PageType.IMAGE;
+    } else if (this.url.startsWith("https://preview.redd.it")) {
       return PageType.IMAGE;
     } else {
       return PageType.UNKNOWN;
