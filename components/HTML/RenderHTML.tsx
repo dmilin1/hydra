@@ -47,6 +47,25 @@ function makeChildNodeKey(node: AnyNode, index: number): string {
   );
 }
 
+/**
+ * <p> tags are normally rendered as a Text component. However,
+ * Reddit sends inline images as <p> tags with an <a> tag inside
+ * with the <a> tag containing a link to an image. When that happens,
+ * instead of rendering the <p> tag as a Text component, we have to
+ * render it as an ImageViewer component. This is because rendering
+ * a TouchableOpacity component inside a Text component breaks touches.
+ */
+function isElementImgLinkInParagraph(element: ElementNode): boolean {
+  const child = element.children[0] as ElementNode | undefined;
+  return !!(
+    element.name === "p" &&
+    child?.name === "a" &&
+    child?.children[0]?.type === ElementType.Text &&
+    child?.attribs.href &&
+    RedditURL.getPageType(child?.attribs.href) === PageType.IMAGE
+  );
+}
+
 export function Element({ element, index, inheritedStyles }: ElementProps) {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
@@ -82,6 +101,15 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     );
     wrapperStyles.padding = 10;
     wrapperStyles.backgroundColor = theme.tint;
+  } else if (isElementImgLinkInParagraph(element)) {
+    const imgURL = (element.children[0] as ElementNode)?.attribs.href;
+    Wrapper = () => (
+      <View style={styles.imageContainer}>
+        <ImageViewer images={[imgURL]} aspectRatio={16 / 9} />
+      </View>
+    );
+    wrapperStyles.marginVertical = 10;
+    inheritedStyles.textAlign = "center";
   } else if (element.name === "p") {
     Wrapper = Text;
     wrapperStyles.marginVertical = 5;
@@ -143,21 +171,6 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     inheritedStyles.marginVertical = 0;
     inheritedStyles.paddingHorizontal = 0;
     inheritedStyles.fontSize = 11;
-  } else if (
-    element.name === "a" &&
-    element.children[0]?.type === ElementType.Text &&
-    element.attribs.href &&
-    RedditURL.getPageType(element.attribs.href) === PageType.IMAGE
-  ) {
-    Wrapper = () => (
-      <View>
-        <View style={styles.imageContainer}>
-          <ImageViewer images={[element.attribs.href]} />
-        </View>
-      </View>
-    );
-    wrapperStyles.marginVertical = 10;
-    inheritedStyles.textAlign = "center";
   } else if (
     element.name === "a" &&
     element.children[0]?.type === ElementType.Text
