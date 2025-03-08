@@ -25,8 +25,6 @@
 
 - 🚀 Fancy bookmarks with folders and categories
 
-- 🚀⭐ Keyword filters
-
 - 🚀 Maintain session cookies so log in isn't required every time the app is opened. Will prevent 2FA from being required when switching accounts.
 
 - 🚀⭐ Support deep linking and open from Safari

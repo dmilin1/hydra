@@ -1,5 +1,6 @@
 import { CommentSettingsProvider } from "./CommentSettingsContext";
 import { DataModeProvider } from "./DataModeContext";
+import { FiltersProvider } from "./FiltersContext";
 import { PostSettingsProvider } from "./PostSettingsContext";
 import { ThemeProvider } from "./ThemeContext";
 
@@ -8,7 +9,9 @@ export function SettingsProvider({ children }: React.PropsWithChildren) {
     <ThemeProvider>
       <DataModeProvider>
         <PostSettingsProvider>
-          <CommentSettingsProvider>{children}</CommentSettingsProvider>
+          <FiltersProvider>
+            <CommentSettingsProvider>{children}</CommentSettingsProvider>
+          </FiltersProvider>
         </PostSettingsProvider>
       </DataModeProvider>
     </ThemeProvider>

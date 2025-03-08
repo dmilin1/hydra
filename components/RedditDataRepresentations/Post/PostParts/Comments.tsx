@@ -29,6 +29,7 @@ import { VoteOption } from "../../../../api/Posts";
 import { AccountContext } from "../../../../contexts/AccountContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/CommentSettingsContext";
+import { FiltersContext } from "../../../../contexts/SettingsContexts/FiltersContext";
 import {
   ThemeContext,
   t,
@@ -71,10 +72,16 @@ export function CommentComponent({
   const { voteIndicator, collapseAutoModerator } = useContext(
     CommentSettingsContext,
   );
+  const { doesCommentPassTextFilter } = useContext(FiltersContext);
   const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
   const showContextMenu = useContextMenu();
+
+  const isFiltered =
+    comment.type === "comment" &&
+    !displayInList &&
+    !doesCommentPassTextFilter(comment);
 
   const commentRef = useRef<ElementRef<typeof TouchableHighlight>>(null);
 
@@ -172,262 +179,265 @@ export function CommentComponent({
   };
 
   return useMemo(
-    () => (
-      <View key={comment.id}>
-        {comment.depth >= 0 && (
-          <Slideable
-            xScrollToEngage={15}
-            left={[
-              {
-                icon: <AntDesign name="arrowup" />,
-                color: theme.upvote,
-                action: async () => await voteOnComment(VoteOption.UpVote),
-              },
-              {
-                icon: <AntDesign name="arrowdown" />,
-                color: theme.downvote,
-                action: async () => await voteOnComment(VoteOption.DownVote),
-              },
-            ]}
-            right={[
-              {
-                icon: <Octicons name="reply" />,
-                color: theme.reply,
-                action: () => replyToComment(),
-              },
-            ]}
-          >
-            <TouchableHighlight
-              ref={(ref) => {
-                // @ts-ignore: Need to mutate this ref here because we need to set 2 refs which you'd never normally do
-                commentRef.current = ref;
-                if (commentPropRef) {
-                  commentPropRef.current = ref;
-                }
-              }}
-              activeOpacity={1}
-              underlayColor={theme.tint}
-              onPress={() => {
-                if (displayInList) {
-                  if (comment.type === "comment") {
-                    pushURL(comment.link);
-                  }
-                } else {
-                  commentRef.current?.measureInWindow(
-                    (_x, y, _width_, _height) => {
-                      if (!collapsed && scrollChange) {
-                        scrollChange(y);
-                      }
-                    },
-                  );
-                  setCollapsed(!collapsed);
-                }
-              }}
-              onLongPress={() => showCommentOptions()}
-              style={t(
-                styles.outerCommentContainer,
-                displayInList ? styles.outerCommentContainerDisplayInList : {},
+    () =>
+      isFiltered ? null : (
+        <View key={comment.id}>
+          {comment.depth >= 0 && (
+            <Slideable
+              xScrollToEngage={15}
+              left={[
                 {
-                  marginLeft: 10 * comment.depth,
-                  borderTopColor: theme.divider,
+                  icon: <AntDesign name="arrowup" />,
+                  color: theme.upvote,
+                  action: async () => await voteOnComment(VoteOption.UpVote),
                 },
-              )}
+                {
+                  icon: <AntDesign name="arrowdown" />,
+                  color: theme.downvote,
+                  action: async () => await voteOnComment(VoteOption.DownVote),
+                },
+              ]}
+              right={[
+                {
+                  icon: <Octicons name="reply" />,
+                  color: theme.reply,
+                  action: () => replyToComment(),
+                },
+              ]}
             >
-              <View
-                key={index}
+              <TouchableHighlight
+                ref={(ref) => {
+                  // @ts-ignore: Need to mutate this ref here because we need to set 2 refs which you'd never normally do
+                  commentRef.current = ref;
+                  if (commentPropRef) {
+                    commentPropRef.current = ref;
+                  }
+                }}
+                activeOpacity={1}
+                underlayColor={theme.tint}
+                onPress={() => {
+                  if (displayInList) {
+                    if (comment.type === "comment") {
+                      pushURL(comment.link);
+                    }
+                  } else {
+                    commentRef.current?.measureInWindow(
+                      (_x, y, _width_, _height) => {
+                        if (!collapsed && scrollChange) {
+                          scrollChange(y);
+                        }
+                      },
+                    );
+                    setCollapsed(!collapsed);
+                  }
+                }}
+                onLongPress={() => showCommentOptions()}
                 style={t(
-                  styles.commentContainer,
-                  displayInList ? styles.commentContainerDisplayInList : {},
+                  styles.outerCommentContainer,
+                  displayInList
+                    ? styles.outerCommentContainerDisplayInList
+                    : {},
                   {
-                    borderLeftWidth: comment.depth === 0 ? 0 : 1,
-                    borderLeftColor:
-                      theme.postColorTint[
-                        (comment.depth - 1) % theme.postColorTint.length
-                      ],
-                    borderRightColor:
-                      comment.userVote === VoteOption.UpVote
-                        ? theme.upvote
-                        : theme.downvote,
-                    borderRightWidth:
-                      voteIndicator && comment.userVote !== VoteOption.NoVote
-                        ? 1
-                        : 0,
+                    marginLeft: 10 * comment.depth,
+                    borderTopColor: theme.divider,
                   },
                 )}
               >
                 <View
-                  style={t(styles.topBar, {
-                    marginBottom: collapsed ? 0 : 8,
-                  })}
-                >
-                  {comment.isStickied && (
-                    <AntDesign
-                      name="pushpin"
-                      style={t(styles.stickiedIcon, {
-                        color: theme.moderator,
-                      })}
-                    />
-                  )}
-                  <TouchableOpacity
-                    onPress={() => pushURL(`/user/${comment.author}`)}
-                  >
-                    <Text
-                      style={t(styles.author, {
-                        color: comment.isOP
-                          ? theme.buttonText
-                          : comment.isModerator
-                            ? theme.moderator
-                            : theme.text,
-                      })}
-                    >
-                      {comment.author}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.upvoteContainer}
-                    onPress={() => voteOnComment(VoteOption.UpVote)}
-                  >
-                    <AntDesign
-                      name={
-                        comment.userVote === VoteOption.DownVote
-                          ? "arrowdown"
-                          : "arrowup"
-                      }
-                      size={14}
-                      color={
+                  key={index}
+                  style={t(
+                    styles.commentContainer,
+                    displayInList ? styles.commentContainerDisplayInList : {},
+                    {
+                      borderLeftWidth: comment.depth === 0 ? 0 : 1,
+                      borderLeftColor:
+                        theme.postColorTint[
+                          (comment.depth - 1) % theme.postColorTint.length
+                        ],
+                      borderRightColor:
                         comment.userVote === VoteOption.UpVote
                           ? theme.upvote
-                          : comment.userVote === VoteOption.DownVote
-                            ? theme.downvote
-                            : theme.subtleText
-                      }
-                    />
-                    <Text
-                      style={t(styles.upvoteText, {
-                        color:
+                          : theme.downvote,
+                      borderRightWidth:
+                        voteIndicator && comment.userVote !== VoteOption.NoVote
+                          ? 1
+                          : 0,
+                    },
+                  )}
+                >
+                  <View
+                    style={t(styles.topBar, {
+                      marginBottom: collapsed ? 0 : 8,
+                    })}
+                  >
+                    {comment.isStickied && (
+                      <AntDesign
+                        name="pushpin"
+                        style={t(styles.stickiedIcon, {
+                          color: theme.moderator,
+                        })}
+                      />
+                    )}
+                    <TouchableOpacity
+                      onPress={() => pushURL(`/user/${comment.author}`)}
+                    >
+                      <Text
+                        style={t(styles.author, {
+                          color: comment.isOP
+                            ? theme.buttonText
+                            : comment.isModerator
+                              ? theme.moderator
+                              : theme.text,
+                        })}
+                      >
+                        {comment.author}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.upvoteContainer}
+                      onPress={() => voteOnComment(VoteOption.UpVote)}
+                    >
+                      <AntDesign
+                        name={
+                          comment.userVote === VoteOption.DownVote
+                            ? "arrowdown"
+                            : "arrowup"
+                        }
+                        size={14}
+                        color={
                           comment.userVote === VoteOption.UpVote
                             ? theme.upvote
                             : comment.userVote === VoteOption.DownVote
                               ? theme.downvote
-                              : theme.subtleText,
-                      })}
-                    >
-                      {comment.scoreHidden && !comment.userVote
-                        ? "-"
-                        : comment.upvotes}
-                    </Text>
-                  </TouchableOpacity>
-                  <Text
-                    style={t(styles.upvoteText, {
-                      color: theme.subtleText,
-                    })}
-                  >
-                    {"  ·  "}
-                    {comment.timeSince}
-                  </Text>
-                </View>
-                {!collapsed ? (
-                  <View style={styles.textContainer}>
-                    <RenderHtml html={comment.html} />
-                  </View>
-                ) : null}
-                {displayInList && (
-                  <TouchableOpacity
-                    style={t(styles.sourceContainer, {
-                      borderColor: theme.tint,
-                    })}
-                    activeOpacity={0.8}
-                    onPress={() => {
-                      pushURL(comment.postLink);
-                    }}
-                  >
+                              : theme.subtleText
+                        }
+                      />
+                      <Text
+                        style={t(styles.upvoteText, {
+                          color:
+                            comment.userVote === VoteOption.UpVote
+                              ? theme.upvote
+                              : comment.userVote === VoteOption.DownVote
+                                ? theme.downvote
+                                : theme.subtleText,
+                        })}
+                      >
+                        {comment.scoreHidden && !comment.userVote
+                          ? "-"
+                          : comment.upvotes}
+                      </Text>
+                    </TouchableOpacity>
                     <Text
-                      style={t(styles.sourcePostTitle, {
+                      style={t(styles.upvoteText, {
                         color: theme.subtleText,
                       })}
                     >
-                      {comment.postTitle}
+                      {"  ·  "}
+                      {comment.timeSince}
                     </Text>
-                    <Text
-                      style={t(styles.sourceSubreddit, {
-                        color: theme.verySubtleText,
+                  </View>
+                  {!collapsed ? (
+                    <View style={styles.textContainer}>
+                      <RenderHtml html={comment.html} />
+                    </View>
+                  ) : null}
+                  {displayInList && (
+                    <TouchableOpacity
+                      style={t(styles.sourceContainer, {
+                        borderColor: theme.tint,
                       })}
+                      activeOpacity={0.8}
+                      onPress={() => {
+                        pushURL(comment.postLink);
+                      }}
                     >
-                      {comment.subreddit}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </TouchableHighlight>
-          </Slideable>
-        )}
-        {!collapsed ? (
-          <>
-            {comment.comments.length > 0 &&
-              comment.comments.map((childComment, childIndex) => (
-                <CommentComponent
-                  key={childComment.id}
-                  loadMoreComments={loadMoreComments}
-                  comment={childComment}
-                  index={childIndex}
-                  scrollChange={scrollChange}
-                  changeComment={changeComment}
-                  deleteComment={deleteComment}
-                  commentPropRef={{ current: null }}
-                />
-              ))}
-            {comment.loadMore && comment.loadMore.childIds.length > 0 && (
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={async () => {
-                  setLoadingMore(true);
-                  if (comment.loadMore && loadMoreComments) {
-                    await loadMoreComments(
-                      comment.loadMore.childIds.slice(0, 5),
-                      comment.path,
-                      comment.comments.length,
-                    );
-                  }
-                  setLoadingMore(false);
-                }}
-                style={t(styles.outerCommentContainer, {
-                  marginLeft: 10 * (comment.depth + 1),
-                  borderTopColor: theme.divider,
-                })}
-              >
-                <View
-                  style={t(styles.commentContainer, {
-                    borderLeftWidth: comment.depth === -1 ? 0 : 1,
-                    borderLeftColor:
-                      theme.postColorTint[
-                        comment.depth % theme.postColorTint.length
-                      ],
+                      <Text
+                        style={t(styles.sourcePostTitle, {
+                          color: theme.subtleText,
+                        })}
+                      >
+                        {comment.postTitle}
+                      </Text>
+                      <Text
+                        style={t(styles.sourceSubreddit, {
+                          color: theme.verySubtleText,
+                        })}
+                      >
+                        {comment.subreddit}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </TouchableHighlight>
+            </Slideable>
+          )}
+          {!collapsed ? (
+            <>
+              {comment.comments.length > 0 &&
+                comment.comments.map((childComment, childIndex) => (
+                  <CommentComponent
+                    key={childComment.id}
+                    loadMoreComments={loadMoreComments}
+                    comment={childComment}
+                    index={childIndex}
+                    scrollChange={scrollChange}
+                    changeComment={changeComment}
+                    deleteComment={deleteComment}
+                    commentPropRef={{ current: null }}
+                  />
+                ))}
+              {comment.loadMore && comment.loadMore.childIds.length > 0 && (
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={async () => {
+                    setLoadingMore(true);
+                    if (comment.loadMore && loadMoreComments) {
+                      await loadMoreComments(
+                        comment.loadMore.childIds.slice(0, 5),
+                        comment.path,
+                        comment.comments.length,
+                      );
+                    }
+                    setLoadingMore(false);
+                  }}
+                  style={t(styles.outerCommentContainer, {
+                    marginLeft: 10 * (comment.depth + 1),
+                    borderTopColor: theme.divider,
                   })}
                 >
-                  <Text
-                    style={t(styles.upvoteText, {
-                      color: theme.buttonText,
+                  <View
+                    style={t(styles.commentContainer, {
+                      borderLeftWidth: comment.depth === -1 ? 0 : 1,
+                      borderLeftColor:
+                        theme.postColorTint[
+                          comment.depth % theme.postColorTint.length
+                        ],
                     })}
                   >
-                    {loadingMore
-                      ? "Loading..."
-                      : `${comment.loadMore.childIds.length} more replies`}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          </>
-        ) : null}
-        {displayInList && (
-          <View
-            style={t(styles.spacer, {
-              backgroundColor: theme.divider,
-            })}
-          />
-        )}
-      </View>
-    ),
-    [loadingMore, collapsed, comment, comment.renderCount, theme],
+                    <Text
+                      style={t(styles.upvoteText, {
+                        color: theme.buttonText,
+                      })}
+                    >
+                      {loadingMore
+                        ? "Loading..."
+                        : `${comment.loadMore.childIds.length} more replies`}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            </>
+          ) : null}
+          {displayInList && (
+            <View
+              style={t(styles.spacer, {
+                backgroundColor: theme.divider,
+              })}
+            />
+          )}
+        </View>
+      ),
+    [isFiltered, loadingMore, collapsed, comment, comment.renderCount, theme],
   );
 }
 

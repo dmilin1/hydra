@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import Advanced from "./Advanced";
 import Appearance from "./Appearance";
@@ -13,6 +13,7 @@ import Privacy from "./Privacy";
 import Root from "./Root";
 import Theme from "./Theme";
 import { StackPageProps } from "../../app/stack";
+import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroller";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
 
@@ -31,7 +32,7 @@ export default function SettingsPage({
         backgroundColor: theme.background,
       })}
     >
-      <ScrollView
+      <KeyboardAvoidingScroller
         style={styles.scrollView}
         contentContainerStyle={{
           flexGrow: 1,
@@ -50,7 +51,7 @@ export default function SettingsPage({
         {relativePath === "settings/dataUse" && <DataUse />}
         {relativePath === "settings/privacy" && <Privacy />}
         {relativePath === "settings/advanced" && <Advanced />}
-      </ScrollView>
+      </KeyboardAvoidingScroller>
     </View>
   );
 }

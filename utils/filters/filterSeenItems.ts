@@ -1,9 +1,9 @@
 import { Post } from "../../api/Posts";
-import { arePostsSeen } from "../../db/functions/SeenPosts";
 import {
   FILTER_SEEN_POSTS_DEFAULT,
   FILTER_SEEN_POSTS_KEY,
-} from "../../pages/SettingsPage/General/Filters";
+} from "../../contexts/SettingsContexts/FiltersContext";
+import { arePostsSeen } from "../../db/functions/SeenPosts";
 import KeyStore from "../KeyStore";
 import { FilterFunction } from "../useRedditDataState";
 
