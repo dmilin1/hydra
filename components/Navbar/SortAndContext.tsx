@@ -5,7 +5,8 @@ import {
   SimpleLineIcons,
   Entypo,
 } from "@expo/vector-icons";
-import { RouteProp } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { CompositeNavigationProp, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity, Alert } from "react-native";
@@ -13,6 +14,7 @@ import { Share, StyleSheet, View, TouchableOpacity, Alert } from "react-native";
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
 import { blockUser, User } from "../../api/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
+import { TabParamsList } from "../../app/tabs";
 import {
   makeCommentSubredditSortKey,
   makePostSubredditSortKey,
@@ -57,7 +59,10 @@ export type ContextTypes =
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
-  navigation: NativeStackNavigationProp<StackParamsList, URLRoutes, undefined>;
+  navigation: CompositeNavigationProp<
+    BottomTabNavigationProp<TabParamsList>,
+    NativeStackNavigationProp<StackParamsList, URLRoutes, undefined>
+  >;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
   pageData?: PostDetail | User;
