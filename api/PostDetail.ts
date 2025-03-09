@@ -102,9 +102,17 @@ export function formatComments(
   return formattedComments;
 }
 
-export async function getPostsDetail(url: string): Promise<PostDetail> {
+type GetPostDetailOptions = {
+  limit?: number;
+};
+
+export async function getPostsDetail(
+  url: string,
+  options: GetPostDetailOptions = {},
+): Promise<PostDetail> {
   const redditURL = new RedditURL(url);
   redditURL.changeQueryParam("sr_detail", "true");
+  redditURL.changeQueryParam("limit", String(options?.limit ?? 75));
   redditURL.jsonify();
   const response = await api(redditURL.toString());
   const postData = response[0].data.children[0];

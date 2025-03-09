@@ -27,8 +27,6 @@
 
 - 🚀 Maintain session cookies so log in isn't required every time the app is opened. Will prevent 2FA from being required when switching accounts.
 
-- 🚀⭐ Support deep linking and open from Safari
-
 - 🚀 Auto translation of posts and comments to another language
 
 ### Medium

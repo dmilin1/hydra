@@ -393,7 +393,7 @@ export function CommentComponent({
                     setLoadingMore(true);
                     if (comment.loadMore && loadMoreComments) {
                       await loadMoreComments(
-                        comment.loadMore.childIds.slice(0, 5),
+                        comment.loadMore.childIds.slice(0, 10),
                         comment.path,
                         comment.comments.length,
                       );
