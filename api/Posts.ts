@@ -78,7 +78,7 @@ export async function formatPostData(child: any): Promise<Post> {
 
   let images = Object.values(child.data.media_metadata ?? {})
     .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
-    .map((data: any) => data.s?.u)
+    .map((data: any) => data.s?.u ?? data.s?.gif)
     .filter((img) => img !== undefined)
     .map((img: string) => decode(img));
 

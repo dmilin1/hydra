@@ -25,6 +25,8 @@
 
 - 🚀 Fancy bookmarks with folders and categories
 
+- 🚀 Subreddit sidebars (wiki, rules, etc.)
+
 - 🚀 Maintain session cookies so log in isn't required every time the app is opened. Will prevent 2FA from being required when switching accounts.
 
 - 🚀 Auto translation of posts and comments to another language
