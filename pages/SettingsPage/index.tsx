@@ -36,6 +36,7 @@ export default function SettingsPage({
         style={styles.scrollView}
         contentContainerStyle={{
           flexGrow: 1,
+          paddingBottom: 20,
         }}
       >
         {relativePath === "settings" && <Root />}

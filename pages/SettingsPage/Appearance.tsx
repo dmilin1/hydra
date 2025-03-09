@@ -40,6 +40,8 @@ export default function Appearance() {
     toggleVoteIndicator,
     collapseAutoModerator,
     toggleCollapseAutoModerator,
+    commentFlairs,
+    toggleCommentFlairs,
   } = useContext(CommentSettingsContext);
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
@@ -225,6 +227,22 @@ export default function Appearance() {
             ),
             text: "Collapse AutoModerator",
             onPress: () => toggleCollapseAutoModerator(),
+          },
+          {
+            key: "commentFlairs",
+            icon: <AntDesign name="tago" size={24} color={theme.text} />,
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary as ColorValue,
+                  true: theme.iconPrimary as ColorValue,
+                }}
+                value={commentFlairs}
+                onValueChange={() => toggleCommentFlairs()}
+              />
+            ),
+            text: "Show flairs",
+            onPress: () => toggleCommentFlairs(),
           },
         ]}
       />

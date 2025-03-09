@@ -1,4 +1,5 @@
 import { AntDesign, Octicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import React, {
   useContext,
   useState,
@@ -69,7 +70,7 @@ export function CommentComponent({
   commentPropRef,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
-  const { voteIndicator, collapseAutoModerator } = useContext(
+  const { voteIndicator, collapseAutoModerator, commentFlairs } = useContext(
     CommentSettingsContext,
   );
   const { doesCommentPassTextFilter } = useContext(FiltersContext);
@@ -327,14 +328,40 @@ export function CommentComponent({
                           : comment.upvotes}
                       </Text>
                     </TouchableOpacity>
-                    <Text
-                      style={t(styles.upvoteText, {
-                        color: theme.subtleText,
-                      })}
-                    >
-                      {"  ·  "}
-                      {comment.timeSince}
-                    </Text>
+                    {commentFlairs && comment.flair && (
+                      <View
+                        style={t(styles.flairContainer, {
+                          backgroundColor: theme.divider,
+                        })}
+                      >
+                        {comment.flair.emojis.map((emoji, index) => (
+                          <Image
+                            key={index}
+                            source={{ uri: emoji }}
+                            style={styles.flairEmoji}
+                          />
+                        ))}
+                        {comment.flair.text && (
+                          <Text
+                            style={t(styles.flairText, {
+                              color: theme.verySubtleText,
+                            })}
+                            numberOfLines={1}
+                          >
+                            {comment.flair.text}
+                          </Text>
+                        )}
+                      </View>
+                    )}
+                    <View style={styles.topBarEnd}>
+                      <Text
+                        style={t(styles.upvoteText, {
+                          color: theme.subtleText,
+                        })}
+                      >
+                        {comment.shortTimeSince}
+                      </Text>
+                    </View>
                   </View>
                   {!collapsed ? (
                     <View style={styles.textContainer}>
@@ -437,7 +464,15 @@ export function CommentComponent({
           )}
         </View>
       ),
-    [isFiltered, loadingMore, collapsed, comment, comment.renderCount, theme],
+    [
+      isFiltered,
+      commentFlairs,
+      loadingMore,
+      collapsed,
+      comment,
+      comment.renderCount,
+      theme,
+    ],
   );
 }
 
@@ -505,17 +540,16 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   stickiedIcon: {
-    marginRight: 7,
     fontSize: 16,
   },
   topBar: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 6,
   },
   author: {
     fontSize: 14,
     fontWeight: "500",
-    marginRight: 6,
   },
   upvoteContainer: {
     flexDirection: "row",
@@ -523,6 +557,29 @@ const styles = StyleSheet.create({
   },
   upvoteText: {
     fontSize: 14,
+  },
+  flairContainer: {
+    flexShrink: 1,
+    overflow: "hidden",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 1,
+    paddingHorizontal: 5,
+    borderRadius: 5,
+    gap: 2,
+    marginVertical: -10,
+  },
+  flairEmoji: {
+    width: 16,
+    height: 16,
+  },
+  flairText: {
+    flexShrink: 1,
+    textOverflow: "ellipsis",
+  },
+  topBarEnd: {
+    flexGrow: 1,
+    alignItems: "flex-end",
   },
   textContainer: {
     marginVertical: -10,

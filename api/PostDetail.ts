@@ -1,6 +1,7 @@
 import "react-native-url-polyfill/auto";
 import { decode } from "html-entities";
 
+import { Flair, formatFlair } from "./Flair";
 import { Post, formatPostData, VoteOption } from "./Posts";
 import { api } from "./RedditApi";
 import { UserContent } from "./User";
@@ -20,6 +21,7 @@ export type Comment = {
   upvotes: number;
   scoreHidden: boolean;
   userVote: VoteOption;
+  flair: Flair | null;
   link: string;
   postTitle: string;
   postLink: string;
@@ -37,6 +39,7 @@ export type Comment = {
   after: string;
   createdAt: number;
   timeSince: string;
+  shortTimeSince: string;
 };
 
 export type PostDetail = Omit<Comment, "type"> &
@@ -77,6 +80,7 @@ export function formatComments(
       upvotes: comment.data.ups,
       scoreHidden: comment.data.score_hidden,
       userVote,
+      flair: formatFlair(comment.data),
       link: comment.data.permalink,
       postTitle: comment.data.link_title,
       postLink: comment.data.link_permalink,
@@ -97,6 +101,9 @@ export function formatComments(
       createdAt: comment.data.created,
       timeSince:
         new Time(comment.data.created * 1000).prettyTimeSince() + " ago",
+      shortTimeSince: new Time(
+        comment.data.created * 1000,
+      ).shortPrettyTimeSince(),
     });
   }
   return formattedComments;

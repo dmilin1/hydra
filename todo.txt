@@ -17,7 +17,7 @@
 
 - 🚀 Endpoint caching, future navigation stack state caching
 
-- 🚀⭐ User flairs
+- 🚀 Post flairs (create post with flair and edit it)
 
 - 🚀 Fully customizable themeing with shareability
 
@@ -39,6 +39,10 @@
 - 🚀⭐ Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
 
 - 🚀⭐ Automatic theme switching (https://www.reddit.com/r/HydraFeatureRequests/comments/1ig308c/automatic_theme/)
+
+- 🚀 Change swipe actions
+
+- 🚀 Block specific subreddits from appearing
 
 - 🐛 Enable landscape mode in the browser
 

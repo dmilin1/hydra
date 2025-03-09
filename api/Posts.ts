@@ -1,6 +1,7 @@
 import "react-native-url-polyfill/auto";
 import { decode } from "html-entities";
 
+import { Flair, formatFlair } from "./Flair";
 import { api } from "./RedditApi";
 import Redgifs from "../utils/RedGifs";
 import RedditURL from "../utils/RedditURL";
@@ -25,6 +26,7 @@ export type Post = {
   scoreHidden: boolean;
   saved: boolean;
   userVote: VoteOption;
+  flair: Flair | null;
   subreddit: string;
   subredditIcon: string;
   isModerator: boolean;
@@ -45,6 +47,7 @@ export type Post = {
   openGraphData: OpenGraphData | undefined;
   createdAt: number;
   timeSince: string;
+  shortTimeSince: string;
   after: string;
 };
 
@@ -181,6 +184,7 @@ export async function formatPostData(child: any): Promise<Post> {
     scoreHidden: child.data.score_hidden,
     saved: child.data.saved,
     userVote,
+    flair: formatFlair(child.data),
     subreddit: child.data.subreddit,
     subredditIcon:
       child.data.sr_detail?.community_icon?.split("?")?.[0] ??
@@ -203,6 +207,7 @@ export async function formatPostData(child: any): Promise<Post> {
     openGraphData,
     createdAt: child.data.created,
     timeSince: new Time(child.data.created * 1000).prettyTimeSince() + " ago",
+    shortTimeSince: new Time(child.data.created * 1000).shortPrettyTimeSince(),
     after: child.data.name,
   };
 }
