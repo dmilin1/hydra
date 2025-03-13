@@ -14,65 +14,46 @@ import { useMMKVString } from "react-native-mmkv";
 import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const update = {
-  updateKey: "2.4.1-1",
+  updateKey: "2.5.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   features: [
     {
-      title: "Filter Seen Posts",
-      description:
-        "You can now hide posts you've already seen. To enable this setting, go to Settings => General => Filters => Hide Seen Posts",
+      title: "Text Filtering",
+      description: "You can now filter posts and comments by text. To add a filter, go to Settings => General => Filters => Text Filter List.",
     },
     {
-      title: "Share Images",
-      description:
-        'Long press on an image, then click "Share" to open the share menu',
+      title: "Open in Hydra Shortcut",
+      description: "You can now add a shortcut to open links in Hydra directly from the share sheet of any other app. To add this shortcut, go to Settings => General => Open in Hydra => Get Hydra Shortcut.",
     },
     {
-      title: "Share Videos",
-      description:
-        'Long press on a video when not in fullscreen, then click "Share" to open the share menu',
+      title: "Open Clipboard Links",
+      description: "Hydra can now open links copied to your clipboard. To enable this setting, go to Settings => General => Open Clipboard Links. To prevent iOS from asking you for permission every time, go to the iOS Settings App => Apps => Hydra => Paste from Other Apps and change the setting to Allow. This setting is disabled by default due to the default iOS setting being set to Ask.",
     },
     {
-      title: "Download Videos",
-      description:
-        'Long press on a video when not in fullscreen, click "Share", then click "Save Video" or "Save to Files" to download the video',
+      title: "User Flairs in Comments",
+      description: "User flairs are now displayed in comments. To turn this off, go to Settings => Appearance => Show Flairs.",
     },
     {
-      title: "Smarter Video Post Sizing",
-      description:
-        "Video posts now size themselves better (like image posts do). That means no more black bars! I also slightly bumped up the max height of tall images and videos to fill the screen better.",
+      title: "Faster Post Loading",
+      description: "Clicking on a post with a large comment section now loads significantly faster.",
     },
     {
-      title: "Mark All Messages as Read",
-      description:
-        "You can now mark all messages as read in the Inbox tab by tapping the button in the top right corner",
+      title: "Inline Comment Images",
+      description: "Hydra now displays comment images and gifs inline with the text instead of as a link.",
+    },
+    {
+      title: "Collapsed AutoModerator",
+      description: "AutoModerator comments are now collapsed by default. To turn this off, go to Settings => Appearance, Collapse AutoModerator.",
     },
   ],
   bugfixes: [
     {
-      description: "Opening links, images, and videos marks a post as read",
+      description: "Inline images in comments are now clickable and will open in fullscreen",
     },
     {
-      description:
-        "NSFW posts and hybrid posts (image or video posts with text) properly load thumbnails in compact mode",
-    },
-    {
-      description:
-        "Clicking link post thumbnails when in compact mode opens the browser",
-    },
-    {
-      description:
-        "Increased the hitbox size of the + button when adding an account to make it easier to tap",
-    },
-    {
-      description:
-        "The subreddit name is no longer shown redundantly on every post when in a specific subreddit",
-    },
-    {
-      description:
-        "Loading link images that are certain SVGs would cause a crash due to a bug in the underlying image rendering library. SVG links will no longer be rendered until the bug is fixed",
-    },
+      description: "Posts with multiple gifs will now display all gifs",
+    }
   ],
 };
 
