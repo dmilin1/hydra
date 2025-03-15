@@ -91,7 +91,9 @@ export function CommentComponent({
   }
 
   const [collapsed, setCollapsed] = useState(
-    collapseAutoModerator && comment.author === "AutoModerator",
+    collapseAutoModerator &&
+      comment.depth === 0 &&
+      comment.author === "AutoModerator",
   );
   const [loadingMore, setLoadingMore] = useState(false);
 

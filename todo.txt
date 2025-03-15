@@ -27,16 +27,18 @@
 
 - 🚀 Subreddit sidebars (wiki, rules, etc.)
 
+- 🚀⭐ Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
+
 - 🚀 Maintain session cookies so log in isn't required every time the app is opened. Will prevent 2FA from being required when switching accounts.
 
 - 🚀 Auto translation of posts and comments to another language
+
+- 🐛 Upvoting in the post details is not reflected on the posts list
 
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
 - 🚀 Start app on a different page than Home
-
-- 🚀⭐ Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
 
 - 🚀⭐ Automatic theme switching (https://www.reddit.com/r/HydraFeatureRequests/comments/1ig308c/automatic_theme/)
 
@@ -46,7 +48,13 @@
 
 - 🐛 Enable landscape mode in the browser
 
+- 🐛 Crossposts don't show up (https://www.reddit.com/r/HydraApp/comments/1j6wkmw/cross_posts_just_dont_show_at_all/)
+
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
 - 🐛 Favorite subreddits you aren't subscribed to
+
+- 🐛 Giant emoji in comments (https://discord.com/channels/1257191666771558492/1257773342283268297/1346887957612593272)
+
+- 🐛 Rapid double backwards swipe to the Subreddits page causes weird glitch (https://discord.com/channels/1257191666771558492/1257773342283268297/1347806977748766750)

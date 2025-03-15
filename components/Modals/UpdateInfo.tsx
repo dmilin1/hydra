@@ -20,40 +20,48 @@ const update = {
   features: [
     {
       title: "Text Filtering",
-      description: "You can now filter posts and comments by text. To add a filter, go to Settings => General => Filters => Text Filter List.",
+      description:
+        "You can now filter posts and comments by text. To add a filter, go to Settings => General => Filters => Text Filter List.",
     },
     {
       title: "Open in Hydra Shortcut",
-      description: "You can now add a shortcut to open links in Hydra directly from the share sheet of any other app. To add this shortcut, go to Settings => General => Open in Hydra => Get Hydra Shortcut.",
+      description:
+        "You can now add a shortcut to open links in Hydra directly from the share sheet of any other app. To add this shortcut, go to Settings => General => Open in Hydra => Get Hydra Shortcut.",
     },
     {
       title: "Open Clipboard Links",
-      description: "Hydra can now open links copied to your clipboard. To enable this setting, go to Settings => General => Open Clipboard Links. To prevent iOS from asking you for permission every time, go to the iOS Settings App => Apps => Hydra => Paste from Other Apps and change the setting to Allow. This setting is disabled by default due to the default iOS setting being set to Ask.",
+      description:
+        "Hydra can now open links copied to your clipboard. To enable this setting, go to Settings => General => Open Clipboard Links. To prevent iOS from asking you for permission every time, go to the iOS Settings App => Apps => Hydra => Paste from Other Apps and change the setting to Allow. This setting is disabled by default due to the default iOS setting being set to Ask.",
     },
     {
       title: "User Flairs in Comments",
-      description: "User flairs are now displayed in comments. To turn this off, go to Settings => Appearance => Show Flairs.",
+      description:
+        "User flairs are now displayed in comments. To turn this off, go to Settings => Appearance => Show Flairs.",
     },
     {
       title: "Faster Post Loading",
-      description: "Clicking on a post with a large comment section now loads significantly faster.",
+      description:
+        "Clicking on a post with a large comment section now loads significantly faster.",
     },
     {
       title: "Inline Comment Images",
-      description: "Hydra now displays comment images and gifs inline with the text instead of as a link.",
+      description:
+        "Hydra now displays comment images and gifs inline with the text instead of as a link.",
     },
     {
       title: "Collapsed AutoModerator",
-      description: "AutoModerator comments are now collapsed by default. To turn this off, go to Settings => Appearance, Collapse AutoModerator.",
+      description:
+        "AutoModerator comments are now collapsed by default. To turn this off, go to Settings => Appearance, Collapse AutoModerator.",
     },
   ],
   bugfixes: [
     {
-      description: "Inline images in comments are now clickable and will open in fullscreen",
+      description:
+        "Inline images in comments are now clickable and will open in fullscreen",
     },
     {
       description: "Posts with multiple gifs will now display all gifs",
-    }
+    },
   ],
 };
 
