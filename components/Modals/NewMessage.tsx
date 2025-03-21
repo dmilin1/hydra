@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   TextInput,
 } from "react-native";
+import { useMMKVString } from "react-native-mmkv";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { sendMessage } from "../../api/Messages";
@@ -18,6 +19,7 @@ import { User } from "../../api/User";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import * as Snudown from "../../external/snudown";
+import KeyStore from "../../utils/KeyStore";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
 
@@ -26,16 +28,32 @@ type NewMessageProps = {
   contentSent: () => void;
 };
 
+const MESSAGE_DRAFT_PREFIX = "messageDraft-";
+
+export async function maintainMessageDrafts() {
+  const keys = KeyStore.getAllKeys();
+  keys.forEach((key) => {
+    if (key.startsWith(MESSAGE_DRAFT_PREFIX)) {
+      KeyStore.delete(key);
+    }
+  });
+}
+
 export default function NewMessage({
   recipient,
   contentSent,
 }: NewMessageProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
-
-  const [subject, setSubject] = useState("");
-  const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [storedSubject, setStoredSubject] = useMMKVString(
+    MESSAGE_DRAFT_PREFIX + `Subject-${recipient.userName}`,
+  );
+  const [storedText, setStoredText] = useMMKVString(
+    MESSAGE_DRAFT_PREFIX + `Text-${recipient.userName}`,
+  );
+  const subject = storedSubject ?? "";
+  const text = storedText ?? "";
 
   const submit = async () => {
     setIsSubmitting(true);
@@ -44,6 +62,8 @@ export default function NewMessage({
       if (success) {
         contentSent();
         setModal(undefined);
+        setStoredSubject(undefined);
+        setStoredText(undefined);
         Alert.alert(`Message sent!`);
       } else {
         throw new Error(`Failed to submit comment`);
@@ -119,13 +139,13 @@ export default function NewMessage({
                 placeholder="Title"
                 placeholderTextColor={theme.verySubtleText}
                 value={subject}
-                onChangeText={setSubject}
+                onChangeText={setStoredSubject}
                 scrollEnabled={false}
               />
             </View>
             <MarkdownEditor
               text={text}
-              setText={setText}
+              setText={setStoredText}
               placeholder="Write a comment..."
             />
             <View

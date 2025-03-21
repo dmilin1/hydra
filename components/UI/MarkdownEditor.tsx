@@ -13,7 +13,7 @@ import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 
 type MarkdownEditorProps = {
   text: string;
-  setText: Dispatch<SetStateAction<string>>;
+  setText: Dispatch<SetStateAction<string | undefined>>;
   placeholder: string;
 };
 
