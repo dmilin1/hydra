@@ -89,7 +89,9 @@ function RedditDataScroller<T extends RedditDataObject>(
       scrollEventThrottle={100}
       onEndReachedThreshold={2}
       onEndReached={() => {
-        loadMoreData();
+        if (props.data.length > 0) {
+          loadMoreData();
+        }
       }}
       data={props.data}
       keyExtractor={(item) => `${item.type}-${item.id}`}
