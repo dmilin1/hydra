@@ -9,6 +9,7 @@ import GeneralRoot from "./General/GeneralRoot";
 import OpenInHydra from "./General/OpenInHydra";
 import Sorting from "./General/Sorting";
 import Startup from "./General/Startup";
+import HydraPro from "./HydraPro";
 import Privacy from "./Privacy";
 import Root from "./Root";
 import Theme from "./Theme";
@@ -52,6 +53,7 @@ export default function SettingsPage({
         {relativePath === "settings/dataUse" && <DataUse />}
         {relativePath === "settings/privacy" && <Privacy />}
         {relativePath === "settings/advanced" && <Advanced />}
+        {relativePath === "settings/hydraPro" && <HydraPro />}
       </KeyboardAvoidingScroller>
     </View>
   );

@@ -279,11 +279,11 @@ function PostDetails({ route }: PostDetailsProps) {
       <TouchableOpacity
         activeOpacity={0.8}
         style={t(styles.skipToNextButton, {
-          backgroundColor: theme.buttonText,
+          backgroundColor: theme.buttonBg,
         })}
         onPress={scrollToNextComment}
       >
-        <AntDesign name="down" size={18} color="white" />
+        <AntDesign name="down" size={18} color={theme.buttonText} />
       </TouchableOpacity>
     </View>
   );

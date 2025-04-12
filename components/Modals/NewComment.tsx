@@ -73,7 +73,7 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
             >
               <Text
                 style={t(styles.topBarButton, {
-                  color: theme.buttonText,
+                  color: theme.iconOrTextButton,
                 })}
               >
                 Cancel
@@ -87,12 +87,12 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               New Comment
             </Text>
             {isSubmitting ? (
-              <ActivityIndicator size="small" color={theme.buttonText} />
+              <ActivityIndicator size="small" color={theme.iconOrTextButton} />
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
                   style={t(styles.topBarButton, {
-                    color: theme.buttonText,
+                    color: theme.iconOrTextButton,
                   })}
                 >
                   Post
@@ -122,7 +122,9 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
                       color: theme.text,
                       paddingVertical: parentViewAvailable ? 10 : 0,
                       borderColor:
-                        viewMode === "parent" ? theme.buttonText : theme.tint,
+                        viewMode === "parent"
+                          ? theme.iconOrTextButton
+                          : theme.tint,
                     })}
                   >
                     Parent
@@ -136,7 +138,7 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
                     paddingVertical: 10,
                     borderColor:
                       parentViewAvailable && viewMode === "preview"
-                        ? theme.buttonText
+                        ? theme.iconOrTextButton
                         : theme.tint,
                   })}
                 >

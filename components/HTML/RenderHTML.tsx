@@ -176,7 +176,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     element.children[0]?.type === ElementType.Text
   ) {
     Wrapper = Text;
-    inheritedStyles.color = theme.buttonText;
+    inheritedStyles.color = theme.iconOrTextButton;
     wrapperProps.onPress = () => {
       const url = element.attribs.href;
       try {

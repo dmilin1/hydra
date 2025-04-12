@@ -94,7 +94,7 @@ export default function PollViewer({ poll }: { poll: Poll }) {
           >
             <Text
               style={t(styles.voteButtonText, {
-                color: theme.buttonText,
+                color: theme.iconOrTextButton,
               })}
             >
               Vote

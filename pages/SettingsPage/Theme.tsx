@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import Themes from "../../constants/Themes";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 
 const isValidColor = (color: any) => {
   return (
@@ -15,6 +16,7 @@ const isValidColor = (color: any) => {
 
 export default function Theme() {
   const { theme, currentTheme, setCurrentTheme } = useContext(ThemeContext);
+  const { isPro } = useContext(SubscriptionsContext);
 
   return (
     <>
@@ -52,9 +54,11 @@ export default function Theme() {
               ))}
           </View>
           <View style={styles.checkboxContainer}>
-            {currentTheme === key && (
-              <Feather name="check" size={24} color={theme.buttonText} />
-            )}
+            {currentTheme === key ? (
+              <Feather name="check" size={24} color={theme.iconOrTextButton} />
+            ) : curTheme.isPro && !isPro ? (
+              <Feather name="lock" size={24} color={theme.iconOrTextButton} />
+            ) : null}
           </View>
         </TouchableOpacity>
       ))}
@@ -74,7 +78,7 @@ const styles = StyleSheet.create({
   themeNameText: {
     width: 100,
     fontSize: 18,
-    marginRight: 10,
+    marginRight: 15,
   },
   colorsContainer: {
     flex: 1,

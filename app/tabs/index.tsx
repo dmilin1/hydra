@@ -62,7 +62,7 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Posts",
               animation: "fade",
@@ -82,7 +82,7 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Inbox",
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
@@ -103,7 +103,7 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: currentUser?.userName ?? "Account",
               animation: "fade",
@@ -123,7 +123,7 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Search",
               animation: "fade",
@@ -143,7 +143,7 @@ export default function Tabs() {
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
               ),
-              tabBarActiveTintColor: theme.buttonText as string,
+              tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Settings",
               animation: "fade",

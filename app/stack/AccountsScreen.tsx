@@ -28,7 +28,9 @@ export default function AccountsScreen({
       options={() => ({
         headerRight: () => (
           <IconButton
-            icon={<Entypo name="plus" size={24} color={theme.buttonText} />}
+            icon={
+              <Entypo name="plus" size={24} color={theme.iconOrTextButton} />
+            }
             onPress={() => setModal(<Login />)}
             justifyContent="flex-end"
           />

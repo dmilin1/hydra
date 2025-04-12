@@ -69,7 +69,7 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
             >
               <Text
                 style={t(styles.topBarButton, {
-                  color: theme.buttonText,
+                  color: theme.iconOrTextButton,
                 })}
               >
                 Cancel
@@ -83,12 +83,12 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
               Edit Post
             </Text>
             {isSubmitting ? (
-              <ActivityIndicator size="small" color={theme.buttonText} />
+              <ActivityIndicator size="small" color={theme.iconOrTextButton} />
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
                   style={t(styles.topBarButton, {
-                    color: theme.buttonText,
+                    color: theme.iconOrTextButton,
                   })}
                 >
                   Edit
@@ -114,7 +114,9 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                     color: theme.text,
                     paddingVertical: 10,
                     borderColor:
-                      viewMode === "preview" ? theme.buttonText : theme.tint,
+                      viewMode === "preview"
+                        ? theme.iconOrTextButton
+                        : theme.tint,
                   })}
                 >
                   Preview
@@ -126,7 +128,7 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                     color: theme.text,
                     paddingVertical: 10,
                     borderColor:
-                      viewMode === "old" ? theme.buttonText : theme.tint,
+                      viewMode === "old" ? theme.iconOrTextButton : theme.tint,
                   })}
                 >
                   Parent

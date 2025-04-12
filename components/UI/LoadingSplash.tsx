@@ -1,5 +1,5 @@
 import { SplashScreen } from "expo-router";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import {
   View,
   StyleSheet,

@@ -150,7 +150,7 @@ export default function SortAndContext({
             <AntDesign
               name="Trophy"
               size={24}
-              color={theme.buttonText}
+              color={theme.iconOrTextButton}
               style={{ marginRight: 20 }}
             />
           )) ||
@@ -158,7 +158,7 @@ export default function SortAndContext({
               <SimpleLineIcons
                 name="fire"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )) ||
@@ -166,7 +166,7 @@ export default function SortAndContext({
               <AntDesign
                 name="clockcircleo"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )) ||
@@ -174,7 +174,7 @@ export default function SortAndContext({
               <MaterialCommunityIcons
                 name="podium-gold"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )) ||
@@ -182,7 +182,7 @@ export default function SortAndContext({
               <MaterialIcons
                 name="trending-up"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )) ||
@@ -190,7 +190,7 @@ export default function SortAndContext({
               <MaterialCommunityIcons
                 name="sword-cross"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )) ||
@@ -198,7 +198,7 @@ export default function SortAndContext({
               <MaterialCommunityIcons
                 name="timer-sand-complete"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )) ||
@@ -206,14 +206,14 @@ export default function SortAndContext({
               <AntDesign
                 name="message1"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )) || (
               <AntDesign
                 name="Trophy"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}
               />
             )}
@@ -308,7 +308,7 @@ export default function SortAndContext({
           <Entypo
             name="dots-three-horizontal"
             size={24}
-            color={theme.buttonText}
+            color={theme.iconOrTextButton}
           />
         </TouchableOpacity>
       )}

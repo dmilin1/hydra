@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { ReactNode, useContext } from "react";
+import React, { ReactNode, useContext } from "react";
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
 
 import SectionTitle from "./SectionTitle";

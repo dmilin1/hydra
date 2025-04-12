@@ -93,7 +93,7 @@ export default function AccountsPage() {
                           name="check"
                           style={{
                             fontSize: 24,
-                            color: theme.buttonText,
+                            color: theme.iconOrTextButton,
                             marginVertical: -5,
                           }}
                         />

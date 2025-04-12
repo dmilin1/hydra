@@ -249,7 +249,7 @@ export default function General() {
         <View style={styles.clearButtonContainer}>
           <TouchableOpacity
             style={t(styles.clearButton, {
-              backgroundColor: theme.buttonText,
+              backgroundColor: theme.buttonBg,
             })}
             activeOpacity={0.8}
             onPress={() => {
@@ -258,7 +258,7 @@ export default function General() {
           >
             <Text
               style={t(styles.clearButtonText, {
-                color: theme.text,
+                color: theme.buttonText,
               })}
             >
               Clear custom post sorts ({numRememberedPostSubreddits} sub
@@ -319,7 +319,7 @@ export default function General() {
         <View style={styles.clearButtonContainer}>
           <TouchableOpacity
             style={t(styles.clearButton, {
-              backgroundColor: theme.buttonText,
+              backgroundColor: theme.iconOrTextButton,
             })}
             activeOpacity={0.8}
             onPress={() => {

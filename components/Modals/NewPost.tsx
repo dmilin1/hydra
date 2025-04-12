@@ -131,7 +131,7 @@ export default function NewPostEditor({
             >
               <Text
                 style={t(styles.topBarButton, {
-                  color: theme.buttonText,
+                  color: theme.iconOrTextButton,
                 })}
               >
                 Cancel
@@ -145,12 +145,12 @@ export default function NewPostEditor({
               New Post
             </Text>
             {isSubmitting ? (
-              <ActivityIndicator size="small" color={theme.buttonText} />
+              <ActivityIndicator size="small" color={theme.iconOrTextButton} />
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
                   style={t(styles.topBarButton, {
-                    color: theme.buttonText,
+                    color: theme.iconOrTextButton,
                   })}
                 >
                   Post

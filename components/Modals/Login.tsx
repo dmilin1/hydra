@@ -151,7 +151,7 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
           >
             By logging in you are agreeing to the
             <Text
-              style={{ color: theme.buttonText }}
+              style={{ color: theme.iconOrTextButton }}
               onPress={() =>
                 WebBrowser.openBrowserAsync(
                   "https://www.redditinc.com/policies/user-agreement",
@@ -163,7 +163,7 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
             </Text>
             and the
             <Text
-              style={{ color: theme.buttonText }}
+              style={{ color: theme.iconOrTextButton }}
               onPress={() =>
                 WebBrowser.openBrowserAsync(
                   "https://www.redditinc.com/policies/reddit-rules",
@@ -195,7 +195,7 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
             >
               <Text
                 style={t(styles.buttonText, {
-                  color: theme.buttonText,
+                  color: theme.iconOrTextButton,
                 })}
               >
                 Login

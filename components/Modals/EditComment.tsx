@@ -69,7 +69,7 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
             >
               <Text
                 style={t(styles.topBarButton, {
-                  color: theme.buttonText,
+                  color: theme.iconOrTextButton,
                 })}
               >
                 Cancel
@@ -83,12 +83,12 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
               Edit Comment
             </Text>
             {isSubmitting ? (
-              <ActivityIndicator size="small" color={theme.buttonText} />
+              <ActivityIndicator size="small" color={theme.iconOrTextButton} />
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
                   style={t(styles.topBarButton, {
-                    color: theme.buttonText,
+                    color: theme.iconOrTextButton,
                   })}
                 >
                   Edit
@@ -117,7 +117,9 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
                     color: theme.text,
                     paddingVertical: 10,
                     borderColor:
-                      viewMode === "preview" ? theme.buttonText : theme.tint,
+                      viewMode === "preview"
+                        ? theme.iconOrTextButton
+                        : theme.tint,
                   })}
                 >
                   Preview
@@ -129,7 +131,7 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
                     color: theme.text,
                     paddingVertical: 10,
                     borderColor:
-                      viewMode === "old" ? theme.buttonText : theme.tint,
+                      viewMode === "old" ? theme.iconOrTextButton : theme.tint,
                   })}
                 >
                   Old Version

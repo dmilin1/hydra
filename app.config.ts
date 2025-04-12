@@ -26,7 +26,7 @@ module.exports = {
     ],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: IS_DEV ? 'com.dmilin.hydra-dev' : "com.dmilin.hydra",
+      bundleIdentifier: "com.dmilin.hydra",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
       },

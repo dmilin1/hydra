@@ -26,6 +26,7 @@ import { ModalProvider } from "../contexts/ModalContext";
 import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
+import { SubscriptionsProvider } from "../contexts/SubscriptionsContext";
 import db, { expoDb } from "../db";
 import { doDBMaintenance } from "../db/functions/Maintenance";
 import migrations from "../drizzle/migrations";
@@ -87,25 +88,27 @@ function RootLayout() {
     fontsLoaded &&
     dbMaintenanceDone && (
       <SafeAreaProvider>
-        <SettingsProvider>
-          <AccountProvider>
-            <NavigationProvider>
-              <ActionSheetProvider>
-                <InboxProvider>
-                  <ModalProvider>
-                    <MediaViewerProvider>
-                      <SubredditProvider>
-                        <UpdateInfo />
-                        <SubscribeToHydra />
-                        <Tabs />
-                      </SubredditProvider>
-                    </MediaViewerProvider>
-                  </ModalProvider>
-                </InboxProvider>
-              </ActionSheetProvider>
-            </NavigationProvider>
-          </AccountProvider>
-        </SettingsProvider>
+        <AccountProvider>
+          <SubscriptionsProvider>
+            <SettingsProvider>
+              <NavigationProvider>
+                <ActionSheetProvider>
+                  <InboxProvider>
+                    <ModalProvider>
+                      <MediaViewerProvider>
+                        <SubredditProvider>
+                          <UpdateInfo />
+                          <SubscribeToHydra />
+                          <Tabs />
+                        </SubredditProvider>
+                      </MediaViewerProvider>
+                    </ModalProvider>
+                  </InboxProvider>
+                </ActionSheetProvider>
+              </NavigationProvider>
+            </SettingsProvider>
+          </SubscriptionsProvider>
+        </AccountProvider>
       </SafeAreaProvider>
     )
   );

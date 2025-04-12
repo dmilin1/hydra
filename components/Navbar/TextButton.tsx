@@ -27,7 +27,7 @@ export default function TextButton({
       <Text
         numberOfLines={1}
         style={t(styles.centerText, {
-          color: theme.buttonText,
+          color: theme.iconOrTextButton,
         })}
       >
         {text}

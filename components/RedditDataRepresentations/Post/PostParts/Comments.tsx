@@ -287,7 +287,7 @@ export function CommentComponent({
                       <Text
                         style={t(styles.author, {
                           color: comment.isOP
-                            ? theme.buttonText
+                            ? theme.iconOrTextButton
                             : comment.isModerator
                               ? theme.moderator
                               : theme.text,
@@ -445,7 +445,7 @@ export function CommentComponent({
                   >
                     <Text
                       style={t(styles.upvoteText, {
-                        color: theme.buttonText,
+                        color: theme.iconOrTextButton,
                       })}
                     >
                       {loadingMore

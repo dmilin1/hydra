@@ -101,7 +101,7 @@ export default function Stack() {
   return (
     <StackNavigator.Navigator
       screenOptions={{
-        headerTintColor: theme.buttonText.toString(),
+        headerTintColor: theme.iconOrTextButton.toString(),
         navigationBarColor: theme.background.toString(),
         headerStyle: {
           backgroundColor: theme.background.toString(),

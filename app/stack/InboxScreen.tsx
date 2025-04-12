@@ -32,7 +32,7 @@ export default function InboxScreen({ StackNavigator }: InboxScreenProps) {
               <MaterialIcons
                 name="checklist-rtl"
                 size={24}
-                color={theme.buttonText}
+                color={theme.iconOrTextButton}
               />
             }
             onPress={() => {

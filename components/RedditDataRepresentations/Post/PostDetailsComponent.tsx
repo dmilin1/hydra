@@ -233,7 +233,7 @@ export default function PostDetailsComponent({
             borderTopColor: theme.divider,
           })}
         >
-          <Text style={{ color: theme.buttonText }}>
+          <Text style={{ color: theme.iconOrTextButton }}>
             This is a comment thread. Click here to view all comments.
           </Text>
         </TouchableHighlight>

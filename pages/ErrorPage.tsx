@@ -34,7 +34,7 @@ export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
             onPress={() => WebBrowser.openBrowserAsync(url)}
             style={styles.linkContainer}
           >
-            <Text style={t(styles.linkText, { color: theme.buttonText })}>
+            <Text style={t(styles.linkText, { color: theme.iconOrTextButton })}>
               {url}
             </Text>
           </TouchableHighlight>

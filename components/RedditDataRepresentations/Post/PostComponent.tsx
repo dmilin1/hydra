@@ -98,7 +98,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
         right={[
           {
             icon: <Feather name={seen ? "eye-off" : "eye"} />,
-            color: theme.buttonText,
+            color: theme.iconOrTextButton,
             action: async () => {
               setSeenValue(!seen);
             },

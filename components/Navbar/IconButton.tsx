@@ -27,7 +27,7 @@ export default function IconButton({
         onPress={() => onPress?.()}
         style={t(styles.touchableContainer)}
       >
-        <Text style={{ color: theme.buttonText }}>{icon}</Text>
+        <Text style={{ color: theme.iconOrTextButton }}>{icon}</Text>
       </TouchableOpacity>
     </View>
   );
