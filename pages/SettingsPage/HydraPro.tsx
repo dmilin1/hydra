@@ -90,7 +90,7 @@ export default function HydraPro() {
       <View style={styles.featuresContainer}>
         <FeatureItem
           icon={<Ionicons name="notifications" size={24} color={theme.text} />}
-          title="Push Notifications"
+          title="Inbox Notifications"
           description="Get instant alerts for replies and messages"
           theme={theme}
         />

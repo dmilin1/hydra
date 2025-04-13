@@ -1,4 +1,4 @@
-import { Account } from "../contexts/AccountContext";
+import { Account } from "./User";
 import RedditCookies from "../utils/RedditCookies";
 
 type CurrentUser = {

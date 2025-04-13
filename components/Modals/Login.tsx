@@ -12,7 +12,8 @@ import {
 } from "react-native";
 
 import { IncorrectCredentials, Needs2FA } from "../../api/Authentication";
-import { Account, AccountContext } from "../../contexts/AccountContext";
+import { Account } from "../../api/User";
+import { AccountContext } from "../../contexts/AccountContext";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 

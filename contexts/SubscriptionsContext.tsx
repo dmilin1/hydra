@@ -5,6 +5,8 @@ import Purchases, {
   PurchasesPackage,
 } from "react-native-purchases";
 
+import { registerCustomer } from "../api/Customer";
+
 Purchases.configure({
   apiKey: "appl_okkBpjboHClPttmFHfsSWRaGSFd",
 });
@@ -105,6 +107,14 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
       Purchases.removeCustomerInfoUpdateListener(handleCustomerInfoUpdate);
     };
   }, []);
+
+  useEffect(() => {
+    if (isPro && customerInfo) {
+      registerCustomer({
+        customerId: customerInfo.originalAppUserId,
+      });
+    }
+  }, [isPro]);
 
   return (
     <SubscriptionsContext.Provider

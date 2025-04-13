@@ -10,14 +10,9 @@ import {
   Needs2FA,
   RateLimited,
 } from "../api/Authentication";
-import { User, getUser } from "../api/User";
+import { Account, User, getUser } from "../api/User";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
-
-export type Account = {
-  username: string;
-  password: string;
-};
 
 type AccountContextType = {
   loginInitialized: boolean;
@@ -53,6 +48,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const logInContext = async (account: Account, attempt = 1): Promise<void> => {
     try {
+      await RedditCookies.restoreSessionCookies(account);
       const currentUser = await getCurrentUser();
       if (currentUser?.data?.name !== account.username) {
         await login(account);
@@ -62,6 +58,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       setCurrentAcc(account);
       setCurrentUser(user);
       Sentry.setUser({ username: user.userName });
+      await RedditCookies.saveSessionCookies(account);
     } catch (e) {
       if (e instanceof RateLimited && attempt === 1) {
         // This error seems to happen when the session cookies are stale, but
@@ -106,6 +103,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     }
     // remove from saved data
     await SecureStore.deleteItemAsync(`password-${account.username}`);
+    await RedditCookies.deleteSessionCookies(account);
     await saveAccounts(accs);
     setAccounts(accs);
   };
