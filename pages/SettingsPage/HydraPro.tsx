@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,6 +12,7 @@ import type { ColorValue } from "react-native";
 
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
+import Time from "../../utils/Time";
 
 interface Theme {
   tint: ColorValue;
@@ -43,8 +44,22 @@ const FeatureItem = ({ icon, title, description, theme }: FeatureItemProps) => (
 
 export default function HydraPro() {
   const { theme } = useContext(ThemeContext);
-  const { isPro, buyPro, proOffering, isLoadingOffering } =
-    useContext(SubscriptionsContext);
+  const {
+    isPro,
+    buyPro,
+    proOffering,
+    isLoadingOffering,
+    purchasesInitialized,
+    inGracePeriod,
+    gracePeriodEndsAt,
+    getCustomerInfo,
+  } = useContext(SubscriptionsContext);
+
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  useEffect(() => {
+    getCustomerInfo(true);
+  }, []);
 
   return (
     <>
@@ -97,7 +112,7 @@ export default function HydraPro() {
         <FeatureItem
           icon={<Ionicons name="filter" size={24} color={theme.text} />}
           title="Advanced Post Filtering"
-          description="AI-powered content filtering and organization"
+          description="Post filtering powered by machine learning"
           theme={theme}
         />
         <FeatureItem
@@ -115,11 +130,16 @@ export default function HydraPro() {
       </View>
 
       <TouchableOpacity
-        onPress={buyPro}
+        onPress={async () => {
+          setIsPurchasing(true);
+          await buyPro();
+          setIsPurchasing(false);
+        }}
         activeOpacity={0.5}
         style={t(styles.upgradeButton, {
           backgroundColor: theme.buttonBg,
         })}
+        disabled={isLoadingOffering || !purchasesInitialized}
       >
         <View style={styles.upgradeButtonContent}>
           <Text
@@ -127,13 +147,17 @@ export default function HydraPro() {
               color: theme.buttonText,
             })}
           >
-            {isLoadingOffering
-              ? "Loading..."
-              : isPro
-                ? "Manage Subscription"
-                : proOffering?.product.priceString
-                  ? `Upgrade Now - ${proOffering.product.priceString}`
-                  : "Upgrade to Pro"}
+            {isLoadingOffering || !purchasesInitialized || isPurchasing ? (
+              <ActivityIndicator size="small" color={theme.buttonText} />
+            ) : inGracePeriod ? (
+              "Renew Subscription"
+            ) : isPro ? (
+              "Manage Subscription"
+            ) : proOffering?.product.priceString ? (
+              `Upgrade Now - ${proOffering.product.priceString}`
+            ) : (
+              "Upgrade to Pro"
+            )}
           </Text>
           {isLoadingOffering && (
             <ActivityIndicator
@@ -144,6 +168,12 @@ export default function HydraPro() {
           )}
         </View>
       </TouchableOpacity>
+      {gracePeriodEndsAt && (
+        <Text style={t(styles.gracePeriodText, { color: theme.text })}>
+          Your subscription will end in{" "}
+          {new Time(gracePeriodEndsAt).prettyTimeSince()}
+        </Text>
+      )}
     </>
   );
 }
@@ -223,5 +253,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginRight: 5,
+  },
+  gracePeriodText: {
+    fontSize: 14,
+    marginTop: 4,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    textAlign: "center",
   },
 });

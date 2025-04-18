@@ -5,9 +5,8 @@ export default class Time {
     this.time = new Date(time);
   }
 
-  prettyTimeSince(): string {
-    const now = new Date();
-    const diff = Math.abs(now.getTime() - this.time.getTime());
+  prettyTimeSince(target: Date = new Date()): string {
+    const diff = Math.abs(target.getTime() - this.time.getTime());
     const diffSeconds = Math.floor(diff / 1000);
     const diffMinutes = Math.floor(diffSeconds / 60);
     const diffHours = Math.floor(diffMinutes / 60);
@@ -29,9 +28,8 @@ export default class Time {
     }
   }
 
-  shortPrettyTimeSince(): string {
-    const now = new Date();
-    const diff = Math.abs(now.getTime() - this.time.getTime());
+  shortPrettyTimeSince(target: Date = new Date()): string {
+    const diff = Math.abs(target.getTime() - this.time.getTime());
     const diffSeconds = Math.floor(diff / 1000);
     const diffMinutes = Math.floor(diffSeconds / 60);
     const diffHours = Math.floor(diffMinutes / 60);

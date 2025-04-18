@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import Purchases, {
   CustomerInfo,
+  CustomerInfoUpdateListener,
   PurchasesPackage,
 } from "react-native-purchases";
 
@@ -18,18 +19,24 @@ interface SubscriptionContextType {
   purchasesInitialized: boolean;
   customerInfo: CustomerInfo | null;
   isPro: boolean;
-  buyPro: () => void;
+  buyPro: () => Promise<void>;
+  getCustomerInfo: (refresh?: boolean) => Promise<void>;
   proOffering: PurchasesPackage | null;
   isLoadingOffering: boolean;
+  inGracePeriod: boolean;
+  gracePeriodEndsAt: number | null;
 }
 
 const initialSubscriptionContext: SubscriptionContextType = {
   purchasesInitialized: false,
   customerInfo: null,
   isPro: false,
-  buyPro: () => {},
+  buyPro: async () => {},
   proOffering: null,
+  getCustomerInfo: async () => {},
   isLoadingOffering: true,
+  inGracePeriod: false,
+  gracePeriodEndsAt: null,
 };
 
 export const SubscriptionsContext = createContext(initialSubscriptionContext);
@@ -46,6 +53,15 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
 
   const isPro =
     customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]?.isActive ?? false;
+
+  const inGracePeriod =
+    isPro &&
+    !customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]?.willRenew;
+
+  const gracePeriodEndsAt = inGracePeriod
+    ? customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]
+        ?.expirationDateMillis ?? null
+    : null;
 
   const loadOffering = async () => {
     try {
@@ -66,8 +82,8 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
       if (!proOffering) {
         throw new Error("Hydra Pro offering not found");
       }
-      await Purchases.purchasePackage(proOffering);
-      getCustomerInfo();
+      const result = await Purchases.purchasePackage(proOffering);
+      setCustomerInfo(result.customerInfo);
     } catch (error) {
       if (
         typeof error === "object" &&
@@ -84,22 +100,27 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
       } else {
         Alert.alert("Something went wrong");
       }
+      await getCustomerInfo(true);
     }
   };
 
-  const getCustomerInfo = async () => {
+  const getCustomerInfo = async (refresh = false) => {
+    setPurchasesInitialized(false);
+    if (refresh) {
+      Purchases.invalidateCustomerInfoCache();
+    }
     const customerInfo = await Purchases.getCustomerInfo();
+    console.log("updated customer info", customerInfo);
     setCustomerInfo(customerInfo);
     setPurchasesInitialized(true);
   };
 
   useEffect(() => {
-    Promise.all([getCustomerInfo(), loadOffering()]);
-  }, []);
-
-  useEffect(() => {
-    const handleCustomerInfoUpdate = async () => {
-      const customerInfo = await Purchases.getCustomerInfo();
+    getCustomerInfo();
+    loadOffering();
+    const handleCustomerInfoUpdate: CustomerInfoUpdateListener = async (
+      customerInfo,
+    ) => {
       setCustomerInfo(customerInfo);
     };
     Purchases.addCustomerInfoUpdateListener(handleCustomerInfoUpdate);
@@ -124,7 +145,10 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
         isPro,
         buyPro,
         proOffering,
+        getCustomerInfo,
         isLoadingOffering,
+        inGracePeriod,
+        gracePeriodEndsAt,
       }}
     >
       {children}
