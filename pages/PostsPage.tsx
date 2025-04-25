@@ -15,7 +15,7 @@ export default function PostsPage({
   route,
 }: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
   const { theme } = useContext(ThemeContext);
-  const { filterPostsByText } = useContext(FiltersContext);
+  const { filterPostsByText, filterPostsByAI } = useContext(FiltersContext);
 
   const {
     data: posts,
@@ -25,12 +25,14 @@ export default function PostsPage({
     fullyLoaded,
     hitFilterLimit,
   } = useRedditDataState<Post>({
-    loadData: async (after) =>
+    loadData: async (after, limit) =>
       await getPosts(url, {
         after,
         search: search.current,
+        limit,
       }),
-    filterRules: [filterSeenItems, filterPostsByText],
+    filterRules: [filterSeenItems, filterPostsByText, filterPostsByAI],
+    limitRampUp: [10, 20, 40, 70, 100],
   });
 
   const search = useRef<string>("");

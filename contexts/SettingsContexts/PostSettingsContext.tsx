@@ -9,6 +9,7 @@ const initialValues = {
   postTextLength: 3,
   blurSpoilers: true,
   blurNSFW: true,
+  showPostSummary: true,
 };
 
 const initialPostSettingsContext = {
@@ -20,6 +21,7 @@ const initialPostSettingsContext = {
   changePostTextLength: (_newValue: number) => {},
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
+  toggleShowPostSummary: (_newValue?: boolean) => {},
 };
 
 export const PostSettingsContext = createContext(initialPostSettingsContext);
@@ -35,6 +37,8 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [postTextLength, setPostTextLength] = useMMKVNumber("postTextLength");
   const [blurSpoilers, setBlurSpoilers] = useMMKVBoolean("blurSpoilers");
   const [blurNSFW, setBlurNSFW] = useMMKVBoolean("blurNSFW");
+  const [showPostSummary, setShowPostSummary] =
+    useMMKVBoolean("showPostSummary");
 
   return (
     <PostSettingsContext.Provider
@@ -64,6 +68,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
 
         blurNSFW: blurNSFW ?? initialValues.blurNSFW,
         toggleBlurNSFW: (newValue = !blurNSFW) => setBlurNSFW(newValue),
+
+        showPostSummary: showPostSummary ?? initialValues.showPostSummary,
+        toggleShowPostSummary: (newValue = !showPostSummary) =>
+          setShowPostSummary(newValue),
       }}
     >
       {children}

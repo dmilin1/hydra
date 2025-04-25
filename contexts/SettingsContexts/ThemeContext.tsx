@@ -1,6 +1,6 @@
 import { setStatusBarStyle } from "expo-status-bar";
-import { createContext, useContext, useEffect } from "react";
-import { Alert, ImageStyle, TextStyle, ViewStyle } from "react-native";
+import { createContext, useContext, useEffect, useRef } from "react";
+import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 
 import Themes from "../../constants/Themes";
@@ -9,6 +9,7 @@ const initialThemeContext = {
   currentTheme: "dark" as keyof typeof Themes,
   setCurrentTheme: (_: keyof typeof Themes) => {},
   theme: Themes["dark"] as (typeof Themes)[keyof typeof Themes],
+  cantUseTheme: (_: keyof typeof Themes) => false,
 };
 
 export const ThemeContext = createContext(initialThemeContext);
@@ -16,6 +17,7 @@ export const ThemeContext = createContext(initialThemeContext);
 export function ThemeProvider({ children }: React.PropsWithChildren) {
   const { isPro, purchasesInitialized } = useContext(SubscriptionsContext);
   const [storedCurrentTheme, setStoredTheme] = useMMKVString("theme");
+  const temporaryThemeTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const currentTheme = (
     storedCurrentTheme && storedCurrentTheme in Themes
@@ -30,15 +32,14 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
   const grantThemeTemporarily = (theme: keyof typeof Themes) => {
     const oldTheme = currentTheme;
     setStoredTheme(theme);
-    Alert.alert(
-      "Hydra Pro Theme",
-      "You can use this theme for 5 minutes to try it out. Upgrade to Hydra Pro to keep using it.",
-      [{ text: "OK" }],
-    );
     if (!Themes[oldTheme].isPro) {
-      setTimeout(() => {
-        setStoredTheme(oldTheme);
-      }, 1_000 * 10);
+      temporaryThemeTimeout.current = setTimeout(
+        () => {
+          setStoredTheme(oldTheme);
+          temporaryThemeTimeout.current = null;
+        },
+        1_000 * 60 * 5,
+      );
     }
   };
 
@@ -55,7 +56,11 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
   }, [currentTheme]);
 
   useEffect(() => {
-    if (cantUseTheme(currentTheme)) {
+    if (
+      purchasesInitialized &&
+      !temporaryThemeTimeout.current &&
+      cantUseTheme(currentTheme)
+    ) {
       setStoredTheme(initialThemeContext.currentTheme);
     }
   }, [purchasesInitialized, isPro]);
@@ -66,6 +71,7 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
         currentTheme,
         setCurrentTheme,
         theme: Themes[currentTheme],
+        cantUseTheme,
       }}
     >
       {children}

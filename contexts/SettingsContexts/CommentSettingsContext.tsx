@@ -5,6 +5,7 @@ const initialValues = {
   voteIndicator: false,
   collapseAutoModerator: true,
   commentFlairs: true,
+  showCommentSummary: true,
 };
 
 const initialCommentSettingsContext = {
@@ -12,6 +13,7 @@ const initialCommentSettingsContext = {
   toggleVoteIndicator: (_newValue?: boolean) => {},
   toggleCollapseAutoModerator: (_newValue?: boolean) => {},
   toggleCommentFlairs: (_newValue?: boolean) => {},
+  toggleShowCommentSummary: (_newValue?: boolean) => {},
 };
 
 export const CommentSettingsContext = createContext(
@@ -28,6 +30,11 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
   const [storedCommentFlairs, setCommentFlairs] =
     useMMKVBoolean("commentFlairs");
   const commentFlairs = storedCommentFlairs ?? initialValues.commentFlairs;
+
+  const [storedShowCommentSummary, setShowCommentSummary] =
+    useMMKVBoolean("showCommentSummary");
+  const showCommentSummary =
+    storedShowCommentSummary ?? initialValues.showCommentSummary;
 
   const toggleVoteIndicator = (newValue = !voteIndicator) => {
     setVoteIndicator(newValue);
@@ -49,6 +56,10 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
         commentFlairs,
         toggleCommentFlairs: (newValue = !commentFlairs) =>
           setCommentFlairs(newValue),
+
+        showCommentSummary,
+        toggleShowCommentSummary: (newValue = !showCommentSummary) =>
+          setShowCommentSummary(newValue),
       }}
     >
       {children}

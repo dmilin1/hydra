@@ -6,7 +6,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import React, { useContext, useRef } from "react";
-import { ColorValue, Switch, View } from "react-native";
+import { Alert, ColorValue, Switch, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 import List from "../../components/UI/List";
@@ -14,9 +14,14 @@ import Picker from "../../components/UI/Picker";
 import { CommentSettingsContext } from "../../contexts/SettingsContexts/CommentSettingsContext";
 import { PostSettingsContext } from "../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
+import { useURLNavigation } from "../../utils/navigation";
 
 export default function Appearance() {
   const { theme } = useContext(ThemeContext);
+  const { isPro } = useContext(SubscriptionsContext);
+
+  const { pushURL } = useURLNavigation();
 
   const {
     postCompactMode,
@@ -33,6 +38,8 @@ export default function Appearance() {
     toggleBlurNSFW,
     blurSpoilers,
     toggleBlurSpoilers,
+    showPostSummary,
+    toggleShowPostSummary,
   } = useContext(PostSettingsContext);
 
   const {
@@ -42,10 +49,28 @@ export default function Appearance() {
     toggleCollapseAutoModerator,
     commentFlairs,
     toggleCommentFlairs,
+    showCommentSummary,
+    toggleShowCommentSummary,
   } = useContext(CommentSettingsContext);
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
   const postTextLengthRef = useRef<RNPickerSelect>(null);
+
+  const showProAlert = (title: string, message: string) => {
+    Alert.alert(title, message, [
+      {
+        text: "Get Hydra Pro",
+        isPreferred: true,
+        onPress: () => {
+          pushURL("hydra://settings/hydraPro");
+        },
+      },
+      {
+        text: "Maybe Later",
+        style: "cancel",
+      },
+    ]);
+  };
 
   return (
     <>
@@ -184,6 +209,42 @@ export default function Appearance() {
             text: "Blur NSFW",
             onPress: () => toggleBlurNSFW(),
           },
+          {
+            key: "showPostSummary",
+            icon: (
+              <MaterialIcons name="short-text" size={24} color={theme.text} />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary as ColorValue,
+                  true: theme.iconPrimary as ColorValue,
+                }}
+                value={isPro && showPostSummary}
+                onValueChange={() => {
+                  if (isPro) {
+                    toggleShowPostSummary();
+                  } else {
+                    showProAlert(
+                      "Hydra Pro",
+                      "Post summaries are only available to Hydra Pro subscribers.",
+                    );
+                  }
+                }}
+              />
+            ),
+            text: "Show post summary",
+            onPress: () => {
+              if (isPro) {
+                toggleShowPostSummary();
+              } else {
+                showProAlert(
+                  "Hydra Pro",
+                  "Post summaries are only available to Hydra Pro subscribers.",
+                );
+              }
+            },
+          },
         ]}
       />
       <View style={{ marginTop: 5 }} />
@@ -243,6 +304,42 @@ export default function Appearance() {
             ),
             text: "Show flairs",
             onPress: () => toggleCommentFlairs(),
+          },
+          {
+            key: "showCommentSummary",
+            icon: (
+              <MaterialIcons name="short-text" size={24} color={theme.text} />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary as ColorValue,
+                  true: theme.iconPrimary as ColorValue,
+                }}
+                value={isPro && showCommentSummary}
+                onValueChange={() => {
+                  if (isPro) {
+                    toggleShowCommentSummary();
+                  } else {
+                    showProAlert(
+                      "Hydra Pro",
+                      "Comment summaries are only available to Hydra Pro subscribers.",
+                    );
+                  }
+                }}
+              />
+            ),
+            text: "Show comment summary",
+            onPress: () => {
+              if (isPro) {
+                toggleShowCommentSummary();
+              } else {
+                showProAlert(
+                  "Hydra Pro",
+                  "Comment summaries are only available to Hydra Pro subscribers.",
+                );
+              }
+            },
           },
         ]}
       />

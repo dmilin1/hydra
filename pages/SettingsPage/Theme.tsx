@@ -1,10 +1,11 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 
 import Themes from "../../constants/Themes";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
+import { useURLNavigation } from "../../utils/navigation";
 
 const isValidColor = (color: any) => {
   return (
@@ -15,15 +16,40 @@ const isValidColor = (color: any) => {
 };
 
 export default function Theme() {
-  const { theme, currentTheme, setCurrentTheme } = useContext(ThemeContext);
+  const { theme, currentTheme, setCurrentTheme, cantUseTheme } =
+    useContext(ThemeContext);
   const { isPro } = useContext(SubscriptionsContext);
+  const { pushURL } = useURLNavigation();
+
+  const setTheme = (theme: keyof typeof Themes) => {
+    setCurrentTheme(theme);
+    if (cantUseTheme(theme)) {
+      Alert.alert(
+        "Hydra Pro Theme",
+        "You can use this theme for 5 minutes to try it out. Upgrade to Hydra Pro to keep using it.",
+        [
+          {
+            text: "Get Hydra Pro",
+            isPreferred: true,
+            onPress: () => {
+              pushURL("hydra://settings/hydraPro");
+            },
+          },
+          {
+            text: "Maybe Later",
+            style: "cancel",
+          },
+        ],
+      );
+    }
+  };
 
   return (
     <>
       {Object.entries(Themes).map(([key, curTheme]) => (
         <TouchableOpacity
           key={key}
-          onPress={() => setCurrentTheme(key as keyof typeof Themes)}
+          onPress={() => setTheme(key as keyof typeof Themes)}
           style={t(styles.themeItemContainer, {
             borderBottomColor: theme.divider,
           })}

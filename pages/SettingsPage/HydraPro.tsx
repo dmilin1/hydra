@@ -105,7 +105,7 @@ export default function HydraPro() {
       <View style={styles.featuresContainer}>
         <FeatureItem
           icon={<Ionicons name="notifications" size={24} color={theme.text} />}
-          title="Inbox Notifications"
+          title="Inbox Alerts"
           description="Get instant alerts for replies and messages"
           theme={theme}
         />
@@ -125,6 +125,12 @@ export default function HydraPro() {
           icon={<Ionicons name="color-palette" size={24} color={theme.text} />}
           title="Additional Themes"
           description="Customize your app with premium themes"
+          theme={theme}
+        />
+        <FeatureItem
+          icon={<Ionicons name="heart" size={24} color={theme.text} />}
+          title="Support Hydra"
+          description="Support me with Hydra's ongoing development costs"
           theme={theme}
         />
       </View>

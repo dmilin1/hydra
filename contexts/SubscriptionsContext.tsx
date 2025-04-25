@@ -18,6 +18,7 @@ const HYDRA_PRO_ENTITLEMENT = "Hydra Pro";
 interface SubscriptionContextType {
   purchasesInitialized: boolean;
   customerInfo: CustomerInfo | null;
+  customerId: string | null;
   isPro: boolean;
   buyPro: () => Promise<void>;
   getCustomerInfo: (refresh?: boolean) => Promise<void>;
@@ -30,6 +31,7 @@ interface SubscriptionContextType {
 const initialSubscriptionContext: SubscriptionContextType = {
   purchasesInitialized: false,
   customerInfo: null,
+  customerId: null,
   isPro: false,
   buyPro: async () => {},
   proOffering: null,
@@ -50,6 +52,8 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
   );
   const [proOffering, setProOffering] = useState<PurchasesPackage | null>(null);
   const [isLoadingOffering, setIsLoadingOffering] = useState(true);
+
+  const customerId = customerInfo?.originalAppUserId ?? null;
 
   const isPro =
     customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]?.isActive ?? false;
@@ -110,7 +114,6 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
       Purchases.invalidateCustomerInfoCache();
     }
     const customerInfo = await Purchases.getCustomerInfo();
-    console.log("updated customer info", customerInfo);
     setCustomerInfo(customerInfo);
     setPurchasesInitialized(true);
   };
@@ -142,6 +145,7 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
       value={{
         purchasesInitialized,
         customerInfo,
+        customerId,
         isPro,
         buyPro,
         proOffering,

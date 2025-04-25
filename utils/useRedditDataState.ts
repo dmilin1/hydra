@@ -8,9 +8,13 @@ export type FilterFunction<T extends RedditDataObject> = (
 ) => Promise<T[]> | T[];
 
 type UseRedditDataStateProps<T extends RedditDataObject> = {
-  loadData: (after: string | undefined) => Promise<T[]>;
+  loadData: (
+    after: string | undefined,
+    limit: number | undefined,
+  ) => Promise<T[]>;
   filterRules?: FilterFunction<T>[];
   filterRetries?: number;
+  limitRampUp?: number[];
 };
 
 const filterExisting = async <T extends RedditDataObject>(
@@ -29,6 +33,7 @@ export default function useRedditDataState<T extends RedditDataObject>({
   loadData,
   filterRules = [],
   filterRetries = 5,
+  limitRampUp,
 }: UseRedditDataStateProps<T>) {
   const unfilteredAfter = useRef<string | undefined>(undefined);
 
@@ -46,7 +51,10 @@ export default function useRedditDataState<T extends RedditDataObject>({
   const loadMoreData = async () => {
     let newData: T[] = [];
     for (let i = 0; i < filterRetries; i++) {
-      const potentialData = await loadData(unfilteredAfter.current);
+      const potentialData = await loadData(
+        unfilteredAfter.current,
+        limitRampUp?.[i],
+      );
       if (potentialData.length === 0) {
         setFullyLoaded(true);
         return;
@@ -68,7 +76,10 @@ export default function useRedditDataState<T extends RedditDataObject>({
     unfilteredAfter.current = undefined;
     let newData: T[] = [];
     for (let i = 0; i < filterRetries; i++) {
-      const potentialData = await loadData(unfilteredAfter.current);
+      const potentialData = await loadData(
+        unfilteredAfter.current,
+        limitRampUp?.[i],
+      );
       if (potentialData.length === 0) {
         setData([]);
         setFullyLoaded(true);

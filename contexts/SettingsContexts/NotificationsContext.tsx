@@ -27,10 +27,10 @@ export function NotificationsProvider({ children }: React.PropsWithChildren) {
     storedNotificationsEnabled ?? initialValues.notificationsEnabled;
 
   const { accounts } = useContext(AccountContext);
-  const { isPro, customerInfo } = useContext(SubscriptionsContext);
+  const { isPro, customerId } = useContext(SubscriptionsContext);
 
   const registerForPushNotifications = async () => {
-    if (!customerInfo) return;
+    if (!customerId) return;
 
     try {
       const { status: existingStatus } =
@@ -63,11 +63,7 @@ export function NotificationsProvider({ children }: React.PropsWithChildren) {
         session: string;
       }[];
 
-      await registerNotifications(
-        customerInfo.originalAppUserId,
-        token,
-        accountsWithSession,
-      );
+      await registerNotifications(customerId, token, accountsWithSession);
     } catch (error) {
       console.error("Error registering for push notifications:", error);
     }
