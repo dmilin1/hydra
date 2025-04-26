@@ -1,6 +1,6 @@
 import { FlashList, FlashListProps } from "@shopify/flash-list";
 import * as Haptics from "expo-haptics";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import {
   StyleSheet,
   RefreshControl,
@@ -64,10 +64,6 @@ function RedditDataScroller<T extends RedditDataObject>(
     }
     setIsLoadingMore(false);
   };
-
-  useEffect(() => {
-    loadMoreData();
-  }, []);
 
   return (
     <FlashList<T>
