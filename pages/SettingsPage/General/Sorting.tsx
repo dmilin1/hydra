@@ -19,7 +19,7 @@ import {
   DEFAULT_POST_SORT_TOP_KEY,
   REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
-  SORT_HOME_PAGE
+  SORT_HOME_PAGE,
 } from "../../../constants/SettingsKeys";
 import {
   t,
@@ -132,8 +132,7 @@ export default function General() {
   );
   const [storedRememberCommentSubredditSort, setRememberCommentSubredditSort] =
     useMMKVBoolean(REMEMBER_COMMENT_SUBREDDIT_SORT_KEY);
-  const [storedSortHomePage, setSortHomePage] =
-    useMMKVBoolean(SORT_HOME_PAGE);
+  const [storedSortHomePage, setSortHomePage] = useMMKVBoolean(SORT_HOME_PAGE);
 
   const defaultPostSort = storedDefaultPostSort ?? "default";
   const defaultPostSortTop = storedDefaultPostSortTop ?? "all";
@@ -201,32 +200,32 @@ export default function General() {
           },
           ...(defaultPostSort === "top"
             ? [
-              {
-                key: "defaultPostSortTop",
-                icon: (
-                  <MaterialCommunityIcons
-                    name="podium-gold"
-                    size={24}
-                    color={theme.text}
-                  />
-                ),
-                text: "Default top sort",
-                rightIcon: (
-                  <Picker
-                    ref={defaultPostSortTopRef}
-                    onValueChange={(value: string) => {
-                      if (value) {
-                        setDefaultPostSortTop(value);
-                      }
-                    }}
-                    items={TOP_SORT_OPTIONS}
-                    value={defaultPostSortTop}
-                  />
-                ),
-                onPress: () =>
-                  defaultPostSortTopRef.current?.togglePicker(true),
-              },
-            ]
+                {
+                  key: "defaultPostSortTop",
+                  icon: (
+                    <MaterialCommunityIcons
+                      name="podium-gold"
+                      size={24}
+                      color={theme.text}
+                    />
+                  ),
+                  text: "Default top sort",
+                  rightIcon: (
+                    <Picker
+                      ref={defaultPostSortTopRef}
+                      onValueChange={(value: string) => {
+                        if (value) {
+                          setDefaultPostSortTop(value);
+                        }
+                      }}
+                      items={TOP_SORT_OPTIONS}
+                      value={defaultPostSortTop}
+                    />
+                  ),
+                  onPress: () =>
+                    defaultPostSortTopRef.current?.togglePicker(true),
+                },
+              ]
             : []),
           {
             key: "sortHomePage",
@@ -238,14 +237,11 @@ export default function General() {
                   true: theme.iconPrimary as ColorValue,
                 }}
                 value={sortHomePage}
-                onValueChange={() =>
-                  setSortHomePage(!sortHomePage)
-                }
+                onValueChange={() => setSortHomePage(!sortHomePage)}
               />
             ),
-            text: "Sort on home page",
-            onPress: () =>
-              setSortHomePage(!sortHomePage),
+            text: "Apply sort to home",
+            onPress: () => setSortHomePage(!sortHomePage),
           },
           {
             key: "rememberPostSubredditSort",
