@@ -13,6 +13,7 @@ import List from "../../components/UI/List";
 import Picker from "../../components/UI/Picker";
 import { CommentSettingsContext } from "../../contexts/SettingsContexts/CommentSettingsContext";
 import { PostSettingsContext } from "../../contexts/SettingsContexts/PostSettingsContext";
+import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import { useURLNavigation } from "../../utils/navigation";
@@ -52,6 +53,8 @@ export default function Appearance() {
     showCommentSummary,
     toggleShowCommentSummary,
   } = useContext(CommentSettingsContext);
+
+  const { showUsername, toggleShowUsername } = useContext(TabSettingsContext);
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
   const postTextLengthRef = useRef<RNPickerSelect>(null);
@@ -340,6 +343,28 @@ export default function Appearance() {
                 );
               }
             },
+          },
+        ]}
+      />
+      <View style={{ marginTop: 5 }} />
+      <List
+        title="Tab Appearance Settings"
+        items={[
+          {
+            key: "showUsername",
+            icon: <MaterialIcons name="person" size={24} color={theme.text} />,
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary as ColorValue,
+                  true: theme.iconPrimary as ColorValue,
+                }}
+                value={showUsername}
+                onValueChange={() => toggleShowUsername()}
+              />
+            ),
+            text: "Show username",
+            onPress: () => toggleShowUsername(),
           },
         ]}
       />

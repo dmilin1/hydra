@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LoadingSplash from "../../components/UI/LoadingSplash";
 import { AccountContext } from "../../contexts/AccountContext";
 import { InboxContext } from "../../contexts/InboxContext";
+import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import Stack from "../stack";
 
@@ -30,6 +31,7 @@ export default function Tabs() {
   const { theme } = useContext(ThemeContext);
   const { loginInitialized, currentUser } = useContext(AccountContext);
   const { inboxCount } = useContext(InboxContext);
+  const { showUsername } = useContext(TabSettingsContext);
 
   const tabBarStyle = {
     backgroundColor: theme.background,
@@ -105,7 +107,9 @@ export default function Tabs() {
               ),
               tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
-              tabBarLabel: currentUser?.userName ?? "Account",
+              tabBarLabel: showUsername
+                ? currentUser?.userName ?? "Account"
+                : "Account",
               animation: "fade",
             }}
             component={Stack}
