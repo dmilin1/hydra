@@ -40,6 +40,8 @@ type Themes = {
   midnight: Theme;
   discord: Theme;
   spotify: Theme;
+  strawberry: Theme;
+  spiderman: Theme;
   gilded: Theme;
   mulberry: Theme;
   ocean: Theme;
@@ -162,6 +164,52 @@ const themes: Themes = {
     delete: "#ff0000",
     reply: "#23b5ff",
     moderator: "#4687d6",
+  },
+  strawberry: {
+    name: "Strawberry",
+    systemModeStyle: "light",
+    statusBar: "dark",
+    text: "#2d1f21",
+    isPro: false,
+    iconOrTextButton: "#FF6B6B",
+    buttonBg: "#FF6B6B",
+    buttonText: "#ffffff",
+    subtleText: "#5a3d3f",
+    verySubtleText: "#8a6d6f",
+    background: "#FFF5F5",
+    tint: "#FFE8E8",
+    iconPrimary: "#FF6B6B",
+    iconSecondary: "#FF8E8E",
+    divider: "#FFD6D6",
+    postColorTint: rainbow,
+    upvote: "#FF6B6B",
+    downvote: "#8B6F71",
+    delete: "#B22222",
+    reply: "#4CAF50",
+    moderator: "#2E8B57",
+  },
+  spiderman: {
+    name: "Spiderman",
+    systemModeStyle: "dark",
+    statusBar: "light",
+    text: "#ffffff",
+    isPro: false,
+    iconOrTextButton: "#FF0000",
+    buttonBg: "#FF0000",
+    buttonText: "#ffffff",
+    subtleText: "#e8e8e8",
+    verySubtleText: "#b5b5b5",
+    background: "#000033",
+    tint: "#1a1a4d",
+    iconPrimary: "#FF0000",
+    iconSecondary: "#FF3333",
+    divider: "#333366",
+    postColorTint: rainbow,
+    upvote: "#FF0000",
+    downvote: "#0000FF",
+    delete: "#B22222",
+    reply: "#4169E1",
+    moderator: "#1E90FF",
   },
   gilded: {
     name: "Gilded",
