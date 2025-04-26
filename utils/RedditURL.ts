@@ -9,6 +9,7 @@ import {
   makePostSubredditSortTopKey,
   REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
+  SORT_HOME_PAGE
 } from "../constants/SettingsKeys";
 
 export enum PageType {
@@ -226,7 +227,13 @@ export default class RedditURL extends URL {
     const existingSort = this.getSort();
     if (existingSort) return this;
 
-    if (pageType === PageType.SUBREDDIT) {
+    const shouldApplySortToHomePage = KeyStore.getBoolean(
+      SORT_HOME_PAGE,
+    )
+
+    if (pageType === PageType.HOME && !shouldApplySortToHomePage) return this;
+
+    if ([PageType.SUBREDDIT, PageType.HOME].includes(pageType)) {
       const subreddit = this.getSubreddit();
       const subredditSpecificSort = KeyStore.getBoolean(
         REMEMBER_POST_SUBREDDIT_SORT_KEY,
