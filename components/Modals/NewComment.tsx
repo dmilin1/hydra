@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Comment, PostDetail, submitComment } from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
@@ -24,13 +25,15 @@ type NewCommentProps = {
   parent: Comment | PostDetail;
 };
 
+const DRAFT_PREFIX = "newCommentDraft-";
+
 export default function NewComment({ contentSent, parent }: NewCommentProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
   const parentViewAvailable = !!parent.html;
 
-  const [text, setText] = useState("");
+  const [text, setText] = useDraftState(DRAFT_PREFIX + parent.id);
   const [viewMode, setViewMode] = useState<"parent" | "preview">(
     parentViewAvailable ? "parent" : "preview",
   );

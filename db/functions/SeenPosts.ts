@@ -8,13 +8,16 @@ export async function maintainSeenPosts() {
   const MAX_SEEN_POSTS = 5_000;
   const seenPostCount = await db.$count(SeenPosts);
   if (seenPostCount > MAX_SEEN_POSTS) {
-    const oldestSeenPost = await db
+    const oldestSeenPost = db
       .select()
       .from(SeenPosts)
       .orderBy(SeenPosts.createdAt)
       .offset(seenPostCount - MAX_SEEN_POSTS)
-      .limit(1);
-    await db.delete(SeenPosts).where(lt(SeenPosts.id, oldestSeenPost[0].id));
+      .limit(1)
+      .get();
+    if (oldestSeenPost) {
+      await db.delete(SeenPosts).where(lt(SeenPosts.id, oldestSeenPost.id));
+    }
   }
 }
 

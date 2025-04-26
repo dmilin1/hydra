@@ -22,6 +22,7 @@ import { uploadImage } from "../../api/Media";
 import { submitPost } from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
@@ -31,6 +32,8 @@ type NewPostProps = {
   subreddit: string;
 };
 
+const DRAFT_PREFIX = "newPostDraft-";
+
 export default function NewPostEditor({
   contentSent,
   subreddit,
@@ -38,8 +41,8 @@ export default function NewPostEditor({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
-  const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
+  const [title, setTitle] = useDraftState(DRAFT_PREFIX + "title-" + subreddit);
+  const [text, setText] = useDraftState(DRAFT_PREFIX + "text-" + subreddit);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [kind, setKind] = useState<"self" | "link" | "image">("self");
 

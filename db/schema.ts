@@ -26,3 +26,24 @@ export const SeenPosts = sqliteTable(
     index("updatedAt_idx").on(table.updatedAt),
   ],
 );
+
+export const Drafts = sqliteTable(
+  "drafts",
+  {
+    id: integer({ mode: "number" }).primaryKey({ autoIncrement: true }),
+    key: text().notNull(),
+    text: text().notNull(),
+    createdAt: text()
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`),
+    updatedAt: text()
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`)
+      .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+  },
+  (table) => [
+    uniqueIndex("drafts_key_idx").on(table.key),
+    index("drafts_createdAt_idx").on(table.createdAt),
+    index("drafts_updatedAt_idx").on(table.updatedAt),
+  ],
+);

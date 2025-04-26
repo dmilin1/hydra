@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Message, replyToMessage } from "../../api/Messages";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
@@ -24,6 +25,8 @@ type ReplyToMessageProps = {
   previousMsg: Message;
 };
 
+const DRAFT_PREFIX = "replyToMessageDraft-";
+
 export default function ReplyToMessage({
   contentSent,
   previousMsg,
@@ -31,7 +34,7 @@ export default function ReplyToMessage({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
-  const [text, setText] = useState("");
+  const [text, setText] = useDraftState(DRAFT_PREFIX + previousMsg.author);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
