@@ -147,7 +147,7 @@ export default function Appearance() {
                     changePostTitleLength(Number(value));
                   }
                 }}
-                items={[...Array(5).keys()].map((i) => ({
+                items={[...Array(10).keys()].map((i) => ({
                   label: (i + 1).toString(),
                   value: i + 1,
                 }))}
