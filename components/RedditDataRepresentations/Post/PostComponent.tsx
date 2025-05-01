@@ -1,11 +1,11 @@
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Share } from "react-native";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
-import { vote } from "../../../api/PostDetail";
+import { savePost, vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
 import { URLRoutes } from "../../../app/stack";
 import { PostInteractionProvider } from "../../../contexts/PostInteractionContext";
@@ -98,9 +98,17 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
         right={[
           {
             icon: <Feather name={seen ? "eye-off" : "eye"} />,
-            color: theme.iconOrTextButton,
+            color: theme.showHide,
             action: async () => {
               setSeenValue(!seen);
+            },
+          },
+          {
+            icon: <FontAwesome name={post.saved ? "bookmark" : "bookmark-o"} />,
+            color: theme.bookmark,
+            action: async () => {
+              await savePost(post, !post.saved);
+              setPost({ ...post, saved: !post.saved });
             },
           },
         ]}
@@ -271,6 +279,13 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
               <View style={styles.footerRight} />
             </View>
           </View>
+          {post.saved && (
+            <View
+              style={t(styles.bookmarkNotch, {
+                borderColor: theme.bookmark,
+              })}
+            />
+          )}
         </TouchableOpacity>
         <View
           style={{
@@ -345,5 +360,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 3,
     marginRight: 12,
+  },
+  bookmarkNotch: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+    backgroundColor: "transparent",
+    borderStyle: "solid",
+    borderLeftWidth: 15,
+    borderBottomWidth: 15,
+    borderLeftColor: "transparent",
   },
 });

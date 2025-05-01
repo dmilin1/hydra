@@ -30,7 +30,9 @@ type Theme = {
   upvote: ColorValue;
   downvote: ColorValue;
   delete: ColorValue;
+  showHide: ColorValue;
   reply: ColorValue;
+  bookmark: ColorValue;
   moderator: ColorValue;
 };
 
@@ -70,7 +72,9 @@ const themes: Themes = {
     upvote: "#ff6c00",
     downvote: "#565fe3",
     delete: "#ff0000",
+    showHide: "#87ceeb",
     reply: "#23b5ff",
+    bookmark: "#00ac37",
     moderator: "#00940f",
   },
   light: {
@@ -93,7 +97,9 @@ const themes: Themes = {
     upvote: "#ff6c00",
     downvote: "#565fe3",
     delete: "#ff0000",
+    showHide: "#87ceeb",
     reply: "#23b5ff",
+    bookmark: "#00ac37",
     moderator: "#00940f",
   },
   midnight: {
@@ -116,7 +122,9 @@ const themes: Themes = {
     upvote: "#ff6c00",
     downvote: "#565fe3",
     delete: "#ff0000",
+    showHide: "#87ceeb",
     reply: "#23b5ff",
+    bookmark: "#00ac37",
     moderator: "#00940f",
   },
   discord: {
@@ -139,7 +147,9 @@ const themes: Themes = {
     upvote: "#23a55a",
     downvote: "#f23f43",
     delete: "#ff0000",
+    showHide: "#87ceeb",
     reply: "#23b5ff",
+    bookmark: "#00ac37",
     moderator: "#00940f",
   },
   spotify: {
@@ -162,7 +172,9 @@ const themes: Themes = {
     upvote: "#1fdf64",
     downvote: "#565fe3",
     delete: "#ff0000",
+    showHide: "#87ceeb",
     reply: "#23b5ff",
+    bookmark: "#00ac37",
     moderator: "#4687d6",
   },
   strawberry: {
@@ -185,7 +197,9 @@ const themes: Themes = {
     upvote: "#FF6B6B",
     downvote: "#8B6F71",
     delete: "#B22222",
+    showHide: "#87ceeb",
     reply: "#4CAF50",
+    bookmark: "#2E8B57",
     moderator: "#2E8B57",
   },
   spiderman: {
@@ -208,7 +222,9 @@ const themes: Themes = {
     upvote: "#FF0000",
     downvote: "#0000FF",
     delete: "#B22222",
+    showHide: "#87ceeb",
     reply: "#4169E1",
+    bookmark: "#32CD32",
     moderator: "#1E90FF",
   },
   gilded: {
@@ -231,7 +247,9 @@ const themes: Themes = {
     upvote: "#FFD700",
     downvote: "#8B7355",
     delete: "#B22222",
+    showHide: "#87ceeb",
     reply: "#4FB3CC",
+    bookmark: "#FFA500",
     moderator: "#2E8B57",
   },
   mulberry: {
@@ -254,7 +272,9 @@ const themes: Themes = {
     upvote: "#FFB4B4",
     downvote: "#8B6F71",
     delete: "#B22222",
+    showHide: "#87ceeb",
     reply: "#66D9EF",
+    bookmark: "#FFC0CB",
     moderator: "#4682B4",
   },
   ocean: {
@@ -277,7 +297,9 @@ const themes: Themes = {
     upvote: "#66D9EF",
     downvote: "#4A7B8C",
     delete: "#B22222",
+    showHide: "#87ceeb",
     reply: "#FFB4B4",
+    bookmark: "#00CED1",
     moderator: "#32CD32",
   },
   aurora: {
@@ -300,7 +322,9 @@ const themes: Themes = {
     upvote: "#A5FFD6",
     downvote: "#5C8C7A",
     delete: "#B22222",
+    showHide: "#87ceeb",
     reply: "#FFD700",
+    bookmark: "#98FB98",
     moderator: "#4169E1",
   },
   royal: {
@@ -323,7 +347,9 @@ const themes: Themes = {
     upvote: "#9D4EDD",
     downvote: "#5A189A",
     delete: "#B22222",
+    showHide: "#87ceeb",
     reply: "#66D9EF",
+    bookmark: "#9370DB",
     moderator: "#4682B4",
   },
 };

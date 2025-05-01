@@ -293,7 +293,7 @@ export async function deleteUserContent(
 }
 
 export async function savePost(
-  post: PostDetail,
+  post: Post | PostDetail,
   saved: boolean,
 ): Promise<void> {
   await api(

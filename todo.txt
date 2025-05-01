@@ -31,6 +31,8 @@
 
 - 🐛 Upvoting in the post details is not reflected on the posts list
 
+- 🚀 Search saved items. Reddit has no API, so need to create an index. (https://www.reddit.com/r/HydraApp/comments/1jchl0x/comment/mpm891w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button)
+
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
