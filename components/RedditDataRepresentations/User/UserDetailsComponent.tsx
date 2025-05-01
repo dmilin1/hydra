@@ -1,4 +1,8 @@
-import { Feather, FontAwesome5 } from "@expo/vector-icons";
+import {
+  Feather,
+  FontAwesome5,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
@@ -119,7 +123,7 @@ export default function UserDetailsComponent({
                     onPress: () => pushURL(`/user/${user.userName}/hidden`),
                   },
                   {
-                    key: "saved",
+                    key: "savedPosts",
                     icon: (
                       <Feather
                         name="bookmark"
@@ -127,8 +131,22 @@ export default function UserDetailsComponent({
                         color={theme.iconPrimary}
                       />
                     ),
-                    text: "Saved",
-                    onPress: () => pushURL(`/user/${user.userName}/saved`),
+                    text: "Saved Posts",
+                    onPress: () =>
+                      pushURL(`/user/${user.userName}/saved?type=links`),
+                  },
+                  {
+                    key: "savedComments",
+                    icon: (
+                      <MaterialCommunityIcons
+                        name="comment-bookmark-outline"
+                        size={24}
+                        color={theme.iconPrimary}
+                      />
+                    ),
+                    text: "Saved Comments",
+                    onPress: () =>
+                      pushURL(`/user/${user.userName}/saved?type=comments`),
                   },
                 ]
               : []),

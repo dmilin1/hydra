@@ -20,6 +20,7 @@ export type Comment = {
   isStickied: boolean;
   upvotes: number;
   scoreHidden: boolean;
+  saved: boolean;
   userVote: VoteOption;
   flair: Flair | null;
   link: string;
@@ -79,6 +80,7 @@ export function formatComments(
       isStickied: comment.data.stickied,
       upvotes: comment.data.ups,
       scoreHidden: comment.data.score_hidden,
+      saved: comment.data.saved,
       userVote,
       flair: formatFlair(comment.data),
       link: comment.data.permalink,
@@ -287,24 +289,6 @@ export async function deleteUserContent(
       requireAuth: true,
       body: {
         id: userContent.name,
-      },
-    },
-  );
-}
-
-export async function savePost(
-  post: Post | PostDetail,
-  saved: boolean,
-): Promise<void> {
-  await api(
-    `https://www.reddit.com/api/${saved ? "save" : "unsave"}`,
-    {
-      method: "POST",
-    },
-    {
-      requireAuth: true,
-      body: {
-        id: post.name,
       },
     },
   );

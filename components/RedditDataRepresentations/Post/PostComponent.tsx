@@ -5,8 +5,9 @@ import { StyleSheet, View, Text, TouchableOpacity, Share } from "react-native";
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
-import { savePost, vote } from "../../../api/PostDetail";
+import { vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
+import { saveItem } from "../../../api/Save";
 import { URLRoutes } from "../../../app/stack";
 import { PostInteractionProvider } from "../../../contexts/PostInteractionContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
@@ -107,7 +108,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
             icon: <FontAwesome name={post.saved ? "bookmark" : "bookmark-o"} />,
             color: theme.bookmark,
             action: async () => {
-              await savePost(post, !post.saved);
+              await saveItem(post, !post.saved);
               setPost({ ...post, saved: !post.saved });
             },
           },

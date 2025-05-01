@@ -18,8 +18,9 @@ import {
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
 import { summarizePostDetails, summarizePostComments } from "../../../api/AI";
-import { PostDetail, savePost, vote } from "../../../api/PostDetail";
+import { PostDetail, vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
+import { saveItem } from "../../../api/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../contexts/SettingsContexts/CommentSettingsContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
@@ -259,7 +260,7 @@ export default function PostDetailsComponent({
             backgroundColor: undefined,
           })}
           onPress={async () => {
-            await savePost(postDetail, !postDetail.saved);
+            await saveItem(postDetail, !postDetail.saved);
             setPostDetail({
               ...postDetail,
               saved: !postDetail.saved,

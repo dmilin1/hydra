@@ -1,4 +1,4 @@
-import { AntDesign, Octicons } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, Octicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, {
   useContext,
@@ -27,6 +27,7 @@ import {
   vote,
 } from "../../../../api/PostDetail";
 import { VoteOption } from "../../../../api/Posts";
+import { saveItem } from "../../../../api/Save";
 import { AccountContext } from "../../../../contexts/AccountContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/CommentSettingsContext";
@@ -109,6 +110,16 @@ export function CommentComponent({
     }
   };
 
+  const saveComment = async () => {
+    if (comment.type !== "comment") return;
+    await saveItem(comment, !comment.saved);
+    changeComment?.({
+      ...comment,
+      saved: !comment.saved,
+      renderCount: comment.renderCount + 1,
+    });
+  };
+
   const replyToComment = () => {
     setModal(
       <NewComment
@@ -165,6 +176,7 @@ export function CommentComponent({
   const showCommentOptions = async () => {
     const options = [
       "Reply",
+      ...(comment.saved ? ["Unsave"] : ["Save"]),
       ...(currentUser?.userName === comment.author ? ["Edit", "Delete"] : []),
       "Share",
     ];
@@ -172,6 +184,8 @@ export function CommentComponent({
 
     if (result === "Reply") {
       replyToComment();
+    } else if (result === "Save" || result === "Unsave") {
+      saveComment();
     } else if (result === "Edit") {
       editComment();
     } else if (result === "Delete") {
@@ -205,6 +219,15 @@ export function CommentComponent({
                   icon: <Octicons name="reply" />,
                   color: theme.reply,
                   action: () => replyToComment(),
+                },
+                {
+                  icon: (
+                    <FontAwesome
+                      name={comment.saved ? "bookmark" : "bookmark-o"}
+                    />
+                  ),
+                  color: theme.bookmark,
+                  action: () => saveComment(),
                 },
               ]}
             >
@@ -395,6 +418,13 @@ export function CommentComponent({
                         {comment.subreddit}
                       </Text>
                     </TouchableOpacity>
+                  )}
+                  {comment.saved && (
+                    <View
+                      style={t(styles.bookmarkNotch, {
+                        borderColor: theme.bookmark,
+                      })}
+                    />
                   )}
                 </View>
               </TouchableHighlight>
@@ -603,5 +633,17 @@ const styles = StyleSheet.create({
   },
   spacer: {
     height: 10,
+  },
+  bookmarkNotch: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+    backgroundColor: "transparent",
+    borderStyle: "solid",
+    borderLeftWidth: 15,
+    borderBottomWidth: 15,
+    borderLeftColor: "transparent",
   },
 });

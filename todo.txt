@@ -21,7 +21,7 @@
 
 - 🚀⭐ Notifications
 
-- 🚀 Fancy bookmarks with folders and categories
+- 🚀 Fancy bookmarks with folders and categories (available in Reddit API)
 
 - 🚀 Subreddit sidebars (wiki, rules, etc.)
 
@@ -58,7 +58,5 @@
 - 🐛 Giant emoji in comments (https://discord.com/channels/1257191666771558492/1257773342283268297/1346887957612593272)
 
 - 🐛 Rapid double backwards swipe to the Subreddits page causes weird glitch (https://discord.com/channels/1257191666771558492/1257773342283268297/1347806977748766750)
-
-- 🚀 Hide username on the bottom bar
 
 - 🚀 Add link to /r/friends (https://www.reddit.com/r/HydraApp/comments/1jt0wcw/possibility_to_see_rfriends/)
