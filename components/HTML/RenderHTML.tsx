@@ -3,6 +3,7 @@ import * as WebBrowser from "expo-web-browser";
 import { parseDocument, ElementType } from "htmlparser2";
 import React, { useContext, useState } from "react";
 import {
+  Dimensions,
   Platform,
   ScrollView,
   ScrollViewProps,
@@ -19,6 +20,8 @@ import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
+
+const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
 
@@ -134,9 +137,18 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     Wrapper = Text;
     wrapperStyles.marginVertical = 5;
   } else if (element.name === "table") {
-    Wrapper = View;
-    wrapperStyles.flexDirection = "column";
-    wrapperStyles.margin = 5;
+    Wrapper = (props) => (
+      <ScrollView
+        {...{ ...props, children: null }}
+        horizontal
+        style={{
+          maxWidth: "100%",
+          marginVertical: 5,
+        }}
+      >
+        <View onStartShouldSetResponder={() => true}>{props.children}</View>
+      </ScrollView>
+    );
   } else if (element.name === "thead") {
     Wrapper = View;
     wrapperStyles.flexDirection = "column";
@@ -149,10 +161,14 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     wrapperStyles.flexDirection = "row";
   } else if (["th", "td"].includes(element.name)) {
     Wrapper = View;
+    const siblingCount =
+      element.parent?.children?.filter((c) => c.type !== "text")?.length ?? 1;
+    const availableWidth = (SCREEN_WIDTH - 30) /* padding */ / siblingCount;
     wrapperStyles.flexDirection = "column";
-    wrapperStyles.flex = 1;
+    wrapperStyles.width = siblingCount < 4 ? availableWidth : 100;
     wrapperStyles.borderColor = theme.tint;
     wrapperStyles.borderWidth = 1;
+    wrapperStyles.padding = 2;
   } else if (element.name === "strong") {
     Wrapper = Text;
     inheritedStyles.fontWeight = "bold";
