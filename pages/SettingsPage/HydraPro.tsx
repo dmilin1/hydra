@@ -117,7 +117,7 @@ export default function HydraPro() {
         />
         <FeatureItem
           icon={<Ionicons name="document-text" size={24} color={theme.text} />}
-          title="Post Summaries"
+          title="Post & Comment Summaries"
           description="Quick summaries of long posts and threads"
           theme={theme}
         />

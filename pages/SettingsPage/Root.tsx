@@ -7,10 +7,13 @@ import {
 import * as Application from "expo-application";
 import * as Updates from "expo-updates";
 import React, { useContext } from "react";
-import { StyleSheet, Text, Image, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
+import { LAST_SEEN_UPDATE_KEY } from "../../components/Modals/UpdateInfo";
+import GetHydraProButton from "../../components/UI/GetHydraProButton";
 import List from "../../components/UI/List";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import KeyStore from "../../utils/KeyStore";
 import { useURLNavigation } from "../../utils/navigation";
 
 export default function Root() {
@@ -65,6 +68,18 @@ export default function Root() {
             onPress: () => pushURL("hydra://settings/advanced"),
           },
           {
+            key: "patchNotes",
+            icon: (
+              <MaterialIcons
+                name="system-update"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            text: "Patch Notes",
+            onPress: () => KeyStore.delete(LAST_SEEN_UPDATE_KEY),
+          },
+          {
             key: "requestFeature",
             icon: (
               <Feather name="git-pull-request" size={24} color={theme.text} />
@@ -74,35 +89,7 @@ export default function Root() {
           },
         ]}
       />
-      <TouchableOpacity
-        onPress={() => pushURL("hydra://settings/hydraPro")}
-        activeOpacity={0.5}
-        style={t(styles.buyProButton, {
-          backgroundColor: theme.buttonBg,
-        })}
-      >
-        <View style={styles.buyProButtonSubContainer}>
-          <View style={styles.buyProButtonIcon}>
-            <Image
-              source={require("./../../assets/images/icon.png")}
-              style={styles.buyProButtonIconImage}
-            />
-          </View>
-          <Text
-            style={t(styles.buyProButtonText, {
-              color: theme.buttonText,
-            })}
-          >
-            Hydra Pro
-          </Text>
-          <MaterialIcons
-            name="keyboard-arrow-right"
-            size={30}
-            color={theme.buttonText}
-            style={styles.buyProButtonIcon}
-          />
-        </View>
-      </TouchableOpacity>
+      <GetHydraProButton />
       <View style={styles.appDetails}>
         <Text
           style={t(styles.appDetailsText, {
@@ -134,31 +121,5 @@ const styles = StyleSheet.create({
   appDetailsText: {
     flex: 1,
     textAlign: "center",
-  },
-  buyProButton: {
-    padding: 12,
-    borderRadius: 5,
-    marginHorizontal: 20,
-    marginVertical: 15,
-  },
-  buyProButtonSubContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buyProButtonText: {
-    fontSize: 20,
-    marginLeft: 10,
-  },
-  buyProButtonIcon: {
-    marginVertical: -100,
-    width: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buyProButtonIconImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 5,
   },
 });

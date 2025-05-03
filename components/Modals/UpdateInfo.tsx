@@ -1,5 +1,5 @@
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -12,55 +12,102 @@ import {
 import { useMMKVString } from "react-native-mmkv";
 
 import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import GetHydraProButton from "../UI/GetHydraProButton";
+
+export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 const update = {
-  updateKey: "2.5.0-1",
+  updateKey: "2.6.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
+  proFeatures: [
+    {
+      title: "Post & Comment Summaries",
+      description:
+        "Quick summaries appear at the top of long posts and threads. This is enabled by default, but you can disable it in Settings => Appearance => Show Post/Comment Summary.",
+    },
+    {
+      title: "Advanced Post Filtering",
+      description:
+        "Post filtering powered by machine learning. Tired of all the politics? This catches posts that the regular word filter misses. To enable, go to Settings => General => Filters => Smart Post Filter. You can write a custom filter or use one of the pre-made filters.",
+    },
+    {
+      title: "Inbox Alerts",
+      description:
+        "Get instant alerts for replies and messages. Enabled by default. You can disable it in the iOS System Settings.",
+    },
+    {
+      title: "New Themes",
+      description:
+        "Five new premium themes: Gilded, Ocean, Aurora, Royal, and Mulberry. To enable these themes, go to Settings => Theme. Even if you don't have Hydra Pro, you can still try these themes out.",
+    },
+    {
+      title: "Support Hydra",
+      description:
+        "Even if the features above don't interest you, Hydra Pro is a great way to support Hydra's ongoing development costs. Hydra is not self sustainable right now, so any support is greatly appreciated!",
+    },
+  ],
   features: [
     {
-      title: "Text Filtering",
+      title: "New Themes",
       description:
-        "You can now filter posts and comments by text. To add a filter, go to Settings => General => Filters => Text Filter List.",
+        "Two new themes: Strawberry and Spiderman. To enable these themes, go to Settings => Theme.",
     },
     {
-      title: "Open in Hydra Shortcut",
+      title: "Save Comments",
       description:
-        "You can now add a shortcut to open links in Hydra directly from the share sheet of any other app. To add this shortcut, go to Settings => General => Open in Hydra => Get Hydra Shortcut.",
+        "Comments can now be saved with a swipe to the left or a long press. You can view your saved comments in the Account tab.",
     },
     {
-      title: "Open Clipboard Links",
+      title: "Save Posts Easier",
       description:
-        "Hydra can now open links copied to your clipboard. To enable this setting, go to Settings => General => Open Clipboard Links. To prevent iOS from asking you for permission every time, go to the iOS Settings App => Apps => Hydra => Paste from Other Apps and change the setting to Allow. This setting is disabled by default due to the default iOS setting being set to Ask.",
+        "Posts can now be saved without having to click into them. To quickly save a post, long swipe to the left. You can view your saved posts in the Account tab.",
     },
     {
-      title: "User Flairs in Comments",
+      title: "Saved Indicators",
       description:
-        "User flairs are now displayed in comments. To turn this off, go to Settings => Appearance => Show Flairs.",
+        "Posts and comments that you have saved will now have a small indicator in the bottom right corner of the post/comment.",
     },
     {
-      title: "Faster Post Loading",
+      title: "Drafts",
       description:
-        "Clicking on a post with a large comment section now loads significantly faster.",
+        "Your posts, comments, and replies are now automatically saved as drafts. Exiting out midway through typing and reopening the text entry modal will show your previous text where you left off. Thanks to Ronak Vir for implementing this feature!",
     },
     {
-      title: "Inline Comment Images",
+      title: "Apply Default Sort to Home",
       description:
-        "Hydra now displays comment images and gifs inline with the text instead of as a link.",
+        "Added a setting to apply the default post sort setting to the home page. To enable this, go to Settings => General => Sorting => Apply sort to home.",
     },
     {
-      title: "Collapsed AutoModerator",
+      title: "Hide Account Tab Username",
       description:
-        "AutoModerator comments are now collapsed by default. To turn this off, go to Settings => Appearance, Collapse AutoModerator.",
+        "You can now prevent your username from being displayed on the account tab button. To disable your username from showing, go to Settings => Appearance => Show username and toggle it off.",
+    },
+    {
+      title: "Better Tables",
+      description:
+        "Wide tables are now horizontally scrollable, preventing text from getting crammed. This should be a big help for those sports posts full of data.",
+    },
+    {
+      title: "Post Title Line Limit",
+      description:
+        "The max configurable post title line limit has been increased from 5 lines to 10 for those really long post titles. You can change this in Settings => Appearance => Post title max lines.",
+    },
+    {
+      title: "Smarter Loading",
+      description:
+        "Hydra now loads infinite scrolls in a more efficient manner. This should result in fewer API calls and faster loads. You'll notice this most if you have a lot of filters enabled.",
+    },
+    {
+      title: "View Patch Notes",
+      description:
+        "You can now get back to these patch notes at any time by going to Settings => Patch Notes.",
     },
   ],
   bugfixes: [
     {
       description:
-        "Inline images in comments are now clickable and will open in fullscreen",
-    },
-    {
-      description: "Posts with multiple gifs will now display all gifs",
+        "Some API calls were being duplicated, causing slightly slower loads and more data usage.",
     },
   ],
 };
@@ -68,7 +115,8 @@ const update = {
 export default function UpdateInfo() {
   const { theme } = useContext(ThemeContext);
 
-  const [lastSeenUpdate, setLastSeenUpdate] = useMMKVString("lastSeenUpdate");
+  const [lastSeenUpdate, setLastSeenUpdate] =
+    useMMKVString(LAST_SEEN_UPDATE_KEY);
 
   const exitUpdateInfo = () => {
     setLastSeenUpdate(update.updateKey);
@@ -105,7 +153,35 @@ export default function UpdateInfo() {
             >
               {update.subtitle}
             </Text>
-            <ScrollView contentContainerStyle={{ paddingBottom: 20, gap: 20 }}>
+            <ScrollView>
+              <View style={{ marginTop: -20 }} />
+              <Text
+                style={t(styles.heading, {
+                  color: theme.text,
+                })}
+              >
+                👑 Pro Features
+              </Text>
+              <View style={styles.listContainer}>
+                {update.proFeatures.map((feature) => (
+                  <View key={feature.title}>
+                    <Text
+                      style={t(styles.featureTitle, {
+                        color: theme.text,
+                      })}
+                    >
+                      • {feature.title}
+                    </Text>
+                    <Text
+                      style={t(styles.featureDescription, {
+                        color: theme.subtleText,
+                      })}
+                    >
+                      {feature.description}
+                    </Text>
+                  </View>
+                ))}
+              </View>
               <Text
                 style={t(styles.heading, {
                   color: theme.text,
@@ -113,24 +189,26 @@ export default function UpdateInfo() {
               >
                 🚀 Features
               </Text>
-              {update.features.map((feature) => (
-                <View key={feature.title}>
-                  <Text
-                    style={t(styles.featureTitle, {
-                      color: theme.text,
-                    })}
-                  >
-                    • {feature.title}
-                  </Text>
-                  <Text
-                    style={t(styles.featureDescription, {
-                      color: theme.subtleText,
-                    })}
-                  >
-                    {feature.description}
-                  </Text>
-                </View>
-              ))}
+              <View style={styles.listContainer}>
+                {update.features.map((feature) => (
+                  <View key={feature.title}>
+                    <Text
+                      style={t(styles.featureTitle, {
+                        color: theme.text,
+                      })}
+                    >
+                      • {feature.title}
+                    </Text>
+                    <Text
+                      style={t(styles.featureDescription, {
+                        color: theme.subtleText,
+                      })}
+                    >
+                      {feature.description}
+                    </Text>
+                  </View>
+                ))}
+              </View>
               <Text
                 style={t(styles.heading, {
                   color: theme.text,
@@ -138,17 +216,19 @@ export default function UpdateInfo() {
               >
                 🐛 Bugfixes
               </Text>
-              {update.bugfixes.map((bugfix) => (
-                <View key={bugfix.description}>
-                  <Text
-                    style={t(styles.bugfixDescription, {
-                      color: theme.text,
-                    })}
-                  >
-                    • {bugfix.description}
-                  </Text>
-                </View>
-              ))}
+              <View style={styles.listContainer}>
+                {update.bugfixes.map((bugfix) => (
+                  <View key={bugfix.description}>
+                    <Text
+                      style={t(styles.bugfixDescription, {
+                        color: theme.text,
+                      })}
+                    >
+                      • {bugfix.description}
+                    </Text>
+                  </View>
+                ))}
+              </View>
               <View style={styles.helpContainer}>
                 <View style={styles.helpIcon}>
                   <Image
@@ -179,6 +259,7 @@ export default function UpdateInfo() {
                   https://github.com/dmilin1/hydra
                 </Text>
               </View>
+              <GetHydraProButton onPress={() => exitUpdateInfo()} />
             </ScrollView>
           </View>
         </View>
@@ -196,10 +277,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     zIndex: 2,
-    marginTop: Dimensions.get("window").height * 0.2,
+    marginTop: Dimensions.get("window").height * 0.175,
     flex: 1,
     justifyContent: "center",
-    maxHeight: Dimensions.get("window").height * 0.6,
+    maxHeight: Dimensions.get("window").height * 0.65,
     maxWidth: Dimensions.get("window").width - 40,
     alignSelf: "center",
   },
@@ -243,7 +324,8 @@ const styles = StyleSheet.create({
   heading: {
     textAlign: "center",
     fontSize: 18,
-    marginHorizontal: 20,
+    marginTop: 25,
+    marginBottom: 10,
   },
   featureTitle: {
     fontSize: 18,
@@ -261,7 +343,7 @@ const styles = StyleSheet.create({
   helpContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    marginTop: 20,
     marginHorizontal: 20,
   },
   helpIcon: {
@@ -275,5 +357,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 14,
     marginHorizontal: 20,
+  },
+  listContainer: {
+    gap: 20,
   },
 });
