@@ -13,6 +13,7 @@ import {
 import { AccountContext } from "./AccountContext";
 import { StackParamsList } from "../app/stack";
 import KeyStore from "../utils/KeyStore";
+import RedditURL from "../utils/RedditURL";
 
 export const INITIAL_TAB_STORAGE_KEY = "initialTab";
 
@@ -41,7 +42,11 @@ const INITIAL_STATE = {
           },
           {
             name: "Home",
-            params: { url: "https://www.reddit.com/" },
+            params: {
+              url: new RedditURL("https://www.reddit.com/")
+                .applyPreferredSorts()
+                .toString(),
+            },
           },
         ],
       },
