@@ -124,6 +124,8 @@ export default function Filters() {
   const {
     filterSeenPosts,
     toggleFilterSeenPosts,
+    autoMarkAsSeen,
+    toggleAutoMarkAsSeen,
     filterText,
     setFilterText,
     aiFilterText,
@@ -189,6 +191,28 @@ export default function Filters() {
             ),
             text: "Hide Seen Posts",
             onPress: () => toggleFilterSeenPosts(),
+          },
+          {
+            key: "autoMarkAsSeen",
+            icon: (
+              <MaterialCommunityIcons
+                name="view-compact-outline"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={autoMarkAsSeen}
+                onValueChange={() => toggleAutoMarkAsSeen()}
+              />
+            ),
+            text: "Mark as Seen On Scroll",
+            onPress: () => toggleAutoMarkAsSeen(),
           },
         ]}
       />

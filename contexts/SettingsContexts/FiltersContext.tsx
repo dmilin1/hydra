@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo } from "react";
+import { Alert } from "react-native";
 import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
 
 import { filterPosts } from "../../api/AI";
@@ -17,6 +18,7 @@ export const FILTER_SEEN_POSTS_DEFAULT = false;
 
 const initialValues = {
   filterSeenPosts: FILTER_SEEN_POSTS_DEFAULT,
+  autoMarkAsSeen: false,
   filterText: "",
   aiFilterText: "",
   filterPostsByAI: ((posts) => posts) as FilterFunction<Post>,
@@ -25,6 +27,7 @@ const initialValues = {
 const initialPostSettingsContext = {
   ...initialValues,
   toggleFilterSeenPosts: (_newValue?: boolean) => {},
+  toggleAutoMarkAsSeen: (_newValue?: boolean) => {},
   setFilterText: (_newValue?: string) => {},
   filterPostsByText: ((posts) => posts) as FilterFunction<Post>,
   doesCommentPassTextFilter: (_comment: Comment) => true,
@@ -42,6 +45,10 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
   );
   const filterSeenPosts =
     storedFilterSeenPosts ?? initialValues.filterSeenPosts;
+
+  const [storedAutoMarkAsSeen, setAutoMarkAsSeen] =
+    useMMKVBoolean("autoMarkAsSeen");
+  const autoMarkAsSeen = storedAutoMarkAsSeen ?? initialValues.autoMarkAsSeen;
 
   const [storedFilterText, setFilterText] = useMMKVString("filterText");
   const filterText = storedFilterText ?? initialValues.filterText;
@@ -79,6 +86,17 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
         filterSeenPosts: filterSeenPosts ?? initialValues.filterSeenPosts,
         toggleFilterSeenPosts: (newValue = !filterSeenPosts) =>
           setFilterSeenPosts(newValue),
+
+        autoMarkAsSeen: autoMarkAsSeen ?? initialValues.autoMarkAsSeen,
+        toggleAutoMarkAsSeen: (newValue = !autoMarkAsSeen) => {
+          Alert.alert(
+            "Restart the app for this change to take effect.",
+            newValue && filterSeenPosts
+              ? "You may notice slower loads with this setting enabled because all the hidden posts still have to be loaded in the background."
+              : undefined,
+          );
+          setAutoMarkAsSeen(newValue);
+        },
 
         filterText: storedFilterText ?? initialValues.filterText,
         setFilterText: (newValue = "") => setFilterText(newValue),

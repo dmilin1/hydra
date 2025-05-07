@@ -1,5 +1,5 @@
 import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Share } from "react-native";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
@@ -44,7 +44,9 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
     redditURL.getPageType() !== PageType.SUBREDDIT ||
     ["popular", "all"].includes(redditURL.getSubreddit());
 
-  const [seen, setSeen] = useState(false);
+  const seen = isPostSeen(post);
+
+  const [_, rerender] = useState(0);
 
   const openContextMenu = useContextMenu();
 
@@ -56,12 +58,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
         : theme.subtleText;
 
   const setSeenValue = (value: boolean) => {
-    setSeen(value);
     if (value) {
       markPostSeen(post);
     } else {
       markPostUnseen(post);
     }
+    rerender((prev) => prev + 1);
   };
 
   const voteOnPost = async (voteOption: VoteOption) => {
@@ -72,10 +74,6 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
       userVote: result,
     });
   };
-
-  useEffect(() => {
-    isPostSeen(post).then(setSeen);
-  }, [post.id]);
 
   return (
     <PostInteractionProvider

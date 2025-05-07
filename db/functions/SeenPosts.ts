@@ -34,13 +34,14 @@ export async function markPostUnseen(post: Post) {
   await db.delete(SeenPosts).where(eq(SeenPosts.postId, post.id));
 }
 
-export async function isPostSeen(post: Post): Promise<boolean> {
-  const result = await db
+export function isPostSeen(post: Post): boolean {
+  const result = db
     .select()
     .from(SeenPosts)
     .where(eq(SeenPosts.postId, post.id))
-    .limit(1);
-  return result.length > 0;
+    .limit(1)
+    .get();
+  return !!result;
 }
 
 export async function arePostsSeen(posts: Post[]): Promise<boolean[]> {

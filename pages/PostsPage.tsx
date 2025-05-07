@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { getPosts, Post } from "../api/Posts";
@@ -8,6 +8,7 @@ import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
 import { FiltersContext } from "../contexts/SettingsContexts/FiltersContext";
 import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { markPostSeen } from "../db/functions/SeenPosts";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
 
@@ -15,7 +16,10 @@ export default function PostsPage({
   route,
 }: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
   const { theme } = useContext(ThemeContext);
-  const { filterPostsByText, filterPostsByAI } = useContext(FiltersContext);
+  const { filterPostsByText, filterPostsByAI, autoMarkAsSeen } =
+    useContext(FiltersContext);
+
+  const [rerenderCount, rerender] = useState(0);
 
   const {
     data: posts,
@@ -39,6 +43,13 @@ export default function PostsPage({
 
   const { url } = route.params;
 
+  const handleScrolledPastPost = (post: Post) => {
+    if (autoMarkAsSeen) {
+      markPostSeen(post);
+      rerender((prev) => prev + 1);
+    }
+  };
+
   return (
     <View
       style={t(styles.postsContainer, {
@@ -61,6 +72,7 @@ export default function PostsPage({
         fullyLoaded={fullyLoaded}
         hitFilterLimit={hitFilterLimit}
         data={posts}
+        extraData={rerenderCount} // This triggers a rerender of the visible list items
         renderItem={({ item }) => (
           <PostComponent
             post={item}
@@ -69,6 +81,19 @@ export default function PostsPage({
             }}
           />
         )}
+        onViewableItemsChanged={(data) => {
+          const maxVisibleItem =
+            data.viewableItems[data.viewableItems.length - 1]?.index ?? -1;
+          const changedItems = data.changed;
+          changedItems
+            .filter(
+              (item) => !item.isViewable && (item?.index ?? 0) < maxVisibleItem,
+            )
+            .forEach((viewToken) => {
+              const post = viewToken.item as Post;
+              handleScrolledPastPost(post);
+            });
+        }}
       />
     </View>
   );
