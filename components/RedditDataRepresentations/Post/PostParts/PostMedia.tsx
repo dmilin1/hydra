@@ -3,6 +3,7 @@ import { BlurView } from "expo-blur";
 import React, { useContext, useRef, useState } from "react";
 import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 
+import CrossPost from "./PostMediaParts/CrossPost";
 import ImageViewer from "./PostMediaParts/ImageViewer";
 import Link from "./PostMediaParts/Link";
 import PollViewer from "./PostMediaParts/PollViewer";
@@ -43,7 +44,9 @@ export default function PostMedia({
     setBlur(isBlurable);
   }
 
-  return (
+  return post.crossPost ? (
+    <CrossPost post={post.crossPost} />
+  ) : (
     <>
       {post.video && (
         <View style={styles.videoContainer}>
@@ -114,6 +117,12 @@ export default function PostMedia({
 }
 
 const styles = StyleSheet.create({
+  crossPostContainer: {
+    marginHorizontal: 10,
+    marginVertical: 10,
+    borderRadius: 10,
+    borderWidth: 3,
+  },
   externalLinkContainer: {
     marginVertical: 10,
     marginHorizontal: 10,

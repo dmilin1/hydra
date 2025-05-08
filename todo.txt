@@ -19,8 +19,6 @@
 
 - 🚀 Fully customizable themeing with shareability
 
-- 🚀⭐ Notifications
-
 - 🚀 Fancy bookmarks with folders and categories (available in Reddit API)
 
 - 🚀 Subreddit sidebars (wiki, rules, etc.)
@@ -45,8 +43,6 @@
 - 🚀 Block specific subreddits from appearing
 
 - 🐛 Enable landscape mode in the browser
-
-- 🐛 Crossposts don't show up (https://www.reddit.com/r/HydraApp/comments/1j6wkmw/cross_posts_just_dont_show_at_all/)
 
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash

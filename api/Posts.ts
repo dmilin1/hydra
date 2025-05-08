@@ -20,6 +20,7 @@ export type Post = {
   id: string;
   name: string;
   type: "post";
+  crossPost?: Post;
   title: string;
   author: string;
   upvotes: number;
@@ -174,10 +175,18 @@ export async function formatPostData(child: any): Promise<Post> {
     userVote = VoteOption.DownVote;
   }
 
+  let crossPost: Post | undefined = undefined;
+  if (child.data.crosspost_parent_list?.[0]) {
+    crossPost = await formatPostData({
+      data: child.data.crosspost_parent_list[0],
+    });
+  }
+
   return {
     id: child.data.id,
     name: child.data.name,
     type: "post",
+    crossPost,
     title: decode(child.data.title),
     author: child.data.author,
     upvotes: child.data.ups,
