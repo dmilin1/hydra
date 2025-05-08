@@ -75,7 +75,7 @@ export default function ImageViewer({
       {!loadLowData && (
         <ImageView
           images={images.map((image) => ({ uri: image }))}
-          imageIndex={0}
+          imageIndex={imageIndex}
           presentationStyle="overFullScreen"
           animationType="none"
           visible={visible}
