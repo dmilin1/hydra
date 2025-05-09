@@ -13,6 +13,7 @@ import {
   VirtualizedList,
   ModalProps,
   Modal,
+  Text
 } from "react-native";
 
 import { ImageSource } from "./@types";
@@ -23,6 +24,7 @@ import useAnimatedComponents from "./hooks/useAnimatedComponents";
 import useImageIndexChange from "./hooks/useImageIndexChange";
 import useRequestClose from "./hooks/useRequestClose";
 import { PostInteractionContext } from "../../../../../../contexts/PostInteractionContext";
+import { ThemeContext } from "../../../../../../contexts/SettingsContexts/ThemeContext";
 
 type Props = {
   images: ImageSource[];
@@ -64,6 +66,8 @@ function ImageViewing({
   FooterComponent,
 }: Props) {
   const { interactedWithPost } = useContext(PostInteractionContext);
+
+  const { theme } = useContext(ThemeContext);
 
   const imageList = useRef<VirtualizedList<ImageSource>>(null);
   const [_opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
@@ -164,6 +168,21 @@ function ImageViewing({
                   : imageSrc.uri
             }
           />
+          {images.length > 1 && (
+            <View
+              style={[styles.imageCounterPill, {
+                backgroundColor: theme.background
+              }]}
+            >
+              <Text
+                style={[styles.counterText, {
+                  color: theme.text,
+                }]}
+              >
+                {imageIndex + 1} / {images.length}
+              </Text>
+            </View>
+          )}
           {typeof FooterComponent !== "undefined" && (
             <Animated.View
               style={[styles.footer, { transform: footerTransform }]}
@@ -196,10 +215,25 @@ const styles = StyleSheet.create({
     zIndex: 1,
     bottom: 0,
   },
+  imageCounterPill: {
+    position: "absolute",
+    right: 16,
+    bottom: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    backgroundColor: "rgba(0,0,0,0.6)",
+  },
+  counterText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
 });
 
 const EnhancedImageViewing = (props: Props) => (
-  <ImageViewing key={props.imageIndex} {...props} />
+  <ImageViewing {...props} />
 );
 
 export default EnhancedImageViewing;
