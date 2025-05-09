@@ -7,6 +7,7 @@ const initialValues = {
   showSubredditIcon: true,
   postTitleLength: 2,
   postTextLength: 3,
+  linkDescriptionLength: 10,
   blurSpoilers: true,
   blurNSFW: true,
   showPostSummary: true,
@@ -19,6 +20,7 @@ const initialPostSettingsContext = {
   toggleSubredditIcon: (_newValue?: boolean) => {},
   changePostTitleLength: (_newValue: number) => {},
   changePostTextLength: (_newValue: number) => {},
+  changeLinkDescriptionLength: (_newValue: number) => {},
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
@@ -35,6 +37,9 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [postTitleLength, setPostTitleLength] =
     useMMKVNumber("postTitleLength");
   const [postTextLength, setPostTextLength] = useMMKVNumber("postTextLength");
+  const [linkDescriptionLength, setLinkDescriptionLength] = useMMKVNumber(
+    "linkDescriptionLength",
+  );
   const [blurSpoilers, setBlurSpoilers] = useMMKVBoolean("blurSpoilers");
   const [blurNSFW, setBlurNSFW] = useMMKVBoolean("blurNSFW");
   const [showPostSummary, setShowPostSummary] =
@@ -61,6 +66,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
 
         postTextLength: postTextLength ?? initialValues.postTextLength,
         changePostTextLength: (newValue: number) => setPostTextLength(newValue),
+
+        linkDescriptionLength:
+          linkDescriptionLength ?? initialValues.linkDescriptionLength,
+        changeLinkDescriptionLength: (newValue: number) =>
+          setLinkDescriptionLength(newValue),
 
         blurSpoilers: blurSpoilers ?? initialValues.blurSpoilers,
         toggleBlurSpoilers: (newValue = !blurSpoilers) =>

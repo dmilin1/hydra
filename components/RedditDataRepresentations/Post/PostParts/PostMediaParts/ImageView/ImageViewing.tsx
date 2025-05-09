@@ -13,7 +13,7 @@ import {
   VirtualizedList,
   ModalProps,
   Modal,
-  Text
+  Text,
 } from "react-native";
 
 import { ImageSource } from "./@types";
@@ -170,14 +170,20 @@ function ImageViewing({
           />
           {images.length > 1 && (
             <View
-              style={[styles.imageCounterPill, {
-                backgroundColor: theme.background
-              }]}
+              style={[
+                styles.imageCounterPill,
+                {
+                  backgroundColor: theme.background,
+                },
+              ]}
             >
               <Text
-                style={[styles.counterText, {
-                  color: theme.text,
-                }]}
+                style={[
+                  styles.counterText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 {imageIndex + 1} / {images.length}
               </Text>
@@ -229,11 +235,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-
 });
 
-const EnhancedImageViewing = (props: Props) => (
-  <ImageViewing {...props} />
-);
+const EnhancedImageViewing = (props: Props) => <ImageViewing {...props} />;
 
 export default EnhancedImageViewing;

@@ -35,6 +35,8 @@ export default function Appearance() {
     changePostTitleLength,
     postTextLength,
     changePostTextLength,
+    linkDescriptionLength,
+    changeLinkDescriptionLength,
     blurNSFW,
     toggleBlurNSFW,
     blurSpoilers,
@@ -58,6 +60,7 @@ export default function Appearance() {
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
   const postTextLengthRef = useRef<RNPickerSelect>(null);
+  const linkDescriptionLengthRef = useRef<RNPickerSelect>(null);
 
   const showProAlert = (title: string, message: string) => {
     Alert.alert(title, message, [
@@ -177,6 +180,27 @@ export default function Appearance() {
             ),
             text: "Post text max lines",
             onPress: () => postTextLengthRef.current?.togglePicker(true),
+          },
+          {
+            key: "linkDescriptionLength",
+            icon: <MaterialIcons name="link" size={24} color={theme.text} />,
+            rightIcon: (
+              <Picker
+                ref={linkDescriptionLengthRef}
+                onValueChange={(value: string | number) => {
+                  if (value) {
+                    changeLinkDescriptionLength(Number(value));
+                  }
+                }}
+                items={[...Array(30).keys()].map((i) => ({
+                  label: (i + 1).toString(),
+                  value: i + 1,
+                }))}
+                value={linkDescriptionLength}
+              />
+            ),
+            text: "Link description max lines",
+            onPress: () => linkDescriptionLengthRef.current?.togglePicker(true),
           },
           {
             key: "blurSpoilers",

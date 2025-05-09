@@ -7,6 +7,7 @@ import { PostDetail } from "../../../../../api/PostDetail";
 import { Post } from "../../../../../api/Posts";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
+import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 import {
   ThemeContext,
   t,
@@ -14,6 +15,7 @@ import {
 
 export default function Link({ post }: { post: Post | PostDetail }) {
   const { theme } = useContext(ThemeContext);
+  const { linkDescriptionLength } = useContext(PostSettingsContext);
 
   const { currentDataMode } = useContext(DataModeContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
@@ -66,6 +68,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
             style={t(styles.descriptionText, {
               color: theme.subtleText,
             })}
+            numberOfLines={linkDescriptionLength}
           >
             {post.openGraphData.description}
           </Text>
