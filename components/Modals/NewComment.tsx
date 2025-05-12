@@ -154,13 +154,19 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
                 backgroundColor: theme.background,
               })}
             >
-              <RenderHtml
-                html={
-                  viewMode === "parent"
-                    ? parent.html
-                    : Snudown.markdown(text).replaceAll(/>\s+</g, "><") // Remove whitespace between tags
-                }
-              />
+              {viewMode === "parent" ? (
+                <Text
+                  style={{ color: theme.text }}
+                  selectable
+                  selectionColor={theme.tint}
+                >
+                  {parent.text}
+                </Text>
+              ) : (
+                <RenderHtml
+                  html={Snudown.markdown(text).replaceAll(/>\s+</g, "><")} // Remove whitespace between tags
+                />
+              )}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

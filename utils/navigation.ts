@@ -31,6 +31,22 @@ export function useRoute<
 
 type NavFunctionsWithURL = "push" | "replace";
 
+export const PageTypeToNavName: Record<PageType, keyof StackParamsList> = {
+  [PageType.HOME]: "Home",
+  [PageType.POST_DETAILS]: "PostDetailsPage",
+  [PageType.SUBREDDIT]: "PostsPage",
+  [PageType.MULTIREDDIT]: "MultiredditPage",
+  [PageType.USER]: "UserPage",
+  [PageType.SEARCH]: "SearchPage",
+  [PageType.INBOX]: "InboxPage",
+  [PageType.MESSAGES]: "MessagesPage",
+  [PageType.ACCOUNTS]: "Accounts",
+  [PageType.SETTINGS]: "SettingsPage",
+  [PageType.WEBVIEW]: "WebviewPage",
+  [PageType.IMAGE]: "ErrorPage",
+  [PageType.UNKNOWN]: "ErrorPage",
+};
+
 export function useURLNavigation(
   overrideNav?: CompositeNavigationProp<
     BottomTabNavigationProp<TabParamsList>,
@@ -51,28 +67,12 @@ export function useURLNavigation(
     ).applyPreferredSorts();
     const pageType = redditURL.getPageType();
     const url = redditURL.url;
-    if (pageType === PageType.HOME) {
-      navigation[func]("Home", { url });
-    } else if (pageType === PageType.SUBREDDIT) {
-      navigation[func]("PostsPage", { url });
-    } else if (pageType === PageType.POST_DETAILS) {
-      navigation[func]("PostDetailsPage", { url });
-    } else if (pageType === PageType.MULTIREDDIT) {
-      navigation[func]("MultiredditPage", { url });
-    } else if (pageType === PageType.USER) {
-      navigation[func]("UserPage", { url });
-    } else if (pageType === PageType.ACCOUNTS) {
-      navigation[func]("Accounts", { url });
-    } else if (pageType === PageType.MESSAGES) {
-      navigation[func]("MessagesPage", { url });
-    } else if (pageType === PageType.SETTINGS) {
-      navigation[func]("SettingsPage", { url });
-    } else if (pageType === PageType.WEBVIEW) {
-      navigation[func]("WebviewPage", { url });
-    } else if (pageType === PageType.IMAGE) {
+    const navName = PageTypeToNavName[pageType];
+
+    if (pageType === PageType.IMAGE) {
       displayMedia(url);
     } else {
-      navigation[func]("ErrorPage", { url });
+      navigation[func](navName, { url });
     }
     clearFuture();
   };

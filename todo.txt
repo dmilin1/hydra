@@ -34,8 +34,6 @@
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
-- 🚀 Start app on a different page than Home
-
 - 🚀⭐ Automatic theme switching (https://www.reddit.com/r/HydraFeatureRequests/comments/1ig308c/automatic_theme/)
 
 - 🚀 Change swipe actions

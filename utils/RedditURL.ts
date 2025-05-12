@@ -187,6 +187,8 @@ export default class RedditURL extends URL {
       name = this.getSubreddit();
     } else if (pageType === PageType.SUBREDDIT) {
       name = this.getSubreddit();
+    } else if (pageType === PageType.MULTIREDDIT) {
+      name = this.getRelativePath().split("/")[4] ?? "Multireddit";
     } else if (pageType === PageType.USER) {
       name = this.getRelativePath().split("/")[2] ?? "User";
     } else if (pageType === PageType.SEARCH) {

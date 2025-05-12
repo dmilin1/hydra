@@ -14,8 +14,12 @@ import { AccountContext } from "./AccountContext";
 import { StackParamsList } from "../app/stack";
 import KeyStore from "../utils/KeyStore";
 import RedditURL from "../utils/RedditURL";
+import { PageTypeToNavName } from "../utils/navigation";
 
 export const INITIAL_TAB_STORAGE_KEY = "initialTab";
+export const STARTUP_URL_STORAGE_KEY = "startupURL";
+
+export const STARTUP_URL_DEFAULT = "https://www.reddit.com/";
 
 export const TabIndices = {
   Posts: 0,
@@ -24,6 +28,16 @@ export const TabIndices = {
   Search: 3,
   Settings: 4,
 };
+
+let startupURL =
+  KeyStore.getString(STARTUP_URL_STORAGE_KEY) ?? STARTUP_URL_DEFAULT;
+let navName = "Home";
+try {
+  const redditURL = new RedditURL(startupURL);
+  navName = PageTypeToNavName[redditURL.getPageType()];
+} catch (_e) {
+  startupURL = STARTUP_URL_DEFAULT;
+}
 
 const initialTabName = KeyStore.getString(INITIAL_TAB_STORAGE_KEY);
 const initialTabIndex =
@@ -41,11 +55,9 @@ const INITIAL_STATE = {
             name: "Subreddits",
           },
           {
-            name: "Home",
+            name: navName,
             params: {
-              url: new RedditURL("https://www.reddit.com/")
-                .applyPreferredSorts()
-                .toString(),
+              url: new RedditURL(startupURL).applyPreferredSorts().toString(),
             },
           },
         ],
