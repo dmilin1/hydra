@@ -295,6 +295,24 @@ export default function PostDetailsComponent({
           <Feather name="share" size={28} color={theme.iconPrimary} />
         </TouchableOpacity>
       </View>
+      {contextDepth > 0 && (
+        <TouchableHighlight
+          onPress={() => {
+            pushURL(
+              new RedditURL(
+                `https://www.reddit.com/r/${postDetail.subreddit}/comments/${postDetail.id}/`,
+              ).toString(),
+            );
+          }}
+          style={t(styles.showContextContainer, {
+            borderTopColor: theme.divider,
+          })}
+        >
+          <Text style={{ color: theme.iconOrTextButton }}>
+            This is a comment thread. Click here to view all comments.
+          </Text>
+        </TouchableHighlight>
+      )}
       {summary?.comments && (
         <TouchableHighlight
           onPress={() => setCommentSummaryCollapsed(!commentSummaryCollapsed)}
@@ -320,24 +338,6 @@ export default function PostDetailsComponent({
               </Text>
             )}
           </>
-        </TouchableHighlight>
-      )}
-      {contextDepth > 0 && (
-        <TouchableHighlight
-          onPress={() => {
-            pushURL(
-              new RedditURL(
-                `https://www.reddit.com/r/${postDetail.subreddit}/comments/${postDetail.id}/`,
-              ).toString(),
-            );
-          }}
-          style={t(styles.showContextContainer, {
-            borderTopColor: theme.divider,
-          })}
-        >
-          <Text style={{ color: theme.iconOrTextButton }}>
-            This is a comment thread. Click here to view all comments.
-          </Text>
         </TouchableHighlight>
       )}
     </View>

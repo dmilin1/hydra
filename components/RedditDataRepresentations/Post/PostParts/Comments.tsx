@@ -244,7 +244,11 @@ export function CommentComponent({
                 onPress={() => {
                   if (displayInList) {
                     if (comment.type === "comment") {
-                      pushURL(comment.link);
+                      pushURL(
+                        new RedditURL(comment.link)
+                          .setQueryParams({ context: "10" })
+                          .toString(),
+                      );
                     }
                   } else {
                     commentRef.current?.measureInWindow(
