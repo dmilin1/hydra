@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -140,13 +141,19 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                 backgroundColor: theme.background,
               })}
             >
-              <RenderHtml
-                html={
-                  viewMode === "old"
-                    ? edit.html
-                    : Snudown.markdown(text).replaceAll(/>\s+</g, "><") // Remove whitespace between tags
-                }
-              />
+              {viewMode === "old" ? (
+                <TextInput
+                  style={t(styles.parentText, { color: theme.subtleText })}
+                  editable={false}
+                  value={edit.text}
+                  multiline
+                  selectTextOnFocus
+                />
+              ) : (
+                <RenderHtml
+                  html={Snudown.markdown(text).replaceAll(/>\s+</g, "><")} // Remove whitespace between tags
+                />
+              )}
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -205,5 +212,9 @@ const styles = StyleSheet.create({
     minHeight: 150,
     paddingHorizontal: 10,
     paddingVertical: 5,
+  },
+  parentText: {
+    flex: 1,
+    fontSize: 16,
   },
 });

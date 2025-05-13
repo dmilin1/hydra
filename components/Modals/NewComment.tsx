@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -155,13 +156,13 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               })}
             >
               {viewMode === "parent" ? (
-                <Text
-                  style={{ color: theme.text }}
-                  selectable
-                  selectionColor={theme.tint}
-                >
-                  {parent.text}
-                </Text>
+                <TextInput
+                  style={t(styles.parentText, { color: theme.subtleText })}
+                  editable={false}
+                  value={parent.text}
+                  multiline
+                  selectTextOnFocus
+                />
               ) : (
                 <RenderHtml
                   html={Snudown.markdown(text).replaceAll(/>\s+</g, "><")} // Remove whitespace between tags
@@ -220,5 +221,9 @@ const styles = StyleSheet.create({
     minHeight: 150,
     paddingHorizontal: 10,
     paddingVertical: 5,
+  },
+  parentText: {
+    flex: 1,
+    fontSize: 16,
   },
 });
