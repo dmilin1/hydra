@@ -43,6 +43,7 @@ import useContextMenu from "../../../../utils/useContextMenu";
 import RenderHtml from "../../../HTML/RenderHTML";
 import EditComment from "../../../Modals/EditComment";
 import NewComment from "../../../Modals/NewComment";
+import SelectText from "../../../Modals/SelectText";
 import Slideable from "../../../UI/Slideable";
 
 interface CommentProps {
@@ -175,6 +176,7 @@ export function CommentComponent({
 
   const showCommentOptions = async () => {
     const options = [
+      "Select Text",
       "Reply",
       ...(comment.saved ? ["Unsave"] : ["Save"]),
       ...(currentUser?.userName === comment.author ? ["Edit", "Delete"] : []),
@@ -190,6 +192,8 @@ export function CommentComponent({
       editComment();
     } else if (result === "Delete") {
       confirmDeleteComment();
+    } else if (result === "Select Text") {
+      setModal(<SelectText text={comment.text} />);
     } else if (result === "Share") {
       Share.share({ url: new RedditURL(comment.link).toString() });
     }

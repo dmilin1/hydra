@@ -103,6 +103,7 @@ function PostDetails({ route }: PostDetailsProps) {
         ? ["Delete" as ContextTypes]
         : []),
       "Report",
+      "Select Text",
       "Share",
     ];
     const contextSort: SortTypes[] = [

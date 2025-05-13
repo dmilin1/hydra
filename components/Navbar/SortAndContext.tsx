@@ -32,6 +32,7 @@ import useContextMenu from "../../utils/useContextMenu";
 import EditPost from "../Modals/EditPost";
 import NewMessage from "../Modals/NewMessage";
 import NewPost from "../Modals/NewPost";
+import SelectText from "../Modals/SelectText";
 
 export type SortTypes =
   | "Best"
@@ -45,6 +46,7 @@ export type SortTypes =
 
 export type ContextTypes =
   | "Share"
+  | "Select Text"
   | "Subscribe"
   | "Unsubscribe"
   | "Favorite"
@@ -228,6 +230,11 @@ export default function SortAndContext({
             });
             if (result === "Share") {
               Share.share({ url: new RedditURL(currentPath).toString() });
+            } else if (
+              result === "Select Text" &&
+              pageData?.type === "postDetail"
+            ) {
+              setModal(<SelectText text={pageData.text} />);
             } else if (result === "New Post") {
               setModal(
                 <NewPost
