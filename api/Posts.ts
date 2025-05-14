@@ -105,8 +105,10 @@ export async function formatPostData(child: any): Promise<Post> {
     mediaAspectRatio = width / height;
   } else if (child.data.gallery_data?.items?.[0]?.media_id) {
     const firstMediaId = child.data.gallery_data.items[0].media_id;
-    const { x, y } = child.data.media_metadata[firstMediaId].s;
-    mediaAspectRatio = x / y;
+    const dimensions = child.data.media_metadata[firstMediaId].s;
+    if (dimensions) {
+      mediaAspectRatio = dimensions.x / dimensions.y;
+    }
   }
 
   let video = child.data.media?.reddit_video?.fallback_url;
