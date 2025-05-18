@@ -13,6 +13,7 @@ import HydraPro from "./HydraPro";
 import Privacy from "./Privacy";
 import Root from "./Root";
 import Theme from "./Theme";
+import ThemeMaker from "./ThemeMaker";
 import { StackPageProps } from "../../app/stack";
 import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroller";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
@@ -49,6 +50,7 @@ export default function SettingsPage({
         {relativePath === "settings/general/startup" && <Startup />}
 
         {relativePath === "settings/theme" && <Theme />}
+        {relativePath === "settings/themeMaker" && <ThemeMaker />}
         {relativePath === "settings/appearance" && <Appearance />}
         {relativePath === "settings/dataUse" && <DataUse />}
         {relativePath === "settings/privacy" && <Privacy />}

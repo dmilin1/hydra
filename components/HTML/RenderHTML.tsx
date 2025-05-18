@@ -14,13 +14,18 @@ import {
   View,
   ViewProps,
   ViewStyle,
+  TouchableOpacity,
+  Alert
 } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext, saveCustomTheme, t } from "../../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
-
+import ThemeRow from "../UI/ThemeRow";
+import KeyStore from "../../utils/KeyStore";
+import { useSetTheme } from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView/hooks/useSetTheme";
+import { CUSTOM_THEME_IMPORT_PREFIX, CUSTOM_THEME_IMPORT_REGEX } from "../../constants/Themes";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -285,21 +290,69 @@ type TextNodeProps = {
 
 export function TextNodeElem({
   textNode,
-  index,
   inheritedStyles,
 }: TextNodeProps) {
+  const setTheme = useSetTheme();
   const { theme } = useContext(ThemeContext);
 
+  const makeOnPress = (themeData: any) => () =>
+    Alert.alert(
+      "Import Theme",
+      `Import "${themeData.name}" to your custom themes?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Import",
+          onPress: () => {
+            try {
+              saveCustomTheme(themeData);
+              Alert.alert("Imported", `"${themeData.name}" saved.`);
+            } catch {
+              Alert.alert("Error", "Failed to save theme.");
+            }
+          },
+        },
+        {
+          text: "Import & Apply",
+          onPress: () => {
+            try {
+              saveCustomTheme(themeData);
+              setTheme?.(`${themeData.name}`, true);
+            } catch {
+              Alert.alert("Error", "Failed to apply theme.");
+            }
+          },
+        },
+      ]
+    );
+
+  const segments = textNode.data.split(CUSTOM_THEME_IMPORT_REGEX);
+
   return (
-    <Text
-      key={index}
-      style={t(styles.basicText, {
-        color: theme.subtleText,
-        ...inheritedStyles,
+    <>
+      {segments.map((segment, idx) => {
+        if (!segment.startsWith(CUSTOM_THEME_IMPORT_PREFIX)) {
+          return <Text key={idx} style={t(styles.basicText, { color: theme.subtleText, ...inheritedStyles })}>{segment}</Text>;
+        }
+        const jsonPart = segment.slice(CUSTOM_THEME_IMPORT_PREFIX.length);
+        try {
+          const themeData = JSON.parse(jsonPart);
+          return (
+            <ThemeRow
+              key={idx}
+              theme={themeData}
+              onPress={makeOnPress(themeData)}
+            />
+          );
+        } catch {
+          return (
+            <Text key={idx} style={{ color: "red" }}>
+              {segment}
+            </Text>
+          );
+        }
       })}
-    >
-      {textNode.data}
-    </Text>
+    </>
   );
 }
 
@@ -366,5 +419,30 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 150,
     width: 200,
+  },
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+  },
+  name: {
+    width: 100,
+    fontSize: 18,
+    marginRight: 15,
+  },
+  swatches: {
+    flex: 1,
+    flexDirection: "row",
+    borderWidth: 1,
+  },
+  swatch: {
+    flex: 1,
+    height: 20,
+  },
+  icon: {
+    width: 30,
+    alignItems: "flex-end",
   },
 });

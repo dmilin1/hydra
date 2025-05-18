@@ -10,7 +10,25 @@ const rainbow = [
   "#732982",
 ];
 
-type Theme = {
+
+export type ThemeData = {
+  name: string;
+  systemModeStyle: string;
+  statusBar: string;
+  isPro: boolean;
+  postColorTint: string[];
+  [key: string]: string | boolean | string[];
+};
+
+export const CUSTOM_THEME_IMPORT_PREFIX = "::hydra-theme-import::";
+
+export const CUSTOM_THEME_IMPORT_REGEX = new RegExp(
+  `(${CUSTOM_THEME_IMPORT_PREFIX}\\{[^}]+\\})`,
+  "g"
+);
+
+
+export type Theme = {
   name: string;
   systemModeStyle: "light" | "dark";
   statusBar: StatusBarStyle;
@@ -353,5 +371,8 @@ const themes: Themes = {
     moderator: "#4682B4",
   },
 };
+
+export const DEFAULT_THEME = themes.dark;
+
 
 export default themes;

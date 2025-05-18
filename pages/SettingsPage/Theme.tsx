@@ -1,120 +1,52 @@
-import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
-
-import Themes from "../../constants/Themes";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
-import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { useURLNavigation } from "../../utils/navigation";
-
-const isValidColor = (color: any) => {
-  return (
-    typeof color === "string" &&
-    color.startsWith("#") &&
-    RegExp(/^#([0-9A-F]{3})|([0-9A-F]{6})|([0-9A-F]{8})$/i).test(color)
-  );
-};
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { useSetTheme } from "../../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView/hooks/useSetTheme";
+import ThemeList from "../../components/UI/ThemeList";
 
 export default function Theme() {
-  const { theme, currentTheme, setCurrentTheme, cantUseTheme } =
-    useContext(ThemeContext);
-  const { isPro } = useContext(SubscriptionsContext);
+  const { theme, currentTheme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
-
-  const setTheme = (theme: keyof typeof Themes) => {
-    setCurrentTheme(theme);
-    if (cantUseTheme(theme)) {
-      Alert.alert(
-        "Hydra Pro Theme",
-        "You can use this theme for 5 minutes to try it out. Upgrade to Hydra Pro to keep using it.",
-        [
-          {
-            text: "Get Hydra Pro",
-            isPreferred: true,
-            onPress: () => {
-              pushURL("hydra://settings/hydraPro");
-            },
-          },
-          {
-            text: "Maybe Later",
-            style: "cancel",
-          },
-        ],
-      );
-    }
-  };
+  const setTheme = useSetTheme();
 
   return (
     <>
-      {Object.entries(Themes).map(([key, curTheme]) => (
+      <View style={styles.header}>
+        <Text style={[styles.headerText, { color: theme.text }]}>
+          Themes
+        </Text>
         <TouchableOpacity
-          key={key}
-          onPress={() => setTheme(key as keyof typeof Themes)}
-          style={t(styles.themeItemContainer, {
-            borderBottomColor: theme.divider,
-          })}
+          onPress={() => pushURL("hydra://settings/themeMaker")}
         >
-          <Text
-            style={t(styles.themeNameText, {
-              color: theme.text,
-            })}
-          >
-            {curTheme.name}
-          </Text>
-          <View
-            style={t(styles.colorsContainer, {
-              borderColor: theme.divider,
-            })}
-          >
-            {Object.entries(curTheme)
-              .filter(([_, val]) => isValidColor(val))
-              .map(([key, color]: [string, any]) => (
-                <View
-                  key={key}
-                  style={{
-                    backgroundColor: color,
-                    flex: 1,
-                    height: 20,
-                  }}
-                />
-              ))}
-          </View>
-          <View style={styles.checkboxContainer}>
-            {currentTheme === key ? (
-              <Feather name="check" size={24} color={theme.iconOrTextButton} />
-            ) : curTheme.isPro && !isPro ? (
-              <Feather name="lock" size={24} color={theme.iconOrTextButton} />
-            ) : null}
-          </View>
+          <Feather
+            name="plus"
+            size={24}
+            color={theme.iconOrTextButton}
+          />
         </TouchableOpacity>
-      ))}
+      </View>
+
+      <ThemeList
+        currentThemeKey={currentTheme}
+        onSelect={(key, _themeData, isCustom) =>
+          setTheme(key, isCustom)
+        }
+      />
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  themeItemContainer: {
+  header: {
     flexDirection: "row",
-    alignItems: "center",
+    padding: 15,
     justifyContent: "space-between",
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
+    alignItems: "center",
   },
-  themeNameText: {
-    width: 100,
-    fontSize: 18,
-    marginRight: 15,
-  },
-  colorsContainer: {
-    flex: 1,
-    flexDirection: "row",
-    borderWidth: 1,
-  },
-  checkboxContainer: {
-    width: 30,
-    height: 24,
-    marginLeft: 25,
-    alignItems: "flex-end",
+  headerText: {
+    fontSize: 22,
+    fontWeight: "bold",
   },
 });

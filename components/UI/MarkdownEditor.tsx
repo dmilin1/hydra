@@ -1,5 +1,5 @@
 import { AntDesign, Entypo, FontAwesome } from "@expo/vector-icons";
-import React, { Dispatch, SetStateAction, useContext, useRef } from "react";
+import React, { Dispatch, SetStateAction, useContext, useRef, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -7,9 +7,15 @@ import {
   TextInput,
   TextInputSelectionChangeEventData,
   Alert,
+  Modal,
+  ScrollView,
+  Text,
 } from "react-native";
 
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { CUSTOM_THEME_IMPORT_PREFIX, Theme } from "../../constants/Themes";
+
+import ThemeList from "./ThemeList";
 
 type MarkdownEditorProps = {
   text: string;
@@ -46,11 +52,65 @@ export default function MarkdownEditor({
   placeholder,
 }: MarkdownEditorProps) {
   const { theme } = useContext(ThemeContext);
+  const [showThemeModal, setShowThemeModal] = useState(false);
 
   const selection = useRef<TextInputSelectionChangeEventData["selection"]>({
     start: 0,
     end: 0,
   });
+
+  const handleThemeSelect = (themeData: Theme) => {
+    Alert.alert(
+      "Attach Theme",
+      `Do you want to attach the "${themeData.name}" theme to your text?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Attach",
+          onPress: () => {
+            const themeImportString = `${CUSTOM_THEME_IMPORT_PREFIX}${JSON.stringify(themeData)}`;
+            setText((text) => {
+              const newText = replaceText(text, themeImportString, selection);
+              return newText;
+            });
+            setShowThemeModal(false);
+          },
+        },
+      ],
+    );
+  };
+
+  const renderThemeModal = () => {
+    try {
+      return (
+        <Modal
+          visible={showThemeModal}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setShowThemeModal(false)}
+        >
+          <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: theme.divider }]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>Select Theme</Text>
+              <TouchableOpacity onPress={() => setShowThemeModal(false)}>
+                <FontAwesome name="times" size={24} color={theme.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView>
+              <ThemeList onSelect={(_key, themeData) => handleThemeSelect(themeData)} />
+            </ScrollView>
+          </View>
+        </Modal>
+      );
+    } catch (error) {
+      console.error('Error rendering theme modal:', error);
+      return null;
+    }
+  };
 
   return (
     <View
@@ -165,7 +225,11 @@ export default function MarkdownEditor({
         >
           <FontAwesome name="eye-slash" size={24} color={theme.iconPrimary} />
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowThemeModal(true)}>
+          <FontAwesome name="paint-brush" size={24} color={theme.iconPrimary} />
+        </TouchableOpacity>
       </View>
+      {renderThemeModal()}
     </View>
   );
 }
@@ -185,5 +249,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    marginTop: 50,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    padding: 15,
+    paddingBottom: 5,
   },
 });
