@@ -45,7 +45,7 @@ export function StackFutureProvider({
 }: StackFutureProviderProps) {
   const navigation =
     useNavigation<NativeStackNavigationProp<StackParamsList>>();
-  const gestureStartX = useRef(0);
+  const gestureStart = useRef<{ x: number; y: number } | null>(null);
 
   const handleBeforeRemove: HandleBeforeRemoveType = () => {
     const popped = navigation.getState().routes.slice(-1)[0];
@@ -71,19 +71,33 @@ export function StackFutureProvider({
           height: "100%",
         }}
         onStartShouldSetResponderCapture={(e) => {
-          gestureStartX.current = e.nativeEvent.pageX;
+          gestureStart.current = {
+            x: e.nativeEvent.pageX,
+            y: e.nativeEvent.pageY,
+          };
           return false;
         }}
         onMoveShouldSetResponder={() =>
-          SCREEN_WIDTH - gestureStartX.current < 30 &&
+          !!gestureStart.current &&
+          SCREEN_WIDTH - gestureStart.current.x < 30 &&
           futureRoutes.current.length > 0
         }
         onResponderMove={(e) => {
-          if (gestureStartX.current - e.nativeEvent.pageX > 15) {
+          if (!gestureStart.current) return false;
+          const deltaX = gestureStart.current.x - e.nativeEvent.pageX;
+          const deltaY = e.nativeEvent.pageY - gestureStart.current.y;
+          const angleDegrees = Math.abs(
+            Math.atan2(deltaY, deltaX) * (180 / Math.PI),
+          );
+          if (angleDegrees > 15 && deltaY > 30) {
+            gestureStart.current = null;
+            return false;
+          }
+          if (deltaX > 15 && angleDegrees < 15) {
             const popped = futureRoutes.current.pop();
             if (!popped) return false;
             navigation.push(popped.name as any, popped.params as any);
-            gestureStartX.current = 0;
+            gestureStart.current = null;
             return true;
           }
           return false;

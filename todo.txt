@@ -23,6 +23,8 @@
 
 - 🚀 Subreddit sidebars (wiki, rules, etc.)
 
+- 🚀 Swipe to navigate support
+
 - 🚀⭐ Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
 
 - 🚀 Auto translation of posts and comments to another language
@@ -41,6 +43,8 @@
 - 🚀 Block specific subreddits from appearing
 
 - 🐛 Enable landscape mode in the browser
+
+- 🚀 Use the faster post search API
 
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
