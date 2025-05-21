@@ -27,7 +27,6 @@ const useImageDimensions = (image: ImageSource): Dimensions | null => {
         return;
       }
 
-      // @ts-ignore
       if (image.uri) {
         const source = image as ImageURISource;
 
@@ -38,7 +37,6 @@ const useImageDimensions = (image: ImageSource): Dimensions | null => {
         if (imageDimensions) {
           resolve(imageDimensions);
         } else if (source.uri) {
-          // @ts-ignore
           Image.getSizeWithHeaders(
             source.uri,
             source.headers ?? {},

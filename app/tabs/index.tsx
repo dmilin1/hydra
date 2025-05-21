@@ -108,7 +108,7 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: showUsername
-                ? currentUser?.userName ?? "Account"
+                ? (currentUser?.userName ?? "Account")
                 : "Account",
               animation: "fade",
             }}

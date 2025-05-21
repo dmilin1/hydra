@@ -17,7 +17,7 @@ export const ThemeContext = createContext(initialThemeContext);
 export function ThemeProvider({ children }: React.PropsWithChildren) {
   const { isPro, purchasesInitialized } = useContext(SubscriptionsContext);
   const [storedCurrentTheme, setStoredTheme] = useMMKVString("theme");
-  const temporaryThemeTimeout = useRef<NodeJS.Timeout | null>(null);
+  const temporaryThemeTimeout = useRef<number | null>(null);
 
   const currentTheme = (
     storedCurrentTheme && storedCurrentTheme in Themes

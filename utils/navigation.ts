@@ -1,26 +1,18 @@
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import {
-  CompositeNavigationProp,
   RouteProp,
   useNavigation as useNavigationUntyped,
   useRoute as useRouteUntyped,
 } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useContext } from "react";
 
 import RedditURL, { PageType } from "./RedditURL";
 import { StackParamsList } from "../app/stack";
-import { TabParamsList } from "../app/tabs";
 import { MediaViewerContext } from "../contexts/MediaViewerContext";
 import { StackFutureContext } from "../contexts/StackFutureContext";
+import { AppNavigationProp, FlexibleNavigationProp } from "./navigationTypes";
 
 export function useNavigation() {
-  return useNavigationUntyped<
-    CompositeNavigationProp<
-      BottomTabNavigationProp<TabParamsList>,
-      NativeStackNavigationProp<StackParamsList>
-    >
-  >();
+  return useNavigationUntyped<AppNavigationProp>();
 }
 
 export function useRoute<
@@ -47,11 +39,8 @@ export const PageTypeToNavName: Record<PageType, keyof StackParamsList> = {
   [PageType.UNKNOWN]: "ErrorPage",
 };
 
-export function useURLNavigation(
-  overrideNav?: CompositeNavigationProp<
-    BottomTabNavigationProp<TabParamsList>,
-    NativeStackNavigationProp<StackParamsList>
-  >,
+export function useURLNavigation<NavType extends FlexibleNavigationProp>(
+  overrideNav?: NavType,
 ) {
   // eslint-disable-next-line react-hooks/rules-of-hooks -- We want to be able to use this in places that can't access the context
   const navigation = overrideNav ?? useNavigation();

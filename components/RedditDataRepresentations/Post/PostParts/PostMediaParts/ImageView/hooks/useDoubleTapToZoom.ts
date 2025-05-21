@@ -15,7 +15,7 @@ let lastTapTS: number | null = null;
  * Same functionality for Android implemented inside usePanResponder hook.
  */
 function useDoubleTapToZoom(
-  scrollViewRef: React.RefObject<ScrollView>,
+  scrollViewRef: React.RefObject<ScrollView | null>,
   scaled: boolean,
   screen: Dimensions,
 ) {
@@ -40,7 +40,6 @@ function useDoubleTapToZoom(
           targetHeight = screen.height / 2;
         }
 
-        // @ts-ignore
         scrollResponderRef?.scrollResponderZoomTo({
           x: targetX,
           y: targetY,

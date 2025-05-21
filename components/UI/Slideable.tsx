@@ -4,6 +4,7 @@ import { View, StyleSheet, Animated, ColorValue } from "react-native";
 
 import { ScrollerContext } from "../../contexts/ScrollerContext";
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { IconProps } from "@expo/vector-icons/build/createIconSet";
 
 type SlideItem = {
   icon: ReactNode;
@@ -26,7 +27,7 @@ export default function Slideable({
   const { theme } = useContext(ThemeContext);
   const { setScrollDisabled } = useContext(ScrollerContext);
 
-  const touchStart = useRef<{ x: number; y: number }>();
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchX = useRef(new Animated.Value(0)).current;
 
   const [slideItem, setSlideItem] = useState<
@@ -153,7 +154,7 @@ export default function Slideable({
           })}
         >
           {icon &&
-            cloneElement(icon as React.ReactElement, {
+            cloneElement(icon as React.ReactElement<IconProps<string>>, {
               color: slideItem?.color ? theme.text : theme.subtleText,
               size: slideItem?.color ? 32 : 28,
             })}

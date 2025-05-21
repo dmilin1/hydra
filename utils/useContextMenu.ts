@@ -11,7 +11,6 @@ type OpenContextMenuFn = <Options extends string[]>(
 ) => Promise<Options[number] | null>;
 
 export default function useContextMenu() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { showActionSheetWithOptions } = useActionSheet();
   const { theme } = useContext(ThemeContext);
 

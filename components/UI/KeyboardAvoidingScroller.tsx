@@ -10,7 +10,7 @@ import {
 type KeyboardAvoidingScrollerProps = ScrollViewProps;
 
 type KeyboardAvoidingScrollerContextType = {
-  scrollViewRef: React.RefObject<ScrollView>;
+  scrollViewRef: React.RefObject<ScrollView | null>;
   currentInput: TextInput | null;
   setCurrentInput: (input: TextInput) => void;
 };

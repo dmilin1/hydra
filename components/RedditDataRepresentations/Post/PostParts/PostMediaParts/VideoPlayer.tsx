@@ -78,7 +78,7 @@ export default function VideoPlayer({
   const lastProgress = useRef(0);
   const lastProgressMillis = useRef(0);
   const isFullscreen = useRef(false);
-  const audio = useRef<SoundObject>();
+  const audio = useRef<SoundObject | null>(null);
   const audioIsPlaying = useRef(false);
   const isChangingAudio = useRef(false);
 
@@ -93,7 +93,7 @@ export default function VideoPlayer({
     }
   };
 
-  const oneChangeAtATime = async (func: Function) => {
+  const oneChangeAtATime = async (func: () => Promise<void>) => {
     if (isChangingAudio.current) return;
     isChangingAudio.current = true;
     await func();

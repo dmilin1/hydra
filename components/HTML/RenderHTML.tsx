@@ -79,7 +79,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
   const wrapperProps: ViewProps & TextProps & ScrollViewProps = {};
   const wrapperStyles: ViewStyle & TextStyle = {};
 
-  // @ts-ignore comment
+  // @ts-expect-error index is not typed
   element.index = index;
   if (element.attribs.class === "md-spoiler-text") {
     Wrapper = Text;

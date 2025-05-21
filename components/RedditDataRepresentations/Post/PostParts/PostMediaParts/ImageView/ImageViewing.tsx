@@ -87,7 +87,7 @@ function ImageViewing({
 
   const onZoom = useCallback(
     (isScaled: boolean) => {
-      // @ts-ignore
+      // @ts-expect-error setNativeProps is not typed correctly
       imageList?.current?.setNativeProps({ scrollEnabled: !isScaled });
       toggleBarsVisible(!isScaled);
     },
@@ -159,13 +159,12 @@ function ImageViewing({
               />
             )}
             onMomentumScrollEnd={onScroll}
-            //@ts-ignore
             keyExtractor={(imageSrc, index) =>
               keyExtractor
                 ? keyExtractor(imageSrc, index)
                 : typeof imageSrc === "number"
                   ? `${imageSrc}`
-                  : imageSrc.uri
+                  : (imageSrc.uri ?? index.toString())
             }
           />
           {images.length > 1 && (

@@ -5,16 +5,13 @@ import {
   SimpleLineIcons,
   Entypo,
 } from "@expo/vector-icons";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { CompositeNavigationProp, RouteProp } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteProp } from "@react-navigation/native";
 import React, { useContext } from "react";
 import { Share, StyleSheet, View, TouchableOpacity, Alert } from "react-native";
 
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
 import { blockUser, User } from "../../api/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
-import { TabParamsList } from "../../app/tabs";
 import {
   makeCommentSubredditSortKey,
   makePostSubredditSortKey,
@@ -23,11 +20,12 @@ import {
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
 } from "../../constants/SettingsKeys";
 import { ModalContext } from "../../contexts/ModalContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
 import KeyStore from "../../utils/KeyStore";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
+import { FlexibleNavigationProp } from "../../utils/navigationTypes";
 import useContextMenu from "../../utils/useContextMenu";
 import EditPost from "../Modals/EditPost";
 import NewMessage from "../Modals/NewMessage";
@@ -61,10 +59,7 @@ export type ContextTypes =
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
-  navigation: CompositeNavigationProp<
-    BottomTabNavigationProp<TabParamsList>,
-    NativeStackNavigationProp<StackParamsList, URLRoutes, undefined>
-  >;
+  navigation: FlexibleNavigationProp;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
   pageData?: PostDetail | User;
@@ -125,9 +120,10 @@ export default function SortAndContext({
   };
 
   return (
-    <View style={t(styles.sectionContainer, { justifyContent: "flex-end" })}>
+    <View style={styles.sectionContainer}>
       {sortOptions && (
         <TouchableOpacity
+          style={{ width: 44, height: 24 }}
           activeOpacity={0.5}
           onPress={async () => {
             const sort = await showContextMenu({
@@ -223,6 +219,7 @@ export default function SortAndContext({
       )}
       {contextOptions && (
         <TouchableOpacity
+          style={{ width: 24, height: 24 }}
           activeOpacity={0.5}
           onPress={async () => {
             const result = await showContextMenu({
@@ -325,8 +322,8 @@ export default function SortAndContext({
 
 const styles = StyleSheet.create({
   sectionContainer: {
+    justifyContent: "flex-end",
     alignItems: "center",
-    justifyContent: "center",
     flexDirection: "row",
   },
   centerText: {

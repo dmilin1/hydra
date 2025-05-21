@@ -10,9 +10,10 @@ import {
   READ_CLIPBOARD_DEFAULT,
   READ_CLIPBOARD_KEY,
 } from "../pages/SettingsPage/General/OpenInHydra";
+import { AppNavigationProp } from "./navigationTypes";
 
 export default function IncomingURLHandler({ children }: PropsWithChildren) {
-  const { pushURL, navigate } = useURLNavigation();
+  const { pushURL, navigate } = useURLNavigation<AppNavigationProp>();
   const isAsking = useRef(false);
 
   const deepLink = useLinkingURL();

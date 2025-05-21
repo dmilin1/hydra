@@ -237,7 +237,6 @@ export function CommentComponent({
             >
               <TouchableHighlight
                 ref={(ref) => {
-                  // @ts-ignore: Need to mutate this ref here because we need to set 2 refs which you'd never normally do
                   commentRef.current = ref;
                   if (commentPropRef) {
                     commentPropRef.current = ref;
@@ -615,7 +614,6 @@ const styles = StyleSheet.create({
   },
   flairText: {
     flexShrink: 1,
-    textOverflow: "ellipsis",
   },
   topBarEnd: {
     flexGrow: 1,

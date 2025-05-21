@@ -63,8 +63,8 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
     !customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]?.willRenew;
 
   const gracePeriodEndsAt = inGracePeriod
-    ? customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]
-        ?.expirationDateMillis ?? null
+    ? (customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]
+        ?.expirationDateMillis ?? null)
     : null;
 
   const loadOffering = async () => {
