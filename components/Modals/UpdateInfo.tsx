@@ -17,97 +17,75 @@ import GetHydraProButton from "../UI/GetHydraProButton";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 const update = {
-  updateKey: "2.6.0-1",
+  updateKey: "2.7.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [
     {
-      title: "Post & Comment Summaries",
+      title: "Custom Themes + Sharing",
       description:
-        "Quick summaries appear at the top of long posts and threads. This is enabled by default, but you can disable it in Settings => Appearance => Show Post/Comment Summary.",
-    },
-    {
-      title: "Advanced Post Filtering",
-      description:
-        "Post filtering powered by machine learning. Tired of all the politics? This catches posts that the regular word filter misses. To enable, go to Settings => General => Filters => Smart Post Filter. You can write a custom filter or use one of the pre-made filters.",
-    },
-    {
-      title: "Inbox Alerts",
-      description:
-        "Get instant alerts for replies and messages. Enabled by default. You can disable it in the iOS System Settings.",
-    },
-    {
-      title: "New Themes",
-      description:
-        "Five new premium themes: Gilded, Ocean, Aurora, Royal, and Mulberry. To enable these themes, go to Settings => Theme. Even if you don't have Hydra Pro, you can still try these themes out.",
-    },
-    {
-      title: "Support Hydra",
-      description:
-        "Even if the features above don't interest you, Hydra Pro is a great way to support Hydra's ongoing development costs. Hydra is not self sustainable right now, so any support is greatly appreciated!",
+        "Design your own themes and share them with other Hydra users at the new /r/HydraThemes subreddit. Sort by top to find community favorites! To make a custom theme, go to Settings => Appearance => Custom Theme +. Themes can be shared when on the /r/HydraThemes subreddit by pressing the art brush icon in the markdown editor.",
     },
   ],
   features: [
     {
-      title: "New Themes",
+      title: "Auto Mark as Read",
       description:
-        "Two new themes: Strawberry and Spiderman. To enable these themes, go to Settings => Theme.",
+        "Added a setting to automatically mark posts you scroll past as read. Note that this may result in longer page load times since the read posts still have to be loaded. You can enable this setting in Settings => General => Filters => Mark as Seen On Scroll.",
     },
     {
-      title: "Save Comments",
+      title: "Support for Crossposts",
       description:
-        "Comments can now be saved with a swipe to the left or a long press. You can view your saved comments in the Account tab.",
+        "Hydra now supports crossposts. The source post will be displayed inside the post card.",
     },
     {
-      title: "Save Posts Easier",
+      title: "Custom Startup URL",
       description:
-        "Posts can now be saved without having to click into them. To quickly save a post, long swipe to the left. You can view your saved posts in the Account tab.",
+        "You can now startup to any Reddit URL supported by Hydra. This includes things like multireddits or user pages. You can set a custom startup URL in Settings => General => Startup URL.",
     },
     {
-      title: "Saved Indicators",
+      title: "Highlight Post/Comment Text",
       description:
-        "Posts and comments that you have saved will now have a small indicator in the bottom right corner of the post/comment.",
+        'Press and hold on a comment, or tap the ... button on a post, to highlight the text and you\'ll discover a new "Select Text" option in the menu. This option allows you to highlight and copy text from posts and comments.',
     },
     {
-      title: "Drafts",
+      title: "Highlight Text When Replying",
       description:
-        "Your posts, comments, and replies are now automatically saved as drafts. Exiting out midway through typing and reopening the text entry modal will show your previous text where you left off. Thanks to Ronak Vir for implementing this feature!",
+        "When replying to a post or comment, you can now highlight and copy the text of the parent post or comment.",
     },
     {
-      title: "Apply Default Sort to Home",
+      title: "Image Gallery Count",
       description:
-        "Added a setting to apply the default post sort setting to the home page. To enable this, go to Settings => General => Sorting => Apply sort to home.",
+        "Image galleries will now display the current image number and total image count in the corner.",
     },
     {
-      title: "Hide Account Tab Username",
+      title: "Self Hosted Hydra Server",
       description:
-        "You can now prevent your username from being displayed on the account tab button. To disable your username from showing, go to Settings => Appearance => Show username and toggle it off.",
-    },
-    {
-      title: "Better Tables",
-      description:
-        "Wide tables are now horizontally scrollable, preventing text from getting crammed. This should be a big help for those sports posts full of data.",
-    },
-    {
-      title: "Post Title Line Limit",
-      description:
-        "The max configurable post title line limit has been increased from 5 lines to 10 for those really long post titles. You can change this in Settings => Appearance => Post title max lines.",
-    },
-    {
-      title: "Smarter Loading",
-      description:
-        "Hydra now loads infinite scrolls in a more efficient manner. This should result in fewer API calls and faster loads. You'll notice this most if you have a lot of filters enabled.",
-    },
-    {
-      title: "View Patch Notes",
-      description:
-        "You can now get back to these patch notes at any time by going to Settings => Patch Notes.",
+        "Technical users can now host their own Hydra server. To set up a self hosted server, go to Settings => Advanced => Use Custom Server. Source code at github.com/dmilin1/hydra-server",
     },
   ],
   bugfixes: [
     {
       description:
-        "Some API calls were being duplicated, causing slightly slower loads and more data usage.",
+        "Fixed the Apply Default Sort to Home setting not being applied when the app first started up.",
+    },
+    {
+      description: "Fixed navbar buttons sometimes being difficult to click.",
+    },
+    {
+      description: "Fixed multireddits having no navbar title.",
+    },
+    {
+      description:
+        "Made the right to left page swipe gesture to go to the future post less sensitive. It should be less likely to trigger when scrolling.",
+    },
+    {
+      description:
+        "Fixed show all comments button not appearing when a comment thread was accessed through the user page.",
+    },
+    {
+      description:
+        "Fixed a rare bug causing post feeds to fail to load when a post has media without dimensions.",
     },
   ],
 };
