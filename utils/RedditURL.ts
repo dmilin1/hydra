@@ -279,4 +279,11 @@ export default class RedditURL extends URL {
 
     return this;
   }
+
+  supportsSharingThemes(): boolean {
+    const subreddit = this.getSubreddit().toLowerCase();
+    return ["hydraapp", "hydrafeaturerequests", "hydrathemes"].includes(
+      subreddit,
+    );
+  }
 }

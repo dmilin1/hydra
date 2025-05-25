@@ -10,25 +10,37 @@ const rainbow = [
   "#732982",
 ];
 
-
-export type ThemeData = {
+export type CustomTheme = Partial<
+  Omit<Theme, "key" | "commentDepthColors" | "isPro">
+> & {
   name: string;
-  systemModeStyle: string;
-  statusBar: string;
-  isPro: boolean;
-  postColorTint: string[];
-  [key: string]: string | boolean | string[];
+  extends: (typeof themes)[keyof typeof themes]["key"];
 };
+
+export const NEW_CUSTOM_THEME: CustomTheme = {
+  name: "Custom",
+  extends: "dark",
+};
+
+export type CustomThemeColorKeys = Exclude<
+  keyof Theme,
+  | "key"
+  | "name"
+  | "systemModeStyle"
+  | "statusBar"
+  | "isPro"
+  | "commentDepthColors"
+>;
 
 export const CUSTOM_THEME_IMPORT_PREFIX = "::hydra-theme-import::";
 
 export const CUSTOM_THEME_IMPORT_REGEX = new RegExp(
   `(${CUSTOM_THEME_IMPORT_PREFIX}\\{[^}]+\\})`,
-  "g"
+  "g",
 );
 
-
 export type Theme = {
+  key: string;
   name: string;
   systemModeStyle: "light" | "dark";
   statusBar: StatusBarStyle;
@@ -44,7 +56,7 @@ export type Theme = {
   iconPrimary: ColorValue;
   iconSecondary: ColorValue;
   divider: ColorValue;
-  postColorTint: string[];
+  commentDepthColors: string[];
   upvote: ColorValue;
   downvote: ColorValue;
   delete: ColorValue;
@@ -71,6 +83,7 @@ type Themes = {
 
 const themes: Themes = {
   dark: {
+    key: "dark",
     name: "Dark",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -86,7 +99,7 @@ const themes: Themes = {
     iconPrimary: "#2282fe",
     iconSecondary: "#ccc",
     divider: "#222222",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#ff6c00",
     downvote: "#565fe3",
     delete: "#ff0000",
@@ -96,6 +109,7 @@ const themes: Themes = {
     moderator: "#00940f",
   },
   light: {
+    key: "light",
     name: "Light",
     systemModeStyle: "light",
     statusBar: "dark",
@@ -111,7 +125,7 @@ const themes: Themes = {
     iconPrimary: "#2282fe",
     iconSecondary: "#ccc",
     divider: "#999",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#ff6c00",
     downvote: "#565fe3",
     delete: "#ff0000",
@@ -121,6 +135,7 @@ const themes: Themes = {
     moderator: "#00940f",
   },
   midnight: {
+    key: "midnight",
     name: "Midnight",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -136,7 +151,7 @@ const themes: Themes = {
     iconPrimary: "#2282fe",
     iconSecondary: "#ccc",
     divider: "#383a40",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#ff6c00",
     downvote: "#565fe3",
     delete: "#ff0000",
@@ -146,6 +161,7 @@ const themes: Themes = {
     moderator: "#00940f",
   },
   discord: {
+    key: "discord",
     name: "Discord",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -161,7 +177,7 @@ const themes: Themes = {
     iconPrimary: "#00a8fc",
     iconSecondary: "#ccc",
     divider: "#383a40",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#23a55a",
     downvote: "#f23f43",
     delete: "#ff0000",
@@ -171,6 +187,7 @@ const themes: Themes = {
     moderator: "#00940f",
   },
   spotify: {
+    key: "spotify",
     name: "Spotify",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -186,7 +203,7 @@ const themes: Themes = {
     iconPrimary: "#1fdf64",
     iconSecondary: "#ccc",
     divider: "#4d4d4d",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#1fdf64",
     downvote: "#565fe3",
     delete: "#ff0000",
@@ -196,6 +213,7 @@ const themes: Themes = {
     moderator: "#4687d6",
   },
   strawberry: {
+    key: "strawberry",
     name: "Strawberry",
     systemModeStyle: "light",
     statusBar: "dark",
@@ -211,7 +229,7 @@ const themes: Themes = {
     iconPrimary: "#FF6B6B",
     iconSecondary: "#FF8E8E",
     divider: "#FFD6D6",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#FF6B6B",
     downvote: "#8B6F71",
     delete: "#B22222",
@@ -221,6 +239,7 @@ const themes: Themes = {
     moderator: "#2E8B57",
   },
   spiderman: {
+    key: "spiderman",
     name: "Spiderman",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -236,7 +255,7 @@ const themes: Themes = {
     iconPrimary: "#FF0000",
     iconSecondary: "#FF3333",
     divider: "#333366",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#FF0000",
     downvote: "#0000FF",
     delete: "#B22222",
@@ -246,6 +265,7 @@ const themes: Themes = {
     moderator: "#1E90FF",
   },
   gilded: {
+    key: "gilded",
     name: "Gilded",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -261,7 +281,7 @@ const themes: Themes = {
     iconPrimary: "#FFD700",
     iconSecondary: "#DAA520",
     divider: "#3d3d20",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#FFD700",
     downvote: "#8B7355",
     delete: "#B22222",
@@ -271,6 +291,7 @@ const themes: Themes = {
     moderator: "#2E8B57",
   },
   mulberry: {
+    key: "mulberry",
     name: "Mulberry",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -286,7 +307,7 @@ const themes: Themes = {
     iconPrimary: "#FFB4B4",
     iconSecondary: "#E6A4A4",
     divider: "#4d3b3d",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#FFB4B4",
     downvote: "#8B6F71",
     delete: "#B22222",
@@ -296,6 +317,7 @@ const themes: Themes = {
     moderator: "#4682B4",
   },
   ocean: {
+    key: "ocean",
     name: "Deep Ocean",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -311,7 +333,7 @@ const themes: Themes = {
     iconPrimary: "#66D9EF",
     iconSecondary: "#4FB3CC",
     divider: "#2d4456",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#66D9EF",
     downvote: "#4A7B8C",
     delete: "#B22222",
@@ -321,6 +343,7 @@ const themes: Themes = {
     moderator: "#32CD32",
   },
   aurora: {
+    key: "aurora",
     name: "Aurora",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -336,7 +359,7 @@ const themes: Themes = {
     iconPrimary: "#A5FFD6",
     iconSecondary: "#7FDEB2",
     divider: "#2d4035",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#A5FFD6",
     downvote: "#5C8C7A",
     delete: "#B22222",
@@ -346,6 +369,7 @@ const themes: Themes = {
     moderator: "#4169E1",
   },
   royal: {
+    key: "royal",
     name: "Royal",
     systemModeStyle: "dark",
     statusBar: "light",
@@ -361,7 +385,7 @@ const themes: Themes = {
     iconPrimary: "#9D4EDD",
     iconSecondary: "#7B2CBF",
     divider: "#3C2665",
-    postColorTint: rainbow,
+    commentDepthColors: rainbow,
     upvote: "#9D4EDD",
     downvote: "#5A189A",
     delete: "#B22222",
@@ -373,6 +397,5 @@ const themes: Themes = {
 };
 
 export const DEFAULT_THEME = themes.dark;
-
 
 export default themes;

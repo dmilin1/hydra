@@ -1,5 +1,11 @@
 import { AntDesign, Entypo, FontAwesome } from "@expo/vector-icons";
-import React, { Dispatch, SetStateAction, useContext, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import {
   StyleSheet,
   View,
@@ -10,17 +16,22 @@ import {
   Modal,
   ScrollView,
   Text,
+  SafeAreaView,
 } from "react-native";
 
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
-import { CUSTOM_THEME_IMPORT_PREFIX, Theme } from "../../constants/Themes";
+import {
+  CUSTOM_THEME_IMPORT_PREFIX,
+  CustomTheme,
+} from "../../constants/Themes";
 
-import ThemeList from "./ThemeList";
+import ThemeList from "./Themes/ThemeList";
 
 type MarkdownEditorProps = {
   text: string;
   setText: Dispatch<SetStateAction<string>>;
   placeholder: string;
+  showCustomThemeOption?: boolean;
 };
 
 const getSelected = (
@@ -50,8 +61,9 @@ export default function MarkdownEditor({
   text,
   setText,
   placeholder,
+  showCustomThemeOption = false,
 }: MarkdownEditorProps) {
-  const { theme } = useContext(ThemeContext);
+  const { theme, currentTheme } = useContext(ThemeContext);
   const [showThemeModal, setShowThemeModal] = useState(false);
 
   const selection = useRef<TextInputSelectionChangeEventData["selection"]>({
@@ -59,10 +71,10 @@ export default function MarkdownEditor({
     end: 0,
   });
 
-  const handleThemeSelect = (themeData: Theme) => {
+  const handleThemeSelect = (customTheme: CustomTheme) => {
     Alert.alert(
       "Attach Theme",
-      `Do you want to attach the "${themeData.name}" theme to your text?`,
+      `Do you want to attach the "${customTheme.name}" theme to your text?`,
       [
         {
           text: "Cancel",
@@ -71,7 +83,7 @@ export default function MarkdownEditor({
         {
           text: "Attach",
           onPress: () => {
-            const themeImportString = `${CUSTOM_THEME_IMPORT_PREFIX}${JSON.stringify(themeData)}`;
+            const themeImportString = `\n${CUSTOM_THEME_IMPORT_PREFIX}${JSON.stringify(customTheme)}\n`;
             setText((text) => {
               const newText = replaceText(text, themeImportString, selection);
               return newText;
@@ -81,35 +93,6 @@ export default function MarkdownEditor({
         },
       ],
     );
-  };
-
-  const renderThemeModal = () => {
-    try {
-      return (
-        <Modal
-          visible={showThemeModal}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setShowThemeModal(false)}
-        >
-          <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
-            <View style={[styles.modalHeader, { borderBottomColor: theme.divider }]}>
-              <Text style={[styles.modalTitle, { color: theme.text }]}>Select Theme</Text>
-              <TouchableOpacity onPress={() => setShowThemeModal(false)}>
-                <FontAwesome name="times" size={24} color={theme.text} />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView>
-              <ThemeList onSelect={(_key, themeData) => handleThemeSelect(themeData)} />
-            </ScrollView>
-          </View>
-        </Modal>
-      );
-    } catch (error) {
-      console.error('Error rendering theme modal:', error);
-      return null;
-    }
   };
 
   return (
@@ -225,11 +208,57 @@ export default function MarkdownEditor({
         >
           <FontAwesome name="eye-slash" size={24} color={theme.iconPrimary} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowThemeModal(true)}>
-          <FontAwesome name="paint-brush" size={24} color={theme.iconPrimary} />
-        </TouchableOpacity>
+        {showCustomThemeOption && (
+          <TouchableOpacity onPress={() => setShowThemeModal(true)}>
+            <FontAwesome
+              name="paint-brush"
+              size={24}
+              color={theme.iconPrimary}
+            />
+          </TouchableOpacity>
+        )}
       </View>
-      {renderThemeModal()}
+      <Modal
+        visible={showThemeModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowThemeModal(false)}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          <View
+            style={[
+              styles.modalContainer,
+              { backgroundColor: theme.background },
+            ]}
+          >
+            <View
+              style={[styles.modalHeader, { borderBottomColor: theme.divider }]}
+            >
+              <Text style={[styles.modalTitle, { color: theme.text }]}>
+                Select Custom Theme
+              </Text>
+              <TouchableOpacity onPress={() => setShowThemeModal(false)}>
+                <Text
+                  style={[
+                    styles.modalExitButton,
+                    { color: theme.iconOrTextButton },
+                  ]}
+                >
+                  Exit
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView>
+              <ThemeList
+                currentTheme={currentTheme}
+                onSelect={(_key, customTheme) => handleThemeSelect(customTheme)}
+                showCustomOnly={true}
+              />
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 }
@@ -252,24 +281,27 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    marginTop: 50,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 15,
     borderBottomWidth: 1,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  modalExitButton: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     padding: 15,
     paddingBottom: 5,
   },

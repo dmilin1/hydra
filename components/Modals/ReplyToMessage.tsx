@@ -109,6 +109,7 @@ export default function ReplyToMessage({
               text={text}
               setText={setText}
               placeholder="Write a comment..."
+              showCustomThemeOption={true}
             />
             <View
               style={t(styles.previewTypeContainer, {

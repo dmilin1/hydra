@@ -1,65 +1,47 @@
 import { setStatusBarStyle } from "expo-status-bar";
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 
-import Themes, { DEFAULT_THEME, Theme, ThemeData } from "../../constants/Themes";
+import Themes, {
+  DEFAULT_THEME,
+  CustomTheme,
+  NEW_CUSTOM_THEME,
+} from "../../constants/Themes";
 import { SubscriptionsContext } from "../SubscriptionsContext";
-import KeyStore from "../../utils/KeyStore";
+import { getCustomTheme } from "../../db/functions/CustomThemes";
 
 const initialThemeContext = {
-  currentTheme: "dark" as string,
+  currentTheme: DEFAULT_THEME.key,
   setCurrentTheme: (_: string) => {},
-  theme: Themes["dark"] as (typeof Themes)[keyof typeof Themes],
+  theme: DEFAULT_THEME,
+  baseTheme: DEFAULT_THEME,
   cantUseTheme: (_: string) => false,
+  customThemeData: NEW_CUSTOM_THEME,
+  setCustomThemeData: (_: CustomTheme) => {},
 };
 
 export const ThemeContext = createContext(initialThemeContext);
 
-function getMergedCustomTheme(themeName: string) {
-  const customThemes = KeyStore.getString("customThemes");
-  if (!customThemes) return Themes.dark;
-  const parsed = JSON.parse(customThemes);
-  const custom = parsed[themeName];
-  if (!custom) return Themes.dark;
-  const combinedTheme = {
-    ...Themes.dark,
-    ...custom,
-  };
-  return combinedTheme;
-}
-
-export function saveCustomTheme(themeData: ThemeData): void {
-  const storedThemes = KeyStore.getString("customThemes");
-  const themes = storedThemes ? JSON.parse(storedThemes) : {};
-  const newTheme = { ...themeData, postColorTint: DEFAULT_THEME.postColorTint, isPro: true };
-  themes[newTheme.name] = newTheme;
-  KeyStore.set("customThemes", JSON.stringify(themes));
-}
-
 export function ThemeProvider({ children }: React.PropsWithChildren) {
   const { isPro, purchasesInitialized } = useContext(SubscriptionsContext);
   const [storedCurrentTheme, setStoredTheme] = useMMKVString("theme");
+  const [customThemeData, setCustomThemeData] = useState(
+    initialThemeContext.customThemeData,
+  );
   const temporaryThemeTimeout = useRef<number | null>(null);
   const previousTheme = useRef<string | null>(null);
 
-  const currentTheme = storedCurrentTheme || initialThemeContext.currentTheme;
+  const currentTheme = storedCurrentTheme ?? initialThemeContext.currentTheme;
 
-  function getThemeObject(themeKey: string): Theme {
-    const customThemes = KeyStore.getString("customThemes");
-    if (customThemes) {
-      const parsed = JSON.parse(customThemes);
-      if (parsed[themeKey]) {
-        return getMergedCustomTheme(themeKey);
-      }
-    }
-    return Themes[themeKey as keyof typeof Themes] || Themes.dark;
-  }
-
-  const cantUseTheme = (themeKey: string) =>
-    purchasesInitialized &&
-    !isPro &&
-    getThemeObject(themeKey).isPro;
+  const cantUseTheme = (themeKey: string) => {
+    return (
+      purchasesInitialized &&
+      !isPro &&
+      (!(themeKey in Themes) ||
+        (themeKey in Themes && Themes[themeKey as keyof typeof Themes].isPro))
+    );
+  };
 
   const grantThemeTemporarily = (themeKey: string) => {
     if (temporaryThemeTimeout.current) {
@@ -73,12 +55,15 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
 
     setStoredTheme(themeKey);
 
-    temporaryThemeTimeout.current = setTimeout(() => {
-      setStoredTheme(
-        previousTheme.current || initialThemeContext.currentTheme
-      );
-      temporaryThemeTimeout.current = null;
-    }, 1000 * 60 * 5);
+    temporaryThemeTimeout.current = setTimeout(
+      () => {
+        setStoredTheme(
+          previousTheme.current || initialThemeContext.currentTheme,
+        );
+        temporaryThemeTimeout.current = null;
+      },
+      1000 * 60 * 5,
+    );
   };
 
   const setCurrentTheme = (themeKey: string) => {
@@ -89,19 +74,37 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
     }
   };
 
-  let themeObj = getThemeObject(currentTheme);
+  let theme = DEFAULT_THEME;
+  let baseTheme = DEFAULT_THEME;
+  if (currentTheme in Themes) {
+    theme = Themes[currentTheme as keyof typeof Themes];
+    baseTheme = Themes[currentTheme as keyof typeof Themes];
+  } else {
+    const customTheme = getCustomTheme(currentTheme);
+    if (customTheme && customTheme.extends in Themes) {
+      theme = {
+        ...Themes[customTheme.extends as keyof typeof Themes],
+        ...customTheme,
+        isPro: true,
+      };
+    }
+  }
+  theme = { ...theme, ...customThemeData };
 
   useEffect(() => {
-    setStatusBarStyle(themeObj.statusBar);
-  }, [currentTheme]);
+    setStatusBarStyle(theme.statusBar);
+  }, [theme.statusBar]);
 
   return (
     <ThemeContext.Provider
       value={{
         currentTheme,
         setCurrentTheme,
-        theme: themeObj,
+        theme,
+        baseTheme,
         cantUseTheme,
+        customThemeData,
+        setCustomThemeData,
       }}
     >
       {children}

@@ -14,18 +14,14 @@ import {
   View,
   ViewProps,
   ViewStyle,
-  TouchableOpacity,
-  Alert
 } from "react-native";
 
-import { ThemeContext, saveCustomTheme, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
-import ThemeRow from "../UI/ThemeRow";
-import KeyStore from "../../utils/KeyStore";
-import { useSetTheme } from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView/hooks/useSetTheme";
-import { CUSTOM_THEME_IMPORT_PREFIX, CUSTOM_THEME_IMPORT_REGEX } from "../../constants/Themes";
+import ThemeImport from "../UI/Themes/ThemeImport";
+import { extractThemeFromText } from "../../utils/colors";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -290,69 +286,34 @@ type TextNodeProps = {
 
 export function TextNodeElem({
   textNode,
+  index,
   inheritedStyles,
 }: TextNodeProps) {
-  const setTheme = useSetTheme();
   const { theme } = useContext(ThemeContext);
 
-  const makeOnPress = (themeData: any) => () =>
-    Alert.alert(
-      "Import Theme",
-      `Import "${themeData.name}" to your custom themes?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Import",
-          onPress: () => {
-            try {
-              saveCustomTheme(themeData);
-              Alert.alert("Imported", `"${themeData.name}" saved.`);
-            } catch {
-              Alert.alert("Error", "Failed to save theme.");
-            }
-          },
-        },
-        {
-          text: "Import & Apply",
-          onPress: () => {
-            try {
-              saveCustomTheme(themeData);
-              setTheme?.(`${themeData.name}`, true);
-            } catch {
-              Alert.alert("Error", "Failed to apply theme.");
-            }
-          },
-        },
-      ]
-    );
+  const { customThemes, remainingText } = extractThemeFromText(textNode.data);
 
-  const segments = textNode.data.split(CUSTOM_THEME_IMPORT_REGEX);
-
-  return (
-    <>
-      {segments.map((segment, idx) => {
-        if (!segment.startsWith(CUSTOM_THEME_IMPORT_PREFIX)) {
-          return <Text key={idx} style={t(styles.basicText, { color: theme.subtleText, ...inheritedStyles })}>{segment}</Text>;
-        }
-        const jsonPart = segment.slice(CUSTOM_THEME_IMPORT_PREFIX.length);
-        try {
-          const themeData = JSON.parse(jsonPart);
-          return (
-            <ThemeRow
-              key={idx}
-              theme={themeData}
-              onPress={makeOnPress(themeData)}
-            />
-          );
-        } catch {
-          return (
-            <Text key={idx} style={{ color: "red" }}>
-              {segment}
-            </Text>
-          );
-        }
+  const TextComponment = (
+    <Text
+      key={index}
+      style={t(styles.basicText, {
+        color: theme.subtleText,
+        ...inheritedStyles,
       })}
+    >
+      {remainingText}
+    </Text>
+  );
+
+  return customThemes.length > 0 ? (
+    <>
+      {TextComponment}
+      {customThemes.map((customTheme, idx) => (
+        <ThemeImport key={idx} customTheme={customTheme} />
+      ))}
     </>
+  ) : (
+    TextComponment
   );
 }
 

@@ -284,8 +284,8 @@ export function CommentComponent({
                     {
                       borderLeftWidth: comment.depth === 0 ? 0 : 1,
                       borderLeftColor:
-                        theme.postColorTint[
-                          (comment.depth - 1) % theme.postColorTint.length
+                        theme.commentDepthColors[
+                          (comment.depth - 1) % theme.commentDepthColors.length
                         ],
                       borderRightColor:
                         comment.userVote === VoteOption.UpVote
@@ -475,8 +475,8 @@ export function CommentComponent({
                     style={t(styles.commentContainer, {
                       borderLeftWidth: comment.depth === -1 ? 0 : 1,
                       borderLeftColor:
-                        theme.postColorTint[
-                          comment.depth % theme.postColorTint.length
+                        theme.commentDepthColors[
+                          comment.depth % theme.commentDepthColors.length
                         ],
                     })}
                   >

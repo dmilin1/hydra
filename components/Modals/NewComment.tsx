@@ -20,6 +20,7 @@ import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
+import RedditURL from "../../utils/RedditURL";
 
 type NewCommentProps = {
   contentSent: () => void;
@@ -112,6 +113,9 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               text={text}
               setText={setText}
               placeholder="Write a comment..."
+              showCustomThemeOption={new RedditURL(
+                parent.link,
+              ).supportsSharingThemes()}
             />
             <View
               style={t(styles.previewTypeContainer, {

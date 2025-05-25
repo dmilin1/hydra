@@ -26,6 +26,7 @@ import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
+import RedditURL from "../../utils/RedditURL";
 
 type NewPostProps = {
   contentSent: (text: string) => void;
@@ -209,6 +210,9 @@ export default function NewPostEditor({
                   setText={setText}
                   text={text}
                   placeholder="Write your post..."
+                  showCustomThemeOption={new RedditURL(
+                    `https://www.reddit.com/r/${subreddit}`,
+                  ).supportsSharingThemes()}
                 />
                 <View
                   style={t(styles.previewTypeContainer, {

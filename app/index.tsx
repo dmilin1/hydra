@@ -59,7 +59,11 @@ SplashScreen.preventAutoHideAsync();
 enableFreeze(true);
 
 function RootLayout() {
-  useDrizzleStudio(expoDb);
+  if (__DEV__) {
+    // Not a real conditional render since __DEV__ is a compile time constant
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useDrizzleStudio(expoDb);
+  }
   const { success: migrationsComplete, error } = useMigrations(db, migrations);
 
   const [fontsLoaded, _fontsError] = useFonts({

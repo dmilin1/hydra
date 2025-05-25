@@ -17,8 +17,6 @@
 
 - 🚀 Post flairs (create post with flair and edit it)
 
-- 🚀 Fully customizable themeing with shareability
-
 - 🚀 Fancy bookmarks with folders and categories (available in Reddit API)
 
 - 🚀 Subreddit sidebars (wiki, rules, etc.)

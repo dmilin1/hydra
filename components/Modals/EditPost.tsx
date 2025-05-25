@@ -19,6 +19,7 @@ import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
+import RedditURL from "../../utils/RedditURL";
 
 type EditPostProps = {
   contentSent: () => void;
@@ -102,6 +103,9 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
               text={text}
               setText={setText}
               placeholder="Edit your post..."
+              showCustomThemeOption={new RedditURL(
+                edit.link,
+              ).supportsSharingThemes()}
             />
             <View
               style={t(styles.previewTypeContainer, {

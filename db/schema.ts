@@ -47,3 +47,24 @@ export const Drafts = sqliteTable(
     index("drafts_updatedAt_idx").on(table.updatedAt),
   ],
 );
+
+export const CustomThemes = sqliteTable(
+  "custom_themes",
+  {
+    id: integer({ mode: "number" }).primaryKey({ autoIncrement: true }),
+    name: text().notNull(),
+    data: text().notNull(),
+    createdAt: text()
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`),
+    updatedAt: text()
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`)
+      .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+  },
+  (table) => [
+    uniqueIndex("custom_themes_name_idx").on(table.name),
+    index("custom_themes_createdAt_idx").on(table.createdAt),
+    index("custom_themes_updatedAt_idx").on(table.updatedAt),
+  ],
+);

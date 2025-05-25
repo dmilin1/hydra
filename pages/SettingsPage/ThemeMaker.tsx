@@ -1,492 +1,528 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
-    StyleSheet,
-    View,
-    Text,
-    TouchableOpacity,
-    TextInput,
-    ScrollView,
-    Alert,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  Alert,
 } from "react-native";
-import { Feather, AntDesign, FontAwesome, Octicons } from "@expo/vector-icons";
-import { saveCustomTheme, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
-import { DEFAULT_THEME, ThemeData, Theme } from "../../constants/Themes";
+import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import {
+  Theme,
+  CustomThemeColorKeys,
+  NEW_CUSTOM_THEME,
+} from "../../constants/Themes";
 import { useNavigation } from "@react-navigation/native";
+import {
+  getCustomTheme,
+  saveCustomTheme,
+} from "../../db/functions/CustomThemes";
+import ColorPicker from "../../components/UI/Themes/ColorPicker";
 
+type ColorGroups = Record<
+  | "Core Colors"
+  | "Interactive Elements"
+  | "Text Hierarchy"
+  | "Icons"
+  | "Actions",
+  { field: CustomThemeColorKeys; label: string; description: string }[]
+>;
+type ColorGroupKey = keyof ColorGroups;
+type ColorGroupItem = ColorGroups[ColorGroupKey];
 
-type ColorGroup = {
-    field: keyof Theme;
-    label: string;
-};
-
-type ColorGroups = {
-    [key: string]: ColorGroup[];
-};
-
-const COLOR_GROUPS: ColorGroups = {
-    "Core Colors": [
-        { field: "background", label: "Background" },
-        { field: "text", label: "Text" },
-        { field: "tint", label: "Tint" },
-        { field: "divider", label: "Divider" },
-    ],
-    "Interactive Elements": [
-        { field: "buttonBg", label: "Button Background" },
-        { field: "buttonText", label: "Button Text" },
-        { field: "iconOrTextButton", label: "Icon/Text Button" },
-    ],
-    "Text Hierarchy": [
-        { field: "subtleText", label: "Subtle Text" },
-        { field: "verySubtleText", label: "Very Subtle Text" },
-    ],
-    "Icons": [
-        { field: "iconPrimary", label: "Primary Icon" },
-        { field: "iconSecondary", label: "Secondary Icon" },
-    ],
-    "Actions": [
-        { field: "upvote", label: "Upvote" },
-        { field: "downvote", label: "Downvote" },
-        { field: "delete", label: "Delete" },
-        { field: "showHide", label: "Show/Hide" },
-        { field: "reply", label: "Reply" },
-        { field: "bookmark", label: "Bookmark" },
-        { field: "moderator", label: "Moderator" },
-    ],
-};
-
-const COLOR_SWATCHES = {
-    "Primary": ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"],
-    "UI Colors": ["#007AFF", "#34C759", "#FF9500", "#FF2D55", "#5856D6", "#FF3B30"],
-    "Grays": ["#000000", "#333333", "#666666", "#999999", "#CCCCCC", "#FFFFFF"],
-    "Pastels": ["#FFB4B4", "#A5FFD6", "#B4E4FF", "#FFD6A5", "#D6A5FF", "#A5FFE4"],
+const COLOR_GROUPS = {
+  "Text Hierarchy": [
+    {
+      field: "text",
+      label: "Text",
+      description: "Primary text items, post titles, headers, some icons",
+    },
+    {
+      field: "subtleText",
+      label: "Subtle Text",
+      description:
+        "Non primary text elements like post details, comment sections, etc.",
+    },
+    {
+      field: "verySubtleText",
+      label: "Very Subtle Text",
+      description: "Low importance text like text input placeholders",
+    },
+  ],
+  "Core Colors": [
+    {
+      field: "background",
+      label: "Background",
+      description: "Background of most screens.",
+    },
+    {
+      field: "tint",
+      label: "Tint",
+      description:
+        "Background of popups, text inputs, button groups, low contrast borders",
+    },
+    {
+      field: "divider",
+      label: "Divider",
+      description:
+        "Divider between items, high contrast borders, high contrast backgrounds like flairs, message bubbles, etc.",
+    },
+  ],
+  "Interactive Elements": [
+    {
+      field: "buttonBg",
+      label: "Button Background",
+      description:
+        "Background of big primary action buttons like the floating next comment button",
+    },
+    {
+      field: "buttonText",
+      label: "Button Text",
+      description: "Text of big primary action buttons",
+    },
+    {
+      field: "iconOrTextButton",
+      label: "Icon/Text Button",
+      description:
+        "Buttons that are just text without a container like navbar text buttons",
+    },
+  ],
+  Icons: [
+    {
+      field: "iconPrimary",
+      label: "Primary Icon",
+      description:
+        "Keep this the same as Icon/Text Button. It does the same thing. Will probably be removed soon.",
+    },
+    {
+      field: "iconSecondary",
+      label: "Secondary Icon",
+      description:
+        "Keep this the same as Subtle Text. Off mode color for switches (poorly named), will probably be removed soon.",
+    },
+  ],
+  Actions: [
+    {
+      field: "upvote",
+      label: "Upvote",
+      description:
+        "Color of the upvote button, slider, and other upvote related elements",
+    },
+    {
+      field: "downvote",
+      label: "Downvote",
+      description:
+        "Color of the downvote button, slider, and other downvote related elements",
+    },
+    {
+      field: "delete",
+      label: "Delete",
+      description:
+        "Color of the delete button, slider, and other delete related elements",
+    },
+    {
+      field: "showHide",
+      label: "Show/Hide",
+      description:
+        "Color of the show/hide slider and other show/hide related elements",
+    },
+    {
+      field: "reply",
+      label: "Reply",
+      description: "Color of the reply slider and other reply related elements",
+    },
+    {
+      field: "bookmark",
+      label: "Bookmark",
+      description:
+        "Color of the bookmark slider and other bookmark related elements",
+    },
+    {
+      field: "moderator",
+      label: "Moderator",
+      description:
+        "Color of moderator usernames and other moderator related elements",
+    },
+  ],
 };
 
 export default function ThemeMaker() {
-    const { theme } = useContext(ThemeContext);
-    const navigation = useNavigation();
-    const [themeData, setThemeData] = useState<ThemeData>({ ...DEFAULT_THEME } as ThemeData);
-    const [selectedColorField, setSelectedColorField] = useState<keyof Theme>("background");
-    const [hexInput, setHexInput] = useState<string>(themeData[selectedColorField] as string);
-    const [selectedColorGroup, setSelectedColorGroup] = useState<string>("Core Colors");
-    const [showPreview, setShowPreview] = useState<boolean>(true);
+  const { baseTheme, customThemeData, setCustomThemeData, setCurrentTheme } =
+    useContext(ThemeContext);
+  const navigation = useNavigation();
+  const [selectedColorField, setSelectedColorField] =
+    useState<CustomThemeColorKeys>("background");
+  const [selectedColorGroup, setSelectedColorGroup] =
+    useState<keyof ColorGroups>("Text Hierarchy");
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
-    const handleColorChange = (color: string) => {
-        setHexInput(color);
-        setThemeData((prev) => ({ ...prev, [selectedColorField]: color }));
+  const handleSelectColorField = (field: CustomThemeColorKeys) => {
+    setSelectedColorField(field);
+  };
+
+  const saveTheme = () => {
+    const doSave = () => {
+      saveCustomTheme(customThemeData);
+      setCurrentTheme(customThemeData.name);
+      Alert.alert("Success", "Theme saved successfully!", [
+        {
+          text: "OK",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
     };
+    if (!customThemeData.name.trim()) {
+      Alert.alert("Error", "Please enter a theme name");
+      return;
+    }
+    if (getCustomTheme(customThemeData.name)) {
+      Alert.alert(
+        "Important",
+        "Another theme with this name already exists. Do you want to overwrite it?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Overwrite",
+            style: "destructive",
+            onPress: () => doSave(),
+          },
+        ],
+      );
+      return;
+    }
+    doSave();
+  };
 
-    const handleSelectColorField = (field: keyof Theme) => {
-        setSelectedColorField(field);
-        setHexInput(themeData[field] as string);
-    };
+  useEffect(() => {
+    setCustomThemeData({ ...NEW_CUSTOM_THEME, extends: baseTheme.key });
+    return () =>
+      setCustomThemeData({ ...NEW_CUSTOM_THEME, extends: baseTheme.key });
+  }, []);
 
-    const validateAndSetHex = (hex: string) => {
-        if (!hex.startsWith('#')) {
-            hex = '#' + hex;
+  return (
+    <ScrollView
+      style={styles.mainContent}
+      contentContainerStyle={{ backgroundColor: baseTheme.background }}
+    >
+      <ColorPicker
+        show={showColorPicker}
+        onClose={() => setShowColorPicker(false)}
+        currentColor={customThemeData[selectedColorField] || "#000000"}
+        onChange={(color) =>
+          setCustomThemeData({
+            ...customThemeData,
+            [selectedColorField]: color,
+          })
         }
-        if (/^#([0-9A-F]{3}){1,2}$/i.test(hex)) {
-            handleColorChange(hex);
-        } else {
-            setHexInput(hex);
-        }
-    };
-
-    const saveTheme = () => {
-        if (!themeData.name.trim()) {
-            Alert.alert("Error", "Please enter a theme name");
-            return;
-        }
-        saveCustomTheme(themeData);
-        Alert.alert("Success", "Theme saved successfully!", [
-            {
-                text: "OK",
-                onPress: () => navigation.goBack()
+      />
+      <View style={styles.editorSection}>
+        <View style={styles.inputContainer}>
+          <Text style={[styles.label, { color: baseTheme.text }]}>
+            Theme Name
+          </Text>
+          <TextInput
+            style={[
+              styles.input,
+              { color: baseTheme.text, borderColor: baseTheme.divider },
+            ]}
+            value={customThemeData.name}
+            onChangeText={(text) =>
+              setCustomThemeData({ ...customThemeData, name: text })
             }
-        ]);
-    };
-
-    const resetToDefault = () => {
-        setThemeData({ ...DEFAULT_THEME, name: "" } as ThemeData);
-        setSelectedColorField("background");
-        setHexInput(DEFAULT_THEME.background as string);
-    };
-
-    const renderPreview = () => (
-        <View style={[styles.previewContainer, { backgroundColor: themeData.background as string }]}>
-            <View style={styles.previewHeader}>
-                <Text style={[styles.previewTitle, { color: themeData.text as string }]}>Preview</Text>
-                <TouchableOpacity onPress={() => setShowPreview(!showPreview)}>
-                    <Feather
-                        name={showPreview ? "chevron-up" : "chevron-down"}
-                        size={24}
-                        color={themeData.text as string}
-                    />
-                </TouchableOpacity>
-            </View>
-            {showPreview && (
-                <View style={styles.previewContent}>
-                    <Text style={[styles.previewText, { color: themeData.text as string }]}>Sample Text</Text>
-                    <Text style={[styles.previewText, { color: themeData.subtleText as string }]}>Subtle Text</Text>
-                    <View style={[styles.previewButton, { backgroundColor: themeData.buttonBg as string }]}>
-                        <Text style={{ color: themeData.buttonText as string }}>Button</Text>
-                    </View>
-                    <View style={styles.previewIcons}>
-                        <AntDesign name="arrowup" size={24} color={themeData.upvote as string} />
-                        <AntDesign name="arrowdown" size={24} color={themeData.downvote as string} />
-                        <Octicons name="reply" size={24} color={themeData.reply as string} />
-                        <FontAwesome name="bookmark" size={24} color={themeData.bookmark as string} />
-                    </View>
-                    <View style={[styles.previewInput, { borderColor: themeData.divider as string }]}>
-                        <TextInput
-                            placeholder="Very Subtle Text"
-                            placeholderTextColor={themeData.verySubtleText as string}
-                            style={{ color: themeData.text as string }}
-                            editable={false}
-                        />
-                    </View>
-                </View>
-            )}
+            placeholder="Enter theme name"
+            placeholderTextColor={baseTheme.subtleText}
+          />
         </View>
-    );
 
-    return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <View style={styles.header}>
-                <Text style={[styles.title, { color: theme.text }]}>Create Theme</Text>
-                <View style={styles.headerButtons}>
-                    <TouchableOpacity style={styles.resetButton} onPress={resetToDefault}>
-                        <Feather name="refresh-cw" size={20} color={theme.text} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.saveButton} onPress={saveTheme}>
-                        <Feather name="check" size={24} color={theme.text} />
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            <ScrollView style={styles.mainContent}>
-                {renderPreview()}
-
-                <View style={styles.editorSection}>
-                    <View style={styles.inputContainer}>
-                        <Text style={[styles.label, { color: theme.text }]}>Theme Name</Text>
-                        <TextInput
-                            style={[styles.input, { color: theme.text, borderColor: theme.divider }]}
-                            value={themeData.name}
-                            onChangeText={(text) => setThemeData((prev) => ({ ...prev, name: text }))}
-                            placeholder="Enter theme name"
-                            placeholderTextColor={theme.subtleText}
-                        />
-                    </View>
-
-                    <View style={styles.modeContainer}>
-                        <View style={styles.modeSection}>
-                            <Text style={[styles.label, { color: theme.text }]}>System Mode</Text>
-                            <View style={styles.modeButtons}>
-                                {['light', 'dark'].map((mode) => (
-                                    <TouchableOpacity
-                                        key={mode}
-                                        style={[
-                                            styles.modeButton,
-                                            { backgroundColor: themeData.systemModeStyle === mode ? theme.iconOrTextButton : theme.tint }
-                                        ]}
-                                        onPress={() => setThemeData((prev) => ({ ...prev, systemModeStyle: mode }))}
-                                    >
-                                        <Text style={{ color: themeData.systemModeStyle === mode ? '#fff' : theme.text }}>
-                                            {mode}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </View>
-
-                        <View style={styles.modeSection}>
-                            <Text style={[styles.label, { color: theme.text }]}>Status Bar</Text>
-                            <View style={styles.modeButtons}>
-                                {['light', 'dark'].map((bar) => (
-                                    <TouchableOpacity
-                                        key={bar}
-                                        style={[
-                                            styles.modeButton,
-                                            { backgroundColor: themeData.statusBar === bar ? theme.iconOrTextButton : theme.tint }
-                                        ]}
-                                        onPress={() => setThemeData((prev) => ({ ...prev, statusBar: bar }))}
-                                    >
-                                        <Text style={{ color: themeData.statusBar === bar ? '#fff' : theme.text }}>
-                                            {bar}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </View>
-                    </View>
-
-                    <View style={styles.colorGroupsContainer}>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            style={styles.colorGroupsScroll}
-                            contentContainerStyle={styles.colorGroupsScrollContent}
-                        >
-                            {Object.keys(COLOR_GROUPS).map((group) => (
-                                <TouchableOpacity
-                                    key={group}
-                                    style={[
-                                        styles.colorGroupButton,
-                                        { backgroundColor: selectedColorGroup === group ? theme.iconOrTextButton : theme.tint }
-                                    ]}
-                                    onPress={() => setSelectedColorGroup(group)}
-                                >
-                                    <Text style={{ color: selectedColorGroup === group ? '#fff' : theme.text }}>
-                                        {group}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                    </View>
-
-                    <View style={styles.colorFieldsContainer}>
-                        {COLOR_GROUPS[selectedColorGroup].map(({ field, label }) => (
-                            <TouchableOpacity
-                                key={field}
-                                style={[
-                                    styles.colorFieldButton,
-                                    { borderColor: selectedColorField === field ? theme.iconOrTextButton : theme.divider }
-                                ]}
-                                onPress={() => handleSelectColorField(field)}
-                            >
-                                <Text style={{ color: theme.text }}>{label}</Text>
-                                <View style={[
-                                    styles.colorPreview,
-                                    { backgroundColor: themeData[field] as string, borderColor: theme.divider }
-                                ]} />
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-
-                    <View style={styles.colorPickerContainer}>
-                        <Text style={[styles.label, { color: theme.text }]}>
-                            Pick a color for {COLOR_GROUPS[selectedColorGroup].find(c => c.field === selectedColorField)?.label}
-                        </Text>
-                        <View style={styles.hexInputContainer}>
-                            <TextInput
-                                style={[styles.hexInput, { color: theme.text, borderColor: theme.divider }]}
-                                value={hexInput}
-                                onChangeText={validateAndSetHex}
-                                placeholder="#RRGGBB"
-                                placeholderTextColor={theme.subtleText}
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                            />
-                            <TouchableOpacity
-                                style={styles.resetColorButton}
-                                onPress={() => handleColorChange(DEFAULT_THEME[selectedColorField] as string)}
-                            >
-                                <Text style={{ color: theme.iconOrTextButton }}>Reset</Text>
-                            </TouchableOpacity>
-                        </View>
-                        {Object.entries(COLOR_SWATCHES).map(([group, colors]) => (
-                            <View key={group} style={styles.swatchGroup}>
-                                <Text style={[styles.swatchGroupLabel, { color: theme.text }]}>{group}</Text>
-                                <ScrollView
-                                    horizontal
-                                    showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={styles.swatchGroupContent}
-                                >
-                                    {colors.map((color, idx) => (
-                                        <TouchableOpacity
-                                            key={color + '-' + idx}
-                                            style={[
-                                                styles.swatch,
-                                                { backgroundColor: color, borderColor: hexInput === color ? theme.iconOrTextButton : theme.divider }
-                                            ]}
-                                            onPress={() => validateAndSetHex(color)}
-                                        />
-                                    ))}
-                                </ScrollView>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            </ScrollView>
+        <View style={styles.modeSection}>
+          <Text style={[styles.label, { color: baseTheme.text }]}>UI Mode</Text>
+          <Text style={[styles.description, { color: baseTheme.subtleText }]}>
+            Controls whether the picker, scroll bars, and splash screen display
+            in light or dark mode.
+          </Text>
+          <View style={styles.modeButtons}>
+            {(["light", "dark"] as Theme["systemModeStyle"][]).map((mode) => (
+              <TouchableOpacity
+                key={mode}
+                style={[
+                  styles.modeButton,
+                  {
+                    borderColor:
+                      customThemeData.systemModeStyle === mode
+                        ? baseTheme.iconOrTextButton
+                        : baseTheme.divider,
+                  },
+                ]}
+                onPress={() =>
+                  setCustomThemeData({
+                    ...customThemeData,
+                    systemModeStyle: mode,
+                  })
+                }
+              >
+                <Text
+                  style={{
+                    color:
+                      customThemeData.systemModeStyle === mode
+                        ? "#fff"
+                        : baseTheme.text,
+                  }}
+                >
+                  {mode}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-    );
+
+        <View style={styles.modeSection}>
+          <Text style={[styles.label, { color: baseTheme.text }]}>
+            Status Bar
+          </Text>
+          <Text style={[styles.description, { color: baseTheme.subtleText }]}>
+            Controls whether the system status bar at the top with the time and
+            battery displays in light or dark mode.
+          </Text>
+          <View style={styles.modeButtons}>
+            {(["light", "dark"] as Theme["statusBar"][]).map((bar) => (
+              <TouchableOpacity
+                key={bar}
+                style={[
+                  styles.modeButton,
+                  {
+                    borderColor:
+                      customThemeData.statusBar === bar
+                        ? baseTheme.iconOrTextButton
+                        : baseTheme.divider,
+                  },
+                ]}
+                onPress={() =>
+                  setCustomThemeData({ ...customThemeData, statusBar: bar })
+                }
+              >
+                <Text
+                  style={{
+                    color:
+                      customThemeData.statusBar === bar
+                        ? "#fff"
+                        : baseTheme.text,
+                  }}
+                >
+                  {bar}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <Text style={[styles.label, { color: baseTheme.text }]}>
+          Color Groups
+        </Text>
+        <Text style={[styles.description, { color: baseTheme.subtleText }]}>
+          Colors used by various elements of the app.
+        </Text>
+        <View style={styles.colorGroupsContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.colorGroupsScroll}
+            contentContainerStyle={styles.colorGroupsScrollContent}
+          >
+            {(Object.keys(COLOR_GROUPS) as ColorGroupKey[]).map((group) => (
+              <TouchableOpacity
+                key={group}
+                style={[
+                  styles.colorGroupButton,
+                  {
+                    borderColor:
+                      selectedColorGroup === group
+                        ? baseTheme.iconOrTextButton
+                        : baseTheme.divider,
+                  },
+                ]}
+                onPress={() => setSelectedColorGroup(group)}
+              >
+                <Text style={{ color: baseTheme.text }}>{group}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+        <View style={styles.colorFieldsContainer}>
+          {(COLOR_GROUPS[selectedColorGroup] as ColorGroupItem).map(
+            ({ field, label, description }) => (
+              <TouchableOpacity
+                key={field}
+                style={[
+                  styles.colorFieldButton,
+                  { borderColor: baseTheme.divider },
+                ]}
+                onPress={() => {
+                  handleSelectColorField(field);
+                  setShowColorPicker(true);
+                }}
+              >
+                <View style={[styles.colorFieldInfo]}>
+                  <Text
+                    style={[styles.colorFieldLabel, { color: baseTheme.text }]}
+                  >
+                    {label}
+                    {!customThemeData[field] ? " (default)" : ""}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.colorFieldDescription,
+                      { color: baseTheme.subtleText },
+                    ]}
+                  >
+                    {description}
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    styles.colorPreview,
+                    {
+                      backgroundColor: customThemeData[field],
+                      borderColor: baseTheme.text,
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+            ),
+          )}
+        </View>
+      </View>
+      <View style={styles.detailsContainer}>
+        <Text style={[styles.description, { color: baseTheme.subtleText }]}>
+          You can preview your changes by navigating to other tabs in the app.
+          This screen will not reflect your changes to ensure usability. Changes
+          will persist until you leave the Theme Maker.
+        </Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => saveTheme()}
+        activeOpacity={0.5}
+        style={t(styles.buttonContainer, {
+          backgroundColor: baseTheme.buttonBg,
+        })}
+      >
+        <View style={styles.buttonSubContainer}>
+          <Text
+            style={t(styles.buttonText, {
+              color: baseTheme.buttonText,
+            })}
+          >
+            Save Theme
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ccc",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-    },
-    headerButtons: {
-        flexDirection: "row",
-        gap: 12,
-    },
-    resetButton: {
-        padding: 8,
-    },
-    saveButton: {
-        padding: 8,
-    },
-    mainContent: {
-        flex: 1,
-    },
-    editorSection: {
-        padding: 16,
-    },
-    inputContainer: {
-        marginBottom: 24,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: "600",
-        marginBottom: 8,
-    },
-    input: {
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-    },
-    modeContainer: {
-        marginBottom: 24,
-    },
-    modeSection: {
-        marginBottom: 16,
-    },
-    modeButtons: {
-        flexDirection: "row",
-        gap: 8,
-    },
-    modeButton: {
-        flex: 1,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    colorGroupsContainer: {
-        marginBottom: 16,
-    },
-    colorGroupsScroll: {
-        flexDirection: "row",
-    },
-    colorGroupsScrollContent: {
-        paddingHorizontal: 8,
-    },
-    colorGroupButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-        marginHorizontal: 4,
-    },
-    colorFieldsContainer: {
-        marginBottom: 16,
-    },
-    colorFieldButton: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 12,
-        borderWidth: 1,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    colorPreview: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        borderWidth: 1,
-    },
-    colorPickerContainer: {
-        marginTop: 16,
-    },
-    hexInputContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 16,
-    },
-    hexInput: {
-        flex: 1,
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        marginRight: 8,
-    },
-    resetColorButton: {
-        padding: 12,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 8,
-    },
-    swatchGroup: {
-        marginBottom: 16,
-    },
-    swatchGroupLabel: {
-        fontSize: 14,
-        marginBottom: 8,
-    },
-    swatchGroupContent: {
-        paddingHorizontal: 8,
-    },
-    swatch: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        borderWidth: 1,
-        marginHorizontal: 4,
-    },
-    previewContainer: {
-        margin: 16,
-        borderRadius: 12,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "#ccc",
-    },
-    previewHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ccc",
-    },
-    previewTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-    },
-    previewContent: {
-        padding: 16,
-        gap: 16,
-    },
-    previewText: {
-        fontSize: 16,
-    },
-    previewButton: {
-        padding: 12,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    previewIcons: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        paddingVertical: 16,
-    },
-    previewInput: {
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: 12,
-        marginTop: 16,
-    },
+  mainContent: {
+    flex: 1,
+  },
+  editorSection: {
+    padding: 16,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 13,
+    marginBottom: 16,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+  modeSection: {
+    marginBottom: 24,
+  },
+  modeButtons: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  modeButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    borderWidth: 1,
+  },
+  colorGroupsContainer: {
+    marginBottom: 16,
+  },
+  colorGroupsScroll: {
+    flexDirection: "row",
+  },
+  colorGroupsScrollContent: {
+    gap: 16,
+  },
+  colorGroupButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  colorFieldsContainer: {
+    gap: 16,
+  },
+  colorFieldButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+    gap: 12,
+  },
+  colorFieldInfo: {
+    flexShrink: 1,
+    flexDirection: "column",
+    gap: 4,
+  },
+  colorFieldLabel: {
+    fontSize: 16,
+  },
+  colorFieldDescription: {
+    fontSize: 13,
+  },
+  colorPreview: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  detailsContainer: {
+    marginHorizontal: 20,
+  },
+  buttonContainer: {
+    padding: 12,
+    borderRadius: 10,
+    marginHorizontal: 20,
+  },
+  buttonSubContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    fontSize: 16,
+  },
 });

@@ -6,7 +6,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import React, { useContext, useRef } from "react";
-import { Alert, ColorValue, Switch, View } from "react-native";
+import { Alert, Switch, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 import List from "../../components/UI/List";
@@ -95,8 +95,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={postCompactMode}
                 onValueChange={() => togglePostCompactMode()}
@@ -111,8 +111,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={subredditAtTop}
                 onValueChange={() => toggleSubredditAtTop()}
@@ -129,8 +129,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={showSubredditIcon}
                 onValueChange={() => toggleSubredditIcon()}
@@ -208,8 +208,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={blurSpoilers}
                 onValueChange={() => toggleBlurSpoilers()}
@@ -226,8 +226,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={blurNSFW}
                 onValueChange={() => toggleBlurNSFW()}
@@ -244,8 +244,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={isPro && showPostSummary}
                 onValueChange={() => {
@@ -284,8 +284,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={voteIndicator}
                 onValueChange={() => toggleVoteIndicator()}
@@ -306,8 +306,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={collapseAutoModerator}
                 onValueChange={() => toggleCollapseAutoModerator()}
@@ -322,8 +322,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={commentFlairs}
                 onValueChange={() => toggleCommentFlairs()}
@@ -340,8 +340,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={isPro && showCommentSummary}
                 onValueChange={() => {
@@ -380,8 +380,8 @@ export default function Appearance() {
             rightIcon: (
               <Switch
                 trackColor={{
-                  false: theme.iconSecondary as ColorValue,
-                  true: theme.iconPrimary as ColorValue,
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
                 }}
                 value={showUsername}
                 onValueChange={() => toggleShowUsername()}
