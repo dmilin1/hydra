@@ -7,6 +7,7 @@ import Purchases, {
 } from "react-native-purchases";
 
 import { registerCustomer } from "../api/Customer";
+import { USING_CUSTOM_HYDRA_SERVER } from "../constants/HydraServer";
 
 Purchases.configure({
   apiKey: "appl_okkBpjboHClPttmFHfsSWRaGSFd",
@@ -56,7 +57,9 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
   const customerId = customerInfo?.originalAppUserId ?? null;
 
   const isPro =
-    customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]?.isActive ?? false;
+    USING_CUSTOM_HYDRA_SERVER ||
+    (customerInfo?.entitlements.active[HYDRA_PRO_ENTITLEMENT]?.isActive ??
+      false);
 
   const inGracePeriod =
     isPro &&

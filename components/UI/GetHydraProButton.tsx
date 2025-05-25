@@ -1,10 +1,18 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { StackActions } from "@react-navigation/native";
 import { useContext } from "react";
-import { View, Image, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 
 import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../utils/navigation";
+import { USING_CUSTOM_HYDRA_SERVER } from "../../constants/HydraServer";
 
 type GetHydraProButtonProps = {
   onPress?: () => void;
@@ -17,6 +25,12 @@ export default function GetHydraProButton({ onPress }: GetHydraProButtonProps) {
   return (
     <TouchableOpacity
       onPress={() => {
+        if (USING_CUSTOM_HYDRA_SERVER) {
+          Alert.alert(
+            "You cannot subscribe to Hydra Pro while using a custom server.",
+          );
+          return;
+        }
         dispatch(
           StackActions.push("SettingsPage", {
             url: "hydra://settings/hydraPro",
