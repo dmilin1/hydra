@@ -108,7 +108,6 @@ export default function MarkdownEditor({
         placeholder={placeholder}
         placeholderTextColor={theme.verySubtleText}
         multiline
-        numberOfLines={4}
         value={text}
         onChangeText={setText}
         onSelectionChange={({ nativeEvent }) => {
