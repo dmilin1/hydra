@@ -30,7 +30,7 @@ export default function CrossPost({ post }: CrossPostProps) {
       </Text>
 
       <View style={styles.mediaContainer}>
-        <PostMedia post={post} />
+        <PostMedia post={post} renderHTML={false} />
       </View>
 
       <View style={styles.footer}>

@@ -57,7 +57,7 @@ export default function Theme() {
       <TouchableOpacity
         style={[styles.exploreContainer, { backgroundColor: theme.buttonBg }]}
         onPress={() => {
-          pushURL("https://www.reddit.com/r/hydraThemes");
+          pushURL("https://www.reddit.com/r/HydraThemes");
         }}
         activeOpacity={0.8}
       >

@@ -16,6 +16,9 @@ import {
   t,
 } from "../../../../contexts/SettingsContexts/ThemeContext";
 import RenderHtml from "../../../HTML/RenderHTML";
+import { extractThemeFromText } from "../../../../utils/colors";
+import ThemeImport from "../../../UI/Themes/ThemeImport";
+import { CustomTheme } from "../../../../constants/Themes";
 
 type PostMediaProps = {
   post: Post | PostDetail;
@@ -42,6 +45,16 @@ export default function PostMedia({
     // https://shopify.github.io/flash-list/docs/recycling
     lastLoadedPost.current = post.id;
     setBlur(isBlurable);
+  }
+
+  let postText = post.text;
+  let customThemes: CustomTheme[] = [];
+  if (!renderHTML) {
+    const { customThemes: custThemes, remainingText } = extractThemeFromText(
+      post.text,
+    );
+    postText = remainingText;
+    customThemes = custThemes;
   }
 
   return post.crossPost ? (
@@ -73,7 +86,7 @@ export default function PostMedia({
               <RenderHtml html={post.html} />
             </View>
           )
-        : post.text && (
+        : postText && (
             <View style={styles.bodyTextContainer}>
               <Text
                 numberOfLines={maxLines}
@@ -81,7 +94,7 @@ export default function PostMedia({
                   color: theme.subtleText,
                 })}
               >
-                {post.text.trim()}
+                {postText.trim()}
               </Text>
             </View>
           )}
@@ -91,6 +104,9 @@ export default function PostMedia({
         </View>
       )}
       {post.externalLink && <Link post={post} />}
+      {customThemes.map((customTheme, i) => (
+        <ThemeImport key={customTheme.name + i} customTheme={customTheme} />
+      ))}
       {isBlurable && blur && (
         <TouchableOpacity
           style={styles.blurContainer}

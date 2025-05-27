@@ -95,6 +95,16 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
     setStatusBarStyle(theme.statusBar);
   }, [theme.statusBar]);
 
+  useEffect(() => {
+    if (
+      purchasesInitialized &&
+      !temporaryThemeTimeout.current &&
+      cantUseTheme(currentTheme)
+    ) {
+      setStoredTheme(initialThemeContext.currentTheme);
+    }
+  }, [purchasesInitialized, isPro]);
+
   return (
     <ThemeContext.Provider
       value={{
