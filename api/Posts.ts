@@ -7,6 +7,7 @@ import Redgifs from "../utils/RedGifs";
 import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
 import URL, { OpenGraphData } from "../utils/URL";
+import { Alert } from "react-native";
 
 export type Poll = {
   voteCount: number;
@@ -239,10 +240,56 @@ export async function getPosts(
   redditURL.changeQueryParam("after", options?.after ?? "");
   redditURL.jsonify();
   const response = await api(redditURL.toString());
+  if (response.interstitial_warning_message) {
+    return handleGatedSubreddit(
+      response.interstitial_warning_message,
+      url,
+      options,
+    );
+  }
   const posts: Post[] = await Promise.all(
     response.data.children.map(
       async (child: any) => await formatPostData(child),
     ),
   );
   return posts;
+}
+
+function handleGatedSubreddit(
+  warning: string,
+  url: string,
+  options: GetPostOptions,
+): Promise<Post[]> {
+  return new Promise<Post[]>((resolve) => {
+    Alert.alert("Warning", warning, [
+      {
+        text: "Cancel",
+        style: "cancel",
+        onPress: () => {
+          resolve([]);
+        },
+      },
+      {
+        text: "Proceed",
+        onPress: async () => {
+          await api(
+            `https://old.reddit.com/gated`,
+            {
+              method: "POST",
+              redirect: "manual",
+            },
+            {
+              requireAuth: true,
+              body: {
+                sr_name: new RedditURL(url).getSubreddit(),
+                accept: "yes",
+              },
+              dontJsonifyResponse: true,
+            },
+          );
+          resolve(await getPosts(url, options));
+        },
+      },
+    ]);
+  });
 }
