@@ -1,5 +1,5 @@
 import { Image, useImage } from "expo-image";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
   Text,
   StyleSheet,
@@ -34,7 +34,7 @@ export default function ImageViewer({
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
-  const [imageIndex, setImageIndex] = useState(0);
+  const initialImageIndex = useRef(0);
 
   const { theme } = useContext(ThemeContext);
 
@@ -75,13 +75,17 @@ export default function ImageViewer({
       {!loadLowData && (
         <ImageView
           images={images.map((image) => ({ uri: image }))}
-          imageIndex={imageIndex}
+          initialImageIndex={initialImageIndex.current}
           presentationStyle="overFullScreen"
           animationType="none"
           visible={visible}
           onRequestClose={() => setVisible(false)}
-          onLongPress={() => showImageMenu(images[imageIndex])}
-          onImageIndexChange={(index) => setImageIndex(index)}
+          onLongPress={(imgSource) =>
+            typeof imgSource === "object" &&
+            imgSource.uri &&
+            showImageMenu(imgSource.uri)
+          }
+          onImageIndexChange={(index) => (initialImageIndex.current = index)}
           delayLongPress={500}
         />
       )}
@@ -90,11 +94,11 @@ export default function ImageViewer({
           key={index}
           onPress={() => {
             setLoadLowData(false);
-            setImageIndex(index);
+            initialImageIndex.current = index;
             setVisible(true);
           }}
           style={styles.touchableZone}
-          onLongPress={() => showImageMenu(images[imageIndex])}
+          onLongPress={() => showImageMenu(images[index])}
         >
           <Image
             style={[

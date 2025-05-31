@@ -111,7 +111,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           {mediaOpen && (
             <ImageView
               images={post.images.map((image) => ({ uri: image }))}
-              imageIndex={0}
+              initialImageIndex={0}
               presentationStyle="overFullScreen"
               animationType="none"
               visible

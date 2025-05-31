@@ -29,7 +29,7 @@ import { ThemeContext } from "../../../../../../contexts/SettingsContexts/ThemeC
 type Props = {
   images: ImageSource[];
   keyExtractor?: (imageSrc: ImageSource, index: number) => string;
-  imageIndex: number;
+  initialImageIndex: number;
   visible: boolean;
   onRequestClose: () => void;
   onLongPress?: (image: ImageSource) => void;
@@ -52,7 +52,7 @@ const SCREEN_WIDTH = SCREEN.width;
 function ImageViewing({
   images,
   keyExtractor,
-  imageIndex,
+  initialImageIndex,
   visible,
   onRequestClose,
   onLongPress = () => {},
@@ -71,7 +71,10 @@ function ImageViewing({
 
   const imageList = useRef<VirtualizedList<ImageSource>>(null);
   const [_opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
-  const [currentImageIndex, onScroll] = useImageIndexChange(imageIndex, SCREEN);
+  const [currentImageIndex, onScroll] = useImageIndexChange(
+    initialImageIndex,
+    SCREEN,
+  );
   const [headerTransform, footerTransform, toggleBarsVisible] =
     useAnimatedComponents();
 
@@ -139,7 +142,7 @@ function ImageViewing({
             maxToRenderPerBatch={100}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
-            initialScrollIndex={imageIndex}
+            initialScrollIndex={initialImageIndex}
             getItem={(_: ImageSource[], index: number) => images[index]}
             getItemCount={() => images.length}
             getItemLayout={(_: ImageSource, index: number) => ({
@@ -184,7 +187,7 @@ function ImageViewing({
                   },
                 ]}
               >
-                {imageIndex + 1} / {images.length}
+                {currentImageIndex + 1} / {images.length}
               </Text>
             </View>
           )}
