@@ -54,6 +54,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
               contentFit="cover"
               style={{ height: 200, borderRadius: 10 }}
               transition={250}
+              recyclingKey={post.openGraphData?.image}
             />
           )}
           <Text

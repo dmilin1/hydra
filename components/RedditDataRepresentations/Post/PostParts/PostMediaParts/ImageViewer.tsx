@@ -107,6 +107,7 @@ export default function ImageViewer({
                 height: imgs.length >= 2 ? imgHeight / 2 : imgHeight,
               },
             ]}
+            recyclingKey={images[index]}
             contentFit="contain"
             source={img}
             transition={250}
