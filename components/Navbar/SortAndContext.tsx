@@ -31,6 +31,7 @@ import EditPost from "../Modals/EditPost";
 import NewMessage from "../Modals/NewMessage";
 import NewPost from "../Modals/NewPost";
 import SelectText from "../Modals/SelectText";
+import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
 
 export type SortTypes =
   | "Best"
@@ -55,7 +56,9 @@ export type ContextTypes =
   | "Delete"
   | "Message"
   | "Block"
-  | "Report";
+  | "Report"
+  | "Show Seen Posts"
+  | "Hide Seen Posts";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
@@ -76,6 +79,7 @@ export default function SortAndContext({
   const { setModal } = useContext(ModalContext);
   const { subscribe, unsubscribe, toggleFavorite, multis, addSubToMulti } =
     useContext(SubredditContext);
+  const { toggleHideSeenURL } = useContext(FiltersContext);
 
   const { replaceURL, pushURL } = useURLNavigation(navigation);
 
@@ -306,6 +310,12 @@ export default function SortAndContext({
               );
             } else if (result === "Report") {
               pushURL("hydra://webview/?url=https://www.reddit.com/report");
+            } else if (
+              result === "Show Seen Posts" ||
+              result === "Hide Seen Posts"
+            ) {
+              toggleHideSeenURL(currentPath);
+              replaceURL(currentPath);
             }
           }}
         >

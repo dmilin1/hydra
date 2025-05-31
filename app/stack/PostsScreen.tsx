@@ -6,6 +6,7 @@ import SortAndContext from "../../components/Navbar/SortAndContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
 import PostsPage from "../../pages/PostsPage";
 import RedditURL from "../../utils/RedditURL";
+import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
 
 type PostsScreenProps = {
   StackNavigator: ReturnType<
@@ -15,6 +16,7 @@ type PostsScreenProps = {
 
 export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
   const { subreddits } = useContext(SubredditContext);
+  const { getHideSeenURLStatus } = useContext(FiltersContext);
   return (
     <StackNavigator.Screen<"PostsPage">
       name="PostsPage"
@@ -37,6 +39,9 @@ export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
                   ? "Unfavorite"
                   : "Favorite",
                 "Add to Multireddit",
+                getHideSeenURLStatus(route.params.url)
+                  ? "Show Seen Posts"
+                  : "Hide Seen Posts",
                 "Share",
               ]}
             />

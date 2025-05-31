@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StackParamsList } from "./index";
 import SortAndContext from "../../components/Navbar/SortAndContext";
 import PostsPage from "../../pages/PostsPage";
+import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
+import { useContext } from "react";
 
 type HomeScreenProps = {
   StackNavigator: ReturnType<
@@ -11,6 +13,7 @@ type HomeScreenProps = {
 };
 
 export default function HomeScreen({ StackNavigator }: HomeScreenProps) {
+  const { getHideSeenURLStatus } = useContext(FiltersContext);
   return (
     <StackNavigator.Screen<"Home">
       name="Home"
@@ -22,7 +25,12 @@ export default function HomeScreen({ StackNavigator }: HomeScreenProps) {
               route={route}
               navigation={navigation}
               sortOptions={["Best", "Hot", "New", "Top", "Rising"]}
-              contextOptions={["Share"]}
+              contextOptions={[
+                getHideSeenURLStatus(route.params.url)
+                  ? "Show Seen Posts"
+                  : "Hide Seen Posts",
+                "Share",
+              ]}
             />
           );
         },

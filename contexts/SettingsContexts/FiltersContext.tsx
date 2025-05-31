@@ -1,6 +1,10 @@
 import { createContext, useContext, useMemo } from "react";
 import { Alert } from "react-native";
-import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
+import {
+  useMMKVBoolean,
+  useMMKVObject,
+  useMMKVString,
+} from "react-native-mmkv";
 
 import { filterPosts } from "../../api/AI";
 import { Comment } from "../../api/PostDetail";
@@ -12,12 +16,19 @@ import {
 } from "../../utils/filters/TextFiltering";
 import { FilterFunction } from "../../utils/useRedditDataState";
 import { SubscriptionsContext } from "../SubscriptionsContext";
+import RedditURL from "../../utils/RedditURL";
+
+type HideSeenURLs = Record<string, boolean>;
 
 export const FILTER_SEEN_POSTS_KEY = "filterSeenPosts";
 export const FILTER_SEEN_POSTS_DEFAULT = false;
 
+export const HIDE_SEEN_URLS_KEY = "hideSeenURLs";
+export const HIDE_SEEN_URLS_DEFAULT = {} as HideSeenURLs;
+
 const initialValues = {
   filterSeenPosts: FILTER_SEEN_POSTS_DEFAULT,
+  hideSeenURLs: HIDE_SEEN_URLS_DEFAULT,
   autoMarkAsSeen: false,
   filterText: "",
   aiFilterText: "",
@@ -27,6 +38,9 @@ const initialValues = {
 const initialPostSettingsContext = {
   ...initialValues,
   toggleFilterSeenPosts: (_newValue?: boolean) => {},
+  hideSeenURLs: HIDE_SEEN_URLS_DEFAULT,
+  getHideSeenURLStatus: (_url: string) => false as boolean,
+  toggleHideSeenURL: (_url: string) => {},
   toggleAutoMarkAsSeen: (_newValue?: boolean) => {},
   setFilterText: (_newValue?: string) => {},
   filterPostsByText: ((posts) => posts) as FilterFunction<Post>,
@@ -45,6 +59,10 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
   );
   const filterSeenPosts =
     storedFilterSeenPosts ?? initialValues.filterSeenPosts;
+
+  const [storedHideSeenURLs, setHideSeenURLs] =
+    useMMKVObject<HideSeenURLs>(HIDE_SEEN_URLS_KEY);
+  const hideSeenURLs = storedHideSeenURLs ?? HIDE_SEEN_URLS_DEFAULT;
 
   const [storedAutoMarkAsSeen, setAutoMarkAsSeen] =
     useMMKVBoolean("autoMarkAsSeen");
@@ -83,11 +101,27 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
   return (
     <FiltersContext.Provider
       value={{
-        filterSeenPosts: filterSeenPosts ?? initialValues.filterSeenPosts,
+        filterSeenPosts,
         toggleFilterSeenPosts: (newValue = !filterSeenPosts) =>
           setFilterSeenPosts(newValue),
 
-        autoMarkAsSeen: autoMarkAsSeen ?? initialValues.autoMarkAsSeen,
+        hideSeenURLs,
+        getHideSeenURLStatus: (url: string) => {
+          const baseURL = new RedditURL(url).getBasePath();
+          return hideSeenURLs[baseURL] ?? filterSeenPosts;
+        },
+        toggleHideSeenURL: (url: string) => {
+          const baseURL = new RedditURL(url).getBasePath();
+          const newSetting = !hideSeenURLs[baseURL];
+          if (newSetting === filterSeenPosts) {
+            delete hideSeenURLs[baseURL];
+          } else {
+            hideSeenURLs[baseURL] = newSetting;
+          }
+          setHideSeenURLs(hideSeenURLs);
+        },
+
+        autoMarkAsSeen,
         toggleAutoMarkAsSeen: (newValue = !autoMarkAsSeen) => {
           Alert.alert(
             "Restart the app for this change to take effect.",
@@ -98,10 +132,10 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
           setAutoMarkAsSeen(newValue);
         },
 
-        filterText: storedFilterText ?? initialValues.filterText,
+        filterText,
         setFilterText: (newValue = "") => setFilterText(newValue),
 
-        aiFilterText: storedAiFilterText ?? initialValues.aiFilterText,
+        aiFilterText,
         setAiFilterText: (newValue = "") => setAiFilterText(newValue),
 
         filterPostsByText,

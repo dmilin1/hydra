@@ -15,11 +15,19 @@ import useRedditDataState from "../utils/useRedditDataState";
 export default function PostsPage({
   route,
 }: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
+  const { url } = route.params;
+
   const { theme } = useContext(ThemeContext);
-  const { filterPostsByText, filterPostsByAI, autoMarkAsSeen } =
-    useContext(FiltersContext);
+  const {
+    filterPostsByText,
+    filterPostsByAI,
+    autoMarkAsSeen,
+    getHideSeenURLStatus,
+  } = useContext(FiltersContext);
 
   const [rerenderCount, rerender] = useState(0);
+
+  const shouldFilterSeen = getHideSeenURLStatus(url);
 
   const {
     data: posts,
@@ -35,13 +43,15 @@ export default function PostsPage({
         search: search.current,
         limit,
       }),
-    filterRules: [filterSeenItems, filterPostsByText, filterPostsByAI],
+    filterRules: [
+      ...(shouldFilterSeen ? [filterSeenItems] : []),
+      filterPostsByText,
+      filterPostsByAI,
+    ],
     limitRampUp: [10, 20, 40, 70, 100],
   });
 
   const search = useRef<string>("");
-
-  const { url } = route.params;
 
   const handleScrolledPastPost = (post: Post) => {
     if (autoMarkAsSeen) {

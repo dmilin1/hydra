@@ -124,6 +124,7 @@ export default function Filters() {
   const {
     filterSeenPosts,
     toggleFilterSeenPosts,
+    hideSeenURLs,
     autoMarkAsSeen,
     toggleAutoMarkAsSeen,
     filterText,
@@ -134,6 +135,10 @@ export default function Filters() {
 
   const { isPro } = useContext(SubscriptionsContext);
   const { pushURL } = useURLNavigation();
+
+  const hideSeenURLOverrides = Object.entries(hideSeenURLs)
+    .filter(([_, setting]) => setting !== filterSeenPosts)
+    .map(([url]) => url);
 
   const showProAlert = () => {
     Alert.alert(
@@ -216,6 +221,28 @@ export default function Filters() {
           },
         ]}
       />
+      {hideSeenURLOverrides.length > 0 && (
+        <View style={styles.hideSeenURLsContainer}>
+          <Text
+            style={{
+              color: theme.text,
+            }}
+          >
+            You have set manual overrides to {filterSeenPosts ? "show" : "hide"}{" "}
+            seen posts on the following URLs:
+          </Text>
+          {hideSeenURLOverrides.map((url) => (
+            <Text
+              key={url}
+              style={{
+                color: theme.text,
+              }}
+            >
+              {url}
+            </Text>
+          ))}
+        </View>
+      )}
       <SectionTitle text="Text Filter List" />
       <TextInput
         style={t(styles.filterText, {
@@ -310,6 +337,10 @@ const styles = StyleSheet.create({
   textDescription: {
     margin: 15,
     lineHeight: 20,
+  },
+  hideSeenURLsContainer: {
+    margin: 15,
+    gap: 5,
   },
   filterText: {
     marginHorizontal: 15,
