@@ -1,6 +1,13 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { ReactNode, useContext } from "react";
-import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+import {
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Text,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
 import SectionTitle from "./SectionTitle";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -16,9 +23,10 @@ type ListItem = {
 type ListProps = {
   items: ListItem[];
   title?: string;
+  containerStyle?: StyleProp<ViewStyle>;
 };
 
-export default function List({ items, title }: ListProps) {
+export default function List({ items, title, containerStyle }: ListProps) {
   const { theme } = useContext(ThemeContext);
 
   return (
@@ -30,6 +38,7 @@ export default function List({ items, title }: ListProps) {
           {
             backgroundColor: theme.tint,
           },
+          containerStyle,
         ]}
       >
         {items.map((item, i) => (
