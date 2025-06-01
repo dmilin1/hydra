@@ -17,6 +17,13 @@ export function formatFlair(redditData: any): Flair | null {
       }
     }
   }
+  if (
+    !text &&
+    !emojis.length &&
+    typeof redditData.author_flair_text === "string"
+  ) {
+    text = redditData.author_flair_text;
+  }
   if (emojis.length > 0 || text) {
     return {
       emojis,
