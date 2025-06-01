@@ -3,10 +3,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { Post } from "../../../../../api/Posts";
-import {
-  ThemeContext,
-  t,
-} from "../../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../../../../utils/navigation";
 import PostMedia from "../PostMedia";
 import SubredditIcon from "../SubredditIcon";
@@ -23,9 +20,9 @@ export default function CrossPost({ post }: CrossPostProps) {
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={() => pushURL(post.link)}
-      style={t(styles.container, { borderColor: theme.divider })}
+      style={[styles.container, { borderColor: theme.divider }]}
     >
-      <Text numberOfLines={2} style={t(styles.title, { color: theme.text })}>
+      <Text numberOfLines={2} style={[styles.title, { color: theme.text }]}>
         {post.title}
       </Text>
 
@@ -43,7 +40,7 @@ export default function CrossPost({ post }: CrossPostProps) {
             }
           >
             <SubredditIcon post={post} />
-            <Text style={t(styles.subredditText, { color: theme.subtleText })}>
+            <Text style={[styles.subredditText, { color: theme.subtleText }]}>
               r/{post.subreddit}
             </Text>
           </TouchableOpacity>
@@ -52,19 +49,19 @@ export default function CrossPost({ post }: CrossPostProps) {
         <View style={styles.metadataContainer}>
           <View style={styles.metadataItem}>
             <AntDesign name="arrowup" size={16} color={theme.subtleText} />
-            <Text style={t(styles.metadataText, { color: theme.subtleText })}>
+            <Text style={[styles.metadataText, { color: theme.subtleText }]}>
               {post.upvotes}
             </Text>
           </View>
           <View style={styles.metadataItem}>
             <Feather name="message-square" size={16} color={theme.subtleText} />
-            <Text style={t(styles.metadataText, { color: theme.subtleText })}>
+            <Text style={[styles.metadataText, { color: theme.subtleText }]}>
               {post.commentCount}
             </Text>
           </View>
           <View style={styles.metadataItem}>
             <Feather name="clock" size={16} color={theme.subtleText} />
-            <Text style={t(styles.metadataText, { color: theme.subtleText })}>
+            <Text style={[styles.metadataText, { color: theme.subtleText }]}>
               {post.timeSince}
             </Text>
           </View>

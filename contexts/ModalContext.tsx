@@ -1,8 +1,6 @@
 import { ReactNode, createContext, useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, StyleSheet } from "react-native";
 
-import { t } from "./SettingsContexts/ThemeContext";
-
 type ModalContextType = {
   setModal: (modal?: ReactNode) => void;
 };
@@ -34,13 +32,16 @@ export function ModalProvider({ children }: React.PropsWithChildren) {
       }}
     >
       <Animated.View
-        style={t(styles.modalContainer, {
-          transform: [
-            {
-              translateY: modalPosition,
-            },
-          ],
-        })}
+        style={[
+          styles.modalContainer,
+          {
+            transform: [
+              {
+                translateY: modalPosition,
+              },
+            ],
+          },
+        ]}
       >
         {modal}
       </Animated.View>

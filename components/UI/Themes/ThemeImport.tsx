@@ -1,10 +1,7 @@
 import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, Alert, View } from "react-native";
 
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import Themes, { CustomTheme } from "../../../constants/Themes";
 import { useSetTheme } from "../../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView/hooks/useSetTheme";
@@ -24,9 +21,12 @@ export default function ThemeImport({ customTheme }: ThemeImportProps) {
   if (typeof customTheme.extends !== "string") {
     return (
       <Text
-        style={t(styles.themeNameText, {
-          color: currentTheme.text,
-        })}
+        style={[
+          styles.themeNameText,
+          {
+            color: currentTheme.text,
+          },
+        ]}
       >
         Theme is invalid
       </Text>
@@ -66,15 +66,21 @@ export default function ThemeImport({ customTheme }: ThemeImportProps) {
       <TouchableOpacity
         onPress={() => saveTheme()}
         activeOpacity={0.5}
-        style={t(styles.themeItemSubContainer, {
-          borderColor: currentTheme.divider,
-        })}
+        style={[
+          styles.themeItemSubContainer,
+          {
+            borderColor: currentTheme.divider,
+          },
+        ]}
       >
         <View style={styles.themeNameContainer}>
           <Text
-            style={t(styles.themeNameText, {
-              color: currentTheme.text,
-            })}
+            style={[
+              styles.themeNameText,
+              {
+                color: currentTheme.text,
+              },
+            ]}
           >
             {themeData.name}
           </Text>

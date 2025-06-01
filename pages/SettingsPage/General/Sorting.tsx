@@ -21,10 +21,7 @@ import {
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
   SORT_HOME_PAGE,
 } from "../../../constants/SettingsKeys";
-import {
-  t,
-  ThemeContext,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import KeyStore from "../../../utils/KeyStore";
 
 const POST_SORT_OPTIONS = [
@@ -267,18 +264,24 @@ export default function General() {
       {rememberPostSubredditSort && numRememberedPostSubreddits > 0 && (
         <View style={styles.clearButtonContainer}>
           <TouchableOpacity
-            style={t(styles.clearButton, {
-              backgroundColor: theme.buttonBg,
-            })}
+            style={[
+              styles.clearButton,
+              {
+                backgroundColor: theme.buttonBg,
+              },
+            ]}
             activeOpacity={0.8}
             onPress={() => {
               clearRememberedPostSubredditSorts();
             }}
           >
             <Text
-              style={t(styles.clearButtonText, {
-                color: theme.buttonText,
-              })}
+              style={[
+                styles.clearButtonText,
+                {
+                  color: theme.buttonText,
+                },
+              ]}
             >
               Clear custom post sorts ({numRememberedPostSubreddits} sub
               {numRememberedPostSubreddits === 1 ? "" : "s"})
@@ -337,18 +340,24 @@ export default function General() {
       {rememberCommentSubredditSort && numRememberedCommentSubreddits > 0 && (
         <View style={styles.clearButtonContainer}>
           <TouchableOpacity
-            style={t(styles.clearButton, {
-              backgroundColor: theme.iconOrTextButton,
-            })}
+            style={[
+              styles.clearButton,
+              {
+                backgroundColor: theme.iconOrTextButton,
+              },
+            ]}
             activeOpacity={0.8}
             onPress={() => {
               clearRememberedCommentSubredditSorts();
             }}
           >
             <Text
-              style={t(styles.clearButtonText, {
-                color: theme.text,
-              })}
+              style={[
+                styles.clearButtonText,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               Clear custom comment sorts ({numRememberedCommentSubreddits} sub
               {numRememberedCommentSubreddits === 1 ? "" : "s"})

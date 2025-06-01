@@ -18,10 +18,7 @@ import { Post } from "../../../../api/Posts";
 import { PostInteractionContext } from "../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../contexts/SettingsContexts/DataModeContext";
 import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../utils/URL";
 import useImageMenu from "../../../../utils/useImageMenu";
 
@@ -54,9 +51,12 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
 
   return (
     <View
-      style={t(styles.container, {
-        backgroundColor: theme.tint,
-      })}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.tint,
+        },
+      ]}
     >
       {mediaOpen && <ActivityIndicator style={styles.loader} size="small" />}
       {post.video ? (
@@ -177,14 +177,20 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           <BlurView intensity={80} style={styles.blur} />
           <View style={styles.blurIconContainer}>
             <View
-              style={t(styles.blurIconBox, {
-                backgroundColor: theme.background,
-              })}
+              style={[
+                styles.blurIconBox,
+                {
+                  backgroundColor: theme.background,
+                },
+              ]}
             >
               <Text
-                style={t(styles.blurText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.blurText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {post.isNSFW ? "NSFW" : post.isSpoiler ? "Spoiler" : ""}
               </Text>

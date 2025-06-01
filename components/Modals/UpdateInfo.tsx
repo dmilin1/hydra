@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 
-import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../UI/GetHydraProButton";
 
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
@@ -105,38 +105,53 @@ export default function UpdateInfo() {
       <>
         <View style={styles.updateInfoContainer}>
           <View
-            style={t(styles.updateInfoSubContainer, {
-              backgroundColor: theme.tint,
-            })}
+            style={[
+              styles.updateInfoSubContainer,
+              {
+                backgroundColor: theme.tint,
+              },
+            ]}
           >
             <TouchableOpacity
-              style={t(styles.exitButton, {
-                backgroundColor: theme.verySubtleText,
-              })}
+              style={[
+                styles.exitButton,
+                {
+                  backgroundColor: theme.verySubtleText,
+                },
+              ]}
               onPress={() => exitUpdateInfo()}
             >
               <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
             </TouchableOpacity>
             <Text
-              style={t(styles.title, {
-                color: theme.text,
-              })}
+              style={[
+                styles.title,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               {update.title}
             </Text>
             <Text
-              style={t(styles.subtitle, {
-                color: theme.subtleText,
-              })}
+              style={[
+                styles.subtitle,
+                {
+                  color: theme.subtleText,
+                },
+              ]}
             >
               {update.subtitle}
             </Text>
             <ScrollView>
               <View style={{ marginTop: -20 }} />
               <Text
-                style={t(styles.heading, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.heading,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 👑 Pro Features
               </Text>
@@ -144,16 +159,22 @@ export default function UpdateInfo() {
                 {update.proFeatures.map((feature) => (
                   <View key={feature.title}>
                     <Text
-                      style={t(styles.featureTitle, {
-                        color: theme.text,
-                      })}
+                      style={[
+                        styles.featureTitle,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
                     >
                       • {feature.title}
                     </Text>
                     <Text
-                      style={t(styles.featureDescription, {
-                        color: theme.subtleText,
-                      })}
+                      style={[
+                        styles.featureDescription,
+                        {
+                          color: theme.subtleText,
+                        },
+                      ]}
                     >
                       {feature.description}
                     </Text>
@@ -161,9 +182,12 @@ export default function UpdateInfo() {
                 ))}
               </View>
               <Text
-                style={t(styles.heading, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.heading,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 🚀 Features
               </Text>
@@ -171,16 +195,22 @@ export default function UpdateInfo() {
                 {update.features.map((feature) => (
                   <View key={feature.title}>
                     <Text
-                      style={t(styles.featureTitle, {
-                        color: theme.text,
-                      })}
+                      style={[
+                        styles.featureTitle,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
                     >
                       • {feature.title}
                     </Text>
                     <Text
-                      style={t(styles.featureDescription, {
-                        color: theme.subtleText,
-                      })}
+                      style={[
+                        styles.featureDescription,
+                        {
+                          color: theme.subtleText,
+                        },
+                      ]}
                     >
                       {feature.description}
                     </Text>
@@ -188,9 +218,12 @@ export default function UpdateInfo() {
                 ))}
               </View>
               <Text
-                style={t(styles.heading, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.heading,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 🐛 Bugfixes
               </Text>
@@ -198,9 +231,12 @@ export default function UpdateInfo() {
                 {update.bugfixes.map((bugfix) => (
                   <View key={bugfix.description}>
                     <Text
-                      style={t(styles.bugfixDescription, {
-                        color: theme.text,
-                      })}
+                      style={[
+                        styles.bugfixDescription,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
                     >
                       • {bugfix.description}
                     </Text>
@@ -215,9 +251,12 @@ export default function UpdateInfo() {
                   />
                 </View>
                 <Text
-                  style={t(styles.helpItem, {
-                    color: theme.text,
-                  })}
+                  style={[
+                    styles.helpItem,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
                 >
                   If you have any feature requests, you can submit them on
                   /r/HydraFeatureRequests which can be found in the settings tab
@@ -228,9 +267,12 @@ export default function UpdateInfo() {
                   <FontAwesome name="github" size={22} color={theme.text} />
                 </View>
                 <Text
-                  style={t(styles.helpItem, {
-                    color: theme.text,
-                  })}
+                  style={[
+                    styles.helpItem,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
                 >
                   If you have any familiarity with React Native and want to
                   help, you can make a pull request at

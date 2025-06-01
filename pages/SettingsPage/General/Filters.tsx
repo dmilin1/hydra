@@ -6,10 +6,7 @@ import List from "../../../components/UI/List";
 import SectionTitle from "../../../components/UI/SectionTitle";
 import TextInput from "../../../components/UI/TextInput";
 import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
-import {
-  t,
-  ThemeContext,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import { useURLNavigation } from "../../../utils/navigation";
 
@@ -163,9 +160,12 @@ export default function Filters() {
   return (
     <>
       <Text
-        style={t(styles.textDescription, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textDescription,
+          {
+            color: theme.text,
+          },
+        ]}
       >
         Filters only apply to items in the main feeds and subreddits. They do
         not apply to search results or user profiles. Excessive filtering may
@@ -245,19 +245,25 @@ export default function Filters() {
       )}
       <SectionTitle text="Text Filter List" />
       <TextInput
-        style={t(styles.filterText, {
-          backgroundColor: theme.tint,
-          borderColor: theme.divider,
-          color: theme.text,
-        })}
+        style={[
+          styles.filterText,
+          {
+            backgroundColor: theme.tint,
+            borderColor: theme.divider,
+            color: theme.text,
+          },
+        ]}
         multiline
         value={filterText}
         onChangeText={(text) => setFilterText(text)}
       />
       <Text
-        style={t(styles.textDescription, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textDescription,
+          {
+            color: theme.text,
+          },
+        ]}
       >
         Words or phrases can be seperated by commas or new lines. If a post or
         comment contains items on this list, it will be hidden from view. Post
@@ -269,11 +275,14 @@ export default function Filters() {
       </Text>
       <SectionTitle text="Smart Post Filter" />
       <TextInput
-        style={t(styles.filterText, {
-          backgroundColor: theme.tint,
-          borderColor: theme.divider,
-          color: theme.text,
-        })}
+        style={[
+          styles.filterText,
+          {
+            backgroundColor: theme.tint,
+            borderColor: theme.divider,
+            color: theme.text,
+          },
+        ]}
         multiline
         value={aiFilterText}
         onChangeText={(text) => setAiFilterText(text)}
@@ -285,9 +294,12 @@ export default function Filters() {
         }}
       />
       <Text
-        style={t(styles.textDescription, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textDescription,
+          {
+            color: theme.text,
+          },
+        ]}
       >
         Write a description of the kinds of posts you want to have hidden. Posts
         that match this description will be hidden from view. Or, you can use

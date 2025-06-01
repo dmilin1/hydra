@@ -12,7 +12,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { LAST_SEEN_UPDATE_KEY } from "../../components/Modals/UpdateInfo";
 import GetHydraProButton from "../../components/UI/GetHydraProButton";
 import List from "../../components/UI/List";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import KeyStore from "../../utils/KeyStore";
 import { useURLNavigation } from "../../utils/navigation";
 
@@ -92,9 +92,12 @@ export default function Root() {
       <GetHydraProButton />
       <View style={styles.appDetails}>
         <Text
-          style={t(styles.appDetailsText, {
-            color: theme.text,
-          })}
+          style={[
+            styles.appDetailsText,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           {Application.applicationName}: {Application.nativeApplicationVersion}
           {"\n"}

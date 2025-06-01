@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Comment, editUserContent } from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
@@ -52,16 +52,22 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
 
   return (
     <View
-      style={t(styles.editCommentContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.editCommentContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <SafeAreaView style={styles.safeContainers}>
         <KeyboardAvoidingView style={styles.safeContainers} behavior="padding">
           <View
-            style={t(styles.topBar, {
-              borderBottomColor: theme.tint,
-            })}
+            style={[
+              styles.topBar,
+              {
+                borderBottomColor: theme.tint,
+              },
+            ]}
           >
             <TouchableOpacity
               onPress={() => {
@@ -70,17 +76,23 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
               }}
             >
               <Text
-                style={t(styles.topBarButton, {
-                  color: theme.iconOrTextButton,
-                })}
+                style={[
+                  styles.topBarButton,
+                  {
+                    color: theme.iconOrTextButton,
+                  },
+                ]}
               >
                 Cancel
               </Text>
             </TouchableOpacity>
             <Text
-              style={t(styles.topBarTitle, {
-                color: theme.text,
-              })}
+              style={[
+                styles.topBarTitle,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               Edit Comment
             </Text>
@@ -89,9 +101,12 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
-                  style={t(styles.topBarButton, {
-                    color: theme.iconOrTextButton,
-                  })}
+                  style={[
+                    styles.topBarButton,
+                    {
+                      color: theme.iconOrTextButton,
+                    },
+                  ]}
                 >
                   Edit
                 </Text>
@@ -111,46 +126,60 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
               ).supportsSharingThemes()}
             />
             <View
-              style={t(styles.previewTypeContainer, {
-                backgroundColor: theme.tint,
-                borderBottomColor: theme.divider,
-              })}
+              style={[
+                styles.previewTypeContainer,
+                {
+                  backgroundColor: theme.tint,
+                  borderBottomColor: theme.divider,
+                },
+              ]}
             >
               <TouchableOpacity onPress={() => setViewMode("preview")}>
                 <Text
-                  style={t(styles.previewTypeText, {
-                    color: theme.text,
-                    paddingVertical: 10,
-                    borderColor:
-                      viewMode === "preview"
-                        ? theme.iconOrTextButton
-                        : theme.tint,
-                  })}
+                  style={[
+                    styles.previewTypeText,
+                    {
+                      color: theme.text,
+                      paddingVertical: 10,
+                      borderColor:
+                        viewMode === "preview"
+                          ? theme.iconOrTextButton
+                          : theme.tint,
+                    },
+                  ]}
                 >
                   Preview
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setViewMode("old")}>
                 <Text
-                  style={t(styles.previewTypeText, {
-                    color: theme.text,
-                    paddingVertical: 10,
-                    borderColor:
-                      viewMode === "old" ? theme.iconOrTextButton : theme.tint,
-                  })}
+                  style={[
+                    styles.previewTypeText,
+                    {
+                      color: theme.text,
+                      paddingVertical: 10,
+                      borderColor:
+                        viewMode === "old"
+                          ? theme.iconOrTextButton
+                          : theme.tint,
+                    },
+                  ]}
                 >
                   Old Version
                 </Text>
               </TouchableOpacity>
             </View>
             <View
-              style={t(styles.renderHTMLContainer, {
-                backgroundColor: theme.background,
-              })}
+              style={[
+                styles.renderHTMLContainer,
+                {
+                  backgroundColor: theme.background,
+                },
+              ]}
             >
               {viewMode === "old" ? (
                 <TextInput
-                  style={t(styles.parentText, { color: theme.subtleText })}
+                  style={[styles.parentText, { color: theme.subtleText }]}
                   editable={false}
                   value={edit.text}
                   multiline

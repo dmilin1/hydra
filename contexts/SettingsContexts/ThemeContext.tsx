@@ -1,6 +1,5 @@
 import { setStatusBarStyle } from "expo-status-bar";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
 
 import Themes, {
@@ -120,8 +119,4 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function t(...styles: (ViewStyle | TextStyle | ImageStyle)[]) {
-  return Object.assign({}, ...styles);
 }

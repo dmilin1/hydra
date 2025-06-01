@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import type { ColorValue } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import Time from "../../utils/Time";
 
@@ -29,13 +29,13 @@ interface FeatureItemProps {
 }
 
 const FeatureItem = ({ icon, title, description, theme }: FeatureItemProps) => (
-  <View style={t(styles.featureItem, { backgroundColor: theme.tint })}>
-    <View style={t(styles.featureIcon, { backgroundColor: theme.background })}>
+  <View style={[styles.featureItem, { backgroundColor: theme.tint }]}>
+    <View style={[styles.featureIcon, { backgroundColor: theme.background }]}>
       {icon}
     </View>
     <View style={styles.featureTextContainer}>
-      <Text style={t(styles.featureTitle, { color: theme.text })}>{title}</Text>
-      <Text style={t(styles.featureDescription, { color: theme.subtleText })}>
+      <Text style={[styles.featureTitle, { color: theme.text }]}>{title}</Text>
+      <Text style={[styles.featureDescription, { color: theme.subtleText }]}>
         {description}
       </Text>
     </View>
@@ -70,16 +70,22 @@ export default function HydraPro() {
           resizeMode="contain"
         />
         <Text
-          style={t(styles.headerText, {
-            color: theme.text,
-          })}
+          style={[
+            styles.headerText,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           Hydra Pro
         </Text>
         <Text
-          style={t(styles.subheaderText, {
-            color: theme.text,
-          })}
+          style={[
+            styles.subheaderText,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           Unlock the full potential of Hydra
         </Text>
@@ -92,9 +98,12 @@ export default function HydraPro() {
         ) : (
           proOffering?.product.priceString && (
             <Text
-              style={t(styles.priceText, {
-                color: theme.subtleText,
-              })}
+              style={[
+                styles.priceText,
+                {
+                  color: theme.subtleText,
+                },
+              ]}
             >
               {proOffering.product.priceString} per month
             </Text>
@@ -142,16 +151,22 @@ export default function HydraPro() {
           setIsPurchasing(false);
         }}
         activeOpacity={0.5}
-        style={t(styles.upgradeButton, {
-          backgroundColor: theme.buttonBg,
-        })}
+        style={[
+          styles.upgradeButton,
+          {
+            backgroundColor: theme.buttonBg,
+          },
+        ]}
         disabled={isLoadingOffering || !purchasesInitialized}
       >
         <View style={styles.upgradeButtonContent}>
           <Text
-            style={t(styles.upgradeButtonText, {
-              color: theme.buttonText,
-            })}
+            style={[
+              styles.upgradeButtonText,
+              {
+                color: theme.buttonText,
+              },
+            ]}
           >
             {isLoadingOffering || !purchasesInitialized || isPurchasing ? (
               <ActivityIndicator size="small" color={theme.buttonText} />
@@ -175,7 +190,7 @@ export default function HydraPro() {
         </View>
       </TouchableOpacity>
       {gracePeriodEndsAt && (
-        <Text style={t(styles.gracePeriodText, { color: theme.text })}>
+        <Text style={[styles.gracePeriodText, { color: theme.text }]}>
           Your subscription will end in{" "}
           {new Time(gracePeriodEndsAt).prettyTimeSince()}
         </Text>

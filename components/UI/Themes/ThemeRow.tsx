@@ -2,10 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import Themes, { CustomTheme, Theme } from "../../../constants/Themes";
 import ThemeColorBand from "./ThemeColorBand";
@@ -43,14 +40,20 @@ export default function ThemeRow({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      style={t(styles.themeItemContainer, {
-        borderBottomColor: currentTheme.divider,
-      })}
+      style={[
+        styles.themeItemContainer,
+        {
+          borderBottomColor: currentTheme.divider,
+        },
+      ]}
     >
       <Text
-        style={t(styles.themeNameText, {
-          color: currentTheme.text,
-        })}
+        style={[
+          styles.themeNameText,
+          {
+            color: currentTheme.text,
+          },
+        ]}
       >
         {themeData.name}
       </Text>

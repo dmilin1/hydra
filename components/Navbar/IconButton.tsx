@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext } from "react";
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type IconButtonProps = {
   icon: ReactNode;
@@ -18,14 +18,17 @@ export default function IconButton({
 
   return (
     <View
-      style={t(styles.sectionContainer, {
-        justifyContent: justifyContent ?? "center",
-      })}
+      style={[
+        styles.sectionContainer,
+        {
+          justifyContent: justifyContent ?? "center",
+        },
+      ]}
     >
       <TouchableOpacity
         activeOpacity={0.5}
         onPress={() => onPress?.()}
-        style={t(styles.touchableContainer)}
+        style={[styles.touchableContainer]}
       >
         <Text style={{ color: theme.iconOrTextButton }}>{icon}</Text>
       </TouchableOpacity>

@@ -3,7 +3,7 @@ import React, { ReactNode, useContext } from "react";
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
 
 import SectionTitle from "./SectionTitle";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type ListItem = {
   key: string;
@@ -25,26 +25,35 @@ export default function List({ items, title }: ListProps) {
     <>
       {title && <SectionTitle text={title} />}
       <View
-        style={t(styles.listContainer, {
-          backgroundColor: theme.tint,
-        })}
+        style={[
+          styles.listContainer,
+          {
+            backgroundColor: theme.tint,
+          },
+        ]}
       >
         {items.map((item, i) => (
           <TouchableOpacity
             key={item.key}
             onPress={item.onPress}
             activeOpacity={0.5}
-            style={t(styles.itemButtonContainer, {
-              borderBottomColor:
-                i < items.length - 1 ? theme.divider : "transparent",
-            })}
+            style={[
+              styles.itemButtonContainer,
+              {
+                borderBottomColor:
+                  i < items.length - 1 ? theme.divider : "transparent",
+              },
+            ]}
           >
             <View style={styles.itemButtonSubContainer}>
               <View style={styles.iconMargin}>{item.icon}</View>
               <Text
-                style={t(styles.itemButtonText, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.itemButtonText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 {item.text}
               </Text>

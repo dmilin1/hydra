@@ -3,10 +3,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { Subreddit } from "../../../api/Subreddits";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../../../utils/Numbers";
 import { useURLNavigation } from "../../../utils/navigation";
 
@@ -22,17 +19,23 @@ export default function SubredditComponent({
     <View>
       <TouchableOpacity
         activeOpacity={0.8}
-        style={t(styles.subredditContainer, {
-          backgroundColor: theme.background,
-        })}
+        style={[
+          styles.subredditContainer,
+          {
+            backgroundColor: theme.background,
+          },
+        ]}
         onPress={() => {
           pushURL(subreddit.url);
         }}
       >
         <Text
-          style={t(styles.subredditTitle, {
-            color: theme.text,
-          })}
+          style={[
+            styles.subredditTitle,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           /r/{subreddit.name}
         </Text>
@@ -40,9 +43,12 @@ export default function SubredditComponent({
           <View style={styles.bodyTextContainer}>
             <Text
               numberOfLines={3}
-              style={t(styles.bodyText, {
-                color: theme.subtleText,
-              })}
+              style={[
+                styles.bodyText,
+                {
+                  color: theme.subtleText,
+                },
+              ]}
             >
               {subreddit.description ? subreddit.description : "No description"}
             </Text>
@@ -57,25 +63,34 @@ export default function SubredditComponent({
                 color={theme.subtleText}
               />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {new Numbers(subreddit.subscribers).prettyNum()}
               </Text>
               <FontAwesome name="feed" size={18} color={theme.subtleText} />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {subreddit.subscribed ? "Joined" : "Not Subscribed"}
               </Text>
               <Feather name="clock" size={18} color={theme.subtleText} />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {subreddit.timeSinceCreation}
               </Text>
@@ -85,9 +100,12 @@ export default function SubredditComponent({
         </View>
       </TouchableOpacity>
       <View
-        style={t(styles.spacer, {
-          backgroundColor: theme.divider,
-        })}
+        style={[
+          styles.spacer,
+          {
+            backgroundColor: theme.divider,
+          },
+        ]}
       />
     </View>
   );

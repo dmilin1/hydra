@@ -4,7 +4,7 @@ import { ColorValue, StyleSheet, Switch, Text } from "react-native";
 
 import List from "../../components/UI/List";
 import { DataModeContext } from "../../contexts/SettingsContexts/DataModeContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 export default function DataUse() {
   const { theme } = useContext(ThemeContext);
@@ -58,9 +58,12 @@ export default function DataUse() {
         ]}
       />
       <Text
-        style={t(styles.textDescription, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textDescription,
+          {
+            color: theme.text,
+          },
+        ]}
       >
         Low data mode reduces the quality and amount of media that gets loaded
         when scrolling. For example, videos will not be loaded while scrolling

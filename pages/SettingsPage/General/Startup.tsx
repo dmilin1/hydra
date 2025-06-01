@@ -14,10 +14,7 @@ import {
   STARTUP_URL_STORAGE_KEY,
   TabIndices,
 } from "../../../contexts/NavigationContext";
-import {
-  t,
-  ThemeContext,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../../../utils/RedditURL";
 
 const INITIAL_TAB_OPTIONS = Object.keys(TabIndices);
@@ -78,19 +75,25 @@ export default function General() {
       />
       <SectionTitle text="Startup URL" />
       <TextInput
-        style={t(styles.startupURLText, {
-          backgroundColor: theme.tint,
-          borderColor: theme.divider,
-          color: theme.text,
-        })}
+        style={[
+          styles.startupURLText,
+          {
+            backgroundColor: theme.tint,
+            borderColor: theme.divider,
+            color: theme.text,
+          },
+        ]}
         value={initialStartupURL}
         onChangeText={setStartupURL}
       />
       {!startupURLIsValid && (
         <Text
-          style={t(styles.startupURLTextInvalid, {
-            color: theme.text,
-          })}
+          style={[
+            styles.startupURLTextInvalid,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           Invalid RedditURL. This setting will be ignored.
         </Text>

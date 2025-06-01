@@ -10,7 +10,7 @@ import {
 
 import MultiredditLink from "../components/RedditDataRepresentations/Multireddit/MultiredditLink";
 import SubredditCompactLink from "../components/RedditDataRepresentations/Subreddit/SubredditCompactLink";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
 import { useURLNavigation } from "../utils/navigation";
 
@@ -19,14 +19,20 @@ function SectionHeading({ title }: { title: string }) {
 
   return (
     <View
-      style={t(styles.categoryTitleContainer, {
-        backgroundColor: theme.tint,
-      })}
+      style={[
+        styles.categoryTitleContainer,
+        {
+          backgroundColor: theme.tint,
+        },
+      ]}
     >
       <Text
-        style={t(styles.categoryTitle, {
-          color: theme.subtleText,
-        })}
+        style={[
+          styles.categoryTitle,
+          {
+            color: theme.subtleText,
+          },
+        ]}
       >
         {title.toUpperCase()}
       </Text>
@@ -43,9 +49,12 @@ export default function Subreddits() {
   return (
     <View style={styles.subredditsContainer}>
       <ScrollView
-        style={t(styles.scrollView, {
-          backgroundColor: theme.background,
-        })}
+        style={[
+          styles.scrollView,
+          {
+            backgroundColor: theme.background,
+          },
+        ]}
       >
         {[
           {
@@ -80,35 +89,50 @@ export default function Subreddits() {
             key={link.title}
             onPress={() => pushURL(link.path)}
             activeOpacity={0.5}
-            style={t(styles.bigButtonContainer, {
-              borderBottomColor: theme.tint,
-            })}
+            style={[
+              styles.bigButtonContainer,
+              {
+                borderBottomColor: theme.tint,
+              },
+            ]}
           >
             <View
               key={link.path}
-              style={t(styles.bigButtonSubContainer, {
-                borderBottomColor: theme.tint,
-              })}
+              style={[
+                styles.bigButtonSubContainer,
+                {
+                  borderBottomColor: theme.tint,
+                },
+              ]}
             >
               <View
-                style={t(styles.bigButtonIconContainer, {
-                  backgroundColor: link.color,
-                })}
+                style={[
+                  styles.bigButtonIconContainer,
+                  {
+                    backgroundColor: link.color,
+                  },
+                ]}
               >
                 {link.icon}
               </View>
               <View>
                 <Text
-                  style={t(styles.subredditText, {
-                    color: theme.text,
-                  })}
+                  style={[
+                    styles.subredditText,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
                 >
                   {link.title}
                 </Text>
                 <Text
-                  style={t(styles.subredditDescription, {
-                    color: theme.subtleText,
-                  })}
+                  style={[
+                    styles.subredditDescription,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
                 >
                   {link.description}
                 </Text>

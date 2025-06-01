@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { sendMessage } from "../../api/Messages";
 import { User } from "../../api/User";
 import { ModalContext } from "../../contexts/ModalContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
@@ -64,16 +64,22 @@ export default function NewMessage({
 
   return (
     <View
-      style={t(styles.newCommentContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.newCommentContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <SafeAreaView style={styles.safeContainers}>
         <KeyboardAvoidingView style={styles.safeContainers} behavior="padding">
           <View
-            style={t(styles.topBar, {
-              borderBottomColor: theme.tint,
-            })}
+            style={[
+              styles.topBar,
+              {
+                borderBottomColor: theme.tint,
+              },
+            ]}
           >
             <TouchableOpacity
               onPress={() => {
@@ -82,17 +88,23 @@ export default function NewMessage({
               }}
             >
               <Text
-                style={t(styles.topBarButton, {
-                  color: theme.iconOrTextButton,
-                })}
+                style={[
+                  styles.topBarButton,
+                  {
+                    color: theme.iconOrTextButton,
+                  },
+                ]}
               >
                 Cancel
               </Text>
             </TouchableOpacity>
             <Text
-              style={t(styles.topBarTitle, {
-                color: theme.text,
-              })}
+              style={[
+                styles.topBarTitle,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               New Message
             </Text>
@@ -101,9 +113,12 @@ export default function NewMessage({
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
-                  style={t(styles.topBarButton, {
-                    color: theme.iconOrTextButton,
-                  })}
+                  style={[
+                    styles.topBarButton,
+                    {
+                      color: theme.iconOrTextButton,
+                    },
+                  ]}
                 >
                   Send
                 </Text>
@@ -115,15 +130,21 @@ export default function NewMessage({
             keyboardShouldPersistTaps="handled"
           >
             <View
-              style={t(styles.subjectContainer, {
-                borderBottomColor: theme.divider,
-                backgroundColor: theme.tint,
-              })}
+              style={[
+                styles.subjectContainer,
+                {
+                  borderBottomColor: theme.divider,
+                  backgroundColor: theme.tint,
+                },
+              ]}
             >
               <TextInput
-                style={t(styles.subjectInput, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.subjectInput,
+                  {
+                    color: theme.text,
+                  },
+                ]}
                 placeholder="Title"
                 placeholderTextColor={theme.verySubtleText}
                 value={subject}
@@ -138,24 +159,33 @@ export default function NewMessage({
               showCustomThemeOption={true}
             />
             <View
-              style={t(styles.previewTypeContainer, {
-                backgroundColor: theme.tint,
-                borderBottomColor: theme.divider,
-              })}
+              style={[
+                styles.previewTypeContainer,
+                {
+                  backgroundColor: theme.tint,
+                  borderBottomColor: theme.divider,
+                },
+              ]}
             >
               <Text
-                style={t(styles.previewTypeText, {
-                  color: theme.text,
-                  paddingVertical: 0,
-                })}
+                style={[
+                  styles.previewTypeText,
+                  {
+                    color: theme.text,
+                    paddingVertical: 0,
+                  },
+                ]}
               >
                 Preview
               </Text>
             </View>
             <View
-              style={t(styles.renderHTMLContainer, {
-                backgroundColor: theme.background,
-              })}
+              style={[
+                styles.renderHTMLContainer,
+                {
+                  backgroundColor: theme.background,
+                },
+              ]}
             >
               <RenderHtml
                 html={

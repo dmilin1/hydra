@@ -7,10 +7,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
 import { User } from "../../../api/User";
-import {
-  t,
-  ThemeContext,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../../../utils/Numbers";
 import Time from "../../../utils/Time";
 import { useURLNavigation } from "../../../utils/navigation";
@@ -45,16 +42,22 @@ export default function UserDetailsComponent({
         ].map((stat) => (
           <View style={styles.statContainer} key={stat.statName}>
             <Text
-              style={t(styles.statsNum, {
-                color: theme.text,
-              })}
+              style={[
+                styles.statsNum,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               {stat.statValue}
             </Text>
             <Text
-              style={t(styles.statsDescription, {
-                color: theme.verySubtleText,
-              })}
+              style={[
+                styles.statsDescription,
+                {
+                  color: theme.verySubtleText,
+                },
+              ]}
             >
               {stat.statName}
             </Text>

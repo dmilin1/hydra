@@ -24,10 +24,7 @@ import { saveItem } from "../../../api/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../contexts/SettingsContexts/CommentSettingsContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
-import {
-  t,
-  ThemeContext,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import RedditURL from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
@@ -116,29 +113,41 @@ export default function PostDetailsComponent({
       >
         <View style={styles.postDetailsContainer}>
           <Text
-            style={t(styles.title, {
-              color: theme.text,
-            })}
+            style={[
+              styles.title,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             {postDetail.title}
           </Text>
           {!mediaCollapsed && summary?.post && postDetail.text.length > 850 && (
             <View
-              style={t(styles.postSummaryContainer, {
-                borderColor: theme.divider,
-              })}
+              style={[
+                styles.postSummaryContainer,
+                {
+                  borderColor: theme.divider,
+                },
+              ]}
             >
               <Text
-                style={t(styles.postSummaryTitle, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.postSummaryTitle,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 Summary
               </Text>
               <Text
-                style={t(styles.postSummaryText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.postSummaryText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {summary.post}
               </Text>
@@ -150,9 +159,12 @@ export default function PostDetailsComponent({
               {postDetail.isStickied && (
                 <AntDesign
                   name="pushpin"
-                  style={t(styles.stickiedIcon, {
-                    color: theme.moderator,
-                  })}
+                  style={[
+                    styles.stickiedIcon,
+                    {
+                      color: theme.moderator,
+                    },
+                  ]}
                 />
               )}
               <TouchableOpacity
@@ -162,17 +174,23 @@ export default function PostDetailsComponent({
               >
                 <SubredditIcon post={postDetail} />
                 <Text
-                  style={t(styles.boldedSmallText, {
-                    color: theme.subtleText,
-                  })}
+                  style={[
+                    styles.boldedSmallText,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
                 >
                   {`r/${postDetail.subreddit}`}
                 </Text>
               </TouchableOpacity>
               <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.smallText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {" by "}
               </Text>
@@ -181,11 +199,14 @@ export default function PostDetailsComponent({
                 onPress={() => pushURL(`/user/${postDetail.author}`)}
               >
                 <Text
-                  style={t(styles.boldedSmallText, {
-                    color: postDetail.isModerator
-                      ? theme.moderator
-                      : theme.subtleText,
-                  })}
+                  style={[
+                    styles.boldedSmallText,
+                    {
+                      color: postDetail.isModerator
+                        ? theme.moderator
+                        : theme.subtleText,
+                    },
+                  ]}
                 >
                   {`u/${postDetail.author}`}
                 </Text>
@@ -194,16 +215,22 @@ export default function PostDetailsComponent({
             <View style={[styles.metadataRow, { marginTop: 5 }]}>
               <AntDesign name="arrowup" size={15} color={theme.subtleText} />
               <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.smallText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {postDetail.upvotes}
               </Text>
               <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.smallText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {"  •  "}
                 {postDetail.timeSince}
@@ -213,17 +240,23 @@ export default function PostDetailsComponent({
         </View>
       </TouchableOpacity>
       <View
-        style={t(styles.buttonsBarContainer, {
-          borderTopColor: theme.divider,
-        })}
+        style={[
+          styles.buttonsBarContainer,
+          {
+            borderTopColor: theme.divider,
+          },
+        ]}
       >
         <TouchableOpacity
-          style={t(styles.buttonsContainer, {
-            backgroundColor:
-              postDetail.userVote === VoteOption.UpVote
-                ? theme.upvote
-                : undefined,
-          })}
+          style={[
+            styles.buttonsContainer,
+            {
+              backgroundColor:
+                postDetail.userVote === VoteOption.UpVote
+                  ? theme.upvote
+                  : undefined,
+            },
+          ]}
           onPress={() => voteOnPost(VoteOption.UpVote)}
         >
           <AntDesign
@@ -237,12 +270,15 @@ export default function PostDetailsComponent({
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={t(styles.buttonsContainer, {
-            backgroundColor:
-              postDetail.userVote === VoteOption.DownVote
-                ? theme.downvote
-                : undefined,
-          })}
+          style={[
+            styles.buttonsContainer,
+            {
+              backgroundColor:
+                postDetail.userVote === VoteOption.DownVote
+                  ? theme.downvote
+                  : undefined,
+            },
+          ]}
           onPress={() => voteOnPost(VoteOption.DownVote)}
         >
           <AntDesign
@@ -256,9 +292,12 @@ export default function PostDetailsComponent({
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={t(styles.buttonsContainer, {
-            backgroundColor: undefined,
-          })}
+          style={[
+            styles.buttonsContainer,
+            {
+              backgroundColor: undefined,
+            },
+          ]}
           onPress={async () => {
             await saveItem(postDetail, !postDetail.saved);
             setPostDetail({
@@ -304,9 +343,12 @@ export default function PostDetailsComponent({
               ).toString(),
             );
           }}
-          style={t(styles.showContextContainer, {
-            borderTopColor: theme.divider,
-          })}
+          style={[
+            styles.showContextContainer,
+            {
+              borderTopColor: theme.divider,
+            },
+          ]}
         >
           <Text style={{ color: theme.iconOrTextButton }}>
             This is a comment thread. Click here to view all comments.
@@ -316,23 +358,32 @@ export default function PostDetailsComponent({
       {summary?.comments && (
         <TouchableHighlight
           onPress={() => setCommentSummaryCollapsed(!commentSummaryCollapsed)}
-          style={t(styles.commentsSummaryContainer, {
-            borderTopColor: theme.divider,
-          })}
+          style={[
+            styles.commentsSummaryContainer,
+            {
+              borderTopColor: theme.divider,
+            },
+          ]}
         >
           <>
             <Text
-              style={t(styles.commentsSummaryTitle, {
-                color: theme.text,
-              })}
+              style={[
+                styles.commentsSummaryTitle,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               Comments Summary
             </Text>
             {!commentSummaryCollapsed && (
               <Text
-                style={t(styles.commentsSummaryText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.commentsSummaryText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {summary.comments}
               </Text>

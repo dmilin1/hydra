@@ -19,7 +19,7 @@ import {
   SafeAreaView,
 } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import {
   CUSTOM_THEME_IMPORT_PREFIX,
   CustomTheme,
@@ -97,14 +97,20 @@ export default function MarkdownEditor({
 
   return (
     <View
-      style={t(styles.markdownEditorContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.markdownEditorContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <TextInput
-        style={t(styles.textInput, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textInput,
+          {
+            color: theme.text,
+          },
+        ]}
         placeholder={placeholder}
         placeholderTextColor={theme.verySubtleText}
         multiline

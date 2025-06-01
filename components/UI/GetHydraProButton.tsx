@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../utils/navigation";
 import { USING_CUSTOM_HYDRA_SERVER } from "../../constants/HydraServer";
 
@@ -39,9 +39,12 @@ export default function GetHydraProButton({ onPress }: GetHydraProButtonProps) {
         onPress?.();
       }}
       activeOpacity={0.5}
-      style={t(styles.buyProButton, {
-        backgroundColor: theme.buttonBg,
-      })}
+      style={[
+        styles.buyProButton,
+        {
+          backgroundColor: theme.buttonBg,
+        },
+      ]}
     >
       <View style={styles.buyProButtonSubContainer}>
         <View style={styles.buyProButtonIcon}>
@@ -51,9 +54,12 @@ export default function GetHydraProButton({ onPress }: GetHydraProButtonProps) {
           />
         </View>
         <Text
-          style={t(styles.buyProButtonText, {
-            color: theme.buttonText,
-          })}
+          style={[
+            styles.buyProButtonText,
+            {
+              color: theme.buttonText,
+            },
+          ]}
         >
           Hydra Pro
         </Text>

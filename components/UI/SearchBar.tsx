@@ -2,7 +2,7 @@ import { AntDesign, FontAwesome6 } from "@expo/vector-icons";
 import { useContext, useRef, useState } from "react";
 import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type SearchBarProps = {
   onSearch: (text: string) => void;
@@ -24,9 +24,12 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
 
   return (
     <View
-      style={t(styles.searchBarContainer, {
-        backgroundColor: theme.tint,
-      })}
+      style={[
+        styles.searchBarContainer,
+        {
+          backgroundColor: theme.tint,
+        },
+      ]}
     >
       <AntDesign
         name="search1"
@@ -36,9 +39,12 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
       />
       <TextInput
         ref={textInputRef}
-        style={t(styles.searchBar, {
-          color: theme.text,
-        })}
+        style={[
+          styles.searchBar,
+          {
+            color: theme.text,
+          },
+        ]}
         returnKeyType="search"
         onChangeText={(text) => {
           search.current = text;

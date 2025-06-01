@@ -1,5 +1,5 @@
 import { FontAwesome6 } from "@expo/vector-icons";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 import { useMMKVNumber } from "react-native-mmkv";
 
 import { AccountContext } from "../../contexts/AccountContext";
-import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
 
 export default function SubscribeToHydra() {
@@ -50,45 +50,63 @@ export default function SubscribeToHydra() {
       <>
         <View style={styles.subscribeContainer}>
           <View
-            style={t(styles.subscribeSubContainer, {
-              backgroundColor: theme.tint,
-            })}
+            style={[
+              styles.subscribeSubContainer,
+              {
+                backgroundColor: theme.tint,
+              },
+            ]}
           >
             <TouchableOpacity
-              style={t(styles.exitButton, {
-                backgroundColor: theme.verySubtleText,
-              })}
+              style={[
+                styles.exitButton,
+                {
+                  backgroundColor: theme.verySubtleText,
+                },
+              ]}
               onPress={() => answeredModal()}
             >
               <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
             </TouchableOpacity>
             <Text
-              style={t(styles.title, {
-                color: theme.text,
-              })}
+              style={[
+                styles.title,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               Subscribe to Hydra?
             </Text>
             <Text
-              style={t(styles.description, {
-                color: theme.subtleText,
-              })}
+              style={[
+                styles.description,
+                {
+                  color: theme.subtleText,
+                },
+              ]}
             >
               Would you like to subscribe to the /&#8288;r/&#8288;HydraApp
               subreddit?
             </Text>
             <Text
-              style={t(styles.description, {
-                color: theme.subtleText,
-              })}
+              style={[
+                styles.description,
+                {
+                  color: theme.subtleText,
+                },
+              ]}
             >
               New updates to Hydra and discussions about the app will appear in
               your Home feed.
             </Text>
             <TouchableOpacity
-              style={t(styles.subscribeButton, {
-                backgroundColor: theme.iconPrimary,
-              })}
+              style={[
+                styles.subscribeButton,
+                {
+                  backgroundColor: theme.iconPrimary,
+                },
+              ]}
               onPress={() => subscribeToHydra()}
               activeOpacity={0.8}
             >
@@ -96,9 +114,12 @@ export default function SubscribeToHydra() {
                 <ActivityIndicator size="small" color={theme.text} />
               ) : (
                 <Text
-                  style={t(styles.subscribeText, {
-                    color: theme.text,
-                  })}
+                  style={[
+                    styles.subscribeText,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
                 >
                   Subscribe
                 </Text>

@@ -8,10 +8,7 @@ import { Post } from "../../../../../api/Posts";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 
 export default function Link({ post }: { post: Post | PostDetail }) {
   const { theme } = useContext(ThemeContext);
@@ -33,9 +30,12 @@ export default function Link({ post }: { post: Post | PostDetail }) {
 
   return (
     <TouchableOpacity
-      style={t(styles.externalLinkContainer, {
-        borderColor: theme.tint,
-      })}
+      style={[
+        styles.externalLinkContainer,
+        {
+          borderColor: theme.tint,
+        },
+      ]}
       activeOpacity={post.openGraphData?.image ? 0.8 : 0.5}
       onPress={() => {
         if (post.externalLink) {
@@ -59,25 +59,34 @@ export default function Link({ post }: { post: Post | PostDetail }) {
           )}
           <Text
             numberOfLines={1}
-            style={t(styles.title, {
-              color: theme.text,
-            })}
+            style={[
+              styles.title,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             {post.openGraphData.title}
           </Text>
           <Text
-            style={t(styles.descriptionText, {
-              color: theme.subtleText,
-            })}
+            style={[
+              styles.descriptionText,
+              {
+                color: theme.subtleText,
+              },
+            ]}
             numberOfLines={linkDescriptionLength}
           >
             {post.openGraphData.description}
           </Text>
           <Text
             numberOfLines={1}
-            style={t(styles.linkText, {
-              color: theme.subtleText,
-            })}
+            style={[
+              styles.linkText,
+              {
+                color: theme.subtleText,
+              },
+            ]}
           >
             {post.externalLink}
           </Text>
@@ -85,9 +94,12 @@ export default function Link({ post }: { post: Post | PostDetail }) {
       ) : (
         <Text
           numberOfLines={1}
-          style={t(styles.linkOnlyText, {
-            color: theme.text,
-          })}
+          style={[
+            styles.linkOnlyText,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           {post.externalLink}
         </Text>

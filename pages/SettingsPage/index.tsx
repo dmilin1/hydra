@@ -16,7 +16,7 @@ import Theme from "./Theme";
 import ThemeMaker from "./ThemeMaker";
 import { StackPageProps } from "../../app/stack";
 import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroller";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
 
 export default function SettingsPage({
@@ -30,9 +30,12 @@ export default function SettingsPage({
 
   return (
     <View
-      style={t(styles.settingsContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.settingsContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <KeyboardAvoidingScroller
         style={styles.scrollView}

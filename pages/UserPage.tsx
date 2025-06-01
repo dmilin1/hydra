@@ -12,7 +12,7 @@ import { CommentComponent } from "../components/RedditDataRepresentations/Post/P
 import UserDetailsComponent from "../components/RedditDataRepresentations/User/UserDetailsComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
 import URL from "../utils/URL";
 import { useURLNavigation } from "../utils/navigation";
@@ -81,9 +81,12 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
 
   return (
     <View
-      style={t(styles.userContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.userContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <RedditDataScroller<UserContent>
         ListHeaderComponent={() =>

@@ -14,7 +14,7 @@ import Login from "../components/Modals/Login";
 import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
 import { ModalContext } from "../contexts/ModalContext";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 
 export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
@@ -25,9 +25,12 @@ export default function AccountsPage() {
 
   return (
     <View
-      style={t(styles.accountsContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.accountsContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       {accounts.length ? (
         <ScrollView style={styles.scrollView}>
@@ -54,9 +57,12 @@ export default function AccountsPage() {
                 }
               >
                 <TouchableOpacity
-                  style={t(styles.accountItemContainer, {
-                    borderBottomColor: theme.divider,
-                  })}
+                  style={[
+                    styles.accountItemContainer,
+                    {
+                      borderBottomColor: theme.divider,
+                    },
+                  ]}
                   activeOpacity={0.5}
                   onPress={async () => {
                     setLoading(true);
@@ -77,9 +83,12 @@ export default function AccountsPage() {
                   }}
                 >
                   <Text
-                    style={t(styles.accountItemText, {
-                      color: theme.text,
-                    })}
+                    style={[
+                      styles.accountItemText,
+                      {
+                        color: theme.text,
+                      },
+                    ]}
                   >
                     {account.username}
                   </Text>
@@ -108,9 +117,12 @@ export default function AccountsPage() {
       ) : (
         <View style={styles.noAccountsContainer}>
           <Text
-            style={t(styles.noAccountsText, {
-              color: theme.text,
-            })}
+            style={[
+              styles.noAccountsText,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             No accounts
           </Text>

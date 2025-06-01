@@ -2,7 +2,7 @@ import { forwardRef, Ref, useContext } from "react";
 import { StyleSheet, Text } from "react-native";
 import RNPickerSelect, { PickerSelectProps } from "react-native-picker-select";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 export default forwardRef(function Picker(
   props: PickerSelectProps,
@@ -24,9 +24,12 @@ export default forwardRef(function Picker(
       {...props}
     >
       <Text
-        style={t(styles.text, {
-          color: theme.subtleText,
-        })}
+        style={[
+          styles.text,
+          {
+            color: theme.subtleText,
+          },
+        ]}
       >
         {props.items.find((item) => item.value === props.value)?.label}
       </Text>

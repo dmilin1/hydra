@@ -10,10 +10,7 @@ import {
 } from "react-native";
 
 import { Multi } from "../../../api/Multireddit";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../../contexts/SubredditContext";
 import { useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
@@ -32,9 +29,12 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
         key={multi.name}
         onPress={() => pushURL(multi.url)}
         activeOpacity={0.5}
-        style={t(styles.multiredditContainer, {
-          borderBottomColor: theme.tint,
-        })}
+        style={[
+          styles.multiredditContainer,
+          {
+            borderBottomColor: theme.tint,
+          },
+        ]}
       >
         {multi.iconURL ? (
           <Image
@@ -45,17 +45,23 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
           <FontAwesome name="reddit" size={30} color={theme.text} />
         )}
         <Text
-          style={t(styles.multiredditText, {
-            color: theme.text,
-          })}
+          style={[
+            styles.multiredditText,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           {multi.name}
         </Text>
         <TouchableOpacity
           onPress={() => setExpanded(!expanded)}
-          style={t(styles.expandButtonContainer, {
-            backgroundColor: theme.divider,
-          })}
+          style={[
+            styles.expandButtonContainer,
+            {
+              backgroundColor: theme.divider,
+            },
+          ]}
           hitSlop={10}
         >
           <Entypo
@@ -83,9 +89,12 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
                 }
               }}
               activeOpacity={0.5}
-              style={t(styles.multiredditContainer, {
-                borderBottomColor: theme.tint,
-              })}
+              style={[
+                styles.multiredditContainer,
+                {
+                  borderBottomColor: theme.tint,
+                },
+              ]}
             >
               {subreddit.iconURL ? (
                 <Image
@@ -96,9 +105,12 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
                 <FontAwesome name="reddit" size={30} color={theme.text} />
               )}
               <Text
-                style={t(styles.multiredditText, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.multiredditText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 {subreddit.name}
               </Text>

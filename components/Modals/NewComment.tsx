@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Comment, PostDetail, submitComment } from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
@@ -59,16 +59,22 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
 
   return (
     <View
-      style={t(styles.newCommentContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.newCommentContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <SafeAreaView style={styles.safeContainers}>
         <KeyboardAvoidingView style={styles.safeContainers} behavior="padding">
           <View
-            style={t(styles.topBar, {
-              borderBottomColor: theme.tint,
-            })}
+            style={[
+              styles.topBar,
+              {
+                borderBottomColor: theme.tint,
+              },
+            ]}
           >
             <TouchableOpacity
               onPress={() => {
@@ -77,17 +83,23 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               }}
             >
               <Text
-                style={t(styles.topBarButton, {
-                  color: theme.iconOrTextButton,
-                })}
+                style={[
+                  styles.topBarButton,
+                  {
+                    color: theme.iconOrTextButton,
+                  },
+                ]}
               >
                 Cancel
               </Text>
             </TouchableOpacity>
             <Text
-              style={t(styles.topBarTitle, {
-                color: theme.text,
-              })}
+              style={[
+                styles.topBarTitle,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               New Comment
             </Text>
@@ -96,9 +108,12 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
-                  style={t(styles.topBarButton, {
-                    color: theme.iconOrTextButton,
-                  })}
+                  style={[
+                    styles.topBarButton,
+                    {
+                      color: theme.iconOrTextButton,
+                    },
+                  ]}
                 >
                   Post
                 </Text>
@@ -118,22 +133,28 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               ).supportsSharingThemes()}
             />
             <View
-              style={t(styles.previewTypeContainer, {
-                backgroundColor: theme.tint,
-                borderBottomColor: theme.divider,
-              })}
+              style={[
+                styles.previewTypeContainer,
+                {
+                  backgroundColor: theme.tint,
+                  borderBottomColor: theme.divider,
+                },
+              ]}
             >
               {parentViewAvailable && (
                 <TouchableOpacity onPress={() => setViewMode("parent")}>
                   <Text
-                    style={t(styles.previewTypeText, {
-                      color: theme.text,
-                      paddingVertical: parentViewAvailable ? 10 : 0,
-                      borderColor:
-                        viewMode === "parent"
-                          ? theme.iconOrTextButton
-                          : theme.tint,
-                    })}
+                    style={[
+                      styles.previewTypeText,
+                      {
+                        color: theme.text,
+                        paddingVertical: parentViewAvailable ? 10 : 0,
+                        borderColor:
+                          viewMode === "parent"
+                            ? theme.iconOrTextButton
+                            : theme.tint,
+                      },
+                    ]}
                   >
                     Parent
                   </Text>
@@ -141,27 +162,33 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               )}
               <TouchableOpacity onPress={() => setViewMode("preview")}>
                 <Text
-                  style={t(styles.previewTypeText, {
-                    color: theme.text,
-                    paddingVertical: 10,
-                    borderColor:
-                      parentViewAvailable && viewMode === "preview"
-                        ? theme.iconOrTextButton
-                        : theme.tint,
-                  })}
+                  style={[
+                    styles.previewTypeText,
+                    {
+                      color: theme.text,
+                      paddingVertical: 10,
+                      borderColor:
+                        parentViewAvailable && viewMode === "preview"
+                          ? theme.iconOrTextButton
+                          : theme.tint,
+                    },
+                  ]}
                 >
                   Preview
                 </Text>
               </TouchableOpacity>
             </View>
             <View
-              style={t(styles.renderHTMLContainer, {
-                backgroundColor: theme.background,
-              })}
+              style={[
+                styles.renderHTMLContainer,
+                {
+                  backgroundColor: theme.background,
+                },
+              ]}
             >
               {viewMode === "parent" ? (
                 <TextInput
-                  style={t(styles.parentText, { color: theme.subtleText })}
+                  style={[styles.parentText, { color: theme.subtleText }]}
                   editable={false}
                   value={parent.text}
                   multiline

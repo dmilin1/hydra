@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 const splash = require("./../../assets/images/splash.png");
 const splashInverted = require("./../../assets/images/splashInverted.png");
@@ -20,9 +20,12 @@ export default function LoadingSplash() {
     <>
       <View style={styles.splashContainer}>
         <Image
-          style={t(styles.image, {
-            backgroundColor: theme.background,
-          })}
+          style={[
+            styles.image,
+            {
+              backgroundColor: theme.background,
+            },
+          ]}
           source={theme.systemModeStyle === "dark" ? splash : splashInverted}
           onLoadEnd={SplashScreen.hideAsync}
         />

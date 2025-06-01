@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Dimensions, TextInput } from "react-native";
 
 import { ModalContext } from "../../contexts/ModalContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type SelectTextProps = {
   text: string;
@@ -15,15 +15,21 @@ export default function SelectText({ text }: SelectTextProps) {
   return (
     <>
       <View
-        style={t(styles.selectTextContainer, {
-          backgroundColor: theme.tint,
-          borderColor: theme.divider,
-        })}
+        style={[
+          styles.selectTextContainer,
+          {
+            backgroundColor: theme.tint,
+            borderColor: theme.divider,
+          },
+        ]}
       >
         <TextInput
-          style={t(styles.text, {
-            color: theme.text,
-          })}
+          style={[
+            styles.text,
+            {
+              color: theme.text,
+            },
+          ]}
           value={text}
           editable={false}
           multiline

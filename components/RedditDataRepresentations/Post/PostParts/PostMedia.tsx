@@ -11,10 +11,7 @@ import VideoPlayer from "./PostMediaParts/VideoPlayer";
 import { PostDetail } from "../../../../api/PostDetail";
 import { Post } from "../../../../api/Posts";
 import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import RenderHtml from "../../../HTML/RenderHTML";
 import { extractThemeFromText } from "../../../../utils/colors";
 import ThemeImport from "../../../UI/Themes/ThemeImport";
@@ -90,9 +87,12 @@ export default function PostMedia({
             <View style={styles.bodyTextContainer}>
               <Text
                 numberOfLines={maxLines}
-                style={t(styles.bodyText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.bodyText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {postText.trim()}
               </Text>
@@ -116,9 +116,12 @@ export default function PostMedia({
           <BlurView intensity={80} style={styles.blur} />
           <View style={styles.blurIconContainer}>
             <View
-              style={t(styles.blurIconBox, {
-                backgroundColor: theme.background,
-              })}
+              style={[
+                styles.blurIconBox,
+                {
+                  backgroundColor: theme.background,
+                },
+              ]}
             >
               <AntDesign name="eye" size={22} color={theme.subtleText} />
               <Text style={{ color: theme.subtleText }}>

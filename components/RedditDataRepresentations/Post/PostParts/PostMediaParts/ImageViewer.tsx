@@ -10,10 +10,7 @@ import {
 
 import { default as ImageView } from "./ImageView/ImageViewing";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../../utils/URL";
 import useImageMenu from "../../../../../utils/useImageMenu";
 
@@ -68,9 +65,12 @@ export default function ImageViewer({
 
   return (
     <View
-      style={t(styles.imageViewerContainer, {
-        height: imgRefs.length >= 2 ? imgHeight / 2 : imgHeight,
-      })}
+      style={[
+        styles.imageViewerContainer,
+        {
+          height: imgRefs.length >= 2 ? imgHeight / 2 : imgHeight,
+        },
+      ]}
     >
       {!loadLowData && (
         <ImageView
@@ -116,14 +116,20 @@ export default function ImageViewer({
       ))}
       {images.length >= 2 && (
         <View
-          style={t(styles.imageCountContainer, {
-            backgroundColor: theme.background,
-          })}
+          style={[
+            styles.imageCountContainer,
+            {
+              backgroundColor: theme.background,
+            },
+          ]}
         >
           <Text
-            style={t(styles.imageCountText, {
-              color: theme.text,
-            })}
+            style={[
+              styles.imageCountText,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             {images.length} IMAGES
           </Text>
@@ -131,14 +137,20 @@ export default function ImageViewer({
       )}
       {isGif && (
         <View
-          style={t(styles.isGifContainer, {
-            backgroundColor: theme.background,
-          })}
+          style={[
+            styles.isGifContainer,
+            {
+              backgroundColor: theme.background,
+            },
+          ]}
         >
           <Text
-            style={t(styles.isGifText, {
-              color: theme.text,
-            })}
+            style={[
+              styles.isGifText,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             GIF
           </Text>

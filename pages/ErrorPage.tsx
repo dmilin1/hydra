@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableHighlight } from "react-native";
 
 import { StackPageProps } from "../app/stack";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 
 export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
   const { theme } = useContext(ThemeContext);
@@ -13,12 +13,15 @@ export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
 
   return (
     <View
-      style={t(styles.errorContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.errorContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <Entypo name="bug" size={48} color={theme.text} />
-      <Text style={t(styles.errorText, { color: theme.text })}>
+      <Text style={[styles.errorText, { color: theme.text }]}>
         {"\n"}
         Hydra was unable to load this page. It may be because this type of link
         is not yet supported.
@@ -26,7 +29,7 @@ export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
       </Text>
       {url && (
         <>
-          <Text style={t(styles.errorText, { color: theme.text })}>
+          <Text style={[styles.errorText, { color: theme.text }]}>
             You can try opening the link in your browser by clicking the URL
             below: {"\n"}
           </Text>
@@ -34,7 +37,7 @@ export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
             onPress={() => WebBrowser.openBrowserAsync(url)}
             style={styles.linkContainer}
           >
-            <Text style={t(styles.linkText, { color: theme.iconOrTextButton })}>
+            <Text style={[styles.linkText, { color: theme.iconOrTextButton }]}>
               {url}
             </Text>
           </TouchableHighlight>

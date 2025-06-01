@@ -21,7 +21,7 @@ import UserComponent from "../components/RedditDataRepresentations/User/UserComp
 import List from "../components/UI/List";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../utils/navigation";
 import useRedditDataState from "../utils/useRedditDataState";
 
@@ -80,25 +80,35 @@ export default function SearchPage() {
 
   return (
     <View
-      style={t(styles.searchContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.searchContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <View style={styles.searchOptionsContainer}>
         {SearchTypes.map((type) => (
           <TouchableOpacity
             key={type}
-            style={t(styles.searchOption, {
-              backgroundColor: searchType === type ? theme.tint : "transparent",
-            })}
+            style={[
+              styles.searchOption,
+              {
+                backgroundColor:
+                  searchType === type ? theme.tint : "transparent",
+              },
+            ]}
             activeOpacity={0.8}
             onPress={() => setSearchType(type)}
           >
             <Text
               key={type}
-              style={t(styles.searchOptionText, {
-                color: theme.text,
-              })}
+              style={[
+                styles.searchOptionText,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               {type.toUpperCase()}
             </Text>

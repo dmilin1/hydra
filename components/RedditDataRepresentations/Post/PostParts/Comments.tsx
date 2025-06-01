@@ -32,10 +32,7 @@ import { AccountContext } from "../../../../contexts/AccountContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/CommentSettingsContext";
 import { FiltersContext } from "../../../../contexts/SettingsContexts/FiltersContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import { LoadMoreCommentsFunc } from "../../../../pages/PostDetails";
 import RedditURL from "../../../../utils/RedditURL";
 import { useURLNavigation } from "../../../../utils/navigation";
@@ -265,7 +262,7 @@ export function CommentComponent({
                   }
                 }}
                 onLongPress={() => showCommentOptions()}
-                style={t(
+                style={[
                   styles.outerCommentContainer,
                   displayInList
                     ? styles.outerCommentContainerDisplayInList
@@ -274,11 +271,11 @@ export function CommentComponent({
                     marginLeft: 10 * comment.depth,
                     borderTopColor: theme.divider,
                   },
-                )}
+                ]}
               >
                 <View
                   key={index}
-                  style={t(
+                  style={[
                     styles.commentContainer,
                     displayInList ? styles.commentContainerDisplayInList : {},
                     {
@@ -296,32 +293,41 @@ export function CommentComponent({
                           ? 1
                           : 0,
                     },
-                  )}
+                  ]}
                 >
                   <View
-                    style={t(styles.topBar, {
-                      marginBottom: collapsed ? 0 : 8,
-                    })}
+                    style={[
+                      styles.topBar,
+                      {
+                        marginBottom: collapsed ? 0 : 8,
+                      },
+                    ]}
                   >
                     {comment.isStickied && (
                       <AntDesign
                         name="pushpin"
-                        style={t(styles.stickiedIcon, {
-                          color: theme.moderator,
-                        })}
+                        style={[
+                          styles.stickiedIcon,
+                          {
+                            color: theme.moderator,
+                          },
+                        ]}
                       />
                     )}
                     <TouchableOpacity
                       onPress={() => pushURL(`/user/${comment.author}`)}
                     >
                       <Text
-                        style={t(styles.author, {
-                          color: comment.isOP
-                            ? theme.iconOrTextButton
-                            : comment.isModerator
-                              ? theme.moderator
-                              : theme.text,
-                        })}
+                        style={[
+                          styles.author,
+                          {
+                            color: comment.isOP
+                              ? theme.iconOrTextButton
+                              : comment.isModerator
+                                ? theme.moderator
+                                : theme.text,
+                          },
+                        ]}
                       >
                         {comment.author}
                       </Text>
@@ -346,14 +352,17 @@ export function CommentComponent({
                         }
                       />
                       <Text
-                        style={t(styles.upvoteText, {
-                          color:
-                            comment.userVote === VoteOption.UpVote
-                              ? theme.upvote
-                              : comment.userVote === VoteOption.DownVote
-                                ? theme.downvote
-                                : theme.subtleText,
-                        })}
+                        style={[
+                          styles.upvoteText,
+                          {
+                            color:
+                              comment.userVote === VoteOption.UpVote
+                                ? theme.upvote
+                                : comment.userVote === VoteOption.DownVote
+                                  ? theme.downvote
+                                  : theme.subtleText,
+                          },
+                        ]}
                       >
                         {comment.scoreHidden && !comment.userVote
                           ? "-"
@@ -362,9 +371,12 @@ export function CommentComponent({
                     </TouchableOpacity>
                     {commentFlairs && comment.flair && (
                       <View
-                        style={t(styles.flairContainer, {
-                          backgroundColor: theme.divider,
-                        })}
+                        style={[
+                          styles.flairContainer,
+                          {
+                            backgroundColor: theme.divider,
+                          },
+                        ]}
                       >
                         {comment.flair.emojis.map((emoji, index) => (
                           <Image
@@ -375,9 +387,12 @@ export function CommentComponent({
                         ))}
                         {comment.flair.text && (
                           <Text
-                            style={t(styles.flairText, {
-                              color: theme.verySubtleText,
-                            })}
+                            style={[
+                              styles.flairText,
+                              {
+                                color: theme.verySubtleText,
+                              },
+                            ]}
                             numberOfLines={1}
                           >
                             {comment.flair.text}
@@ -387,9 +402,12 @@ export function CommentComponent({
                     )}
                     <View style={styles.topBarEnd}>
                       <Text
-                        style={t(styles.upvoteText, {
-                          color: theme.subtleText,
-                        })}
+                        style={[
+                          styles.upvoteText,
+                          {
+                            color: theme.subtleText,
+                          },
+                        ]}
                       >
                         {comment.shortTimeSince}
                       </Text>
@@ -402,25 +420,34 @@ export function CommentComponent({
                   ) : null}
                   {displayInList && (
                     <TouchableOpacity
-                      style={t(styles.sourceContainer, {
-                        borderColor: theme.tint,
-                      })}
+                      style={[
+                        styles.sourceContainer,
+                        {
+                          borderColor: theme.tint,
+                        },
+                      ]}
                       activeOpacity={0.8}
                       onPress={() => {
                         pushURL(comment.postLink);
                       }}
                     >
                       <Text
-                        style={t(styles.sourcePostTitle, {
-                          color: theme.subtleText,
-                        })}
+                        style={[
+                          styles.sourcePostTitle,
+                          {
+                            color: theme.subtleText,
+                          },
+                        ]}
                       >
                         {comment.postTitle}
                       </Text>
                       <Text
-                        style={t(styles.sourceSubreddit, {
-                          color: theme.verySubtleText,
-                        })}
+                        style={[
+                          styles.sourceSubreddit,
+                          {
+                            color: theme.verySubtleText,
+                          },
+                        ]}
                       >
                         {comment.subreddit}
                       </Text>
@@ -428,9 +455,12 @@ export function CommentComponent({
                   )}
                   {comment.saved && (
                     <View
-                      style={t(styles.bookmarkNotch, {
-                        borderColor: theme.bookmark,
-                      })}
+                      style={[
+                        styles.bookmarkNotch,
+                        {
+                          borderColor: theme.bookmark,
+                        },
+                      ]}
                     />
                   )}
                 </View>
@@ -466,24 +496,33 @@ export function CommentComponent({
                     }
                     setLoadingMore(false);
                   }}
-                  style={t(styles.outerCommentContainer, {
-                    marginLeft: 10 * (comment.depth + 1),
-                    borderTopColor: theme.divider,
-                  })}
+                  style={[
+                    styles.outerCommentContainer,
+                    {
+                      marginLeft: 10 * (comment.depth + 1),
+                      borderTopColor: theme.divider,
+                    },
+                  ]}
                 >
                   <View
-                    style={t(styles.commentContainer, {
-                      borderLeftWidth: comment.depth === -1 ? 0 : 1,
-                      borderLeftColor:
-                        theme.commentDepthColors[
-                          comment.depth % theme.commentDepthColors.length
-                        ],
-                    })}
+                    style={[
+                      styles.commentContainer,
+                      {
+                        borderLeftWidth: comment.depth === -1 ? 0 : 1,
+                        borderLeftColor:
+                          theme.commentDepthColors[
+                            comment.depth % theme.commentDepthColors.length
+                          ],
+                      },
+                    ]}
                   >
                     <Text
-                      style={t(styles.upvoteText, {
-                        color: theme.iconOrTextButton,
-                      })}
+                      style={[
+                        styles.upvoteText,
+                        {
+                          color: theme.iconOrTextButton,
+                        },
+                      ]}
                     >
                       {loadingMore
                         ? "Loading..."
@@ -496,9 +535,12 @@ export function CommentComponent({
           ) : null}
           {displayInList && (
             <View
-              style={t(styles.spacer, {
-                backgroundColor: theme.divider,
-              })}
+              style={[
+                styles.spacer,
+                {
+                  backgroundColor: theme.divider,
+                },
+              ]}
             />
           )}
         </View>
@@ -538,9 +580,12 @@ const Comments = forwardRef(
 
     return (
       <View
-        style={t(styles.commentsContainer, {
-          borderBottomColor: theme.divider,
-        })}
+        style={[
+          styles.commentsContainer,
+          {
+            borderBottomColor: theme.divider,
+          },
+        ]}
         ref={ref}
       >
         <CommentComponent

@@ -7,7 +7,7 @@ import PostComponent from "../components/RedditDataRepresentations/Post/PostComp
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
 import { FiltersContext } from "../contexts/SettingsContexts/FiltersContext";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { markPostSeen } from "../db/functions/SeenPosts";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
@@ -62,9 +62,12 @@ export default function PostsPage({
 
   return (
     <View
-      style={t(styles.postsContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.postsContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <RedditDataScroller<Post>
         ListHeaderComponent={

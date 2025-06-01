@@ -8,10 +8,7 @@ import {
 } from "react-native";
 
 import { Poll } from "../../../../../api/Posts";
-import {
-  ThemeContext,
-  t,
-} from "../../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 
 export default function PollViewer({ poll }: { poll: Poll }) {
   const { theme } = useContext(ThemeContext);
@@ -22,27 +19,39 @@ export default function PollViewer({ poll }: { poll: Poll }) {
   return (
     <TouchableWithoutFeedback>
       <View
-        style={t(styles.pollContainer, {
-          borderColor: theme.tint,
-        })}
+        style={[
+          styles.pollContainer,
+          {
+            borderColor: theme.tint,
+          },
+        ]}
       >
         <View
-          style={t(styles.voteCountContainer, {
-            borderColor: theme.tint,
-          })}
+          style={[
+            styles.voteCountContainer,
+            {
+              borderColor: theme.tint,
+            },
+          ]}
         >
           <Text
-            style={t(styles.pollText, {
-              color: theme.subtleText,
-            })}
+            style={[
+              styles.pollText,
+              {
+                color: theme.subtleText,
+              },
+            ]}
           >
             {poll.voteCount.toLocaleString()} votes
           </Text>
         </View>
         <View
-          style={t(styles.pollInnerContainer, {
-            borderColor: theme.tint,
-          })}
+          style={[
+            styles.pollInnerContainer,
+            {
+              borderColor: theme.tint,
+            },
+          ]}
           onStartShouldSetResponder={() => false}
         >
           {poll.options.map((option, i) => (
@@ -54,24 +63,33 @@ export default function PollViewer({ poll }: { poll: Poll }) {
               hitSlop={10}
             >
               <View
-                style={t(styles.radioButton, {
-                  borderColor: theme.subtleText,
-                  backgroundColor: theme.tint,
-                })}
+                style={[
+                  styles.radioButton,
+                  {
+                    borderColor: theme.subtleText,
+                    backgroundColor: theme.tint,
+                  },
+                ]}
               >
                 {selectedOption === i && (
                   <View
-                    style={t(styles.radioButtonInner, {
-                      backgroundColor: theme.iconPrimary,
-                    })}
+                    style={[
+                      styles.radioButtonInner,
+                      {
+                        backgroundColor: theme.iconPrimary,
+                      },
+                    ]}
                   />
                 )}
               </View>
               <View style={styles.pollTextContainer}>
                 <Text
-                  style={t(styles.pollText, {
-                    color: theme.text,
-                  })}
+                  style={[
+                    styles.pollText,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
                 >
                   {option.text}
                 </Text>
@@ -80,22 +98,31 @@ export default function PollViewer({ poll }: { poll: Poll }) {
           ))}
         </View>
         <View
-          style={t(styles.voteButtonContainer, {
-            borderColor: theme.tint,
-          })}
+          style={[
+            styles.voteButtonContainer,
+            {
+              borderColor: theme.tint,
+            },
+          ]}
         >
           <TouchableOpacity
-            style={t(styles.voteButton, {
-              backgroundColor: theme.tint,
-            })}
+            style={[
+              styles.voteButton,
+              {
+                backgroundColor: theme.tint,
+              },
+            ]}
             activeOpacity={0.8}
             onPress={() => alert("voted")}
             hitSlop={10}
           >
             <Text
-              style={t(styles.voteButtonText, {
-                color: theme.iconOrTextButton,
-              })}
+              style={[
+                styles.voteButtonText,
+                {
+                  color: theme.iconOrTextButton,
+                },
+              ]}
             >
               Vote
             </Text>

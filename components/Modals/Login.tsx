@@ -15,7 +15,7 @@ import { IncorrectCredentials, Needs2FA } from "../../api/Authentication";
 import { Account } from "../../api/User";
 import { AccountContext } from "../../contexts/AccountContext";
 import { ModalContext } from "../../contexts/ModalContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type LoginProps = {
   just2FAVerifyAcc?: Account;
@@ -72,10 +72,13 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
   return (
     <>
       <View
-        style={t(styles.loginSubContainer, {
-          backgroundColor: theme.background,
-          borderColor: theme.divider,
-        })}
+        style={[
+          styles.loginSubContainer,
+          {
+            backgroundColor: theme.background,
+            borderColor: theme.divider,
+          },
+        ]}
       >
         <View style={styles.iconContainer}>
           <Feather
@@ -85,17 +88,23 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
         </View>
         <View style={styles.fieldContainer}>
           <Text
-            style={t(styles.textLabel, {
-              color: theme.text,
-            })}
+            style={[
+              styles.textLabel,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             Username:
           </Text>
           <TextInput
-            style={t(styles.textInput, {
-              color: theme.text,
-              borderColor: theme.divider,
-            })}
+            style={[
+              styles.textInput,
+              {
+                color: theme.text,
+                borderColor: theme.divider,
+              },
+            ]}
             onChangeText={(text) => setUsername(text)}
             value={username}
             autoComplete="username"
@@ -104,17 +113,23 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
         </View>
         <View style={styles.fieldContainer}>
           <Text
-            style={t(styles.textLabel, {
-              color: theme.text,
-            })}
+            style={[
+              styles.textLabel,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             Password:
           </Text>
           <TextInput
-            style={t(styles.textInput, {
-              color: theme.text,
-              borderColor: theme.divider,
-            })}
+            style={[
+              styles.textInput,
+              {
+                color: theme.text,
+                borderColor: theme.divider,
+              },
+            ]}
             onChangeText={(text) => setPassword(text)}
             value={password}
             autoComplete="current-password"
@@ -125,17 +140,23 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
         {needs2FA && (
           <View style={styles.fieldContainer}>
             <Text
-              style={t(styles.textLabel, {
-                color: theme.text,
-              })}
+              style={[
+                styles.textLabel,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               2FA Code:
             </Text>
             <TextInput
-              style={t(styles.textInput, {
-                color: theme.text,
-                borderColor: theme.divider,
-              })}
+              style={[
+                styles.textInput,
+                {
+                  color: theme.text,
+                  borderColor: theme.divider,
+                },
+              ]}
               onChangeText={(text) => setTwoFACode(text)}
               value={twoFACode}
               autoComplete="one-time-code"
@@ -146,9 +167,12 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
         )}
         <View style={styles.legaleseContainer}>
           <Text
-            style={t(styles.legaleseText, {
-              color: theme.text,
-            })}
+            style={[
+              styles.legaleseText,
+              {
+                color: theme.text,
+              },
+            ]}
           >
             By logging in you are agreeing to the
             <Text
@@ -182,9 +206,12 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
             <ActivityIndicator size="small" color={theme.text} />
           ) : (
             <TouchableOpacity
-              style={t(styles.button, {
-                borderColor: theme.divider,
-              })}
+              style={[
+                styles.button,
+                {
+                  borderColor: theme.divider,
+                },
+              ]}
               onPress={async () => {
                 setLoading(true);
                 if (just2FAVerifyAcc) {
@@ -195,9 +222,12 @@ export default function Login({ just2FAVerifyAcc }: LoginProps) {
               }}
             >
               <Text
-                style={t(styles.buttonText, {
-                  color: theme.iconOrTextButton,
-                })}
+                style={[
+                  styles.buttonText,
+                  {
+                    color: theme.iconOrTextButton,
+                  },
+                ]}
               >
                 Login
               </Text>

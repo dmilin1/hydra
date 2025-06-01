@@ -32,7 +32,7 @@ import PostDetailsComponent from "../components/RedditDataRepresentations/Post/P
 import Comments from "../components/RedditDataRepresentations/Post/PostParts/Comments";
 import { AccountContext } from "../contexts/AccountContext";
 import { ScrollerContext, ScrollerProvider } from "../contexts/ScrollerContext";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 
@@ -223,9 +223,12 @@ function PostDetails({ route }: PostDetailsProps) {
 
   return (
     <View
-      style={t(styles.postDetailsOuterContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.postDetailsOuterContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       {postDetail ? (
         <ScrollView
@@ -265,9 +268,12 @@ function PostDetails({ route }: PostDetailsProps) {
           ) : (
             <View key="no-comments" style={styles.noCommentsContainer}>
               <Text
-                style={t(styles.noCommentsText, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.noCommentsText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 No comments
               </Text>
@@ -279,9 +285,12 @@ function PostDetails({ route }: PostDetailsProps) {
       )}
       <TouchableOpacity
         activeOpacity={0.8}
-        style={t(styles.skipToNextButton, {
-          backgroundColor: theme.buttonBg,
-        })}
+        style={[
+          styles.skipToNextButton,
+          {
+            backgroundColor: theme.buttonBg,
+          },
+        ]}
         onPress={scrollToNextComment}
       >
         <AntDesign name="down" size={18} color={theme.buttonText} />

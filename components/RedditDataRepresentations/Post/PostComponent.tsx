@@ -11,10 +11,7 @@ import { saveItem } from "../../../api/Save";
 import { URLRoutes } from "../../../app/stack";
 import { PostInteractionProvider } from "../../../contexts/PostInteractionContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import {
   isPostSeen,
   markPostSeen,
@@ -114,11 +111,14 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
       >
         <TouchableOpacity
           activeOpacity={0.8}
-          style={t(styles.postContainer, {
-            backgroundColor: theme.background,
-            flexDirection: postCompactMode ? "row" : "column",
-            opacity: seen ? 0.75 : 1,
-          })}
+          style={[
+            styles.postContainer,
+            {
+              backgroundColor: theme.background,
+              flexDirection: postCompactMode ? "row" : "column",
+              opacity: seen ? 0.75 : 1,
+            },
+          ]}
           onPress={() => {
             setSeenValue(true);
             pushURL(post.link);
@@ -140,10 +140,10 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
           <View style={styles.bodyContainer}>
             {subredditAtTop && shouldShowSubreddits && (
               <TouchableOpacity
-                style={t(
+                style={[
                   styles.subredditAtTopContainer,
                   styles.subredditContainer,
-                )}
+                ]}
                 activeOpacity={0.5}
                 onPress={() =>
                   pushURL(`https://www.reddit.com/r/${post.subreddit}`)
@@ -151,9 +151,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
               >
                 <SubredditIcon post={post} />
                 <Text
-                  style={t(styles.subredditAtTopText, {
-                    color: theme.subtleText,
-                  })}
+                  style={[
+                    styles.subredditAtTopText,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
                 >
                   {post.subreddit}
                 </Text>
@@ -161,17 +164,23 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
             )}
             <Text
               numberOfLines={postTitleLength}
-              style={t(styles.postTitle, {
-                fontSize: postCompactMode ? 16 : 17,
-                color: theme.text,
-              })}
+              style={[
+                styles.postTitle,
+                {
+                  fontSize: postCompactMode ? 16 : 17,
+                  color: theme.text,
+                },
+              ]}
             >
               {post.title.trim()}
             </Text>
             <View
-              style={t(styles.postBody, {
-                marginVertical: postCompactMode ? 3 : 5,
-              })}
+              style={[
+                styles.postBody,
+                {
+                  marginVertical: postCompactMode ? 3 : 5,
+                },
+              ]}
             >
               {!postCompactMode && (
                 <PostMedia
@@ -187,9 +196,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                   {post.isStickied && (
                     <AntDesign
                       name="pushpin"
-                      style={t(styles.stickiedIcon, {
-                        color: theme.moderator,
-                      })}
+                      style={[
+                        styles.stickiedIcon,
+                        {
+                          color: theme.moderator,
+                        },
+                      ]}
                     />
                   )}
                   {!subredditAtTop && shouldShowSubreddits && (
@@ -203,9 +215,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                       >
                         <SubredditIcon post={post} />
                         <Text
-                          style={t(styles.boldedSmallText, {
-                            color: theme.subtleText,
-                          })}
+                          style={[
+                            styles.boldedSmallText,
+                            {
+                              color: theme.subtleText,
+                            },
+                          ]}
                         >
                           {post.subreddit}{" "}
                         </Text>
@@ -213,9 +228,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                     </>
                   )}
                   <Text
-                    style={t(styles.smallText, {
-                      color: theme.subtleText,
-                    })}
+                    style={[
+                      styles.smallText,
+                      {
+                        color: theme.subtleText,
+                      },
+                    ]}
                   >
                     by{" "}
                   </Text>
@@ -226,11 +244,14 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                     }
                   >
                     <Text
-                      style={t(styles.boldedSmallText, {
-                        color: post.isModerator
-                          ? theme.moderator
-                          : theme.subtleText,
-                      })}
+                      style={[
+                        styles.boldedSmallText,
+                        {
+                          color: post.isModerator
+                            ? theme.moderator
+                            : theme.subtleText,
+                        },
+                      ]}
                     >
                       {post.author}
                     </Text>
@@ -247,9 +268,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                     color={currentVoteColor}
                   />
                   <Text
-                    style={t(styles.metadataText, {
-                      color: currentVoteColor,
-                    })}
+                    style={[
+                      styles.metadataText,
+                      {
+                        color: currentVoteColor,
+                      },
+                    ]}
                   >
                     {post.upvotes}
                   </Text>
@@ -259,17 +283,23 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                     color={theme.subtleText}
                   />
                   <Text
-                    style={t(styles.metadataText, {
-                      color: theme.subtleText,
-                    })}
+                    style={[
+                      styles.metadataText,
+                      {
+                        color: theme.subtleText,
+                      },
+                    ]}
                   >
                     {post.commentCount}
                   </Text>
                   <Feather name="clock" size={18} color={theme.subtleText} />
                   <Text
-                    style={t(styles.metadataText, {
-                      color: theme.subtleText,
-                    })}
+                    style={[
+                      styles.metadataText,
+                      {
+                        color: theme.subtleText,
+                      },
+                    ]}
                   >
                     {post.timeSince}
                   </Text>
@@ -280,9 +310,12 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
           </View>
           {post.saved && (
             <View
-              style={t(styles.bookmarkNotch, {
-                borderColor: theme.bookmark,
-              })}
+              style={[
+                styles.bookmarkNotch,
+                {
+                  borderColor: theme.bookmark,
+                },
+              ]}
             />
           )}
         </TouchableOpacity>

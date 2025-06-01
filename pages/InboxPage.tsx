@@ -8,7 +8,7 @@ import MessageComponent from "../components/RedditDataRepresentations/InboxItem/
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
 import { InboxContext } from "../contexts/InboxContext";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import useRedditDataState from "../utils/useRedditDataState";
 
 export default function InboxPage() {
@@ -39,9 +39,12 @@ export default function InboxPage() {
 
   return (
     <View
-      style={t(styles.postsContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.postsContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <RedditDataScroller<InboxItem>
         loadMore={loadMoreMessages}

@@ -8,7 +8,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import {
   Theme,
   CustomThemeColorKeys,
@@ -407,15 +407,21 @@ export default function ThemeMaker() {
       <TouchableOpacity
         onPress={() => saveTheme()}
         activeOpacity={0.5}
-        style={t(styles.buttonContainer, {
-          backgroundColor: baseTheme.buttonBg,
-        })}
+        style={[
+          styles.buttonContainer,
+          {
+            backgroundColor: baseTheme.buttonBg,
+          },
+        ]}
       >
         <View style={styles.buttonSubContainer}>
           <Text
-            style={t(styles.buttonText, {
-              color: baseTheme.buttonText,
-            })}
+            style={[
+              styles.buttonText,
+              {
+                color: baseTheme.buttonText,
+              },
+            ]}
           >
             Save Theme
           </Text>

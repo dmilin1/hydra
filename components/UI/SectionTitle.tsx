@@ -1,16 +1,19 @@
 import { useContext } from "react";
 import { StyleSheet, Text } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 export default function SectionTitle({ text }: { text: string }) {
   const { theme } = useContext(ThemeContext);
 
   return (
     <Text
-      style={t(styles.title, {
-        color: theme.subtleText,
-      })}
+      style={[
+        styles.title,
+        {
+          color: theme.subtleText,
+        },
+      ]}
     >
       {text.toUpperCase()}
     </Text>

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type TextButtonProps = {
   text: string;
@@ -18,17 +18,23 @@ export default function TextButton({
 
   return (
     <TouchableOpacity
-      style={t(styles.sectionContainer, {
-        justifyContent: justifyContent ?? "center",
-      })}
+      style={[
+        styles.sectionContainer,
+        {
+          justifyContent: justifyContent ?? "center",
+        },
+      ]}
       activeOpacity={0.5}
       onPress={() => onPress?.()}
     >
       <Text
         numberOfLines={1}
-        style={t(styles.centerText, {
-          color: theme.iconOrTextButton,
-        })}
+        style={[
+          styles.centerText,
+          {
+            color: theme.iconOrTextButton,
+          },
+        ]}
       >
         {text}
       </Text>

@@ -23,7 +23,7 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
       {url && (
         <ImageView
           images={[{ uri: url }]}
-          imageIndex={0}
+          initialImageIndex={0}
           presentationStyle="overFullScreen"
           animationType="none"
           visible

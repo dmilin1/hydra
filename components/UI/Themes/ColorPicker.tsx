@@ -11,10 +11,7 @@ import {
 } from "react-native";
 import Slider from "./Slider";
 import TextInput from "../TextInput";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { hexToRgb, rgbToHex, validateHex } from "../../../utils/colors";
 
 type ColorPickerProps = {
@@ -83,19 +80,22 @@ export default function ColorPicker({
         </TouchableWithoutFeedback>
 
         <View
-          style={t(styles.modalContent, { backgroundColor: baseTheme.tint })}
+          style={[styles.modalContent, { backgroundColor: baseTheme.tint }]}
         >
           <View
-            style={t(styles.header, { borderBottomColor: baseTheme.divider })}
+            style={[styles.header, { borderBottomColor: baseTheme.divider }]}
           >
-            <Text style={t(styles.title, { color: baseTheme.text })}>
+            <Text style={[styles.title, { color: baseTheme.text }]}>
               Color Picker
             </Text>
             <TouchableWithoutFeedback onPress={onClose}>
               <Text
-                style={t(styles.closeButton, {
-                  color: baseTheme.iconOrTextButton,
-                })}
+                style={[
+                  styles.closeButton,
+                  {
+                    color: baseTheme.iconOrTextButton,
+                  },
+                ]}
               >
                 Done
               </Text>
@@ -104,21 +104,27 @@ export default function ColorPicker({
 
           <View style={styles.previewContainer}>
             <View
-              style={t(styles.colorPreview, {
-                backgroundColor: previewColor,
-                borderColor: baseTheme.text,
-              })}
+              style={[
+                styles.colorPreview,
+                {
+                  backgroundColor: previewColor,
+                  borderColor: baseTheme.text,
+                },
+              ]}
             />
             <View style={styles.hexInputContainer}>
-              <Text style={t(styles.hexLabel, { color: baseTheme.subtleText })}>
+              <Text style={[styles.hexLabel, { color: baseTheme.subtleText }]}>
                 HEX:
               </Text>
               <TextInput
-                style={t(styles.hexInput, {
-                  color: baseTheme.text,
-                  borderColor: baseTheme.divider,
-                  backgroundColor: baseTheme.background,
-                })}
+                style={[
+                  styles.hexInput,
+                  {
+                    color: baseTheme.text,
+                    borderColor: baseTheme.divider,
+                    backgroundColor: baseTheme.background,
+                  },
+                ]}
                 value={hexInput.toString()}
                 onChangeText={handleHexInputChange}
                 placeholder="#000000"
@@ -132,7 +138,7 @@ export default function ColorPicker({
 
           <View style={styles.slidersContainer}>
             <View style={styles.sliderRow}>
-              <Text style={t(styles.sliderLabel, { color: baseTheme.text })}>
+              <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
                 R
               </Text>
               <View style={styles.sliderWrapper}>
@@ -151,7 +157,7 @@ export default function ColorPicker({
             </View>
 
             <View style={styles.sliderRow}>
-              <Text style={t(styles.sliderLabel, { color: baseTheme.text })}>
+              <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
                 G
               </Text>
               <View style={styles.sliderWrapper}>
@@ -170,7 +176,7 @@ export default function ColorPicker({
             </View>
 
             <View style={styles.sliderRow}>
-              <Text style={t(styles.sliderLabel, { color: baseTheme.text })}>
+              <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
                 B
               </Text>
               <View style={styles.sliderWrapper}>

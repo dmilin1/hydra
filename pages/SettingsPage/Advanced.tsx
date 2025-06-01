@@ -13,7 +13,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 
 import List from "../../components/UI/List";
-import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import {
   CUSTOM_HYDRA_SERVER_URL_KEY,
   DEFAULT_HYDRA_SERVER_URL,
@@ -133,11 +133,14 @@ export default function Advanced() {
       {useCustomHydraServer && (
         <>
           <TextInput
-            style={t(styles.hydraServerUrlInput, {
-              backgroundColor: theme.tint,
-              borderColor: theme.divider,
-              color: theme.text,
-            })}
+            style={[
+              styles.hydraServerUrlInput,
+              {
+                backgroundColor: theme.tint,
+                borderColor: theme.divider,
+                color: theme.text,
+              },
+            ]}
             placeholder="Hydra Server URL"
             value={customServerUrl}
             onChangeText={setCustomServerUrl}
@@ -178,7 +181,7 @@ export default function Advanced() {
             );
           }}
         >
-          <Text style={t(styles.customerIdText, { color: theme.text })}>
+          <Text style={[styles.customerIdText, { color: theme.text }]}>
             Customer ID: {customerId}
           </Text>
         </TouchableOpacity>

@@ -14,7 +14,7 @@ import {
 import URL from "./URL";
 import useContextMenu from "./useContextMenu";
 import { ModalContext } from "../contexts/ModalContext";
-import { t, ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 
 export default function useVideoMenu() {
   const showContextMenu = useContextMenu();
@@ -34,15 +34,21 @@ export default function useVideoMenu() {
             activeOpacity={0.9}
           >
             <View
-              style={t(styles.modal, {
-                backgroundColor: theme.background,
-                borderColor: theme.divider,
-              })}
+              style={[
+                styles.modal,
+                {
+                  backgroundColor: theme.background,
+                  borderColor: theme.divider,
+                },
+              ]}
             >
               <Text
-                style={t(styles.title, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.title,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 Preparing Video...
               </Text>

@@ -14,7 +14,7 @@ import {
   ScrollerContext,
   ScrollerProvider,
 } from "../../contexts/ScrollerContext";
-import { t, ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 /**
  * Future note for when I'm an idiot and the scroller gets all glitchy again.
@@ -94,18 +94,24 @@ function RedditDataScroller<T extends RedditDataObject>(
           {isLoadingMore && <ActivityIndicator size="small" />}
           {!isLoadingMore && props.fullyLoaded && !!props.data.length && (
             <Text
-              style={t(styles.endOfListText, {
-                color: theme.text,
-              })}
+              style={[
+                styles.endOfListText,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               {`Wow. You've reached the bottom.`}
             </Text>
           )}
           {!isLoadingMore && props.hitFilterLimit && (
             <Text
-              style={t(styles.endOfListText, {
-                color: theme.text,
-              })}
+              style={[
+                styles.endOfListText,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               The filter limit has been reached. Your filters may be too strict
               to show anything.

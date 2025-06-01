@@ -3,7 +3,7 @@ import { ReactNode, cloneElement, useContext, useRef, useState } from "react";
 import { View, StyleSheet, Animated, ColorValue } from "react-native";
 
 import { ScrollerContext } from "../../contexts/ScrollerContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { IconProps } from "@expo/vector-icons/build/createIconSet";
 
 type SlideItem = {
@@ -132,26 +132,35 @@ export default function Slideable({
       onResponderTerminationRequest={() => false}
     >
       <Animated.View
-        style={t(styles.animatedView, {
-          backgroundColor: theme.background,
-          transform: [
-            {
-              translateX: touchX,
-            },
-          ],
-        })}
+        style={[
+          styles.animatedView,
+          {
+            backgroundColor: theme.background,
+            transform: [
+              {
+                translateX: touchX,
+              },
+            ],
+          },
+        ]}
       >
         {children}
       </Animated.View>
       <View
-        style={t(styles.backgroundContainer, {
-          backgroundColor: slideItem?.color ?? theme.tint,
-        })}
+        style={[
+          styles.backgroundContainer,
+          {
+            backgroundColor: slideItem?.color ?? theme.tint,
+          },
+        ]}
       >
         <View
-          style={t(styles.iconContainer, {
-            marginLeft: slideItem?.side === "left" ? 0 : "auto",
-          })}
+          style={[
+            styles.iconContainer,
+            {
+              marginLeft: slideItem?.side === "left" ? 0 : "auto",
+            },
+          ]}
         >
           {icon &&
             cloneElement(icon as React.ReactElement<IconProps<string>>, {

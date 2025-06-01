@@ -3,10 +3,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { User } from "../../../api/User";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../../../utils/Numbers";
 import { useURLNavigation } from "../../../utils/navigation";
 
@@ -18,17 +15,23 @@ export default function UserComponent({ user }: { user: User }) {
     <View>
       <TouchableOpacity
         activeOpacity={0.8}
-        style={t(styles.userContainer, {
-          backgroundColor: theme.background,
-        })}
+        style={[
+          styles.userContainer,
+          {
+            backgroundColor: theme.background,
+          },
+        ]}
         onPress={() => {
           pushURL(`/user/${user.userName}`);
         }}
       >
         <Text
-          style={t(styles.userTitle, {
-            color: theme.text,
-          })}
+          style={[
+            styles.userTitle,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           {user.userName}
         </Text>
@@ -41,9 +44,12 @@ export default function UserComponent({ user }: { user: User }) {
                 color={theme.subtleText}
               />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {new Numbers(user.postKarma + user.commentKarma).prettyNum()}{" "}
                 karma
@@ -54,17 +60,23 @@ export default function UserComponent({ user }: { user: User }) {
                 color={theme.subtleText}
               />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 Friends: {user.friends ? "Yes" : "No"}
               </Text>
               <Feather name="clock" size={18} color={theme.subtleText} />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {user.timeSinceCreated}
               </Text>
@@ -74,9 +86,12 @@ export default function UserComponent({ user }: { user: User }) {
         </View>
       </TouchableOpacity>
       <View
-        style={t(styles.spacer, {
-          backgroundColor: theme.divider,
-        })}
+        style={[
+          styles.spacer,
+          {
+            backgroundColor: theme.divider,
+          },
+        ]}
       />
     </View>
   );

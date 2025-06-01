@@ -4,10 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { Message, setInboxItemNewStatus } from "../../../api/Messages";
 import { InboxContext } from "../../../contexts/InboxContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
@@ -44,9 +41,12 @@ export default function MessageComponent({
     >
       <TouchableOpacity
         activeOpacity={0.8}
-        style={t(styles.messageContainer, {
-          backgroundColor: theme.background,
-        })}
+        style={[
+          styles.messageContainer,
+          {
+            backgroundColor: theme.background,
+          },
+        ]}
         onPress={() => {
           setInboxItemNewStatus(message, false);
           setMessage({
@@ -65,9 +65,12 @@ export default function MessageComponent({
           <View style={styles.messageTitleTextContainer}>
             <Text
               numberOfLines={2}
-              style={t(styles.messageTitle, {
-                color: theme.text,
-              })}
+              style={[
+                styles.messageTitle,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               {message.subject}
             </Text>
@@ -80,9 +83,12 @@ export default function MessageComponent({
           <View style={styles.footerLeft}>
             <View style={styles.subAndAuthorContainer}>
               <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.smallText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 from{" "}
               </Text>
@@ -93,9 +99,12 @@ export default function MessageComponent({
                 }
               >
                 <Text
-                  style={t(styles.boldedSmallText, {
-                    color: theme.subtleText,
-                  })}
+                  style={[
+                    styles.boldedSmallText,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
                 >
                   {message.author}
                 </Text>
@@ -104,9 +113,12 @@ export default function MessageComponent({
             <View style={styles.metadataContainer}>
               <Feather name="clock" size={18} color={theme.subtleText} />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {message.timeSince}
               </Text>
@@ -116,9 +128,12 @@ export default function MessageComponent({
         </View>
       </TouchableOpacity>
       <View
-        style={t(styles.spacer, {
-          backgroundColor: theme.tint,
-        })}
+        style={[
+          styles.spacer,
+          {
+            backgroundColor: theme.tint,
+          },
+        ]}
       />
     </Slideable>
   );

@@ -16,7 +16,7 @@ import {
   ViewStyle,
 } from "react-native";
 
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
@@ -296,10 +296,13 @@ export function TextNodeElem({
   const TextComponment = (
     <Text
       key={index}
-      style={t(styles.basicText, {
-        color: theme.subtleText,
-        ...inheritedStyles,
-      })}
+      style={[
+        styles.basicText,
+        {
+          color: theme.subtleText,
+          ...inheritedStyles,
+        },
+      ]}
     >
       {remainingText}
     </Text>

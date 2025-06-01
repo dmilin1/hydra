@@ -21,7 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { uploadImage } from "../../api/Media";
 import { submitPost } from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
@@ -116,16 +116,22 @@ export default function NewPostEditor({
 
   return (
     <View
-      style={t(styles.newPostContainer, {
-        backgroundColor: theme.background,
-      })}
+      style={[
+        styles.newPostContainer,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
     >
       <SafeAreaView style={styles.safeContainers}>
         <KeyboardAvoidingView style={styles.safeContainers} behavior="padding">
           <View
-            style={t(styles.topBar, {
-              borderBottomColor: theme.tint,
-            })}
+            style={[
+              styles.topBar,
+              {
+                borderBottomColor: theme.tint,
+              },
+            ]}
           >
             <TouchableOpacity
               onPress={() => {
@@ -134,17 +140,23 @@ export default function NewPostEditor({
               }}
             >
               <Text
-                style={t(styles.topBarButton, {
-                  color: theme.iconOrTextButton,
-                })}
+                style={[
+                  styles.topBarButton,
+                  {
+                    color: theme.iconOrTextButton,
+                  },
+                ]}
               >
                 Cancel
               </Text>
             </TouchableOpacity>
             <Text
-              style={t(styles.topBarTitle, {
-                color: theme.text,
-              })}
+              style={[
+                styles.topBarTitle,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               New Post
             </Text>
@@ -153,9 +165,12 @@ export default function NewPostEditor({
             ) : (
               <TouchableOpacity onPress={() => submit()}>
                 <Text
-                  style={t(styles.topBarButton, {
-                    color: theme.iconOrTextButton,
-                  })}
+                  style={[
+                    styles.topBarButton,
+                    {
+                      color: theme.iconOrTextButton,
+                    },
+                  ]}
                 >
                   Post
                 </Text>
@@ -167,15 +182,21 @@ export default function NewPostEditor({
             keyboardShouldPersistTaps="handled"
           >
             <View
-              style={t(styles.titleContainer, {
-                borderBottomColor: theme.divider,
-                backgroundColor: theme.tint,
-              })}
+              style={[
+                styles.titleContainer,
+                {
+                  borderBottomColor: theme.divider,
+                  backgroundColor: theme.tint,
+                },
+              ]}
             >
               <TextInput
-                style={t(styles.titleInput, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.titleInput,
+                  {
+                    color: theme.text,
+                  },
+                ]}
                 placeholder="Title"
                 placeholderTextColor={theme.verySubtleText}
                 value={title}
@@ -183,9 +204,12 @@ export default function NewPostEditor({
                 scrollEnabled={false}
               />
               <TouchableOpacity
-                style={t(styles.postTypeBtn, {
-                  backgroundColor: theme.iconSecondary,
-                })}
+                style={[
+                  styles.postTypeBtn,
+                  {
+                    backgroundColor: theme.iconSecondary,
+                  },
+                ]}
                 onPress={() =>
                   setKind((kind) => {
                     setLocalImgUrl(undefined);
@@ -215,23 +239,32 @@ export default function NewPostEditor({
                   ).supportsSharingThemes()}
                 />
                 <View
-                  style={t(styles.previewTypeContainer, {
-                    backgroundColor: theme.tint,
-                    borderBottomColor: theme.divider,
-                  })}
+                  style={[
+                    styles.previewTypeContainer,
+                    {
+                      backgroundColor: theme.tint,
+                      borderBottomColor: theme.divider,
+                    },
+                  ]}
                 >
                   <Text
-                    style={t(styles.previewTypeText, {
-                      color: theme.text,
-                    })}
+                    style={[
+                      styles.previewTypeText,
+                      {
+                        color: theme.text,
+                      },
+                    ]}
                   >
                     Preview
                   </Text>
                 </View>
                 <View
-                  style={t(styles.renderHTMLContainer, {
-                    backgroundColor: theme.background,
-                  })}
+                  style={[
+                    styles.renderHTMLContainer,
+                    {
+                      backgroundColor: theme.background,
+                    },
+                  ]}
                 >
                   <RenderHtml
                     html={
@@ -242,11 +275,14 @@ export default function NewPostEditor({
               </>
             ) : kind === "link" ? (
               <TextInput
-                style={t(styles.urlInput, {
-                  color: theme.text,
-                  borderBottomColor: theme.divider,
-                  backgroundColor: theme.tint,
-                })}
+                style={[
+                  styles.urlInput,
+                  {
+                    color: theme.text,
+                    borderBottomColor: theme.divider,
+                    backgroundColor: theme.tint,
+                  },
+                ]}
                 placeholder="URL"
                 placeholderTextColor={theme.verySubtleText}
                 value={text}
@@ -259,9 +295,12 @@ export default function NewPostEditor({
             ) : kind === "image" ? (
               <>
                 <TouchableOpacity
-                  style={t(styles.uploadImageButton, {
-                    backgroundColor: theme.iconPrimary,
-                  })}
+                  style={[
+                    styles.uploadImageButton,
+                    {
+                      backgroundColor: theme.iconPrimary,
+                    },
+                  ]}
                   activeOpacity={0.5}
                   onPress={() => selectImage()}
                 >
@@ -269,9 +308,12 @@ export default function NewPostEditor({
                     <ActivityIndicator size="small" color={theme.text} />
                   ) : (
                     <Text
-                      style={t(styles.uploadImageText, {
-                        color: theme.text,
-                      })}
+                      style={[
+                        styles.uploadImageText,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
                     >
                       Select Image
                     </Text>

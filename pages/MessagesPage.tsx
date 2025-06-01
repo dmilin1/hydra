@@ -14,7 +14,7 @@ import RenderHtml from "../components/HTML/RenderHTML";
 import ReplyToMessage from "../components/Modals/ReplyToMessage";
 import { AccountContext } from "../contexts/AccountContext";
 import { ModalContext } from "../contexts/ModalContext";
-import { ThemeContext, t } from "../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
 
@@ -62,25 +62,31 @@ export default function MessagesPage({
   return (
     currentUser && (
       <View
-        style={t(styles.messagesContainer, {
-          backgroundColor: theme.background,
-        })}
+        style={[
+          styles.messagesContainer,
+          {
+            backgroundColor: theme.background,
+          },
+        ]}
       >
         <ScrollView ref={scrollView} contentContainerStyle={{ flexGrow: 1 }}>
           {!loading ? (
             messages?.map((message) => (
               <View
                 key={message.id}
-                style={t(styles.messageBubble, {
-                  backgroundColor:
-                    message.author === currentUser.userName
-                      ? theme.iconPrimary
-                      : theme.tint,
-                  alignSelf:
-                    message.author === currentUser.userName
-                      ? "flex-end"
-                      : "flex-start",
-                })}
+                style={[
+                  styles.messageBubble,
+                  {
+                    backgroundColor:
+                      message.author === currentUser.userName
+                        ? theme.iconPrimary
+                        : theme.tint,
+                    alignSelf:
+                      message.author === currentUser.userName
+                        ? "flex-end"
+                        : "flex-start",
+                  },
+                ]}
               >
                 <View style={styles.details}>
                   <Text style={{ color: theme.subtleText }}>
@@ -101,11 +107,14 @@ export default function MessagesPage({
           )}
         </ScrollView>
         {otherUser && lastOtherUserMessage && (
-          <View style={t(styles.replyContainer)}>
+          <View style={[styles.replyContainer]}>
             <TouchableOpacity
-              style={t(styles.replyButton, {
-                backgroundColor: theme.divider,
-              })}
+              style={[
+                styles.replyButton,
+                {
+                  backgroundColor: theme.divider,
+                },
+              ]}
               activeOpacity={0.8}
               onPress={() =>
                 setModal(
@@ -117,9 +126,12 @@ export default function MessagesPage({
               }
             >
               <Text
-                style={t(styles.replyButtonText, {
-                  color: theme.text,
-                })}
+                style={[
+                  styles.replyButtonText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
               >
                 Reply
               </Text>

@@ -6,10 +6,7 @@ import { CommentReply, setInboxItemNewStatus } from "../../../api/Messages";
 import { vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
 import { InboxContext } from "../../../contexts/InboxContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
@@ -74,9 +71,12 @@ export default function CommentReplyComponent({
     >
       <TouchableOpacity
         activeOpacity={0.8}
-        style={t(styles.messageContainer, {
-          backgroundColor: theme.background,
-        })}
+        style={[
+          styles.messageContainer,
+          {
+            backgroundColor: theme.background,
+          },
+        ]}
         onPress={() => {
           setInboxItemNewStatus(commentReply, false);
           setMessage({
@@ -95,9 +95,12 @@ export default function CommentReplyComponent({
           <View style={styles.messageTitleTextContainer}>
             <Text
               numberOfLines={2}
-              style={t(styles.messageTitle, {
-                color: theme.verySubtleText,
-              })}
+              style={[
+                styles.messageTitle,
+                {
+                  color: theme.verySubtleText,
+                },
+              ]}
             >
               <Text style={{ color: theme.text }}>
                 Reply to your comment in{" "}
@@ -113,9 +116,12 @@ export default function CommentReplyComponent({
           <View style={styles.footerLeft}>
             <View style={styles.subAndAuthorContainer}>
               <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.smallText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 in{" "}
               </Text>
@@ -126,17 +132,23 @@ export default function CommentReplyComponent({
                 }
               >
                 <Text
-                  style={t(styles.boldedSmallText, {
-                    color: theme.subtleText,
-                  })}
+                  style={[
+                    styles.boldedSmallText,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
                 >
                   {commentReply.subreddit}
                 </Text>
               </TouchableOpacity>
               <Text
-                style={t(styles.smallText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.smallText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {" "}
                 by{" "}
@@ -148,9 +160,12 @@ export default function CommentReplyComponent({
                 }
               >
                 <Text
-                  style={t(styles.boldedSmallText, {
-                    color: theme.subtleText,
-                  })}
+                  style={[
+                    styles.boldedSmallText,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
                 >
                   {commentReply.author}
                 </Text>
@@ -167,17 +182,23 @@ export default function CommentReplyComponent({
                 color={currentVoteColor}
               />
               <Text
-                style={t(styles.metadataText, {
-                  color: currentVoteColor,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: currentVoteColor,
+                  },
+                ]}
               >
                 {commentReply.upvotes}
               </Text>
               <Feather name="clock" size={18} color={theme.subtleText} />
               <Text
-                style={t(styles.metadataText, {
-                  color: theme.subtleText,
-                })}
+                style={[
+                  styles.metadataText,
+                  {
+                    color: theme.subtleText,
+                  },
+                ]}
               >
                 {commentReply.timeSince}
               </Text>
@@ -187,9 +208,12 @@ export default function CommentReplyComponent({
         </View>
       </TouchableOpacity>
       <View
-        style={t(styles.spacer, {
-          backgroundColor: theme.tint,
-        })}
+        style={[
+          styles.spacer,
+          {
+            backgroundColor: theme.tint,
+          },
+        ]}
       />
     </Slideable>
   );

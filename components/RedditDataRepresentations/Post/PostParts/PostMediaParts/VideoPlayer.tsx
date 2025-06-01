@@ -21,10 +21,7 @@ import {
 import ImageViewer from "./ImageViewer";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
-import {
-  ThemeContext,
-  t,
-} from "../../../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import useVideoMenu from "../../../../../utils/useVideoMenu";
 
 type VideoPlayerProps = {
@@ -115,30 +112,42 @@ export default function VideoPlayer({
 
   return (
     <View
-      style={t(styles.videoPlayerContainer, {
-        height: videoHeight,
-      })}
+      style={[
+        styles.videoPlayerContainer,
+        {
+          height: videoHeight,
+        },
+      ]}
     >
       {dontRenderYet ? (
         <TouchableOpacity
           activeOpacity={0.8}
-          style={t(styles.imgContainer, {
-            height: videoHeight,
-          })}
+          style={[
+            styles.imgContainer,
+            {
+              height: videoHeight,
+            },
+          ]}
           onPress={() => setDontRenderYet(false)}
         >
           {/* Have to put an invisible layer on top of the ImageViewer to keep it from stealing clicks */}
           <View style={styles.invisibleLayer} />
           <ImageViewer images={[thumbnail]} />
           <View
-            style={t(styles.isVideoContainer, {
-              backgroundColor: theme.background,
-            })}
+            style={[
+              styles.isVideoContainer,
+              {
+                backgroundColor: theme.background,
+              },
+            ]}
           >
             <Text
-              style={t(styles.isVideoText, {
-                color: theme.text,
-              })}
+              style={[
+                styles.isVideoText,
+                {
+                  color: theme.text,
+                },
+              ]}
             >
               VIDEO
             </Text>
@@ -152,9 +161,12 @@ export default function VideoPlayer({
           >
             {failedToLoad ? (
               <View
-                style={t(styles.video, {
-                  backgroundColor: theme.background,
-                })}
+                style={[
+                  styles.video,
+                  {
+                    backgroundColor: theme.background,
+                  },
+                ]}
               >
                 <Text
                   style={{
@@ -273,18 +285,24 @@ export default function VideoPlayer({
             )}
           </TouchableWithoutFeedback>
           <View
-            style={t(styles.progressContainer, {
-              backgroundColor: theme.background,
-            })}
+            style={[
+              styles.progressContainer,
+              {
+                backgroundColor: theme.background,
+              },
+            ]}
           >
             <Animated.View
-              style={t(styles.progressBar, {
-                backgroundColor: theme.tint,
-                width: progressAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ["0%", "100%"],
-                }),
-              })}
+              style={[
+                styles.progressBar,
+                {
+                  backgroundColor: theme.tint,
+                  width: progressAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0%", "100%"],
+                  }),
+                },
+              ]}
             />
           </View>
         </>

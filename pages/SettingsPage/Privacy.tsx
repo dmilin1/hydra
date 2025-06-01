@@ -4,7 +4,7 @@ import { ColorValue, StyleSheet, Switch, Text } from "react-native";
 import { useMMKVBoolean } from "react-native-mmkv";
 
 import List from "../../components/UI/List";
-import { ThemeContext, t } from "../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 export const ERROR_REPORTING_STORAGE_KEY = "allowErrorReporting";
 
@@ -46,9 +46,12 @@ export default function Privacy() {
         ]}
       />
       <Text
-        style={t(styles.textDescription, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textDescription,
+          {
+            color: theme.text,
+          },
+        ]}
       >
         If Hydra encounters an error (e.g. a crash or loading issue), it will
         automatically upload an error log. This log includes a stack trace to

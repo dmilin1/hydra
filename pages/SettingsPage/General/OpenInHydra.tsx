@@ -5,10 +5,7 @@ import { Switch, Text, StyleSheet } from "react-native";
 import { useMMKVBoolean } from "react-native-mmkv";
 
 import List from "../../../components/UI/List";
-import {
-  t,
-  ThemeContext,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 
 export const READ_CLIPBOARD_KEY = "readClipboard";
 export const READ_CLIPBOARD_DEFAULT = false;
@@ -40,9 +37,12 @@ export default function OpenInHydra() {
         ]}
       />
       <Text
-        style={t(styles.textDescription, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textDescription,
+          {
+            color: theme.text,
+          },
+        ]}
       >
         Setting up this shortcut will add an "Open in Hydra" option to the
         bottom of the share sheet in other apps. This will allow you to open
@@ -70,9 +70,12 @@ export default function OpenInHydra() {
         ]}
       />
       <Text
-        style={t(styles.textDescription, {
-          color: theme.text,
-        })}
+        style={[
+          styles.textDescription,
+          {
+            color: theme.text,
+          },
+        ]}
       >
         Hydra can automatically detect Reddit links from your clipboard and
         prompt you to open them.

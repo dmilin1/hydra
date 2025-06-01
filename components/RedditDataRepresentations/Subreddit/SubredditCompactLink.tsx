@@ -3,10 +3,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 
 import { Subreddit } from "../../../api/Subreddits";
-import {
-  ThemeContext,
-  t,
-} from "../../../contexts/SettingsContexts/ThemeContext";
+import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../../contexts/SubredditContext";
 import { useURLNavigation } from "../../../utils/navigation";
 
@@ -25,9 +22,12 @@ export default function SubredditCompactLink({
       key={subreddit.name}
       onPress={() => pushURL(subreddit.url)}
       activeOpacity={0.5}
-      style={t(styles.subredditContainer, {
-        borderBottomColor: theme.tint,
-      })}
+      style={[
+        styles.subredditContainer,
+        {
+          borderBottomColor: theme.tint,
+        },
+      ]}
     >
       <>
         {subreddit.iconURL ? (
@@ -39,9 +39,12 @@ export default function SubredditCompactLink({
           <FontAwesome name="reddit" size={30} color={theme.text} />
         )}
         <Text
-          style={t(styles.subredditText, {
-            color: theme.text,
-          })}
+          style={[
+            styles.subredditText,
+            {
+              color: theme.text,
+            },
+          ]}
         >
           {subreddit.name}
         </Text>
