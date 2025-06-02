@@ -123,7 +123,8 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
             setSeenValue(true);
             pushURL(post.link);
           }}
-          onLongPress={async () => {
+          onLongPress={async (e) => {
+            if (e.nativeEvent.touches.length > 1) return;
             const result = await openContextMenu({
               options: ["Share"],
             });

@@ -44,6 +44,8 @@
 
 - 🚀 Use the faster post search API
 
+- 🐛 Searching subreddit then sorting is broken (https://www.reddit.com/r/HydraApp/comments/1klcmbc/searching_then_sorting_should_not_remove_the/)
+
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
