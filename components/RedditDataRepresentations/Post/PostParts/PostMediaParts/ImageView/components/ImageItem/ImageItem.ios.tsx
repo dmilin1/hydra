@@ -18,7 +18,7 @@ import { getImageStyles, getImageTransform } from "../../utils";
 
 const SWIPE_CLOSE_OFFSET = 50;
 const SWIPE_CLOSE_VELOCITY = 1.55;
-const SCREEN = Dimensions.get("screen");
+const SCREEN = Dimensions.get("window");
 const SCREEN_WIDTH = SCREEN.width;
 const SCREEN_HEIGHT = SCREEN.height;
 
@@ -137,7 +137,19 @@ const ImageItem = ({
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         maximumZoomScale={maxScale}
-        contentContainerStyle={styles.imageScrollContainer}
+        contentContainerStyle={{
+          /**
+           * Must be larger than the virtualized list that contains it
+           * or you get a weird bug where you're unable vertically scroll
+           * to exit the image. That's what all the 0.5s are about.
+           *
+           * Also, a new bug appeared where when pressing the X button while zoomed in,
+           * the image would be offset weirdly. For some magical reason, changing the height
+           * of the content container seems to trigger a reflow which fixes it.
+           */
+          height: SCREEN_HEIGHT + (loaded ? 1 : 10),
+          width: SCREEN_WIDTH,
+        }}
         scrollEnabled={swipeToCloseEnabled}
         onScrollEndDrag={onScrollEndDrag}
         scrollEventThrottle={1}
@@ -168,15 +180,6 @@ const styles = StyleSheet.create({
   listItem: {
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
-  },
-  imageScrollContainer: {
-    /**
-     * Must be larger than the virtualized list that contains it
-     * or you get a weird bug where you're unable vertically scroll
-     * to exit the image. That's what all the 0.5s are about.
-     */
-    height: SCREEN_HEIGHT + 1,
-    width: SCREEN_WIDTH,
   },
 });
 
