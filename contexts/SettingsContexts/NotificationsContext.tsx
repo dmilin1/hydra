@@ -1,6 +1,5 @@
 import * as Notifications from "expo-notifications";
 import { createContext, useContext, useEffect } from "react";
-import { Alert } from "react-native";
 import { useMMKVBoolean } from "react-native-mmkv";
 
 import { registerNotifications } from "../../api/Notifications";
@@ -43,9 +42,6 @@ export function NotificationsProvider({ children }: React.PropsWithChildren) {
       }
 
       if (finalStatus !== "granted") {
-        Alert.alert(
-          "Push notifications must be enabled to receive notifications",
-        );
         return;
       }
 
