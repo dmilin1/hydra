@@ -17,77 +17,53 @@ import GetHydraProButton from "../UI/GetHydraProButton";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 const update = {
-  updateKey: "2.7.0-1",
+  updateKey: "2.7.2-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
-  proFeatures: [
-    {
-      title: "Custom Themes + Sharing",
-      description:
-        "Design your own themes and share them with other Hydra users at the new /r/HydraThemes subreddit. Sort by top to find community favorites! To make a custom theme, go to Settings => Appearance => Custom Theme +. Themes can be shared when on the /r/HydraThemes subreddit by pressing the art brush icon in the markdown editor.",
-    },
-  ],
+  proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Auto Mark as Read",
+      title: "Automatic Theme Switching",
       description:
-        "Added a setting to automatically mark posts you scroll past as read. Note that this may result in longer page load times since the read posts still have to be loaded. You can enable this setting in Settings => General => Filters => Mark as Seen On Scroll.",
+        "You can now set a different theme for the system light and dark mode. To do this, go to Settings => Theme => Different Dark Mode Theme and select the theme you want to use at night.",
     },
     {
-      title: "Support for Crossposts",
+      title: "Hide Seen Posts per Subreddit",
       description:
-        "Hydra now supports crossposts. The source post will be displayed inside the post card.",
+        'You can now hide/show posts only on specific subreddits or feed pages (Home, Top, All, etc). To do this, tap the ... in the top right corner of the subreddit page and pick "Show/Hide Seen Posts". This will override the global setting you have set in Settings => General => Filters => Hide Seen Posts.',
     },
-    {
-      title: "Custom Startup URL",
-      description:
-        "You can now startup to any Reddit URL supported by Hydra. This includes things like multireddits or user pages. You can set a custom startup URL in Settings => General => Startup URL.",
-    },
-    {
-      title: "Highlight Post/Comment Text",
-      description:
-        'Press and hold on a comment, or tap the ... button on a post, to highlight the text and you\'ll discover a new "Select Text" option in the menu. This option allows you to highlight and copy text from posts and comments.',
-    },
-    {
-      title: "Highlight Text When Replying",
-      description:
-        "When replying to a post or comment, you can now highlight and copy the text of the parent post or comment.",
-    },
-    {
-      title: "Image Gallery Count",
-      description:
-        "Image galleries will now display the current image number and total image count in the corner.",
-    },
-    {
-      title: "Self Hosted Hydra Server",
-      description:
-        "Technical users can now host their own Hydra server. To set up a self hosted server, go to Settings => Advanced => Use Custom Server. Source code at github.com/dmilin1/hydra-server",
-    },
-  ],
+  ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description:
-        "Fixed the Apply Default Sort to Home setting not being applied when the app first started up.",
-    },
-    {
-      description: "Fixed navbar buttons sometimes being difficult to click.",
-    },
-    {
-      description: "Fixed multireddits having no navbar title.",
+      description: "Fixed push notifications not registering properly.",
     },
     {
       description:
-        "Made the right to left page swipe gesture to go to the future post less sensitive. It should be less likely to trigger when scrolling.",
+        "Fixed quarantied subreddits not loading. You'll now see a prompt the first time you try to access a quarantined subreddit asking for confirmation.",
     },
     {
       description:
-        "Fixed show all comments button not appearing when a comment thread was accessed through the user page.",
+        "Fixed full screen images sometimes being pushed into the corner of the screen.",
     },
     {
       description:
-        "Fixed a rare bug causing post feeds to fail to load when a post has media without dimensions.",
+        "Fixed the image counter pill showing the incorrect slide number when using compact mode.",
     },
-  ],
+    {
+      description: "Fixed flairs for subreddits using non richtext flairs.",
+    },
+    {
+      description:
+        "Fixed the long press menu being overly sensitive when looking at an image in fullscreen.",
+    },
+    {
+      description:
+        "Fixed recycled posts temporarily showing the wrong image when scrolling quickly.",
+    },
+    {
+      description: "Fixed links occasionally showing the wrong image.",
+    },
+  ] as { description: string }[],
 };
 
 export default function UpdateInfo() {
@@ -145,42 +121,46 @@ export default function UpdateInfo() {
             </Text>
             <ScrollView>
               <View style={{ marginTop: -20 }} />
-              <Text
-                style={[
-                  styles.heading,
-                  {
-                    color: theme.text,
-                  },
-                ]}
-              >
-                👑 Pro Features
-              </Text>
-              <View style={styles.listContainer}>
-                {update.proFeatures.map((feature) => (
-                  <View key={feature.title}>
-                    <Text
-                      style={[
-                        styles.featureTitle,
-                        {
-                          color: theme.text,
-                        },
-                      ]}
-                    >
-                      • {feature.title}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.featureDescription,
-                        {
-                          color: theme.subtleText,
-                        },
-                      ]}
-                    >
-                      {feature.description}
-                    </Text>
+              {update.proFeatures.length > 0 && (
+                <>
+                  <Text
+                    style={[
+                      styles.heading,
+                      {
+                        color: theme.text,
+                      },
+                    ]}
+                  >
+                    👑 Pro Features
+                  </Text>
+                  <View style={styles.listContainer}>
+                    {update.proFeatures.map((feature) => (
+                      <View key={feature.title}>
+                        <Text
+                          style={[
+                            styles.featureTitle,
+                            {
+                              color: theme.text,
+                            },
+                          ]}
+                        >
+                          • {feature.title}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.featureDescription,
+                            {
+                              color: theme.subtleText,
+                            },
+                          ]}
+                        >
+                          {feature.description}
+                        </Text>
+                      </View>
+                    ))}
                   </View>
-                ))}
-              </View>
+                </>
+              )}
               <Text
                 style={[
                   styles.heading,
