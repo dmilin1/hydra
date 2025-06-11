@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   expandButtonContainer: {
-    marginRight: 5,
+    marginRight: 20,
     padding: 5,
     borderRadius: 5,
   },

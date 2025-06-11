@@ -1,11 +1,13 @@
 import { FontAwesome5, Feather } from "@expo/vector-icons";
-import React, { useContext } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
   ScrollView,
+  LayoutChangeEvent,
+  GestureResponderEvent,
 } from "react-native";
 
 import MultiredditLink from "../components/RedditDataRepresentations/Multireddit/MultiredditLink";
@@ -40,15 +42,131 @@ function SectionHeading({ title }: { title: string }) {
   );
 }
 
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+function AlphabetScroller({
+  onLetterPress,
+}: {
+  onLetterPress: (letter: string) => void;
+}) {
+  const { theme } = useContext(ThemeContext);
+
+  const [hoveredLetter, setHoveredLetter] = useState<string | null>(null);
+
+  const containerHeight = useRef(0);
+
+  const handleTouch = (event: GestureResponderEvent) => {
+    if (containerHeight.current === 0) return;
+
+    const { locationY } = event.nativeEvent;
+    const letterHeight = containerHeight.current / ALPHABET.length;
+    const letterIndex = Math.floor(locationY / letterHeight);
+    const letter = ALPHABET[letterIndex];
+
+    if (
+      letterIndex >= 0 &&
+      letterIndex < ALPHABET.length &&
+      letter !== hoveredLetter
+    ) {
+      onLetterPress(letter);
+      setHoveredLetter(letter);
+    }
+  };
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    containerHeight.current = height;
+  };
+
+  return (
+    <>
+      <View
+        style={[
+          styles.alphabetScrollerContainer,
+          {
+            backgroundColor: theme.tint,
+          },
+        ]}
+        onLayout={handleLayout}
+        onTouchStart={handleTouch}
+        onTouchMove={handleTouch}
+        onTouchEnd={() => {
+          setHoveredLetter(null);
+        }}
+      >
+        {ALPHABET.map((letter) => (
+          <View
+            key={letter}
+            style={[styles.alphabetItem]}
+            pointerEvents="none" // Ensures the parent is used for locationY calculations
+          >
+            <Text
+              style={[styles.alphabetText, { color: theme.iconOrTextButton }]}
+            >
+              {letter}
+            </Text>
+          </View>
+        ))}
+      </View>
+      {!!hoveredLetter && (
+        <View
+          style={[
+            styles.letterPreview,
+            {
+              backgroundColor: theme.tint,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.letterPreviewText,
+              { color: theme.iconOrTextButton },
+            ]}
+          >
+            {hoveredLetter}
+          </Text>
+        </View>
+      )}
+    </>
+  );
+}
+
 export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
   const { subreddits, multis } = useContext(SubredditContext);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const letterPositionsRef = useRef<{ [key: string]: number }>({});
 
   const { pushURL } = useURLNavigation();
+
+  const sliderSubreddits = subreddits["subscriber"].length
+    ? subreddits["subscriber"]
+    : subreddits["trending"];
+
+  const handleSubredditLayout = (index: number, event: LayoutChangeEvent) => {
+    const { y } = event.nativeEvent.layout;
+    const previousSubredditLetter = sliderSubreddits?.[index - 1]?.name
+      .charAt(0)
+      .toUpperCase();
+    const subredditLetter = sliderSubreddits?.[index]?.name
+      .charAt(0)
+      .toUpperCase();
+    if (previousSubredditLetter !== subredditLetter) {
+      letterPositionsRef.current[subredditLetter] = y;
+    }
+  };
+
+  const scrollToLetter = (letter: string) => {
+    const position = letterPositionsRef.current[letter];
+    if (position !== undefined && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: position, animated: false });
+    }
+  };
 
   return (
     <View style={styles.subredditsContainer}>
       <ScrollView
+        ref={scrollViewRef}
         style={[
           styles.scrollView,
           {
@@ -167,20 +285,31 @@ export default function Subreddits() {
         {subreddits["subscriber"].length > 0 && (
           <>
             <SectionHeading title="subscriber" />
-            {subreddits["subscriber"].map((sub) => (
-              <SubredditCompactLink key={sub.name} subreddit={sub} />
+            {subreddits["subscriber"].map((sub, index) => (
+              <View
+                key={sub.name}
+                onLayout={(event) => handleSubredditLayout(index, event)}
+              >
+                <SubredditCompactLink subreddit={sub} />
+              </View>
             ))}
           </>
         )}
         {subreddits["trending"].length > 0 && (
           <>
             <SectionHeading title="trending" />
-            {subreddits["trending"].map((sub) => (
-              <SubredditCompactLink key={sub.name} subreddit={sub} />
+            {subreddits["trending"].map((sub, index) => (
+              <View
+                key={sub.name}
+                onLayout={(event) => handleSubredditLayout(index, event)}
+              >
+                <SubredditCompactLink key={sub.name} subreddit={sub} />
+              </View>
             ))}
           </>
         )}
       </ScrollView>
+      <AlphabetScroller onLetterPress={scrollToLetter} />
     </View>
   );
 }
@@ -225,5 +354,44 @@ const styles = StyleSheet.create({
   },
   subredditText: {
     fontSize: 16,
+  },
+  // A-Z scroller styles
+  alphabetScrollerContainer: {
+    position: "absolute",
+    right: 0,
+    height: "80%",
+    top: "10%",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 2,
+  },
+  alphabetItem: {
+    width: 20,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 1,
+  },
+  alphabetText: {
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  letterPreview: {
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    opacity: 0.9,
+  },
+  letterPreviewText: {
+    fontSize: 40,
+    fontWeight: "bold",
   },
 });

@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   favoriteIconContainer: {
     flex: 1,
     alignItems: "flex-end",
-    marginRight: 10,
+    marginRight: 25,
   },
   favoriteIcon: {
     fontSize: 22,
