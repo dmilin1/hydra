@@ -4,13 +4,19 @@ import { ThemeContext } from "../../../../../../../contexts/SettingsContexts/The
 import { useURLNavigation } from "../../../../../../../utils/navigation";
 
 export function useSetTheme() {
-  const { systemColorScheme, setCurrentTheme, cantUseTheme } =
-    useContext(ThemeContext);
+  const {
+    useDifferentDarkTheme,
+    systemColorScheme,
+    setCurrentTheme,
+    cantUseTheme,
+  } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
 
   return (
     themeKey: string,
-    colorScheme: "light" | "dark" = systemColorScheme,
+    colorScheme: "light" | "dark" = useDifferentDarkTheme
+      ? systemColorScheme
+      : "light",
   ) => {
     setCurrentTheme(themeKey, colorScheme);
 
