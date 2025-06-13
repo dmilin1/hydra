@@ -34,10 +34,15 @@ export function setDraft(key: string, text: string) {
     .run();
 }
 
+export function deleteDraft(key: string) {
+  db.delete(Drafts).where(eq(Drafts.key, key)).run();
+}
+
 export function useDraftState(
   key: string,
-): [string, Dispatch<SetStateAction<string>>] {
+): [string, Dispatch<SetStateAction<string>>, () => void] {
   const [draft, setDraftState] = useState(getDraft(key) ?? "");
+
   const updateDraft: Dispatch<SetStateAction<string>> = (textDispatch) => {
     if (typeof textDispatch === "string") {
       setDraftState(textDispatch);
@@ -50,5 +55,11 @@ export function useDraftState(
       });
     }
   };
-  return [draft, updateDraft];
+
+  const clearDraft = () => {
+    deleteDraft(key);
+    setDraftState("");
+  };
+
+  return [draft, updateDraft, clearDraft];
 }

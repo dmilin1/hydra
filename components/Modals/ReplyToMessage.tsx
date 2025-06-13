@@ -34,7 +34,9 @@ export default function ReplyToMessage({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
-  const [text, setText] = useDraftState(DRAFT_PREFIX + previousMsg.author);
+  const [text, setText, clearTextDraft] = useDraftState(
+    DRAFT_PREFIX + previousMsg.author,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
@@ -44,6 +46,7 @@ export default function ReplyToMessage({
       if (success) {
         contentSent();
         setModal(undefined);
+        clearTextDraft();
       } else {
         throw new Error(`Failed to submit comment`);
       }

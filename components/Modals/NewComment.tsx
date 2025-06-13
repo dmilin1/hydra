@@ -35,7 +35,9 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
 
   const parentViewAvailable = !!parent.html;
 
-  const [text, setText] = useDraftState(DRAFT_PREFIX + parent.id);
+  const [text, setText, clearTextDraft] = useDraftState(
+    DRAFT_PREFIX + parent.id,
+  );
   const [viewMode, setViewMode] = useState<"parent" | "preview">(
     parentViewAvailable ? "parent" : "preview",
   );
@@ -48,6 +50,7 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
       if (success) {
         contentSent();
         setModal(undefined);
+        clearTextDraft();
       } else {
         throw new Error(`Failed to submit comment`);
       }

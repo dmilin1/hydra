@@ -36,10 +36,10 @@ export default function NewMessage({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [subject, setSubject] = useDraftState(
+  const [subject, setSubject, clearSubjectDraft] = useDraftState(
     DRAFT_PREFIX + `Subject-${recipient.userName}`,
   );
-  const [text, setText] = useDraftState(
+  const [text, setText, clearTextDraft] = useDraftState(
     DRAFT_PREFIX + `Text-${recipient.userName}`,
   );
 
@@ -50,8 +50,8 @@ export default function NewMessage({
       if (success) {
         contentSent();
         setModal(undefined);
-        setSubject("");
-        setText("");
+        clearSubjectDraft();
+        clearTextDraft();
         Alert.alert(`Message sent!`);
       } else {
         throw new Error(`Failed to submit comment`);

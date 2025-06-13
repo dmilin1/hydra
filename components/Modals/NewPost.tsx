@@ -42,8 +42,12 @@ export default function NewPostEditor({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
-  const [title, setTitle] = useDraftState(DRAFT_PREFIX + "title-" + subreddit);
-  const [text, setText] = useDraftState(DRAFT_PREFIX + "text-" + subreddit);
+  const [title, setTitle, clearTitleDraft] = useDraftState(
+    DRAFT_PREFIX + "title-" + subreddit,
+  );
+  const [text, setText, clearTextDraft] = useDraftState(
+    DRAFT_PREFIX + "text-" + subreddit,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [kind, setKind] = useState<"self" | "link" | "image">("self");
 
@@ -66,6 +70,8 @@ export default function NewPostEditor({
            */
           Alert.alert(`Submitted post successfully`, "Post is being processed");
         }
+        clearTitleDraft();
+        clearTextDraft();
         setModal(undefined);
       } else {
         throw new Error(`Failed to submit post`);
