@@ -6,14 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  TouchableHighlight,
-  StyleSheet,
-  Share,
-} from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet, Share } from "react-native";
 
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
@@ -335,7 +328,7 @@ export default function PostDetailsComponent({
         </TouchableOpacity>
       </View>
       {contextDepth > 0 && (
-        <TouchableHighlight
+        <TouchableOpacity
           onPress={() => {
             pushURL(
               new RedditURL(
@@ -353,10 +346,10 @@ export default function PostDetailsComponent({
           <Text style={{ color: theme.iconOrTextButton }}>
             This is a comment thread. Click here to view all comments.
           </Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
       )}
       {summary?.comments && (
-        <TouchableHighlight
+        <TouchableOpacity
           onPress={() => setCommentSummaryCollapsed(!commentSummaryCollapsed)}
           style={[
             styles.commentsSummaryContainer,
@@ -389,7 +382,7 @@ export default function PostDetailsComponent({
               </Text>
             )}
           </>
-        </TouchableHighlight>
+        </TouchableOpacity>
       )}
     </View>
   );
