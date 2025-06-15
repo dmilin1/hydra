@@ -42,6 +42,8 @@ export default function PostsScreen({ StackNavigator }: PostsScreenProps) {
                 getHideSeenURLStatus(route.params.url)
                   ? "Show Seen Posts"
                   : "Hide Seen Posts",
+                "Sidebar",
+                "Wiki",
                 "Share",
               ]}
             />

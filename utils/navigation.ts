@@ -33,6 +33,8 @@ export const PageTypeToNavName: Record<PageType, keyof StackParamsList> = {
   [PageType.INBOX]: "InboxPage",
   [PageType.MESSAGES]: "MessagesPage",
   [PageType.ACCOUNTS]: "Accounts",
+  [PageType.SIDEBAR]: "SidebarPage",
+  [PageType.WIKI]: "WikiPage",
   [PageType.SETTINGS]: "SettingsPage",
   [PageType.WEBVIEW]: "WebviewPage",
   [PageType.IMAGE]: "ErrorPage",

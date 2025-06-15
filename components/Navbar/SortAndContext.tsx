@@ -58,7 +58,9 @@ export type ContextTypes =
   | "Block"
   | "Report"
   | "Show Seen Posts"
-  | "Hide Seen Posts";
+  | "Hide Seen Posts"
+  | "Sidebar"
+  | "Wiki";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
@@ -316,6 +318,12 @@ export default function SortAndContext({
             ) {
               toggleHideSeenURL(currentPath);
               replaceURL(currentPath);
+            } else if (result === "Sidebar") {
+              const subreddit = new RedditURL(currentPath).getSubreddit();
+              pushURL(`https://www.reddit.com/r/${subreddit}/about/`);
+            } else if (result === "Wiki") {
+              const subreddit = new RedditURL(currentPath).getSubreddit();
+              pushURL(`https://www.reddit.com/r/${subreddit}/wiki/index`);
             }
           }}
         >

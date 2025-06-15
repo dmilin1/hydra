@@ -20,6 +20,8 @@ export enum PageType {
   USER,
   SEARCH,
   INBOX,
+  SIDEBAR,
+  WIKI,
 
   MESSAGES,
 
@@ -47,6 +49,8 @@ export default class RedditURL extends URL {
       this.url = `https://www.reddit.com${url}`;
     } else if (url.startsWith("hydra://")) {
       this.url = url;
+    } else if (url.startsWith("https://reddit.com")) {
+      this.url = url.replace("https://reddit.com", "https://www.reddit.com");
     } else if (url.startsWith("https://")) {
       this.url = url;
     } else if (url.startsWith("www")) {
@@ -151,6 +155,16 @@ export default class RedditURL extends URL {
       return PageType.HOME;
     } else if (relativePath.includes("/comments/")) {
       return PageType.POST_DETAILS;
+    } else if (
+      relativePath.startsWith("/r/") &&
+      relativePath.includes("/wiki/")
+    ) {
+      return PageType.WIKI;
+    } else if (
+      relativePath.startsWith("/r/") &&
+      relativePath.includes("/about/")
+    ) {
+      return PageType.SIDEBAR;
     } else if (relativePath.startsWith("/r/")) {
       return PageType.SUBREDDIT;
     } else if (relativePath.startsWith("/message/inbox")) {
@@ -185,6 +199,10 @@ export default class RedditURL extends URL {
       name = name.charAt(0).toUpperCase() + name.slice(1);
     } else if (pageType === PageType.POST_DETAILS) {
       name = this.getSubreddit();
+    } else if (pageType === PageType.SIDEBAR) {
+      name = "Sidebar";
+    } else if (pageType === PageType.WIKI) {
+      name = "Wiki";
     } else if (pageType === PageType.SUBREDDIT) {
       name = this.getSubreddit();
     } else if (pageType === PageType.MULTIREDDIT) {

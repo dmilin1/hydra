@@ -28,7 +28,7 @@ export default class URL {
   }
 
   getBasePath(): string {
-    return this.url.split("?")[0] ?? "";
+    return this.url.split(/\?|\#/)[0] ?? "";
   }
 
   getURLParams(): string {

@@ -22,6 +22,8 @@ import ConditionalWrapper from "../../components/Other/ConditionalWrapper";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { StackFutureProvider } from "../../contexts/StackFutureContext";
 import IncomingURLHandler from "../../utils/IncomingURLHandler";
+import SidebarScreen from "./SidebarScreen";
+import WikiScreen from "./WikiScreen";
 
 export type StackParamsList = {
   Subreddits: object;
@@ -47,6 +49,12 @@ export type StackParamsList = {
   Accounts: {
     url: string;
   };
+  WikiPage: {
+    url: string;
+  };
+  SidebarPage: {
+    url: string;
+  };
   SettingsPage: {
     url: string;
   };
@@ -67,7 +75,9 @@ export type URLRoutes =
   | "UserPage"
   | "Accounts"
   | "SettingsPage"
-  | "WebviewPage";
+  | "WebviewPage"
+  | "SidebarPage"
+  | "WikiPage";
 
 export type StackPageProps<Pages extends keyof StackParamsList> =
   NativeStackScreenProps<StackParamsList, Pages>;
@@ -90,6 +100,8 @@ export default function Stack() {
     MultiredditScreen,
     UserScreen,
     AccountsScreen,
+    SidebarScreen,
+    WikiScreen,
     SettingsScreen,
     SearchScreen,
     WebviewScreen,
