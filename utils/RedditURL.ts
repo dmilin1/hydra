@@ -231,7 +231,10 @@ export default class RedditURL extends URL {
       this.url = this.url.replace("/u/", "/user/");
       return this;
     }
-    if (this.getPageType() !== PageType.UNKNOWN) {
+    if (
+      this.getPageType() !== PageType.UNKNOWN &&
+      !this.url.match(/\/r\/.*\/s\//) // Reddit shortened post URLs /r/subreddit/s/post
+    ) {
       return this;
     }
     const response = await fetch(this.url, {
