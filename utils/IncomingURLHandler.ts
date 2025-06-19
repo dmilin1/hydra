@@ -16,11 +16,11 @@ export default function IncomingURLHandler({ children }: PropsWithChildren) {
   const { pushURL, navigate } = useURLNavigation<AppNavigationProp>();
   const isAsking = useRef(false);
 
-  const deepLink = useLinkingURL();
+  const deepLink = useLinkingURL()?.toLocaleLowerCase();
 
   const handleDeepLink = () => {
-    if (!deepLink || !deepLink.startsWith("hydra://openURL?url=")) return;
-    const url = deepLink.replace("hydra://openURL?url=", "");
+    if (!deepLink || !deepLink.startsWith("hydra://openurl?url=")) return;
+    const url = deepLink.replace("hydra://openurl?url=", "");
     pushURL(url);
     navigate("Posts"); /* Set tab */
   };
