@@ -23,45 +23,34 @@ const update = {
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Automatic Theme Switching",
+      title: "Sidebars and Wikis",
       description:
-        "You can now set a different theme for the system light and dark mode. To do this, go to Settings => Theme => Different Dark Mode Theme and select the theme you want to use at night.",
+        "Added the ability to view subreddit sidebars and wikis. You can view these when on a subreddit page by tapping the ... button at the top right and selecting 'Sidebar' or 'Wiki'.",
     },
     {
-      title: "Hide Seen Posts per Subreddit",
+      title: "A to Z Subreddit Slider",
       description:
-        'You can now hide/show posts only on specific subreddits or feed pages (Home, Top, All, etc). To do this, tap the ... in the top right corner of the subreddit page and pick "Show/Hide Seen Posts". This will override the global setting you have set in Settings => General => Filters => Hide Seen Posts.',
+        "The subreddits page now has an A to Z slider so those of you with lots of subreddits can scroll to what you're looking for more quickly.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description: "Fixed push notifications not registering properly.",
+      description:
+        "Fixed custom hydra server URL not being used for AI requests.",
+    },
+    {
+      description: "Fixed drafts not clearing after submitting.",
     },
     {
       description:
-        "Fixed quarantied subreddits not loading. You'll now see a prompt the first time you try to access a quarantined subreddit asking for confirmation.",
+        "Fixed summaries changing background color when pressed with certain themes set.",
     },
     {
       description:
-        "Fixed full screen images sometimes being pushed into the corner of the screen.",
+        "Fixed being unable to set the current theme when the system is in dark mode.",
     },
     {
-      description:
-        "Fixed the image counter pill showing the incorrect slide number when using compact mode.",
-    },
-    {
-      description: "Fixed flairs for subreddits using non richtext flairs.",
-    },
-    {
-      description:
-        "Fixed the long press menu being overly sensitive when looking at an image in fullscreen.",
-    },
-    {
-      description:
-        "Fixed recycled posts temporarily showing the wrong image when scrolling quickly.",
-    },
-    {
-      description: "Fixed links occasionally showing the wrong image.",
+      description: "Made the hydra://openURL deep link case insensitive.",
     },
   ] as { description: string }[],
 };
