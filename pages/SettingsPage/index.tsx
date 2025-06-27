@@ -6,12 +6,13 @@ import Appearance from "./Appearance";
 import DataUse from "./DataUse";
 import Filters from "./General/Filters";
 import GeneralRoot from "./General/GeneralRoot";
-import OpenInHydra from "./General/OpenInHydra";
-import Sorting from "./General/Sorting";
-import Startup from "./General/Startup";
 import HydraPro from "./HydraPro";
+import Legal from "./General/Legal";
+import OpenInHydra from "./General/OpenInHydra";
 import Privacy from "./Privacy";
 import Root from "./Root";
+import Sorting from "./General/Sorting";
+import Startup from "./General/Startup";
 import Theme from "./Theme";
 import ThemeMaker from "./ThemeMaker";
 import { StackPageProps } from "../../app/stack";
@@ -51,6 +52,7 @@ export default function SettingsPage({
         {relativePath === "settings/general/openInHydra" && <OpenInHydra />}
         {relativePath === "settings/general/filters" && <Filters />}
         {relativePath === "settings/general/startup" && <Startup />}
+        {relativePath === "settings/general/legal" && <Legal />}
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/themeMaker" && <ThemeMaker />}

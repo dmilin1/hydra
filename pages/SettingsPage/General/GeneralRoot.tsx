@@ -49,6 +49,12 @@ export default function GeneralRoot() {
             text: "App Startup",
             onPress: () => pushURL("hydra://settings/general/startup"),
           },
+          {
+            key: "legal",
+            icon: <Feather name="file-text" size={24} color={theme.text} />,
+            text: "Legal",
+            onPress: () => pushURL("hydra://settings/general/legal"),
+          },
         ]}
       />
     </>
