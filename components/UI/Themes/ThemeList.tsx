@@ -13,6 +13,7 @@ import {
   deleteCustomTheme,
   getCustomThemes,
 } from "../../../db/functions/CustomThemes";
+import useContextMenu from "../../../utils/useContextMenu";
 
 type ThemeListProps = {
   currentTheme: string;
@@ -34,6 +35,7 @@ export default function ThemeList({
 }: ThemeListProps) {
   const { theme, setCurrentTheme } = useContext(ThemeContext);
 
+  const openContextMenu = useContextMenu();
   const customThemes = getCustomThemes();
 
   const handleDelete = (customTheme: CustomTheme) => {
@@ -95,6 +97,15 @@ export default function ThemeList({
                 theme={customTheme}
                 isSelected={currentTheme === customTheme.name}
                 onPress={() => onSelect(customTheme.name, customTheme)}
+                onLongPress={async (e) => {
+                  if (e.nativeEvent.touches.length > 1) return;
+                  const result = await openContextMenu({
+                    options: ["Delete"],
+                  });
+                  if (result === "Delete") {
+                    handleDelete(customTheme);
+                  }
+                }}
               />
             </Slideable>
           ))}
