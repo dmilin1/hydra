@@ -13,30 +13,17 @@ import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import useContextMenu from "../utils/useContextMenu";
-<<<<<<< HEAD
-=======
-import { Account } from "../api/User";
->>>>>>> 0807e3f (add swipe anywhere to navigate setting, improved long press options everywhere, added haptics to long presses)
 
 export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
   const { currentUser, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);
   const openContextMenu = useContextMenu();
-<<<<<<< HEAD
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async (username: string) => {
     setLoading(true);
     await removeUser(username);
-=======
-  const { setModal } = useContext(ModalContext);
-  const [loading, setLoading] = useState(false);
-
-  const handleDelete = async (account: Account) => {
-    setLoading(true);
-    await removeUser(account);
->>>>>>> 0807e3f (add swipe anywhere to navigate setting, improved long press options everywhere, added haptics to long presses)
     setLoading(false);
   };
 
@@ -59,23 +46,12 @@ export default function AccountsPage() {
                   username === "Logged Out"
                     ? undefined
                     : [
-<<<<<<< HEAD
                       {
                         icon: <Feather name="trash" style={{ fontSize: 24 }} />,
                         color: theme.delete,
                         action: async () => await handleDelete(username),
                       },
                     ]
-=======
-                        {
-                          icon: (
-                            <Feather name="trash" style={{ fontSize: 24 }} />
-                          ),
-                          color: theme.delete,
-                          action: async () => await handleDelete(account),
-                        },
-                      ]
->>>>>>> 0807e3f (add swipe anywhere to navigate setting, improved long press options everywhere, added haptics to long presses)
                 }
               >
                 <TouchableOpacity
@@ -101,11 +77,7 @@ export default function AccountsPage() {
                       options: ["Delete"],
                     });
                     if (result === "Delete") {
-<<<<<<< HEAD
                       await handleDelete(username);
-=======
-                      await handleDelete(account);
->>>>>>> 0807e3f (add swipe anywhere to navigate setting, improved long press options everywhere, added haptics to long presses)
                     }
                   }}
                 >
