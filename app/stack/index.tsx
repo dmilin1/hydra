@@ -24,6 +24,7 @@ import { StackFutureProvider } from "../../contexts/StackFutureContext";
 import IncomingURLHandler from "../../utils/IncomingURLHandler";
 import SidebarScreen from "./SidebarScreen";
 import WikiScreen from "./WikiScreen";
+import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
 
 export type StackParamsList = {
   Subreddits: object;
@@ -85,6 +86,7 @@ export type StackPageProps<Pages extends keyof StackParamsList> =
 export default function Stack() {
   const StackNavigator = createNativeStackNavigator<StackParamsList>();
   const { theme } = useContext(ThemeContext);
+  const { swipeAnywhereToNavigate } = useContext(GesturesContext);
 
   const futureRoutes = useRef<
     NavigationRoute<StackParamsList, keyof StackParamsList>[]
@@ -121,6 +123,7 @@ export default function Stack() {
         headerTitleStyle: {
           color: theme.text.toString(),
         },
+        fullScreenGestureEnabled: swipeAnywhereToNavigate,
       }}
       screenLayout={({ children, route }) => (
         <StackFutureProvider futureRoutes={futureRoutes}>

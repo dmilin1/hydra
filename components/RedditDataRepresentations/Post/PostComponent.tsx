@@ -126,9 +126,27 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
           onLongPress={async (e) => {
             if (e.nativeEvent.touches.length > 1) return;
             const result = await openContextMenu({
-              options: ["Share"],
+              options: [
+                "Upvote",
+                "Downvote",
+                ...(seen ? ["Mark as Unread"] : ["Mark as Read"]),
+                ...(post.saved ? ["Unsave"] : ["Save"]),
+                "Share",
+              ],
             });
-            if (result === "Share") {
+            if (result === "Upvote") {
+              await voteOnPost(VoteOption.UpVote);
+            } else if (result === "Downvote") {
+              await voteOnPost(VoteOption.DownVote);
+            } else if (
+              result === "Mark as Unread" ||
+              result === "Mark as Read"
+            ) {
+              setSeenValue(!seen);
+            } else if (result === "Save" || result === "Unsave") {
+              await saveItem(post, !post.saved);
+              setPost({ ...post, saved: !post.saved });
+            } else if (result === "Share") {
               Share.share({ url: post.link });
             }
           }}

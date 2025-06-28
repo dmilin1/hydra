@@ -8,6 +8,7 @@ import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
+import useContextMenu from "../../../utils/useContextMenu";
 
 type MessageComponentProps = {
   message: Message;
@@ -22,20 +23,24 @@ export default function MessageComponent({
   const { theme } = useContext(ThemeContext);
   const { inboxCount, setInboxCount } = useContext(InboxContext);
 
+  const openContextMenu = useContextMenu();
+
+  const toggleSeen = async () => {
+    await setInboxItemNewStatus(message, !message.new);
+    setInboxCount(inboxCount + (message.new ? -1 : 1));
+    setMessage({
+      ...message,
+      new: !message.new,
+    });
+  };
+
   return (
     <Slideable
       right={[
         {
           icon: <Feather name="mail" size={18} color={theme.subtleText} />,
           color: theme.iconPrimary,
-          action: async () => {
-            await setInboxItemNewStatus(message, !message.new);
-            setInboxCount(inboxCount + (message.new ? -1 : 1));
-            setMessage({
-              ...message,
-              new: !message.new,
-            });
-          },
+          action: () => toggleSeen(),
         },
       ]}
     >
@@ -54,6 +59,15 @@ export default function MessageComponent({
             new: false,
           });
           pushURL(`https://www.reddit.com/message/messages/${message.id}`);
+        }}
+        onLongPress={async (e) => {
+          if (e.nativeEvent.touches.length > 1) return;
+          const result = await openContextMenu({
+            options: ["Mark as Read"],
+          });
+          if (result === "Mark as Read") {
+            toggleSeen();
+          }
         }}
       >
         <View style={styles.messageTitleContainer}>

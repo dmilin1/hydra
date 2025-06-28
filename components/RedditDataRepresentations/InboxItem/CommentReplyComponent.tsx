@@ -10,6 +10,7 @@ import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
+import useContextMenu from "../../../utils/useContextMenu";
 
 type CommentReplyComponentProps = {
   commentReply: CommentReply;
@@ -23,6 +24,7 @@ export default function CommentReplyComponent({
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
   const { inboxCount, setInboxCount } = useContext(InboxContext);
+  const openContextMenu = useContextMenu();
 
   const currentVoteColor =
     commentReply.userVote === VoteOption.UpVote
@@ -37,6 +39,15 @@ export default function CommentReplyComponent({
       ...commentReply,
       upvotes: commentReply.upvotes - commentReply.userVote + result,
       userVote: result,
+    });
+  };
+
+  const toggleSeen = async () => {
+    await setInboxItemNewStatus(commentReply, !commentReply.new);
+    setInboxCount(inboxCount + (commentReply.new ? -1 : 1));
+    setMessage({
+      ...commentReply,
+      new: !commentReply.new,
     });
   };
 
@@ -58,14 +69,7 @@ export default function CommentReplyComponent({
         {
           icon: <Feather name="mail" size={18} color={theme.subtleText} />,
           color: theme.iconPrimary,
-          action: async () => {
-            await setInboxItemNewStatus(commentReply, !commentReply.new);
-            setInboxCount(inboxCount + (commentReply.new ? -1 : 1));
-            setMessage({
-              ...commentReply,
-              new: !commentReply.new,
-            });
-          },
+          action: () => toggleSeen(),
         },
       ]}
     >
@@ -84,6 +88,23 @@ export default function CommentReplyComponent({
             new: false,
           });
           pushURL(commentReply.contextLink);
+        }}
+        onLongPress={async (e) => {
+          if (e.nativeEvent.touches.length > 1) return;
+          const result = await openContextMenu({
+            options: [
+              "Upvote",
+              "Downvote",
+              ...(commentReply.new ? ["Mark as Read"] : ["Mark as Unread"]),
+            ],
+          });
+          if (result === "Upvote") {
+            await voteOnMessage(VoteOption.UpVote);
+          } else if (result === "Downvote") {
+            await voteOnMessage(VoteOption.DownVote);
+          } else if (result === "Mark as Unread" || result === "Mark as Read") {
+            toggleSeen();
+          }
         }}
       >
         <View style={styles.messageTitleContainer}>
