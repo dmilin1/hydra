@@ -1,6 +1,7 @@
 import { CommentSettingsProvider } from "./CommentSettingsContext";
 import { DataModeProvider } from "./DataModeContext";
 import { FiltersProvider } from "./FiltersContext";
+import { GesturesProvider } from "./GesturesContext";
 import { NotificationsProvider } from "./NotificationsContext";
 import { PostSettingsProvider } from "./PostSettingsContext";
 import { TabSettingsProvider } from "./TabSettingsContext";
@@ -10,15 +11,17 @@ export function SettingsProvider({ children }: React.PropsWithChildren) {
   return (
     <ThemeProvider>
       <DataModeProvider>
-        <NotificationsProvider>
-          <PostSettingsProvider>
-            <FiltersProvider>
-              <CommentSettingsProvider>
-                <TabSettingsProvider>{children}</TabSettingsProvider>
-              </CommentSettingsProvider>
-            </FiltersProvider>
-          </PostSettingsProvider>
-        </NotificationsProvider>
+        <GesturesProvider>
+          <NotificationsProvider>
+            <PostSettingsProvider>
+              <FiltersProvider>
+                <CommentSettingsProvider>
+                  <TabSettingsProvider>{children}</TabSettingsProvider>
+                </CommentSettingsProvider>
+              </FiltersProvider>
+            </PostSettingsProvider>
+          </NotificationsProvider>
+        </GesturesProvider>
       </DataModeProvider>
     </ThemeProvider>
   );

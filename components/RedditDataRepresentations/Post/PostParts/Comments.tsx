@@ -173,6 +173,8 @@ export function CommentComponent({
 
   const showCommentOptions = async () => {
     const options = [
+      "Upvote",
+      "Downvote",
       "Select Text",
       "Reply",
       ...(comment.saved ? ["Unsave"] : ["Save"]),
@@ -181,7 +183,11 @@ export function CommentComponent({
     ];
     const result = await showContextMenu({ options });
 
-    if (result === "Reply") {
+    if (result === "Upvote") {
+      await voteOnComment(VoteOption.UpVote);
+    } else if (result === "Downvote") {
+      await voteOnComment(VoteOption.DownVote);
+    } else if (result === "Reply") {
       replyToComment();
     } else if (result === "Save" || result === "Unsave") {
       saveComment();

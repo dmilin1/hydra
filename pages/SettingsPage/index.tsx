@@ -19,6 +19,7 @@ import { StackPageProps } from "../../app/stack";
 import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroller";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
+import Gestures from "./General/Gestures";
 
 export default function SettingsPage({
   route,
@@ -48,6 +49,7 @@ export default function SettingsPage({
         {relativePath === "settings" && <Root />}
 
         {relativePath === "settings/general" && <GeneralRoot />}
+        {relativePath === "settings/general/gestures" && <Gestures />}
         {relativePath === "settings/general/sorting" && <Sorting />}
         {relativePath === "settings/general/openInHydra" && <OpenInHydra />}
         {relativePath === "settings/general/filters" && <Filters />}
