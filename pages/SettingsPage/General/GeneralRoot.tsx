@@ -20,6 +20,12 @@ export default function GeneralRoot() {
         title="General"
         items={[
           {
+            key: "gestures",
+            icon: <FontAwesome name="hand-o-up" size={24} color={theme.text} />,
+            text: "Gestures",
+            onPress: () => pushURL("hydra://settings/general/gestures"),
+          },
+          {
             key: "sorting",
             icon: <FontAwesome name="sort" size={24} color={theme.text} />,
             text: "Post & Comment Sorting",

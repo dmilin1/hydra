@@ -1,6 +1,12 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  GestureResponderEvent,
+} from "react-native";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
@@ -11,12 +17,14 @@ type ThemeRowProps = {
   theme: Theme | CustomTheme;
   isSelected?: boolean;
   onPress?: () => void;
+  onLongPress?: (e: GestureResponderEvent) => void;
 };
 
 export default function ThemeRow({
   theme,
   isSelected = false,
   onPress,
+  onLongPress,
 }: ThemeRowProps) {
   const { theme: currentTheme } = useContext(ThemeContext);
   const { isPro } = useContext(SubscriptionsContext);
@@ -40,6 +48,7 @@ export default function ThemeRow({
   return (
     <TouchableOpacity
       onPress={handlePress}
+      onLongPress={onLongPress}
       style={[
         styles.themeItemContainer,
         {

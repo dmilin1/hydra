@@ -15,13 +15,22 @@ import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import useContextMenu from "../utils/useContextMenu";
+import { Account } from "../api/User";
 
 export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
   const { currentAcc, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);
+  const openContextMenu = useContextMenu();
   const { setModal } = useContext(ModalContext);
   const [loading, setLoading] = useState(false);
+
+  const handleDelete = async (account: Account) => {
+    setLoading(true);
+    await removeUser(account);
+    setLoading(false);
+  };
 
   return (
     <View
@@ -47,11 +56,7 @@ export default function AccountsPage() {
                             <Feather name="trash" style={{ fontSize: 24 }} />
                           ),
                           color: theme.delete,
-                          action: async () => {
-                            setLoading(true);
-                            await removeUser(account);
-                            setLoading(false);
-                          },
+                          action: async () => await handleDelete(account),
                         },
                       ]
                 }
@@ -80,6 +85,15 @@ export default function AccountsPage() {
                       }
                     }
                     setLoading(false);
+                  }}
+                  onLongPress={async (e) => {
+                    if (e.nativeEvent.touches.length > 1) return;
+                    const result = await openContextMenu({
+                      options: ["Delete"],
+                    });
+                    if (result === "Delete") {
+                      await handleDelete(account);
+                    }
                   }}
                 >
                   <Text
