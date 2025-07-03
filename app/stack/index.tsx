@@ -25,6 +25,7 @@ import IncomingURLHandler from "../../utils/IncomingURLHandler";
 import SidebarScreen from "./SidebarScreen";
 import WikiScreen from "./WikiScreen";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export type StackParamsList = {
   Subreddits: object;
@@ -80,6 +81,24 @@ export type URLRoutes =
   | "SidebarPage"
   | "WikiPage";
 
+const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
+  Subreddits: false,
+  Home: true,
+  InboxPage: true,
+  MessagesPage: false,
+  PostsPage: true,
+  PostDetailsPage: true,
+  MultiredditPage: true,
+  UserPage: true,
+  Accounts: false,
+  WikiPage: false,
+  SidebarPage: false,
+  SettingsPage: false,
+  SearchPage: true,
+  WebviewPage: false,
+  ErrorPage: false,
+};
+
 export type StackPageProps<Pages extends keyof StackParamsList> =
   NativeStackScreenProps<StackParamsList, Pages>;
 
@@ -87,6 +106,8 @@ export default function Stack() {
   const StackNavigator = createNativeStackNavigator<StackParamsList>();
   const { theme } = useContext(ThemeContext);
   const { swipeAnywhereToNavigate } = useContext(GesturesContext);
+
+  const tabBarHeight = useBottomTabBarHeight();
 
   const futureRoutes = useRef<
     NavigationRoute<StackParamsList, keyof StackParamsList>[]
@@ -114,7 +135,7 @@ export default function Stack() {
 
   return (
     <StackNavigator.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerTintColor: theme.iconOrTextButton.toString(),
         navigationBarColor: theme.background.toString(),
         headerStyle: {
@@ -124,7 +145,11 @@ export default function Stack() {
           color: theme.text.toString(),
         },
         fullScreenGestureEnabled: swipeAnywhereToNavigate,
-      }}
+        contentStyle: {
+          paddingBottom: SHOWS_BENEATH_TABS[route.name] ? 0 : tabBarHeight,
+          backgroundColor: theme.background,
+        },
+      })}
       screenLayout={({ children, route }) => (
         <StackFutureProvider futureRoutes={futureRoutes}>
           <ConditionalWrapper
