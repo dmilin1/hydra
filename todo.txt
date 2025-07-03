@@ -3,8 +3,6 @@
 
 
 ### Hard
-- 🚀 Make top/bottom bars fade or disappear when scrolling
-
 - 🚀 Android support
 
 - 🚀 Get polls working
