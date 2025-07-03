@@ -32,6 +32,7 @@ import { doDBMaintenance } from "../db/functions/Maintenance";
 import migrations from "../drizzle/migrations";
 import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
+import { TabScrollProvider } from "../contexts/TabScrollContext";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -95,21 +96,23 @@ function RootLayout() {
         <AccountProvider>
           <SubscriptionsProvider>
             <SettingsProvider>
-              <NavigationProvider>
-                <ActionSheetProvider>
-                  <InboxProvider>
-                    <ModalProvider>
-                      <MediaViewerProvider>
-                        <SubredditProvider>
-                          <UpdateInfo />
-                          <SubscribeToHydra />
-                          <Tabs />
-                        </SubredditProvider>
-                      </MediaViewerProvider>
-                    </ModalProvider>
-                  </InboxProvider>
-                </ActionSheetProvider>
-              </NavigationProvider>
+              <TabScrollProvider>
+                <NavigationProvider>
+                  <ActionSheetProvider>
+                    <InboxProvider>
+                      <ModalProvider>
+                        <MediaViewerProvider>
+                          <SubredditProvider>
+                            <UpdateInfo />
+                            <SubscribeToHydra />
+                            <Tabs />
+                          </SubredditProvider>
+                        </MediaViewerProvider>
+                      </ModalProvider>
+                    </InboxProvider>
+                  </ActionSheetProvider>
+                </NavigationProvider>
+              </TabScrollProvider>
             </SettingsProvider>
           </SubscriptionsProvider>
         </AccountProvider>

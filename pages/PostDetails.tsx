@@ -35,6 +35,8 @@ import { ScrollerContext, ScrollerProvider } from "../contexts/ScrollerContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
+import { TabScrollContext } from "../contexts/TabScrollContext";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -49,9 +51,12 @@ function PostDetails({ route }: PostDetailsProps) {
 
   const navigation = useURLNavigation();
 
+  const tabBarHeight = useBottomTabBarHeight();
+
   const { theme } = useContext(ThemeContext);
   const { scrollDisabled } = useContext(ScrollerContext);
   const { currentUser } = useContext(AccountContext);
+  const { handleScrollForTabBar } = useContext(TabScrollContext);
 
   const topOfScroll = useRef<View>(null);
   const scrollView = useRef<ScrollView>(null);
@@ -240,6 +245,10 @@ function PostDetails({ route }: PostDetailsProps) {
             />
           }
           scrollEnabled={!scrollDisabled}
+          onScroll={(e) => handleScrollForTabBar(e)}
+          contentContainerStyle={{
+            paddingBottom: 100,
+          }}
         >
           <View ref={topOfScroll} />
           <PostDetailsComponent
@@ -288,6 +297,7 @@ function PostDetails({ route }: PostDetailsProps) {
         style={[
           styles.skipToNextButton,
           {
+            bottom: tabBarHeight + 20,
             backgroundColor: theme.buttonBg,
           },
         ]}
@@ -375,7 +385,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   skipToNextButton: {
-    bottom: 20,
     right: 20,
     position: "absolute",
     alignItems: "center",
