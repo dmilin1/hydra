@@ -198,8 +198,9 @@ function PostDetails({ route }: PostDetailsProps) {
     });
   };
 
-  const scrollToNextComment = async () => {
+  const scrollToNextComment = async (goPrevious = false) => {
     if (!scrollView.current || !commentsView.current) return;
+    const FUZZY_DISTANCE = 5;
     const scrollRef = scrollView.current;
     const scrollY = (await asyncMeasure(scrollRef, "measureInWindow"))[1];
     const currentScrollHeight = (
@@ -207,17 +208,24 @@ function PostDetails({ route }: PostDetailsProps) {
     )[1];
     const childComments = (commentsView.current as any).__internalInstanceHandle
       .child.child.child.child.memoizedProps[0];
+    let prevDelta = 0;
     for (const commentView of childComments) {
       const commentRef = commentView.props.commentPropRef.current;
       const commentMeasures = await asyncMeasure(commentRef, "measureInWindow");
       const commentY = commentMeasures[1];
       const delta = commentY - currentScrollHeight;
-      if (commentY > scrollY) {
+      if (
+        commentY > scrollY &&
+        !(Math.abs(commentY - scrollY) < FUZZY_DISTANCE)
+      ) {
         scrollView.current.scrollTo({
-          y: delta + 1 /* scroll a bit over to fix bug */,
+          y: goPrevious ? prevDelta : delta,
           animated: true,
         });
         break;
+      }
+      if (commentY < scrollY - FUZZY_DISTANCE) {
+        prevDelta = delta;
       }
     }
   };
@@ -301,7 +309,9 @@ function PostDetails({ route }: PostDetailsProps) {
             backgroundColor: theme.buttonBg,
           },
         ]}
-        onPress={scrollToNextComment}
+        onPress={() => scrollToNextComment()}
+        onLongPress={() => scrollToNextComment(true)}
+        delayLongPress={300}
       >
         <AntDesign name="down" size={18} color={theme.buttonText} />
       </TouchableOpacity>
