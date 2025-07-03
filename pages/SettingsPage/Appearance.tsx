@@ -56,7 +56,12 @@ export default function Appearance() {
     toggleShowCommentSummary,
   } = useContext(CommentSettingsContext);
 
-  const { showUsername, toggleShowUsername } = useContext(TabSettingsContext);
+  const {
+    showUsername,
+    toggleShowUsername,
+    hideTabsOnScroll,
+    toggleHideTabsOnScroll,
+  } = useContext(TabSettingsContext);
 
   const postTitleLengthRef = useRef<RNPickerSelect>(null);
   const postTextLengthRef = useRef<RNPickerSelect>(null);
@@ -389,6 +394,22 @@ export default function Appearance() {
             ),
             text: "Show username",
             onPress: () => toggleShowUsername(),
+          },
+          {
+            key: "hideTabsOnScroll",
+            icon: <FontAwesome name="arrows-v" size={24} color={theme.text} />,
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={hideTabsOnScroll}
+                onValueChange={() => toggleHideTabsOnScroll()}
+              />
+            ),
+            text: "Hide on infinite scroll",
+            onPress: () => toggleHideTabsOnScroll(),
           },
         ]}
       />

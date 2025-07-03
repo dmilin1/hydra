@@ -15,6 +15,7 @@ import {
   ScrollerProvider,
 } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { TabScrollContext } from "../../contexts/TabScrollContext";
 
 /**
  * Future note for when I'm an idiot and the scroller gets all glitchy again.
@@ -49,6 +50,7 @@ function RedditDataScroller<T extends RedditDataObject>(
 ) {
   const { theme } = useContext(ThemeContext);
   const { scrollDisabled } = useContext(ScrollerContext);
+  const { handleScrollForTabBar } = useContext(TabScrollContext);
 
   const [refreshing, setRefreshing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(!!props.loadMore);
@@ -83,6 +85,9 @@ function RedditDataScroller<T extends RedditDataObject>(
         />
       }
       scrollEventThrottle={100}
+      onScroll={(e) => {
+        handleScrollForTabBar(e);
+      }}
       onEndReachedThreshold={2}
       onEndReached={() => {
         loadMoreData();

@@ -16,6 +16,7 @@ import { InboxContext } from "../../contexts/InboxContext";
 import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import Stack from "../stack";
+import { TabScrollContext } from "../../contexts/TabScrollContext";
 
 export type TabParamsList = {
   Posts: undefined;
@@ -32,11 +33,7 @@ export default function Tabs() {
   const { loginInitialized, currentUser } = useContext(AccountContext);
   const { inboxCount } = useContext(InboxContext);
   const { showUsername } = useContext(TabSettingsContext);
-
-  const tabBarStyle = {
-    backgroundColor: theme.background,
-    borderTopWidth: 0,
-  };
+  const { tabBarTranslateY } = useContext(TabScrollContext);
 
   useEffect(() => {
     if (loginInitialized) {
@@ -50,13 +47,22 @@ export default function Tabs() {
       edges={["right", "top", "left"]}
     >
       {loginInitialized ? (
-        <Tab.Navigator>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarStyle: {
+              position: "absolute",
+              bottom: 0,
+              backgroundColor: theme.background,
+              borderTopWidth: 0,
+              transform: [{ translateY: tabBarTranslateY }],
+            },
+          }}
+        >
           <Tab.Screen
             name="Posts"
             options={{
               title: "Posts",
               headerShown: false,
-              tabBarStyle,
               tabBarIcon: ({ focused, size }) => (
                 <MaterialCommunityIcons
                   name="post"
@@ -76,7 +82,6 @@ export default function Tabs() {
             options={{
               title: "Inbox",
               headerShown: false,
-              tabBarStyle,
               tabBarIcon: ({ focused, size }) => (
                 <Entypo
                   name="mail"
@@ -97,7 +102,6 @@ export default function Tabs() {
             options={{
               title: currentUser?.userName ?? "Accounts",
               headerShown: false,
-              tabBarStyle,
               tabBarIcon: ({ focused, size }) => (
                 <MaterialIcons
                   name="account-circle"
@@ -119,7 +123,6 @@ export default function Tabs() {
             options={{
               title: "Search",
               headerShown: false,
-              tabBarStyle,
               tabBarIcon: ({ focused, size }) => (
                 <AntDesign
                   name="search1"
@@ -139,7 +142,6 @@ export default function Tabs() {
             options={{
               title: "Settings",
               headerShown: false,
-              tabBarStyle,
               tabBarIcon: ({ focused, size }) => (
                 <Ionicons
                   name="settings-sharp"
