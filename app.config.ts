@@ -60,7 +60,13 @@ module.exports = {
           "photosPermission": "$(PRODUCT_NAME) accesses your photos to upload images.",
         }
       ],
-      'expo-notifications'
+      'expo-notifications',
+      [
+        'expo-video',
+        {
+          "supportsPictureInPicture": true,
+        }
+      ]
     ],
     updates: {
       url: `https://u.expo.dev/${projectId}`,

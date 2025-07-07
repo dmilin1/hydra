@@ -62,7 +62,7 @@ export default function PostMedia({
         <View style={styles.videoContainer}>
           <VideoPlayer
             source={post.video}
-            redditAudioSource={post.redditAudioSource}
+            videoDownloadURL={post.videoDownloadURL}
             thumbnail={post.imageThumbnail}
             aspectRatio={post.mediaAspectRatio}
           />
