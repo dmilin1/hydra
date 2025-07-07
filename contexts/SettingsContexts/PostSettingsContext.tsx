@@ -11,6 +11,7 @@ const initialValues = {
   blurSpoilers: true,
   blurNSFW: true,
   showPostSummary: true,
+  autoPlayVideos: true,
 };
 
 const initialPostSettingsContext = {
@@ -24,26 +25,55 @@ const initialPostSettingsContext = {
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
+  toggleAutoPlayVideos: (_newValue?: boolean) => {},
 };
 
 export const PostSettingsContext = createContext(initialPostSettingsContext);
 
 export function PostSettingsProvider({ children }: React.PropsWithChildren) {
-  const [postCompactMode, setPostCompactMode] =
+  const [storedPostCompactMode, setPostCompactMode] =
     useMMKVBoolean("postCompactMode");
-  const [subredditAtTop, setSubredditAtTop] = useMMKVBoolean("subredditAtTop");
-  const [showSubredditIcon, setShowSubredditIcon] =
+  const postCompactMode =
+    storedPostCompactMode ?? initialValues.postCompactMode;
+
+  const [storedSubredditAtTop, setSubredditAtTop] =
+    useMMKVBoolean("subredditAtTop");
+  const subredditAtTop = storedSubredditAtTop ?? initialValues.subredditAtTop;
+
+  const [storedShowSubredditIcon, setShowSubredditIcon] =
     useMMKVBoolean("showSubredditIcon");
-  const [postTitleLength, setPostTitleLength] =
+  const showSubredditIcon =
+    storedShowSubredditIcon ?? initialValues.showSubredditIcon;
+
+  const [storedPostTitleLength, setPostTitleLength] =
     useMMKVNumber("postTitleLength");
-  const [postTextLength, setPostTextLength] = useMMKVNumber("postTextLength");
-  const [linkDescriptionLength, setLinkDescriptionLength] = useMMKVNumber(
+  const postTitleLength =
+    storedPostTitleLength ?? initialValues.postTitleLength;
+
+  const [storedPostTextLength, setPostTextLength] =
+    useMMKVNumber("postTextLength");
+  const postTextLength = storedPostTextLength ?? initialValues.postTextLength;
+
+  const [storedLinkDescriptionLength, setLinkDescriptionLength] = useMMKVNumber(
     "linkDescriptionLength",
   );
-  const [blurSpoilers, setBlurSpoilers] = useMMKVBoolean("blurSpoilers");
-  const [blurNSFW, setBlurNSFW] = useMMKVBoolean("blurNSFW");
-  const [showPostSummary, setShowPostSummary] =
+  const linkDescriptionLength =
+    storedLinkDescriptionLength ?? initialValues.linkDescriptionLength;
+
+  const [storedBlurSpoilers, setBlurSpoilers] = useMMKVBoolean("blurSpoilers");
+  const blurSpoilers = storedBlurSpoilers ?? initialValues.blurSpoilers;
+
+  const [storedBlurNSFW, setBlurNSFW] = useMMKVBoolean("blurNSFW");
+  const blurNSFW = storedBlurNSFW ?? initialValues.blurNSFW;
+
+  const [storedShowPostSummary, setShowPostSummary] =
     useMMKVBoolean("showPostSummary");
+  const showPostSummary =
+    storedShowPostSummary ?? initialValues.showPostSummary;
+
+  const [storedAutoPlayVideos, setAutoPlayVideos] =
+    useMMKVBoolean("autoPlayVideos");
+  const autoPlayVideos = storedAutoPlayVideos ?? initialValues.autoPlayVideos;
 
   return (
     <PostSettingsContext.Provider
@@ -82,6 +112,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         showPostSummary: showPostSummary ?? initialValues.showPostSummary,
         toggleShowPostSummary: (newValue = !showPostSummary) =>
           setShowPostSummary(newValue),
+
+        autoPlayVideos: autoPlayVideos ?? initialValues.autoPlayVideos,
+        toggleAutoPlayVideos: (newValue = !autoPlayVideos) =>
+          setAutoPlayVideos(newValue),
       }}
     >
       {children}

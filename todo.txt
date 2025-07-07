@@ -47,6 +47,8 @@
 - 🐛 Searching subreddit then sorting is broken (https://www.reddit.com/r/HydraApp/comments/1klcmbc/searching_then_sorting_should_not_remove_the/)
 
 ### Easy
+- 🐛 Sort icon doesn't change when sorting in multireddit
+
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
 - 🐛 Favorite subreddits you aren't subscribed to

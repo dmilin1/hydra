@@ -1,15 +1,8 @@
-import {
-  Video,
-  ResizeMode,
-  VideoFullscreenUpdate,
-  AVPlaybackStatus,
-  AVPlaybackStatusSuccess,
-} from "expo-av";
-import { Sound, SoundObject, setAudioModeAsync } from "expo-av/build/Audio";
-import React, { useRef, useState, useContext, useEffect } from "react";
+import { useEvent, useEventListener } from "expo";
+import { useVideoPlayer, VideoView } from "expo-video";
+import React, { useRef, useState, useContext } from "react";
 import {
   Animated,
-  Easing,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -23,11 +16,13 @@ import { PostInteractionContext } from "../../../../../contexts/PostInteractionC
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import useVideoMenu from "../../../../../utils/useVideoMenu";
+import { AntDesign } from "@expo/vector-icons";
+import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 
 type VideoPlayerProps = {
   source: string;
   thumbnail: string;
-  redditAudioSource?: string;
+  videoDownloadURL?: string;
   straightToFullscreen?: boolean;
   exitedFullScreenCallback?: () => void;
   aspectRatio?: number;
@@ -39,76 +34,63 @@ const DEVICE_WIDTH = Dimensions.get("window").width;
 export default function VideoPlayer({
   source,
   thumbnail,
-  redditAudioSource,
+  videoDownloadURL,
   straightToFullscreen,
   exitedFullScreenCallback,
   aspectRatio,
 }: VideoPlayerProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
+  const { autoPlayVideos } = useContext(PostSettingsContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
-
   const showVideoMenu = useVideoMenu();
 
   const [dontRenderYet, setDontRenderYet] = useState(
     currentDataMode === "lowData",
   );
-  const [fullscreen, setFullscreen] = useState(false);
-  const [failedToLoad, setFailedToLoad] = useState(false);
+  const [failedToLoadErr, setFailedToLoadErr] = useState<string | null>(null);
 
-  const lastLoadedVideo = useRef(source);
-  if (lastLoadedVideo.current !== source) {
+  const player = useVideoPlayer(source, (player) => {
+    player.muted = true;
+    player.loop = true;
+    player.timeUpdateEventInterval = 1 / 60;
+    if (autoPlayVideos) {
+      player.play();
+    }
+  });
+
+  const isPlaying = useEvent(player, "playingChange")?.isPlaying;
+
+  useEventListener(player, "timeUpdate", (e) => {
+    progress.setValue(e.currentTime / player.duration);
+  });
+
+  useEventListener(player, "statusChange", (e) => {
+    if (e.error) {
+      setFailedToLoadErr(e.error.message);
+    } else if (e.status === "readyToPlay" && straightToFullscreen) {
+      video.current?.enterFullscreen();
+    }
+  });
+
+  useEventListener(player, "sourceChange", () => {
     // Component was recycled by FlashList. Need to reset state.
     // https://shopify.github.io/flash-list/docs/recycling
-    lastLoadedVideo.current = source;
     setDontRenderYet(currentDataMode === "lowData");
-    setFullscreen(false);
-    setFailedToLoad(false);
-  }
+    setFailedToLoadErr(null);
+  });
 
   const videoRatio = aspectRatio ?? 1;
   const heightIfFullSize = DEVICE_WIDTH / videoRatio;
   const videoHeight = Math.min(DEVICE_HEIGHT * 0.6, heightIfFullSize);
 
-  const video = useRef<Video>(null);
-  const progressAnim = useRef(new Animated.Value(0)).current;
-  const lastProgress = useRef(0);
-  const lastProgressMillis = useRef(0);
-  const isFullscreen = useRef(false);
-  const audio = useRef<SoundObject | null>(null);
-  const audioIsPlaying = useRef(false);
-  const isChangingAudio = useRef(false);
+  const video = useRef<VideoView>(null);
+  const progress = useRef(new Animated.Value(0)).current;
 
-  const loadAudio = async () => {
-    if (!redditAudioSource) return;
-    await setAudioModeAsync({ playsInSilentModeIOS: true });
-    try {
-      audio.current = await Sound.createAsync({ uri: redditAudioSource });
-      audio.current.sound.setIsLoopingAsync(true);
-    } catch {
-      /* video has no audio */
-    }
-  };
-
-  const oneChangeAtATime = async (func: () => Promise<void>) => {
-    if (isChangingAudio.current) return;
-    isChangingAudio.current = true;
-    await func();
-    isChangingAudio.current = false;
-  };
-
-  useEffect(() => {
-    loadAudio();
-    return () => {
-      audio.current?.sound.unloadAsync();
-    };
-  }, [redditAudioSource]);
-
-  useEffect(() => {
-    if (fullscreen || straightToFullscreen) {
-      interactedWithPost();
-    }
-  }, [fullscreen, straightToFullscreen]);
+  const progressPercent = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0%", "100%"],
+  });
 
   return (
     <View
@@ -156,10 +138,16 @@ export default function VideoPlayer({
       ) : (
         <>
           <TouchableWithoutFeedback
-            onPress={() => video.current?.presentFullscreenPlayer()}
-            onLongPress={() => showVideoMenu(source)}
+            onPress={() => {
+              interactedWithPost();
+              video.current?.enterFullscreen();
+              player.play();
+            }}
+            onLongPress={() =>
+              videoDownloadURL ? showVideoMenu(videoDownloadURL) : null
+            }
           >
-            {failedToLoad ? (
+            {failedToLoadErr ? (
               <View
                 style={[
                   styles.video,
@@ -169,116 +157,36 @@ export default function VideoPlayer({
                 ]}
               >
                 <Text
-                  style={{
-                    color: theme.subtleText,
-                  }}
+                  style={[
+                    styles.videoError,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
                 >
-                  Failed to load video
+                  Failed to load video: {failedToLoadErr}
                 </Text>
               </View>
             ) : (
-              /**
-               * Had to add this seeminly useless View as well as the
-               * width: 100%, height 100% properties to fix this bug:
-               * https://github.com/expo/expo/issues/26829
-               */
-              <View style={styles.video}>
-                <Video
-                  ref={video}
-                  style={styles.video}
-                  resizeMode={ResizeMode.CONTAIN}
-                  source={{
-                    uri: source,
-                    headers: {
-                      "User-Agent": "Hydra",
-                    },
-                  }}
-                  isLooping
-                  shouldPlay
-                  useNativeControls={fullscreen}
-                  volume={fullscreen ? 1 : 0}
-                  onLoad={() => {
+              <View style={styles.videoContainer}>
+                {!isPlaying && (
+                  <View style={styles.playButtonContainer}>
+                    <AntDesign name="play" size={50} color={theme.text} />
+                  </View>
+                )}
+                <VideoView
+                  ref={(videoRef) => {
+                    video.current = videoRef;
                     if (straightToFullscreen) {
-                      video.current?.presentFullscreenPlayer();
+                      videoRef?.enterFullscreen();
                     }
                   }}
-                  onFullscreenUpdate={(e) => {
-                    const newFullscreen =
-                      e.fullscreenUpdate ===
-                        VideoFullscreenUpdate.PLAYER_WILL_PRESENT ||
-                      e.fullscreenUpdate ===
-                        VideoFullscreenUpdate.PLAYER_DID_PRESENT;
-                    setFullscreen(newFullscreen);
-                    if (!newFullscreen) {
-                      exitedFullScreenCallback?.();
-                    }
-                    if (
-                      e.fullscreenUpdate ===
-                      VideoFullscreenUpdate.PLAYER_DID_PRESENT
-                    ) {
-                      audio.current?.sound.playFromPositionAsync(
-                        lastProgressMillis.current,
-                      );
-                      audioIsPlaying.current = true;
-                      isFullscreen.current = true;
-                    }
-                    if (
-                      e.fullscreenUpdate ===
-                      VideoFullscreenUpdate.PLAYER_DID_DISMISS
-                    ) {
-                      video.current?.playAsync();
-                      audio.current?.sound.pauseAsync();
-                      audioIsPlaying.current = false;
-                      isFullscreen.current = false;
-                    }
-                  }}
-                  onPlaybackStatusUpdate={async (e: AVPlaybackStatus) => {
-                    const status = e as AVPlaybackStatusSuccess;
-                    if (!status.durationMillis) return;
-                    const newProgress =
-                      (status.progressUpdateIntervalMillis +
-                        status.positionMillis) /
-                      status.durationMillis;
-                    Animated.timing(progressAnim, {
-                      toValue: newProgress,
-                      duration: newProgress < lastProgress.current ? 0 : 500,
-                      useNativeDriver: false,
-                      easing: Easing.linear,
-                    }).start();
-                    lastProgress.current = newProgress;
-                    lastProgressMillis.current = status.positionMillis;
-                    if (!audio.current) return;
-                    const audioStatus =
-                      (await audio.current?.sound.getStatusAsync()) as AVPlaybackStatusSuccess;
-                    const audioDelay = Math.abs(
-                      audioStatus.positionMillis - status.positionMillis,
-                    );
-                    if (audioDelay > 500 && isFullscreen.current) {
-                      oneChangeAtATime(async () => {
-                        /* adding ~150ms to account for OS time to set play spot */
-                        audio.current?.sound.setPositionAsync(
-                          audioStatus.positionMillis + audioDelay + 150,
-                        );
-                      });
-                    }
-                    if (audioIsPlaying.current && !status.isPlaying) {
-                      audio.current?.sound.pauseAsync();
-                      audioIsPlaying.current = false;
-                    }
-                    if (
-                      !audioIsPlaying.current &&
-                      status.isPlaying &&
-                      isFullscreen.current
-                    ) {
-                      audio.current?.sound.playFromPositionAsync(
-                        status.durationMillis,
-                      );
-                      audioIsPlaying.current = true;
-                    }
-                  }}
-                  progressUpdateIntervalMillis={500}
-                  onError={() => {
-                    setFailedToLoad(true);
+                  player={player}
+                  style={styles.video}
+                  onFullscreenEnter={() => (player.muted = false)}
+                  onFullscreenExit={() => {
+                    player.muted = true;
+                    exitedFullScreenCallback?.();
                   }}
                 />
               </View>
@@ -296,11 +204,8 @@ export default function VideoPlayer({
               style={[
                 styles.progressBar,
                 {
-                  backgroundColor: theme.tint,
-                  width: progressAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ["0%", "100%"],
-                  }),
+                  backgroundColor: theme.subtleText,
+                  width: progressPercent,
                 },
               ]}
             />
@@ -336,6 +241,22 @@ const styles = StyleSheet.create({
   isVideoText: {
     padding: 5,
   },
+  videoContainer: {
+    flex: 1,
+  },
+  playButtonContainer: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -50 }, { translateY: -50 }],
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: 0.5,
+    zIndex: 1,
+  },
   video: {
     flex: 1,
     height: "100%",
@@ -344,9 +265,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   progressContainer: {
-    height: 5,
+    height: 1,
   },
   progressBar: {
     flex: 1,
+  },
+  videoError: {
+    marginHorizontal: 20,
   },
 });

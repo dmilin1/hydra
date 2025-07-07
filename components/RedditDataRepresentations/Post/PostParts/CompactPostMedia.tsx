@@ -80,7 +80,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           {mediaOpen && (
             <VideoPlayer
               source={post.video}
-              redditAudioSource={post.redditAudioSource}
+              videoDownloadURL={post.videoDownloadURL}
               thumbnail={post.imageThumbnail}
               straightToFullscreen
               exitedFullScreenCallback={() => setMediaOpen(false)}
