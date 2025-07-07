@@ -43,6 +43,8 @@ export default function Appearance() {
     toggleBlurSpoilers,
     showPostSummary,
     toggleShowPostSummary,
+    autoPlayVideos,
+    toggleAutoPlayVideos,
   } = useContext(PostSettingsContext);
 
   const {
@@ -276,6 +278,24 @@ export default function Appearance() {
                 );
               }
             },
+          },
+          {
+            key: "autoPlayVideos",
+            icon: (
+              <MaterialIcons name="play-arrow" size={24} color={theme.text} />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={autoPlayVideos}
+                onValueChange={() => toggleAutoPlayVideos()}
+              />
+            ),
+            text: "Auto play videos",
+            onPress: () => toggleAutoPlayVideos(),
           },
         ]}
       />

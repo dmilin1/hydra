@@ -43,7 +43,7 @@ export type Post = {
   imageThumbnail: string;
   mediaAspectRatio: number;
   video: string | undefined;
-  redditAudioSource?: string;
+  videoDownloadURL: string | undefined;
   poll: Poll | undefined;
   externalLink: string | undefined;
   openGraphData: OpenGraphData | undefined;
@@ -112,11 +112,8 @@ export async function formatPostData(child: any): Promise<Post> {
     }
   }
 
-  let video = child.data.media?.reddit_video?.fallback_url;
-  let redditAudioSource;
-  if (video) {
-    redditAudioSource = video.replace(/DASH_\d+/, "DASH_AUDIO_128");
-  }
+  let video = child.data.media?.reddit_video?.hls_url;
+  const videoDownloadURL = child.data.media?.reddit_video?.fallback_url;
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
@@ -213,7 +210,7 @@ export async function formatPostData(child: any): Promise<Post> {
     imageThumbnail,
     mediaAspectRatio,
     video,
-    redditAudioSource,
+    videoDownloadURL,
     poll,
     externalLink,
     openGraphData,
