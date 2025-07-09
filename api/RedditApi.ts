@@ -19,29 +19,24 @@ export async function api(
   fetchOptions: RequestInit = {},
   apiOptions: ApiOptions = {},
 ): Promise<any> {
+  const headers = new Headers(fetchOptions?.headers);
   if (apiOptions.requireAuth) {
     if (!UserAuth.modhash) {
       Alert.alert("You need to log in first!");
       throw new Error("User is not authenticated");
     }
-    const authorizedHeaders: HeadersInit = new Headers(fetchOptions?.headers);
-    authorizedHeaders.set("X-Modhash", UserAuth.modhash);
-    fetchOptions.headers = authorizedHeaders;
+    headers.set("X-Modhash", UserAuth.modhash);
   }
 
   fetchOptions.cache = "no-store";
 
   if (apiOptions.body) {
-    const contentTypeHeaders: HeadersInit = new Headers(fetchOptions?.headers);
-    contentTypeHeaders.set("Content-Type", "application/x-www-form-urlencoded");
-    fetchOptions.headers = contentTypeHeaders;
+    headers.set("Content-Type", "application/x-www-form-urlencoded");
     fetchOptions.body = new URLSearchParams(apiOptions.body).toString();
   }
 
-  fetchOptions.headers = {
-    ...fetchOptions.headers,
-    "User-Agent": USER_AGENT,
-  };
+  headers.set("User-Agent", USER_AGENT);
+  fetchOptions.headers = headers;
 
   const res = await fetch(url, fetchOptions);
 
