@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import { UserAuth } from "./Authentication";
 import RedditCookies from "../utils/RedditCookies";
 import RedditURL from "../utils/RedditURL";
+import { USER_AGENT } from "./UserAgent";
 
 export type RedditDataObject = { id: string; type: string; after: string };
 
@@ -36,6 +37,11 @@ export async function api(
     fetchOptions.headers = contentTypeHeaders;
     fetchOptions.body = new URLSearchParams(apiOptions.body).toString();
   }
+
+  fetchOptions.headers = {
+    ...fetchOptions.headers,
+    "User-Agent": USER_AGENT,
+  };
 
   const res = await fetch(url, fetchOptions);
 
