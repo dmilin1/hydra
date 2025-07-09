@@ -11,6 +11,7 @@ import {
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
   SORT_HOME_PAGE,
 } from "../constants/SettingsKeys";
+import { USER_AGENT } from "../api/UserAgent";
 
 export enum PageType {
   HOME,
@@ -240,6 +241,9 @@ export default class RedditURL extends URL {
     const response = await fetch(this.url, {
       method: "HEAD",
       redirect: "follow",
+      headers: {
+        "User-Agent": USER_AGENT,
+      },
     });
     this.url = response.url;
     return this;

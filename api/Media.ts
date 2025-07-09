@@ -1,6 +1,7 @@
 import { ImagePickerAsset } from "expo-image-picker";
 
 import { api } from "./RedditApi";
+import { USER_AGENT } from "./UserAgent";
 
 export async function uploadImage(
   imageAsset: ImagePickerAsset,
@@ -40,6 +41,7 @@ export async function uploadImage(
     method: "POST",
     headers: {
       "Content-Type": "multipart/form-data; ",
+      "User-Agent": USER_AGENT,
     },
     body,
   });

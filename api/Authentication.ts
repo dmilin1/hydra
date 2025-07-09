@@ -1,5 +1,6 @@
 import { Account } from "./User";
 import RedditCookies from "../utils/RedditCookies";
+import { USER_AGENT } from "./UserAgent";
 
 type CurrentUser = {
   data: {
@@ -34,6 +35,9 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     method: "GET",
     redirect: "follow",
     cache: "no-store",
+    headers: {
+      "User-Agent": USER_AGENT,
+    },
   }).then((response) => {
     if (response.status === 429) {
       throw new RateLimited();
@@ -60,6 +64,9 @@ export async function login(account: Account): Promise<void> {
     method: "POST",
     body: formdata,
     redirect: "follow",
+    headers: {
+      "User-Agent": USER_AGENT,
+    },
   }).then((response) => response.json());
 
   if (res?.success !== true) {
@@ -90,6 +97,9 @@ export async function logout(): Promise<void> {
     method: "POST",
     body: formdata,
     redirect: "follow",
+    headers: {
+      "User-Agent": USER_AGENT,
+    },
   });
 
   await RedditCookies.clearSessionCookies();
