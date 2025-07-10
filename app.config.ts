@@ -66,6 +66,12 @@ module.exports = {
         {
           "supportsPictureInPicture": true,
         }
+      ],
+      [
+        "react-native-safari-extension",
+        {
+          "folderName": "IosExtension",
+        }
       ]
     ],
     updates: {
