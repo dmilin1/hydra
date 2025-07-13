@@ -9,18 +9,15 @@ import {
   ScrollView,
 } from "react-native";
 
-import { Needs2FA } from "../api/Authentication";
-import Login from "../components/Modals/Login";
 import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
-import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import { Account } from "../api/User";
 
 export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
-  const { currentAcc, accounts, logIn, logOut, removeUser } =
+  const { currentUser, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);
-  const { setModal } = useContext(ModalContext);
   const [loading, setLoading] = useState(false);
 
   return (
@@ -34,7 +31,7 @@ export default function AccountsPage() {
     >
       {accounts.length ? (
         <ScrollView style={styles.scrollView}>
-          {[...accounts, { username: "Logged Out", password: "" }].map(
+          {[...accounts, { username: "Logged Out" } as Account].map(
             (account) => (
               <Slideable
                 key={account.username}
@@ -69,15 +66,7 @@ export default function AccountsPage() {
                     if (account.username === "Logged Out") {
                       await logOut();
                     } else {
-                      try {
-                        await logIn(account);
-                      } catch (e) {
-                        if (e instanceof Needs2FA) {
-                          setModal(<Login just2FAVerifyAcc={account} />);
-                        } else {
-                          throw e;
-                        }
-                      }
+                      await logIn(account);
                     }
                     setLoading(false);
                   }}
@@ -92,8 +81,8 @@ export default function AccountsPage() {
                   >
                     {account.username}
                   </Text>
-                  {(currentAcc?.username === account.username ||
-                    (!currentAcc && account.username === "Logged Out")) && (
+                  {(currentUser?.userName === account.username ||
+                    (!currentUser && account.username === "Logged Out")) && (
                     <>
                       {loading ? (
                         <ActivityIndicator size="small" color={theme.text} />

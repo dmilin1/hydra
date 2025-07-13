@@ -31,7 +31,10 @@ export function InboxProvider({ children }: React.PropsWithChildren) {
 
   // set up an interval to run every 30 seconds to check for new messages if the user is logged in
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      setInboxCount(0);
+      return;
+    }
     const interval = setInterval(checkForMessages, 30_000);
     checkForMessages();
     return () => clearInterval(interval);

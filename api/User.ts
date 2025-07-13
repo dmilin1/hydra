@@ -8,7 +8,6 @@ import Time from "../utils/Time";
 
 export type Account = {
   username: string;
-  password: string;
 };
 
 export type User = {

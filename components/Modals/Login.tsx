@@ -1,312 +1,208 @@
 import { Feather } from "@expo/vector-icons";
-import * as WebBrowser from "expo-web-browser";
-import React, { useState, useContext } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import {
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
   Dimensions,
-  TextInput,
   ActivityIndicator,
+  SafeAreaView,
+  Alert,
 } from "react-native";
 
-import { IncorrectCredentials, Needs2FA } from "../../api/Authentication";
+import { getCurrentUser } from "../../api/Authentication";
 import { Account } from "../../api/User";
 import { AccountContext } from "../../contexts/AccountContext";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { WebView } from "react-native-webview";
 
-type LoginProps = {
-  just2FAVerifyAcc?: Account;
-};
+const INJECTED_JAVASCRIPT = `
+  const modifyThroughShadowDOM = (selector, styleOrFunction) => {
+    const applyInTree = (root) => {
+      try {
+        // Regular DOM
+        root.querySelectorAll(selector).forEach(el => {
+          if (typeof styleOrFunction === 'function') {
+            styleOrFunction(el);
+          } else if (typeof styleOrFunction === 'object') {
+            Object.assign(el.style, styleOrFunction);
+          }
+        });
+        
+        // Shadow DOM
+        root.querySelectorAll('*').forEach(el => {
+          if (el.shadowRoot) {
+            applyInTree(el.shadowRoot);
+          }
+        });
+      } catch (e) {
+        console.warn('Error applying styles to elements:', e);
+      }
+    };
+    
+    applyInTree(document);
+    
+    // Watch for changes
+    new MutationObserver(() => applyInTree(document))
+      .observe(document.body, { childList: true, subtree: true });
+  };
 
-export default function Login({ just2FAVerifyAcc }: LoginProps) {
+  modifyThroughShadowDOM(
+    '.flex.justify-between.items-end.pt-lg.pb-xs',
+    { display: 'none' },
+  );
+
+  modifyThroughShadowDOM(
+    'h1.text-24.text-center.text-neutral-content-strong',
+    { 'margin-top': '20px' },
+  );
+`;
+
+export default function Login() {
   const { theme } = useContext(ThemeContext);
-  const { addUser, logIn } = useContext(AccountContext);
+  const { currentUser, addUser, logIn, logOut } = useContext(AccountContext);
   const { setModal } = useContext(ModalContext);
-  const [username, setUsername] = useState(just2FAVerifyAcc?.username ?? "");
-  const [password, setPassword] = useState(just2FAVerifyAcc?.password ?? "");
-  const [twoFACode, setTwoFACode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [needs2FA, setNeeds2FA] = useState(!!just2FAVerifyAcc);
 
-  const resetModal = () => {
+  const initialUser = useRef(currentUser);
+  const loginFinished = useRef(false);
+
+  const handleLoginSuccess = async (account: Account) => {
+    await addUser(account);
+  };
+
+  const handleLoginCanceled = () => {
+    if (initialUser.current) {
+      logIn({ username: initialUser.current.userName });
+    }
     setModal(null);
-    setUsername("");
-    setPassword("");
-    setTwoFACode("");
-    setLoading(false);
   };
 
-  const handleLoginError = (e: unknown) => {
-    setLoading(false);
-    if (e instanceof Needs2FA) {
-      setNeeds2FA(true);
-    } else if (e instanceof IncorrectCredentials) {
-      alert("Incorrect username or password");
+  const handleLoginFailed = () => {
+    if (initialUser.current !== currentUser) {
+      logOut();
+    }
+    Alert.alert("Login failed", "Something went wrong");
+  };
+
+  const handleLoginFinished = async () => {
+    if (loginFinished.current) return;
+    loginFinished.current = true;
+    setModal(null);
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      handleLoginSuccess({ username: currentUser.data.name });
+    } else {
+      handleLoginFailed();
     }
   };
 
-  const submit2FACheck = async () => {
-    try {
-      await logIn({
-        username,
-        password: needs2FA ? `${password}:${twoFACode}` : password,
-      });
-      resetModal();
-    } catch (e) {
-      handleLoginError(e);
+  useEffect(() => {
+    if (currentUser) {
+      logOut();
     }
-  };
-
-  const addNewUser = async () => {
-    try {
-      await addUser({ username, password }, twoFACode);
-      resetModal();
-    } catch (e) {
-      handleLoginError(e);
-    }
-  };
+  }, []);
 
   return (
-    <>
-      <View
-        style={[
-          styles.loginSubContainer,
-          {
-            backgroundColor: theme.background,
-            borderColor: theme.divider,
-          },
-        ]}
-      >
-        <View style={styles.iconContainer}>
-          <Feather
-            name="user-plus"
-            style={{ color: theme.text, fontSize: 32 }}
-          />
-        </View>
-        <View style={styles.fieldContainer}>
-          <Text
-            style={[
-              styles.textLabel,
-              {
-                color: theme.text,
-              },
-            ]}
-          >
-            Username:
-          </Text>
-          <TextInput
-            style={[
-              styles.textInput,
-              {
-                color: theme.text,
-                borderColor: theme.divider,
-              },
-            ]}
-            onChangeText={(text) => setUsername(text)}
-            value={username}
-            autoComplete="username"
-            autoCapitalize="none"
-          />
-        </View>
-        <View style={styles.fieldContainer}>
-          <Text
-            style={[
-              styles.textLabel,
-              {
-                color: theme.text,
-              },
-            ]}
-          >
-            Password:
-          </Text>
-          <TextInput
-            style={[
-              styles.textInput,
-              {
-                color: theme.text,
-                borderColor: theme.divider,
-              },
-            ]}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
-            autoComplete="current-password"
-            autoCapitalize="none"
-            secureTextEntry
-          />
-        </View>
-        {needs2FA && (
-          <View style={styles.fieldContainer}>
-            <Text
-              style={[
-                styles.textLabel,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              2FA Code:
-            </Text>
-            <TextInput
-              style={[
-                styles.textInput,
-                {
-                  color: theme.text,
-                  borderColor: theme.divider,
-                },
-              ]}
-              onChangeText={(text) => setTwoFACode(text)}
-              value={twoFACode}
-              autoComplete="one-time-code"
-              autoCapitalize="none"
-              keyboardType="number-pad"
-            />
+    <View style={styles.loginContainer}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.navbar}>
+          <View style={styles.navbarTitleContainer}>
+            <Text style={styles.navbarText}>Login</Text>
           </View>
-        )}
-        <View style={styles.legaleseContainer}>
-          <Text
-            style={[
-              styles.legaleseText,
-              {
-                color: theme.text,
-              },
-            ]}
+          <TouchableOpacity
+            onPress={() => handleLoginCanceled()}
+            style={styles.closeButton}
+            hitSlop={15}
           >
-            By logging in you are agreeing to the
-            <Text
-              style={{ color: theme.iconOrTextButton }}
-              onPress={() =>
-                WebBrowser.openBrowserAsync(
-                  "https://www.redditinc.com/policies/user-agreement",
-                )
-              }
-            >
-              {" "}
-              Reddit User Agreement{" "}
-            </Text>
-            and the
-            <Text
-              style={{ color: theme.iconOrTextButton }}
-              onPress={() =>
-                WebBrowser.openBrowserAsync(
-                  "https://www.redditinc.com/policies/reddit-rules",
-                )
-              }
-            >
-              {" "}
-              Reddit Rules
-            </Text>
-            .
-          </Text>
+            <Feather name="x" size={24} color="white" />
+          </TouchableOpacity>
         </View>
-        <View style={styles.buttonContainer}>
-          {loading ? (
+        <View style={styles.webViewContainer}>
+          {currentUser ? (
             <ActivityIndicator size="small" color={theme.text} />
           ) : (
-            <TouchableOpacity
-              style={[
-                styles.button,
-                {
-                  borderColor: theme.divider,
-                },
-              ]}
-              onPress={async () => {
-                setLoading(true);
-                if (just2FAVerifyAcc) {
-                  submit2FACheck();
-                } else {
-                  addNewUser();
+            <WebView
+              source={{
+                uri: "https://www.reddit.com/login?dest=https://www.reddit.com/r/HydraApp",
+              }}
+              style={styles.webView}
+              sharedCookiesEnabled={true}
+              thirdPartyCookiesEnabled={true}
+              onLoadStart={(event) => {
+                if (
+                  !event.nativeEvent.url.includes("reddit.com/login") &&
+                  !event.nativeEvent.url.includes(
+                    "redditinc.com/policies/user-agreement",
+                  ) &&
+                  !event.nativeEvent.url.includes(
+                    "redditinc.com/policies/privacy-policy",
+                  ) &&
+                  !event.nativeEvent.url.includes(
+                    "reddit.com/policies/privacy-policy",
+                  )
+                ) {
+                  handleLoginFinished();
                 }
               }}
-            >
-              <Text
-                style={[
-                  styles.buttonText,
-                  {
-                    color: theme.iconOrTextButton,
-                  },
-                ]}
-              >
-                Login
-              </Text>
-            </TouchableOpacity>
+              injectedJavaScript={INJECTED_JAVASCRIPT}
+              // Injected js doesn't run unless you pass a function here even if it doesn't do anything. No idea why.
+              onMessage={() => {}}
+            />
           )}
         </View>
-      </View>
-      <View
-        style={styles.background}
-        onTouchStart={() => {
-          setModal(null);
-          setUsername("");
-          setPassword("");
-        }}
-      />
-    </>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loginSubContainer: {
+  loginContainer: {
     position: "absolute",
     top: 0,
-    width: Dimensions.get("window").width * 0.9,
-    marginTop: Dimensions.get("window").height * 0.15,
-    marginHorizontal: "5%",
-    zIndex: 1,
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-  },
-  background: {
-    position: "absolute",
-    width: "100%",
-    top: 0,
-    left: 0,
+    width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
+    zIndex: 10,
     backgroundColor: "black",
-    opacity: 0.7,
   },
-  iconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 15,
+  safeArea: {
+    flex: 1,
   },
-  fieldContainer: {
+  navbar: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    position: "relative",
+    justifyContent: "flex-end",
+    minHeight: 44,
   },
-  textLabel: {
-    fontSize: 18,
-    marginRight: 10,
-  },
-  textInput: {
-    fontSize: 18,
-    borderWidth: 1,
+  navbarTitleContainer: {
     flex: 1,
-    borderRadius: 5,
-    maxWidth: 175,
-    padding: 5,
-  },
-  legaleseContainer: {
-    marginTop: 10,
-  },
-  legaleseText: {},
-  buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 0,
   },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  buttonText: {
+  navbarText: {
+    color: "white",
     fontSize: 18,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  closeButton: {
+    zIndex: 1,
+    marginLeft: "auto",
+  },
+  webViewContainer: {
+    flex: 1,
+  },
+  webView: {
+    flex: 1,
   },
 });

@@ -49,5 +49,7 @@ export default class RedditCookies {
 
   static async clearSessionCookies() {
     await CookieManager.clearAll();
+    await CookieManager.clearAll(true);
+    await CookieManager.removeSessionCookies();
   }
 }
