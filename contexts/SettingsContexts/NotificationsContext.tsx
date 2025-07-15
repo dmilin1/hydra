@@ -49,9 +49,9 @@ export function NotificationsProvider({ children }: React.PropsWithChildren) {
 
       const accountsWithSession = (
         await Promise.all(
-          accounts.map(async (acc) => ({
-            username: acc.username,
-            session: await RedditCookies.getSessionCookies(acc),
+          accounts.map(async (username) => ({
+            username,
+            session: await RedditCookies.getSessionCookies(username),
           })),
         )
       ).filter((acc) => acc.session !== null) as {

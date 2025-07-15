@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useContext, useRef, useEffect } from "react";
+import React, { useContext, useRef, useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -11,8 +11,6 @@ import {
   Alert,
 } from "react-native";
 
-import { getCurrentUser } from "../../api/Authentication";
-import { Account } from "../../api/User";
 import { AccountContext } from "../../contexts/AccountContext";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -62,27 +60,20 @@ const INJECTED_JAVASCRIPT = `
 
 export default function Login() {
   const { theme } = useContext(ThemeContext);
-  const { currentUser, addUser, logIn, logOut } = useContext(AccountContext);
+  const { logIn, doWithTempLogout } = useContext(AccountContext);
   const { setModal } = useContext(ModalContext);
+  const [canShow, setCanShow] = useState(false);
 
-  const initialUser = useRef(currentUser);
   const loginFinished = useRef(false);
-
-  const handleLoginSuccess = async (account: Account) => {
-    await addUser(account);
-  };
+  const resolver = useRef<((value: boolean) => void) | null>(null);
 
   const handleLoginCanceled = () => {
-    if (initialUser.current) {
-      logIn({ username: initialUser.current.userName });
-    }
+    resolver.current?.(true);
     setModal(null);
   };
 
   const handleLoginFailed = () => {
-    if (initialUser.current !== currentUser) {
-      logOut();
-    }
+    resolver.current?.(true);
     Alert.alert("Login failed", "Something went wrong");
   };
 
@@ -90,18 +81,22 @@ export default function Login() {
     if (loginFinished.current) return;
     loginFinished.current = true;
     setModal(null);
-    const currentUser = await getCurrentUser();
-    if (currentUser) {
-      handleLoginSuccess({ username: currentUser.data.name });
-    } else {
+    const logginSuccess = await logIn();
+    if (!logginSuccess) {
       handleLoginFailed();
+    } else {
+      resolver.current?.(false);
     }
   };
 
   useEffect(() => {
-    if (currentUser) {
-      logOut();
-    }
+    const promise = new Promise<boolean>(
+      (resolve) => (resolver.current = resolve),
+    );
+    doWithTempLogout(() => {
+      setCanShow(true);
+      return promise;
+    });
   }, []);
 
   return (
@@ -120,7 +115,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
         <View style={styles.webViewContainer}>
-          {currentUser ? (
+          {!canShow ? (
             <ActivityIndicator size="small" color={theme.text} />
           ) : (
             <WebView

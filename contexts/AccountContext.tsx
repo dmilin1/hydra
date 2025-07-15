@@ -2,29 +2,29 @@ import * as Sentry from "@sentry/react-native";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
 
-import { getCurrentUser, UserAuth } from "../api/Authentication";
-import { Account, User, getUser } from "../api/User";
+import { UserAuth } from "../api/Authentication";
+import { User, getUser } from "../api/User";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
 
 type AccountContextType = {
   loginInitialized: boolean;
   currentUser: User | null;
-  accounts: Account[];
-  logIn: (account: Account) => Promise<void>;
+  accounts: string[];
+  logIn: (username?: string) => Promise<boolean>;
   logOut: () => Promise<void>;
-  addUser: (account: Account) => Promise<void>;
-  removeUser: (account: Account) => Promise<void>;
+  removeUser: (username: string) => Promise<void>;
+  doWithTempLogout: (fn: () => Promise<boolean>) => Promise<void>;
 };
 
 const initialAccountContext: AccountContextType = {
   loginInitialized: false,
   currentUser: null,
   accounts: [],
-  logIn: async () => {},
+  logIn: async () => false,
   logOut: async () => {},
-  addUser: async () => {},
   removeUser: async () => {},
+  doWithTempLogout: async () => {},
 };
 
 export const AccountContext = createContext(initialAccountContext);
@@ -35,18 +35,43 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     useState<AccountContextType["currentUser"]>(null);
   const [accounts, setAccounts] = useState<AccountContextType["accounts"]>([]);
 
-  const logInContext = async (account: Account): Promise<void> => {
-    await RedditCookies.restoreSessionCookies(account);
-    await getCurrentUser();
-    const user = await getUser("/user/me");
-    if (user.userName !== account.username) {
-      await logOutContext();
-      return;
+  const logInContext = async (username?: string): Promise<boolean> => {
+    if (username) {
+      await RedditCookies.restoreSessionCookies(username);
     }
-    KeyStore.set("currentUser", account.username);
-    setCurrentUser(user);
-    Sentry.setUser({ username: user.userName });
-    await RedditCookies.saveSessionCookies(account);
+    try {
+      const user = await getUser("/user/me");
+      if (username && user.userName !== username) {
+        throw new Error("Authenticated session out of sync");
+      }
+      if (!user.modhash) {
+        throw new Error("Failed to get modhash");
+      }
+      UserAuth.modhash = user.modhash;
+      KeyStore.set("currentUser", user.userName);
+      setCurrentUser(user);
+      Sentry.setUser({ username: user.userName });
+      await RedditCookies.saveSessionCookies(user.userName);
+      if (!accounts.includes(user.userName)) {
+        await addUser(user.userName);
+      }
+      return true;
+    } catch (_e) {
+      await logOutContext();
+      return false;
+    }
+  };
+
+  const doWithTempLogout = async (fn: () => Promise<boolean>) => {
+    const currentUser = KeyStore.getString("currentUser");
+    const currentUserModhash = UserAuth.modhash;
+    await RedditCookies.clearSessionCookies();
+    UserAuth.modhash = undefined;
+    const shouldRestore = await fn();
+    if (shouldRestore && currentUser && currentUserModhash) {
+      await RedditCookies.restoreSessionCookies(currentUser);
+      UserAuth.modhash = currentUserModhash;
+    }
   };
 
   const logOutContext = async () => {
@@ -57,48 +82,34 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     UserAuth.modhash = undefined;
   };
 
-  const addUser = async (account: Account) => {
-    await logInContext({
-      username: account.username,
-    });
-    if (!accounts.find((acc) => acc.username === account.username)) {
-      const accs = [...accounts, account];
-      await saveAccounts(accs);
-      setAccounts(accs);
-    }
-  };
-
-  const removeUser = async (account: Account) => {
-    const accs = accounts.filter((acc) => acc.username !== account.username);
-    if (currentUser?.userName === account.username) {
-      await logOutContext();
-    }
-    // remove from saved data
-    await SecureStore.deleteItemAsync(`password-${account.username}`);
-    await RedditCookies.deleteSessionCookies(account);
+  const addUser = async (username: string) => {
+    const accs = [...accounts, username];
     await saveAccounts(accs);
     setAccounts(accs);
   };
 
-  const saveAccounts = async (accs: Account[]) => {
-    KeyStore.set("usernames", JSON.stringify(accs.map((acc) => acc.username)));
+  const removeUser = async (username: string) => {
+    const accs = accounts.filter((acc) => acc !== username);
+    if (currentUser?.userName === username) {
+      await logOutContext();
+    }
+    // remove from saved data
+    await RedditCookies.deleteSessionCookies(username);
+    await saveAccounts(accs);
+    setAccounts(accs);
+  };
+
+  const saveAccounts = async (accs: string[]) => {
+    KeyStore.set("usernames", JSON.stringify(accs));
   };
 
   const loadSavedData = async () => {
     const usernamesJSON = KeyStore.getString("usernames");
-    const accs: AccountContextType["accounts"] = [];
     if (usernamesJSON) {
       const usernames: string[] = JSON.parse(usernamesJSON);
-      accs.push(...usernames.map((username) => ({ username })));
-      setAccounts(accs);
+      setAccounts(usernames);
       const currentUsername = KeyStore.getString("currentUser");
-      const currentAccount = accs.find(
-        (acc) => acc.username === currentUsername,
-      );
-      if (currentUsername && currentAccount) {
-        await logInContext(currentAccount);
-      }
-      setAccounts(accs);
+      await logInContext(currentUsername);
     }
     setLoginInitialized(true);
   };
@@ -115,8 +126,8 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
         accounts,
         logIn: logInContext,
         logOut: logOutContext,
-        addUser,
         removeUser,
+        doWithTempLogout,
       }}
     >
       {children}

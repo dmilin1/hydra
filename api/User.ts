@@ -6,10 +6,6 @@ import { api } from "./RedditApi";
 import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
 
-export type Account = {
-  username: string;
-};
-
 export type User = {
   id: string;
   type: "user";

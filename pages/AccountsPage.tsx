@@ -12,7 +12,6 @@ import {
 import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
-import { Account } from "../api/User";
 
 export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
@@ -31,77 +30,73 @@ export default function AccountsPage() {
     >
       {accounts.length ? (
         <ScrollView style={styles.scrollView}>
-          {[...accounts, { username: "Logged Out" } as Account].map(
-            (account) => (
-              <Slideable
-                key={account.username}
-                right={
-                  account.username === "Logged Out"
-                    ? undefined
-                    : [
-                        {
-                          icon: (
-                            <Feather name="trash" style={{ fontSize: 24 }} />
-                          ),
-                          color: theme.delete,
-                          action: async () => {
-                            setLoading(true);
-                            await removeUser(account);
-                            setLoading(false);
-                          },
+          {[...accounts, "Logged Out"].map((username) => (
+            <Slideable
+              key={username}
+              right={
+                username === "Logged Out"
+                  ? undefined
+                  : [
+                      {
+                        icon: <Feather name="trash" style={{ fontSize: 24 }} />,
+                        color: theme.delete,
+                        action: async () => {
+                          setLoading(true);
+                          await removeUser(username);
+                          setLoading(false);
                         },
-                      ]
-                }
+                      },
+                    ]
+              }
+            >
+              <TouchableOpacity
+                style={[
+                  styles.accountItemContainer,
+                  {
+                    borderBottomColor: theme.divider,
+                  },
+                ]}
+                activeOpacity={0.5}
+                onPress={async () => {
+                  setLoading(true);
+                  if (username === "Logged Out") {
+                    await logOut();
+                  } else {
+                    await logIn(username);
+                  }
+                  setLoading(false);
+                }}
               >
-                <TouchableOpacity
+                <Text
                   style={[
-                    styles.accountItemContainer,
+                    styles.accountItemText,
                     {
-                      borderBottomColor: theme.divider,
+                      color: theme.text,
                     },
                   ]}
-                  activeOpacity={0.5}
-                  onPress={async () => {
-                    setLoading(true);
-                    if (account.username === "Logged Out") {
-                      await logOut();
-                    } else {
-                      await logIn(account);
-                    }
-                    setLoading(false);
-                  }}
                 >
-                  <Text
-                    style={[
-                      styles.accountItemText,
-                      {
-                        color: theme.text,
-                      },
-                    ]}
-                  >
-                    {account.username}
-                  </Text>
-                  {(currentUser?.userName === account.username ||
-                    (!currentUser && account.username === "Logged Out")) && (
-                    <>
-                      {loading ? (
-                        <ActivityIndicator size="small" color={theme.text} />
-                      ) : (
-                        <Feather
-                          name="check"
-                          style={{
-                            fontSize: 24,
-                            color: theme.iconOrTextButton,
-                            marginVertical: -5,
-                          }}
-                        />
-                      )}
-                    </>
-                  )}
-                </TouchableOpacity>
-              </Slideable>
-            ),
-          )}
+                  {username}
+                </Text>
+                {(currentUser?.userName === username ||
+                  (!currentUser && username === "Logged Out")) && (
+                  <>
+                    {loading ? (
+                      <ActivityIndicator size="small" color={theme.text} />
+                    ) : (
+                      <Feather
+                        name="check"
+                        style={{
+                          fontSize: 24,
+                          color: theme.iconOrTextButton,
+                          marginVertical: -5,
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </TouchableOpacity>
+            </Slideable>
+          ))}
         </ScrollView>
       ) : (
         <View style={styles.noAccountsContainer}>
