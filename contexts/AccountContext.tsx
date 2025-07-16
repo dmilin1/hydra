@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/react-native";
-import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
 
 import { UserAuth } from "../api/Authentication";
@@ -52,9 +51,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       setCurrentUser(user);
       Sentry.setUser({ username: user.userName });
       await RedditCookies.saveSessionCookies(user.userName);
-      if (!accounts.includes(user.userName)) {
-        await addUser(user.userName);
-      }
+      await addUser(user.userName);
       return true;
     } catch (_e) {
       await logOutContext();
@@ -83,6 +80,14 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   };
 
   const addUser = async (username: string) => {
+    const usernamesJSON = KeyStore.getString("usernames");
+    let usernames: string[] = [];
+    if (usernamesJSON) {
+      usernames = JSON.parse(usernamesJSON);
+    }
+    if (usernames.includes(username)) {
+      return;
+    }
     const accs = [...accounts, username];
     await saveAccounts(accs);
     setAccounts(accs);
