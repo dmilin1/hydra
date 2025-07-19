@@ -17,40 +17,50 @@ import GetHydraProButton from "../UI/GetHydraProButton";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 const update = {
-  updateKey: "2.7.2-1",
+  updateKey: "2.9.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Sidebars and Wikis",
+      title: "Hide Tabs on Scroll",
       description:
-        "Added the ability to view subreddit sidebars and wikis. You can view these when on a subreddit page by tapping the ... button at the top right and selecting 'Sidebar' or 'Wiki'.",
+        "You can now hide the tabs while scrolling down infinite scroll pages. You can enable this in Settings => Appearance => Tab Appearance Settings => Hide on infinite scroll.",
     },
     {
-      title: "A to Z Subreddit Slider",
+      title: "Swipe Anywhere to Navigate",
       description:
-        "The subreddits page now has an A to Z slider so those of you with lots of subreddits can scroll to what you're looking for more quickly.",
+        "Added a setting to swipe anywhere on screen to get back to the previous page like in the default Reddit app. You can enable this in Settings => General => Gestures => Swipe Anywhere to Navigate.",
+    },
+    {
+      title: "Full Support for Long Press",
+      description:
+        "Long presses should now allow you to do anything you can do with swipes.",
+    },
+    {
+      title: "Go to Previous Comment",
+      description:
+        "Long pressing on the go to next comment floating arrow will now take you to the previous comment.",
+    },
+    {
+      title: "Video Player Rewrite",
+      description:
+        "The video player has been rewritten to be more stable and to fix audio synchronization issues.",
+    },
+    {
+      title: "Disable Video Autoplay",
+      description:
+        "You can disable autoplay for videos in Settings => Appearance => Post Appearance Settings => Auto play videos.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
       description:
-        "Fixed custom hydra server URL not being used for AI requests.",
-    },
-    {
-      description: "Fixed drafts not clearing after submitting.",
+        "Fixed authentication issues. Hydra now uses a new authentication system.",
     },
     {
       description:
-        "Fixed summaries changing background color when pressed with certain themes set.",
-    },
-    {
-      description:
-        "Fixed being unable to set the current theme when the system is in dark mode.",
-    },
-    {
-      description: "Made the hydra://openURL deep link case insensitive.",
+        "Fixed posts that link to comments not having a link to click on. Subreddits like /r/bestof should now be more usable.",
     },
   ] as { description: string }[],
 };
