@@ -103,7 +103,7 @@ export default function PostMedia({
           <PollViewer poll={post.poll} />
         </View>
       )}
-      {post.externalLink && <Link post={post} />}
+      {(post.link || post.crossCommentLink) && <Link post={post} />}
       {customThemes.map((customTheme, i) => (
         <ThemeImport key={customTheme.name + i} customTheme={customTheme} />
       ))}

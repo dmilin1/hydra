@@ -22,6 +22,7 @@ export type Post = {
   name: string;
   type: "post";
   crossPost?: Post;
+  crossCommentLink?: string;
   title: string;
   author: string;
   upvotes: number;
@@ -117,8 +118,12 @@ export async function formatPostData(child: any): Promise<Post> {
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
+  let crossCommentLink = undefined;
   try {
     new RedditURL(child.data.url);
+    if (child.data.url.includes("/comments/")) {
+      crossCommentLink = child.data.url;
+    }
   } catch (_) {
     externalLink = child.data.url;
     if (externalLink.includes("imgur.com") && externalLink.endsWith(".gifv")) {
@@ -187,6 +192,7 @@ export async function formatPostData(child: any): Promise<Post> {
     name: child.data.name,
     type: "post",
     crossPost,
+    crossCommentLink,
     title: decode(child.data.title),
     author: child.data.author,
     upvotes: child.data.ups,
