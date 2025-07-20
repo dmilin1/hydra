@@ -227,6 +227,20 @@ export async function formatPostData(child: any): Promise<Post> {
   };
 }
 
+export class BannedSubredditError extends Error {
+  constructor() {
+    super("BannedSubredditError");
+    this.name = "BannedSubredditError";
+  }
+}
+
+export class PrivateSubredditError extends Error {
+  constructor() {
+    super("PrivateSubredditError");
+    this.name = "PrivateSubredditError";
+  }
+}
+
 export async function getPosts(
   url: string,
   options: GetPostOptions = {},
@@ -250,24 +264,18 @@ export async function getPosts(
       options,
     );
   }
+  if (response.reason === "banned") {
+    throw new BannedSubredditError();
+  }
+  if (response.reason === "private") {
+    throw new PrivateSubredditError();
+  }
   const posts: Post[] = await Promise.all(
     response.data.children.map(
       async (child: any) => await formatPostData(child),
     ),
   );
   return posts;
-}
-export async function fetchPostsAccessStatus(
-  url: string,
-): Promise<{ reason: string | null; success: boolean; name: string | null }> {
-  const redditURL = new RedditURL(url);
-  const subreddit = redditURL.getSubreddit();
-  redditURL.jsonify();
-  const response = await api(redditURL.toString());
-  if (response.reason === "banned" || response.reason === "private") {
-    return {success: false, reason: response.reason, name: subreddit };
-  }
-  return {success: true, reason: null, name: subreddit };
 }
 
 function handleGatedSubreddit(

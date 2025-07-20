@@ -62,6 +62,10 @@ const update = {
       description:
         "Fixed posts that link to comments not having a link to click on. Subreddits like /r/bestof should now be more usable.",
     },
+    {
+      description:
+        "Indicate when subreddits are banned or private instead of failing to load.",
+    },
   ] as { description: string }[],
 };
 

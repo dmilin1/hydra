@@ -1,6 +1,11 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { getPosts, Post, fetchPostsAccessStatus } from "../api/Posts";
+import {
+  getPosts,
+  Post,
+  PrivateSubredditError,
+  BannedSubredditError,
+} from "../api/Posts";
 
 import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
@@ -11,6 +16,7 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { markPostSeen } from "../db/functions/SeenPosts";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
+import RedditURL from "../utils/RedditURL";
 
 export default function PostsPage({
   route,
@@ -26,18 +32,11 @@ export default function PostsPage({
   } = useContext(FiltersContext);
 
   const [rerenderCount, rerender] = useState(0);
+  const [accessFailure, setAccessFailure] = useState<
+    "private" | "banned" | null
+  >(null);
 
   const shouldFilterSeen = getHideSeenURLStatus(url);
-
-  const [postsAccessStatus, setpostsAccessStatus] = useState<{
-    reason: string | null;
-    success: boolean;
-    name: string | null;
-  } | null>(null);
-
-  useEffect(() => {
-    fetchPostsAccessStatus(url).then(setpostsAccessStatus);
-  }, [url]);
 
   const {
     data: posts,
@@ -47,12 +46,25 @@ export default function PostsPage({
     fullyLoaded,
     hitFilterLimit,
   } = useRedditDataState<Post>({
-    loadData: async (after, limit) =>
-      await getPosts(url, {
-        after,
-        search: search.current,
-        limit,
-      }),
+    loadData: async (after, limit) => {
+      try {
+        return await getPosts(url, {
+          after,
+          search: search.current,
+          limit,
+        });
+      } catch (e) {
+        if (e instanceof BannedSubredditError) {
+          setAccessFailure("banned");
+          return [];
+        } else if (e instanceof PrivateSubredditError) {
+          setAccessFailure("private");
+          return [];
+        } else {
+          throw e;
+        }
+      }
+    },
     filterRules: [
       ...(shouldFilterSeen ? [filterSeenItems] : []),
       filterPostsByText,
@@ -70,33 +82,6 @@ export default function PostsPage({
     }
   };
 
-
-  if (postsAccessStatus && !postsAccessStatus.success) {
-    const text = (postsAccessStatus.reason === "private")
-      ? (`🔑 r/${postsAccessStatus.name} has been set to private by its subreddit moderators`)
-      : (`🚫 r/${postsAccessStatus.name} has been banned by Reddit Administrators for breaking Reddit rules`);
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 16,
-            color: theme.text,
-            textAlign: "center",
-            maxWidth: 320,
-          }}
-        >
-          {text}
-        </Text>
-      </View>
-    );
-  }
-
   return (
     <View
       style={[
@@ -106,45 +91,72 @@ export default function PostsPage({
         },
       ]}
     >
-      <RedditDataScroller<Post>
-        ListHeaderComponent={
-          route.name === "PostsPage" ? (
-            <SearchBar
-              onSearch={(text) => {
-                search.current = text;
-                refreshPosts();
+      {accessFailure === "private" ? (
+        <Text
+          style={[
+            styles.accessFailureText,
+            {
+              color: theme.subtleText,
+            },
+          ]}
+        >
+          🔑 r/{new RedditURL(url).getSubreddit()} has been set to private by
+          its subreddit moderators
+        </Text>
+      ) : accessFailure === "banned" ? (
+        <Text
+          style={[
+            styles.accessFailureText,
+            {
+              color: theme.subtleText,
+            },
+          ]}
+        >
+          🚫 r/{new RedditURL(url).getSubreddit()} has been banned by Reddit
+          Administrators for breaking Reddit rules
+        </Text>
+      ) : (
+        <RedditDataScroller<Post>
+          ListHeaderComponent={
+            route.name === "PostsPage" ? (
+              <SearchBar
+                onSearch={(text) => {
+                  search.current = text;
+                  refreshPosts();
+                }}
+              />
+            ) : null
+          }
+          loadMore={loadMorePosts}
+          refresh={refreshPosts}
+          fullyLoaded={fullyLoaded}
+          hitFilterLimit={hitFilterLimit}
+          data={posts}
+          extraData={rerenderCount} // This triggers a rerender of the visible list items
+          renderItem={({ item }) => (
+            <PostComponent
+              post={item}
+              setPost={(newPost) => {
+                modifyPosts([newPost]);
               }}
             />
-          ) : null
-        }
-        loadMore={loadMorePosts}
-        refresh={refreshPosts}
-        fullyLoaded={fullyLoaded}
-        hitFilterLimit={hitFilterLimit}
-        data={posts}
-        extraData={rerenderCount} // This triggers a rerender of the visible list items
-        renderItem={({ item }) => (
-          <PostComponent
-            post={item}
-            setPost={(newPost) => {
-              modifyPosts([newPost]);
-            }}
-          />
-        )}
-        onViewableItemsChanged={(data) => {
-          const maxVisibleItem =
-            data.viewableItems[data.viewableItems.length - 1]?.index ?? -1;
-          const changedItems = data.changed;
-          changedItems
-            .filter(
-              (item) => !item.isViewable && (item?.index ?? 0) < maxVisibleItem,
-            )
-            .forEach((viewToken) => {
-              const post = viewToken.item as Post;
-              handleScrolledPastPost(post);
-            });
-        }}
-      />
+          )}
+          onViewableItemsChanged={(data) => {
+            const maxVisibleItem =
+              data.viewableItems[data.viewableItems.length - 1]?.index ?? -1;
+            const changedItems = data.changed;
+            changedItems
+              .filter(
+                (item) =>
+                  !item.isViewable && (item?.index ?? 0) < maxVisibleItem,
+              )
+              .forEach((viewToken) => {
+                const post = viewToken.item as Post;
+                handleScrolledPastPost(post);
+              });
+          }}
+        />
+      )}
     </View>
   );
 }
@@ -153,5 +165,12 @@ const styles = StyleSheet.create({
   postsContainer: {
     flex: 1,
     justifyContent: "center",
+  },
+  accessFailureText: {
+    fontSize: 16,
+    textAlign: "center",
+    alignSelf: "center",
+    maxWidth: 320,
+    marginBottom: 150,
   },
 });
