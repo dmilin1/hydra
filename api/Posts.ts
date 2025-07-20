@@ -257,6 +257,18 @@ export async function getPosts(
   );
   return posts;
 }
+export async function fetchPostsAccessStatus(
+  url: string,
+): Promise<{ reason: string | null; success: boolean; name: string | null }> {
+  const redditURL = new RedditURL(url);
+  const subreddit = redditURL.getSubreddit();
+  redditURL.jsonify();
+  const response = await api(redditURL.toString());
+  if (response.reason === "banned" || response.reason === "private") {
+    return {success: false, reason: response.reason, name: subreddit };
+  }
+  return {success: true, reason: null, name: subreddit };
+}
 
 function handleGatedSubreddit(
   warning: string,
