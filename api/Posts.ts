@@ -22,6 +22,7 @@ export type Post = {
   name: string;
   type: "post";
   crossPost?: Post;
+  crossCommentLink?: string;
   title: string;
   author: string;
   upvotes: number;
@@ -117,8 +118,12 @@ export async function formatPostData(child: any): Promise<Post> {
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
+  let crossCommentLink = undefined;
   try {
     new RedditURL(child.data.url);
+    if (child.data.url.includes("/comments/")) {
+      crossCommentLink = child.data.url;
+    }
   } catch (_) {
     externalLink = child.data.url;
     if (externalLink.includes("imgur.com") && externalLink.endsWith(".gifv")) {
@@ -187,6 +192,7 @@ export async function formatPostData(child: any): Promise<Post> {
     name: child.data.name,
     type: "post",
     crossPost,
+    crossCommentLink,
     title: decode(child.data.title),
     author: child.data.author,
     upvotes: child.data.ups,
@@ -221,6 +227,20 @@ export async function formatPostData(child: any): Promise<Post> {
   };
 }
 
+export class BannedSubredditError extends Error {
+  constructor() {
+    super("BannedSubredditError");
+    this.name = "BannedSubredditError";
+  }
+}
+
+export class PrivateSubredditError extends Error {
+  constructor() {
+    super("PrivateSubredditError");
+    this.name = "PrivateSubredditError";
+  }
+}
+
 export async function getPosts(
   url: string,
   options: GetPostOptions = {},
@@ -243,6 +263,12 @@ export async function getPosts(
       url,
       options,
     );
+  }
+  if (response.reason === "banned") {
+    throw new BannedSubredditError();
+  }
+  if (response.reason === "private") {
+    throw new PrivateSubredditError();
   }
   const posts: Post[] = await Promise.all(
     response.data.children.map(

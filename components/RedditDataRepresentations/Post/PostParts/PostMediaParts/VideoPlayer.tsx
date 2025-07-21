@@ -1,6 +1,6 @@
 import { useEvent, useEventListener } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import {
   Animated,
   StyleSheet,
@@ -92,6 +92,15 @@ export default function VideoPlayer({
     outputRange: ["0%", "100%"],
   });
 
+  useEffect(() => {
+    player.muted = true;
+    if (autoPlayVideos) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }, [source]);
+
   return (
     <View
       style={[
@@ -181,12 +190,22 @@ export default function VideoPlayer({
                       videoRef?.enterFullscreen();
                     }
                   }}
+                  allowsPictureInPicture={true}
                   player={player}
                   style={styles.video}
                   onFullscreenEnter={() => (player.muted = false)}
                   onFullscreenExit={() => {
                     player.muted = true;
                     exitedFullScreenCallback?.();
+                  }}
+                  onPictureInPictureStop={() => {
+                    player.muted = true;
+                    exitedFullScreenCallback?.();
+                  }}
+                  onPictureInPictureStart={() => {
+                    setTimeout(() => {
+                      player.muted = false;
+                    }, 1000);
                   }}
                 />
               </View>

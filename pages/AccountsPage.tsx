@@ -38,81 +38,79 @@ export default function AccountsPage() {
     >
       {accounts.length ? (
         <ScrollView style={styles.scrollView}>
-          {
-            [...accounts, "Logged Out"].map((username) => (
-              <Slideable
-                key={username}
-                right={
-                  username === "Logged Out"
-                    ? undefined
-                    : [
+          {[...accounts, "Logged Out"].map((username) => (
+            <Slideable
+              key={username}
+              right={
+                username === "Logged Out"
+                  ? undefined
+                  : [
                       {
                         icon: <Feather name="trash" style={{ fontSize: 24 }} />,
                         color: theme.delete,
                         action: async () => await handleDelete(username),
                       },
                     ]
-                }
+              }
+            >
+              <TouchableOpacity
+                style={[
+                  styles.accountItemContainer,
+                  {
+                    borderBottomColor: theme.divider,
+                  },
+                ]}
+                activeOpacity={0.5}
+                onPress={async () => {
+                  setLoading(true);
+                  if (username === "Logged Out") {
+                    await logOut();
+                  } else {
+                    await logIn(username);
+                  }
+                  setLoading(false);
+                }}
+                onLongPress={async (e) => {
+                  if (e.nativeEvent.touches.length > 1) return;
+                  const result = await openContextMenu({
+                    options: ["Delete"],
+                  });
+                  if (result === "Delete") {
+                    await handleDelete(username);
+                  }
+                }}
               >
-                <TouchableOpacity
+                <Text
                   style={[
-                    styles.accountItemContainer,
+                    styles.accountItemText,
                     {
-                      borderBottomColor: theme.divider,
+                      color: theme.text,
                     },
                   ]}
-                  activeOpacity={0.5}
-                  onPress={async () => {
-                    setLoading(true);
-                    if (username === "Logged Out") {
-                      await logOut();
-                    } else {
-                      await logIn(username);
-                    }
-                    setLoading(false);
-                  }}
-                  onLongPress={async (e) => {
-                    if (e.nativeEvent.touches.length > 1) return;
-                    const result = await openContextMenu({
-                      options: ["Delete"],
-                    });
-                    if (result === "Delete") {
-                      await handleDelete(username);
-                    }
-                  }}
                 >
-                  <Text
-                    style={[
-                      styles.accountItemText,
-                      {
-                        color: theme.text,
-                      },
-                    ]}
-                  >
-                    {username}
-                  </Text>
-                  {(currentUser?.userName === username ||
-                    (!currentUser && username === "Logged Out")) && (
-                      <>
-                        {loading ? (
-                          <ActivityIndicator size="small" color={theme.text} />
-                        ) : (
-                          <Feather
-                            name="check"
-                            style={{
-                              fontSize: 24,
-                              color: theme.iconOrTextButton,
-                              marginVertical: -5,
-                            }}
-                          />
-                        )}
-                      </>
+                  {username}
+                </Text>
+                {(currentUser?.userName === username ||
+                  (!currentUser && username === "Logged Out")) && (
+                  <>
+                    {loading ? (
+                      <ActivityIndicator size="small" color={theme.text} />
+                    ) : (
+                      <Feather
+                        name="check"
+                        style={{
+                          fontSize: 24,
+                          color: theme.iconOrTextButton,
+                          marginVertical: -5,
+                        }}
+                      />
                     )}
-                </TouchableOpacity>
-              </Slideable>
-            ))
-          }
-        </ScrollView >
+                  </>
+                )}
+              </TouchableOpacity>
+            </Slideable>
+          ))}
+        </ScrollView>
       ) : (
         <View style={styles.noAccountsContainer}>
           <Text
@@ -126,9 +124,8 @@ export default function AccountsPage() {
             No accounts
           </Text>
         </View>
-      )
-      }
-    </View >
+      )}
+    </View>
   );
 }
 
