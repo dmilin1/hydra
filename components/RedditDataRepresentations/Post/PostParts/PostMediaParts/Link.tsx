@@ -9,13 +9,18 @@ import { PostInteractionContext } from "../../../../../contexts/PostInteractionC
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
+import { useURLNavigation } from "../../../../../utils/navigation";
+import RedditURL from "../../../../../utils/RedditURL";
 
 export default function Link({ post }: { post: Post | PostDetail }) {
   const { theme } = useContext(ThemeContext);
   const { linkDescriptionLength } = useContext(PostSettingsContext);
+  const { pushURL } = useURLNavigation();
 
   const { currentDataMode } = useContext(DataModeContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
+
+  const url = post.externalLink ?? post.crossCommentLink;
 
   const imgRef = useImage(
     {
@@ -38,9 +43,13 @@ export default function Link({ post }: { post: Post | PostDetail }) {
       ]}
       activeOpacity={post.openGraphData?.image ? 0.8 : 0.5}
       onPress={() => {
-        if (post.externalLink) {
-          interactedWithPost();
-          WebBrowser.openBrowserAsync(post.externalLink);
+        if (!url) return;
+        interactedWithPost();
+        try {
+          new RedditURL(url);
+          pushURL(url);
+        } catch (_) {
+          WebBrowser.openBrowserAsync(url);
         }
       }}
     >
@@ -88,7 +97,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
               },
             ]}
           >
-            {post.externalLink}
+            {url}
           </Text>
         </>
       ) : (
@@ -101,7 +110,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
             },
           ]}
         >
-          {post.externalLink}
+          {url}
         </Text>
       )}
     </TouchableOpacity>

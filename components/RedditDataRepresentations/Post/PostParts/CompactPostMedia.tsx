@@ -21,6 +21,8 @@ import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostS
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../utils/URL";
 import useImageMenu from "../../../../utils/useImageMenu";
+import RedditURL from "../../../../utils/RedditURL";
+import { useURLNavigation } from "../../../../utils/navigation";
 
 type CompactPostMediaProps = {
   post: Post | PostDetail;
@@ -33,6 +35,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
+  const { pushURL } = useURLNavigation();
 
   const { blurNSFW, blurSpoilers } = useContext(PostSettingsContext);
   const isBlurable =
@@ -130,13 +133,18 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
             color={theme.subtleText}
           />
         </View>
-      ) : post.externalLink ? (
+      ) : post.externalLink || post.crossCommentLink ? (
         <TouchableOpacity
           style={styles.externalLinkContainer}
           onPress={() => {
-            if (post.externalLink) {
-              interactedWithPost();
-              WebBrowser.openBrowserAsync(post.externalLink);
+            const url = post.externalLink ?? post.crossCommentLink;
+            if (!url) return;
+            interactedWithPost();
+            try {
+              new RedditURL(url);
+              pushURL(url);
+            } catch (_) {
+              WebBrowser.openBrowserAsync(url);
             }
           }}
         >
