@@ -17,6 +17,7 @@ import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsC
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import Stack from "../stack";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
+import useHandleIncomingURLs from "../../utils/IncomingURLHandler";
 
 export type TabParamsList = {
   Posts: undefined;
@@ -34,6 +35,8 @@ export default function Tabs() {
   const { inboxCount } = useContext(InboxContext);
   const { showUsername } = useContext(TabSettingsContext);
   const { tabBarTranslateY } = useContext(TabScrollContext);
+
+  useHandleIncomingURLs();
 
   useEffect(() => {
     if (loginInitialized) {

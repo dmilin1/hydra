@@ -18,10 +18,8 @@ import SettingsScreen from "./SettingsScreen";
 import SubredditsScreen from "./SubredditsScreen";
 import UserScreen from "./UserScreen";
 import WebviewScreen from "./WebviewScreen";
-import ConditionalWrapper from "../../components/Other/ConditionalWrapper";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { StackFutureProvider } from "../../contexts/StackFutureContext";
-import IncomingURLHandler from "../../utils/IncomingURLHandler";
 import SidebarScreen from "./SidebarScreen";
 import WikiScreen from "./WikiScreen";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
@@ -150,14 +148,9 @@ export default function Stack() {
           backgroundColor: theme.background,
         },
       })}
-      screenLayout={({ children, route }) => (
+      screenLayout={({ children }) => (
         <StackFutureProvider futureRoutes={futureRoutes}>
-          <ConditionalWrapper
-            condition={route.name === "Subreddits"}
-            wrapper={IncomingURLHandler}
-          >
-            {children}
-          </ConditionalWrapper>
+          {children}
         </StackFutureProvider>
       )}
     >

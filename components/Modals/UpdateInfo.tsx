@@ -66,6 +66,9 @@ const update = {
       description:
         "Indicate when subreddits are banned or private instead of failing to load.",
     },
+    {
+      description: "Fixed some bugs with handling incoming URLs.",
+    },
   ] as { description: string }[],
 };
 

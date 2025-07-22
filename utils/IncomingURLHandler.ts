@@ -1,28 +1,49 @@
 import * as Clipboard from "expo-clipboard";
 import { useLinkingURL } from "expo-linking";
-import { PropsWithChildren, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Alert, AppState } from "react-native";
 
 import KeyStore from "./KeyStore";
-import RedditURL from "./RedditURL";
-import { useURLNavigation } from "./navigation";
+import RedditURL, { PageType } from "./RedditURL";
+import { PageTypeToNavName } from "./navigation";
 import {
   READ_CLIPBOARD_DEFAULT,
   READ_CLIPBOARD_KEY,
 } from "../pages/SettingsPage/General/OpenInHydra";
 import { AppNavigationProp } from "./navigationTypes";
+import {
+  createNavigationContainerRef,
+  StackActions,
+  TabActions,
+  useNavigation,
+} from "@react-navigation/native";
 
-export default function IncomingURLHandler({ children }: PropsWithChildren) {
-  const { pushURL, navigate } = useURLNavigation<AppNavigationProp>();
+export const navigationRef = createNavigationContainerRef();
+
+export default function useHandleIncomingURLs() {
+  const navigation = useNavigation<AppNavigationProp>();
   const isAsking = useRef(false);
 
   const deepLink = useLinkingURL()?.toLocaleLowerCase();
 
+  const handleURL = (url: string) => {
+    const pageType = RedditURL.getPageType(url);
+    if (pageType === PageType.UNKNOWN) {
+      Alert.alert("Unknown URL", `The URL ${url} cannot be handled by Hydra.`);
+      return;
+    }
+    navigation.dispatch(TabActions.jumpTo("Posts"));
+    navigation.dispatch(
+      StackActions.push(PageTypeToNavName[pageType], {
+        url: url,
+      }),
+    );
+  };
+
   const handleDeepLink = () => {
     if (!deepLink || !deepLink.startsWith("hydra://openurl?url=")) return;
     const url = deepLink.replace("hydra://openurl?url=", "");
-    pushURL(url);
-    navigate("Posts"); /* Set tab */
+    handleURL(url);
   };
 
   const handleClipboardURL = async () => {
@@ -54,9 +75,8 @@ export default function IncomingURLHandler({ children }: PropsWithChildren) {
         {
           text: "Open",
           onPress: () => {
-            navigate("Posts"); /* Set tab */
             Clipboard.setUrlAsync("");
-            pushURL(clipboardURL);
+            handleURL(clipboardURL);
             isAsking.current = false;
           },
         },
@@ -79,7 +99,5 @@ export default function IncomingURLHandler({ children }: PropsWithChildren) {
 
   useEffect(() => {
     handleDeepLink();
-  }, [deepLink]);
-
-  return children;
+  }, [deepLink, navigationRef.isReady()]);
 }

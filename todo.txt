@@ -60,5 +60,3 @@
 - 🐛 Rapid double backwards swipe to the Subreddits page causes weird glitch (https://discord.com/channels/1257191666771558492/1257773342283268297/1347806977748766750)
 
 - 🚀 Add link to /r/friends (https://www.reddit.com/r/HydraApp/comments/1jt0wcw/possibility_to_see_rfriends/)
-
-- 🐛 Figured out how to push to a tab stack from outside the stack context. Check GetHydraProButton for how. Refactor the useNavigation() hook to use this new method.
