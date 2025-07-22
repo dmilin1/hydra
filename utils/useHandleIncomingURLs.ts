@@ -12,16 +12,14 @@ import {
 } from "../pages/SettingsPage/General/OpenInHydra";
 import { AppNavigationProp } from "./navigationTypes";
 import {
-  createNavigationContainerRef,
+  NavigationContainerRef,
   StackActions,
   TabActions,
   useNavigation,
 } from "@react-navigation/native";
 
-export const navigationRef = createNavigationContainerRef();
-
 export default function useHandleIncomingURLs() {
-  const navigation = useNavigation<AppNavigationProp>();
+  const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
   const isAsking = useRef(false);
 
   const deepLink = useLinkingURL()?.toLocaleLowerCase();
@@ -98,7 +96,7 @@ export default function useHandleIncomingURLs() {
   }, []);
 
   useEffect(() => {
-    if (!navigationRef.isReady()) return;
+    if (!navigation.isReady()) return;
     handleDeepLink();
-  }, [deepLink, navigationRef.isReady()]);
+  }, [deepLink, navigation.isReady()]);
 }
