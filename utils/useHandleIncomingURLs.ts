@@ -98,6 +98,7 @@ export default function useHandleIncomingURLs() {
   }, []);
 
   useEffect(() => {
+    if (!navigationRef.isReady()) return;
     handleDeepLink();
   }, [deepLink, navigationRef.isReady()]);
 }

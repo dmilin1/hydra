@@ -17,7 +17,7 @@ import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsC
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import Stack from "../stack";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
-import useHandleIncomingURLs from "../../utils/IncomingURLHandler";
+import useHandleIncomingURLs from "../../utils/useHandleIncomingURLs";
 
 export type TabParamsList = {
   Posts: undefined;
