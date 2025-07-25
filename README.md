@@ -1,5 +1,13 @@
-# 📱 Hydra
-A Reddit reader app built with Expo and Apollo that doesn't require an API key to function.
+<div align="center">
+    <img src="./assets/images/icon.png" alt="Hydra" width="100" style="border-radius: 22px; overflow: hidden;"/> <br/>
+    <strong>Hydra</strong> <br/>
+    <p>A Reddit reader app built with Expo and Apollo that doesn't require an API key to function.</p>
+<br />
+<a href="https://github.com/dmilin1/hydra/README.md"><img alt="License" src="https://badgen.now.sh/badge/license/AGPL-3.0"></a>
+<a href="https://discord.gg/ypaD4KYJ3R"><img alt="Join the community on Discord" src="https://img.shields.io/discord/1332974865371758646.svg?style=flat"></a>
+</div>
+<br />
+
 
 ## 🚀 Getting Started
 
