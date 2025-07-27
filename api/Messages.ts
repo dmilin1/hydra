@@ -134,9 +134,12 @@ export async function getConversationMessages(
   const messages = [];
   const firstMsgData = response.data.children[0].data;
   messages.push(formatMessage(firstMsgData));
-  firstMsgData.replies.data.children.forEach((child: any) =>
-    messages.push(formatMessage(child.data)),
-  );
+  /* Reddit sets replies to an empty string if there are no replies */
+  if (firstMsgData.replies) {
+    firstMsgData.replies.data.children.forEach((child: any) =>
+      messages.push(formatMessage(child.data)),
+    );
+  }
   return messages;
 }
 

@@ -69,7 +69,10 @@ export default function MessagesPage({
           },
         ]}
       >
-        <ScrollView ref={scrollView} contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView
+          ref={scrollView}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+        >
           {!loading ? (
             messages?.map((message) => (
               <View
@@ -152,7 +155,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     margin: 12,
-    maxWidth: "60%",
+    maxWidth: "70%",
   },
   details: {
     flexDirection: "row",
