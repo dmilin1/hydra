@@ -121,7 +121,10 @@ export async function formatPostData(child: any): Promise<Post> {
   let crossCommentLink = undefined;
   try {
     new RedditURL(child.data.url);
-    if (child.data.url.includes("/comments/")) {
+    if (
+      child.data.url.includes("/comments/") &&
+      !child.data.url.includes(child.data.permalink)
+    ) {
       crossCommentLink = child.data.url;
     }
   } catch (_) {

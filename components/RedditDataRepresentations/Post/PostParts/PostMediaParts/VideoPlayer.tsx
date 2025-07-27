@@ -49,9 +49,12 @@ export default function VideoPlayer({
     currentDataMode === "lowData",
   );
   const [failedToLoadErr, setFailedToLoadErr] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPictureInPicture, setIsPictureInPicture] = useState(false);
 
   const player = useVideoPlayer(source, (player) => {
-    player.muted = true;
+    player.audioMixingMode = "mixWithOthers";
+    player.volume = 0;
     player.loop = true;
     player.timeUpdateEventInterval = 1 / 60;
     if (autoPlayVideos) {
@@ -93,13 +96,13 @@ export default function VideoPlayer({
   });
 
   useEffect(() => {
-    player.muted = true;
+    player.volume = 0;
     if (autoPlayVideos) {
       player.play();
     } else {
       player.pause();
     }
-  }, [source]);
+  }, [source, autoPlayVideos]);
 
   return (
     <View
@@ -190,22 +193,31 @@ export default function VideoPlayer({
                       videoRef?.enterFullscreen();
                     }
                   }}
-                  allowsPictureInPicture={true}
+                  allowsPictureInPicture={isFullscreen || isPictureInPicture}
                   player={player}
                   style={styles.video}
-                  onFullscreenEnter={() => (player.muted = false)}
+                  onFullscreenEnter={() => {
+                    setIsFullscreen(true);
+                    player.volume = 1;
+                  }}
                   onFullscreenExit={() => {
-                    player.muted = true;
+                    setIsFullscreen(false);
+                    player.volume = 0;
                     exitedFullScreenCallback?.();
+                    if (autoPlayVideos) {
+                      player.play();
+                    }
                   }}
                   onPictureInPictureStop={() => {
-                    player.muted = true;
+                    player.volume = 0;
+                    setIsPictureInPicture(false);
                     exitedFullScreenCallback?.();
                   }}
                   onPictureInPictureStart={() => {
+                    setIsPictureInPicture(true);
                     setTimeout(() => {
-                      player.muted = false;
-                    }, 1000);
+                      player.volume = 1;
+                    }, 750);
                   }}
                 />
               </View>
