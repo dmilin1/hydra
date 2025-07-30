@@ -12,6 +12,7 @@ const initialValues = {
   blurNSFW: true,
   showPostSummary: true,
   autoPlayVideos: true,
+  liveTextInteraction: false,
 };
 
 const initialPostSettingsContext = {
@@ -26,6 +27,7 @@ const initialPostSettingsContext = {
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
   toggleAutoPlayVideos: (_newValue?: boolean) => {},
+  toggleLiveTextInteraction: (_newValue?: boolean) => {},
 };
 
 export const PostSettingsContext = createContext(initialPostSettingsContext);
@@ -75,6 +77,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     useMMKVBoolean("autoPlayVideos");
   const autoPlayVideos = storedAutoPlayVideos ?? initialValues.autoPlayVideos;
 
+  const [storedliveTextInteraction, setliveTextInteraction] =
+    useMMKVBoolean("liveTextInteraction");
+  const liveTextInteraction =
+    storedliveTextInteraction ?? initialValues.liveTextInteraction;
+
   return (
     <PostSettingsContext.Provider
       value={{
@@ -116,6 +123,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         autoPlayVideos: autoPlayVideos ?? initialValues.autoPlayVideos,
         toggleAutoPlayVideos: (newValue = !autoPlayVideos) =>
           setAutoPlayVideos(newValue),
+
+        liveTextInteraction:
+          liveTextInteraction ?? initialValues.liveTextInteraction,
+        toggleLiveTextInteraction: (newValue = !liveTextInteraction) =>
+          setliveTextInteraction(newValue),
       }}
     >
       {children}
