@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -15,6 +15,7 @@ import { ImageSource } from "../../@types";
 import useDoubleTapToZoom from "../../hooks/useDoubleTapToZoom";
 import useImageDimensions from "../../hooks/useImageDimensions";
 import { getImageStyles, getImageTransform } from "../../utils";
+import { PostSettingsContext } from "../../../../../../../../contexts/SettingsContexts/PostSettingsContext";
 
 const SWIPE_CLOSE_OFFSET = 50;
 const SWIPE_CLOSE_VELOCITY = 1.55;
@@ -46,6 +47,7 @@ const ImageItem = ({
   const [scaled, setScaled] = useState(false);
   const imageDimensions = useImageDimensions(imageSrc);
   const handleDoubleTap = useDoubleTapToZoom(scrollViewRef, scaled, SCREEN);
+  const { liveTextInteraction } = useContext(PostSettingsContext);
 
   const [translate, scale] = getImageTransform(imageDimensions, SCREEN);
   const scrollValueY = new Animated.Value(0);
@@ -161,13 +163,14 @@ const ImageItem = ({
         <TouchableWithoutFeedback
           onPress={doubleTapToZoomEnabled ? handleDoubleTap : undefined}
           onLongPress={onLongPressHandler}
-          delayLongPress={delayLongPress}
+          delayLongPress={liveTextInteraction ? 1500 : delayLongPress}
         >
           <Animated.View style={imagesStyles}>
             <Image
               source={imageSrc}
               style={{ width: "100%", height: "100%" }}
               onLoad={() => setLoaded(true)}
+              enableLiveTextInteraction={liveTextInteraction}
             />
           </Animated.View>
         </TouchableWithoutFeedback>

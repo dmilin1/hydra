@@ -45,6 +45,8 @@ export default function Appearance() {
     toggleShowPostSummary,
     autoPlayVideos,
     toggleAutoPlayVideos,
+    liveTextInteraction,
+    toggleLiveTextInteraction,
   } = useContext(PostSettingsContext);
 
   const {
@@ -296,6 +298,24 @@ export default function Appearance() {
             ),
             text: "Auto play videos",
             onPress: () => toggleAutoPlayVideos(),
+          },
+          {
+            key: "liveTextInteraction",
+            icon: (<MaterialIcons name="document-scanner" size={24} color={theme.text}
+            />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={liveTextInteraction}
+                onValueChange={() => toggleLiveTextInteraction()}
+              />
+            ),
+            text: "Live text",
+            onPress: () => toggleLiveTextInteraction(),
           },
         ]}
       />
