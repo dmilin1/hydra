@@ -37,6 +37,8 @@ export default function Appearance() {
     changePostTextLength,
     linkDescriptionLength,
     changeLinkDescriptionLength,
+    showPostFlair,
+    toggleShowPostFlair,
     blurNSFW,
     toggleBlurNSFW,
     blurSpoilers,
@@ -210,6 +212,22 @@ export default function Appearance() {
             ),
             text: "Link description max lines",
             onPress: () => linkDescriptionLengthRef.current?.togglePicker(true),
+          },
+          {
+            key: "showPostFlair",
+            icon: <AntDesign name="tago" size={24} color={theme.text} />,
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={showPostFlair}
+                onValueChange={() => toggleShowPostFlair()}
+              />
+            ),
+            text: "Show post flairs",
+            onPress: () => toggleShowPostFlair(),
           },
           {
             key: "blurSpoilers",

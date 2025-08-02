@@ -13,8 +13,6 @@
 
 - 🚀 Endpoint caching, future navigation stack state caching
 
-- 🚀 Post flairs (create post with flair and edit it)
-
 - 🚀 Fancy bookmarks with folders and categories (available in Reddit API)
 
 - 🚀 Subreddit sidebars (wiki, rules, etc.)

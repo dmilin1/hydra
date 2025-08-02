@@ -8,6 +8,7 @@ import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
 import URL, { OpenGraphData } from "../utils/URL";
 import { Alert } from "react-native";
+import { formatPostFlair, PostFlair } from "./PostFlair";
 
 export type Poll = {
   voteCount: number;
@@ -30,6 +31,7 @@ export type Post = {
   saved: boolean;
   userVote: VoteOption;
   flair: Flair | null;
+  postFlair: PostFlair | null;
   subreddit: string;
   subredditIcon: string;
   isModerator: boolean;
@@ -203,6 +205,7 @@ export async function formatPostData(child: any): Promise<Post> {
     saved: child.data.saved,
     userVote,
     flair: formatFlair(child.data),
+    postFlair: formatPostFlair(child.data),
     subreddit: child.data.subreddit,
     subredditIcon:
       child.data.sr_detail?.community_icon?.split("?")?.[0] ??

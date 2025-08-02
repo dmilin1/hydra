@@ -8,6 +8,7 @@ const initialValues = {
   postTitleLength: 2,
   postTextLength: 3,
   linkDescriptionLength: 10,
+  showPostFlair: true,
   blurSpoilers: true,
   blurNSFW: true,
   showPostSummary: true,
@@ -23,6 +24,7 @@ const initialPostSettingsContext = {
   changePostTitleLength: (_newValue: number) => {},
   changePostTextLength: (_newValue: number) => {},
   changeLinkDescriptionLength: (_newValue: number) => {},
+  toggleShowPostFlair: (_newValue?: boolean) => {},
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
@@ -61,6 +63,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   );
   const linkDescriptionLength =
     storedLinkDescriptionLength ?? initialValues.linkDescriptionLength;
+
+  const [storedShowPostFlair, setShowPostFlair] =
+    useMMKVBoolean("showPostFlair");
+  const showPostFlair = storedShowPostFlair ?? initialValues.showPostFlair;
 
   const [storedBlurSpoilers, setBlurSpoilers] = useMMKVBoolean("blurSpoilers");
   const blurSpoilers = storedBlurSpoilers ?? initialValues.blurSpoilers;
@@ -108,6 +114,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
           linkDescriptionLength ?? initialValues.linkDescriptionLength,
         changeLinkDescriptionLength: (newValue: number) =>
           setLinkDescriptionLength(newValue),
+
+        showPostFlair: showPostFlair ?? initialValues.showPostFlair,
+        toggleShowPostFlair: (newValue = !showPostFlair) =>
+          setShowPostFlair(newValue),
 
         blurSpoilers: blurSpoilers ?? initialValues.blurSpoilers,
         toggleBlurSpoilers: (newValue = !blurSpoilers) =>
