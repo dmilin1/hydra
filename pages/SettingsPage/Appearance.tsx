@@ -319,8 +319,12 @@ export default function Appearance() {
           },
           {
             key: "liveTextInteraction",
-            icon: (<MaterialIcons name="document-scanner" size={24} color={theme.text}
-            />
+            icon: (
+              <MaterialIcons
+                name="document-scanner"
+                size={24}
+                color={theme.text}
+              />
             ),
             rightIcon: (
               <Switch

@@ -83,8 +83,9 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     useMMKVBoolean("autoPlayVideos");
   const autoPlayVideos = storedAutoPlayVideos ?? initialValues.autoPlayVideos;
 
-  const [storedliveTextInteraction, setliveTextInteraction] =
-    useMMKVBoolean("liveTextInteraction");
+  const [storedliveTextInteraction, setliveTextInteraction] = useMMKVBoolean(
+    "liveTextInteraction",
+  );
   const liveTextInteraction =
     storedliveTextInteraction ?? initialValues.liveTextInteraction;
 
