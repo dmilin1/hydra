@@ -8,7 +8,6 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Sentry from "@sentry/react-native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { registerRootComponent } from "expo";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -27,7 +26,7 @@ import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
 import { SubscriptionsProvider } from "../contexts/SubscriptionsContext";
-import db, { expoDb } from "../db";
+import db from "../db";
 import { doDBMaintenance } from "../db/functions/Maintenance";
 import migrations from "../drizzle/migrations";
 import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
@@ -60,11 +59,6 @@ SplashScreen.preventAutoHideAsync();
 enableFreeze(true);
 
 function RootLayout() {
-  if (__DEV__) {
-    // Not a real conditional render since __DEV__ is a compile time constant
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useDrizzleStudio(expoDb);
-  }
   const { success: migrationsComplete, error } = useMigrations(db, migrations);
 
   const [fontsLoaded, _fontsError] = useFonts({

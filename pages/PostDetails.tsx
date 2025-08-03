@@ -37,6 +37,7 @@ import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 import { TabScrollContext } from "../contexts/TabScrollContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { modifyStat, Stat } from "../db/functions/Stats";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -320,6 +321,7 @@ function PostDetails({ route }: PostDetailsProps) {
 }
 
 export default (props: PostDetailsProps) => {
+  modifyStat(Stat.POSTS_VIEWED, 1);
   return (
     <ScrollerProvider>
       <PostDetails {...props} />

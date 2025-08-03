@@ -1,4 +1,5 @@
 import {
+  AntDesign,
   Feather,
   FontAwesome,
   FontAwesome5,
@@ -54,6 +55,12 @@ export default function Root() {
             icon: <Feather name="activity" size={24} color={theme.text} />,
             text: "Data Use",
             onPress: () => pushURL("hydra://settings/dataUse"),
+          },
+          {
+            key: "stats",
+            icon: <AntDesign name="barschart" size={24} color={theme.text} />,
+            text: "Stats",
+            onPress: () => pushURL("hydra://settings/stats"),
           },
           {
             key: "privacy",

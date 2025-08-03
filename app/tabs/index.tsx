@@ -20,6 +20,8 @@ import Stack from "../stack";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
 import useHandleIncomingURLs from "../../utils/useHandleIncomingURLs";
 import { AppNavigationProp } from "../../utils/navigationTypes";
+import { expoDb } from "../../db";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 
 export type TabParamsList = {
   Posts: undefined;
@@ -32,6 +34,13 @@ export type TabParamsList = {
 const Tab = createBottomTabNavigator();
 
 export default function Tabs() {
+  if (__DEV__) {
+    // Not a real conditional render since __DEV__ is a compile time constant
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useDrizzleStudio(expoDb);
+    // This is here because the db must be set up before the hook is used
+  }
+
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
 
   const { theme } = useContext(ThemeContext);

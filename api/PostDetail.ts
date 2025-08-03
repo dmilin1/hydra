@@ -7,6 +7,7 @@ import { api } from "./RedditApi";
 import { UserContent } from "./User";
 import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
+import { modifyStat, Stat } from "../db/functions/Stats";
 
 export type Comment = {
   id: string;
@@ -190,6 +191,23 @@ export async function vote(
       },
     },
   );
+
+  if (dir !== VoteOption.NoVote) {
+    if (item.type === "post" || item.type === "postDetail") {
+      modifyStat(
+        dir === VoteOption.UpVote ? Stat.POST_UPVOTES : Stat.POST_DOWNVOTES,
+        1,
+      );
+    } else if (item.type === "comment" || item.type === "commentReply") {
+      modifyStat(
+        dir === VoteOption.UpVote
+          ? Stat.COMMENT_UPVOTES
+          : Stat.COMMENT_DOWNVOTES,
+        1,
+      );
+    }
+  }
+
   return dir;
 }
 
@@ -255,6 +273,7 @@ export async function submitPost(
   if (!Array.isArray(errors) || (Array.isArray(errors) && errors.length > 0)) {
     throw new Error("Unknown error when submitting post");
   }
+  modifyStat(Stat.POSTS_CREATED, 1);
   return data?.url;
 }
 
@@ -275,6 +294,9 @@ export async function submitComment(
       },
     },
   );
+  if (response?.success) {
+    modifyStat(Stat.COMMENTS_CREATED, 1);
+  }
   return response?.success ?? false;
 }
 
