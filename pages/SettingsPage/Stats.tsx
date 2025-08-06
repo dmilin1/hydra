@@ -49,6 +49,11 @@ export default function Stats() {
 
   const [installTime, setInstallTime] = useState<number | null>(null);
 
+  const startedTrackingTime = Math.max(
+    installTime ?? 0,
+    new Date("2025-08-05").getTime(),
+  );
+
   const stats = getStats();
   const subredditVisits = getSubredditVisitCounts();
 
@@ -182,7 +187,8 @@ export default function Stats() {
       title: "Opens per Day",
       value: prettyNum(
         (stats[Stat.APP_FOREGROUNDS] ?? 0) /
-          ((new Date().getTime() - (installTime ?? 0)) / (1000 * 60 * 60 * 24)),
+          ((new Date().getTime() - startedTrackingTime) /
+            (1000 * 60 * 60 * 24)),
         2,
       ),
       icon: (
