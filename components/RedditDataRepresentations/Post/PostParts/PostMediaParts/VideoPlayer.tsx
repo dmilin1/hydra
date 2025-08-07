@@ -206,6 +206,8 @@ export default function VideoPlayer({
                     exitedFullScreenCallback?.();
                     if (autoPlayVideos) {
                       player.play();
+                    } else {
+                      player.pause();
                     }
                   }}
                   onPictureInPictureStop={() => {
