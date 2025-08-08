@@ -17,7 +17,6 @@ import { enableFreeze } from "react-native-screens";
 
 import Tabs from "./tabs";
 import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
-import UpdateInfo from "../components/Modals/UpdateInfo";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { MediaViewerProvider } from "../contexts/MediaViewerContext";
@@ -32,6 +31,7 @@ import migrations from "../drizzle/migrations";
 import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
 import { TabScrollProvider } from "../contexts/TabScrollContext";
+import { StartupModalProvider } from "../contexts/StartupModalContext";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -97,9 +97,10 @@ function RootLayout() {
                       <ModalProvider>
                         <MediaViewerProvider>
                           <SubredditProvider>
-                            <UpdateInfo />
-                            <SubscribeToHydra />
-                            <Tabs />
+                            <StartupModalProvider>
+                              <SubscribeToHydra />
+                              <Tabs />
+                            </StartupModalProvider>
                           </SubredditProvider>
                         </MediaViewerProvider>
                       </ModalProvider>

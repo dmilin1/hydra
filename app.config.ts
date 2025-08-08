@@ -25,6 +25,7 @@ module.exports = {
       "**/*"
     ],
     ios: {
+      appStoreUrl: "https://apps.apple.com/us/app/hydra-for-reddit/id6478089063",
       supportsTablet: true,
       bundleIdentifier: "com.dmilin.hydra",
       infoPlist: {

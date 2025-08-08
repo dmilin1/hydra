@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -8,39 +7,11 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
-import type { ColorValue } from "react-native";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import Time from "../../utils/Time";
-
-interface Theme {
-  tint: ColorValue;
-  background: ColorValue;
-  text: ColorValue;
-  subtleText: ColorValue;
-}
-
-interface FeatureItemProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  theme: Theme;
-}
-
-const FeatureItem = ({ icon, title, description, theme }: FeatureItemProps) => (
-  <View style={[styles.featureItem, { backgroundColor: theme.tint }]}>
-    <View style={[styles.featureIcon, { backgroundColor: theme.background }]}>
-      {icon}
-    </View>
-    <View style={styles.featureTextContainer}>
-      <Text style={[styles.featureTitle, { color: theme.text }]}>{title}</Text>
-      <Text style={[styles.featureDescription, { color: theme.subtleText }]}>
-        {description}
-      </Text>
-    </View>
-  </View>
-);
+import HydraProFeatureList from "../../components/UI/HydraProFeatureList";
 
 export default function HydraPro() {
   const { theme } = useContext(ThemeContext);
@@ -112,36 +83,7 @@ export default function HydraPro() {
       </View>
 
       <View style={styles.featuresContainer}>
-        <FeatureItem
-          icon={<Ionicons name="notifications" size={24} color={theme.text} />}
-          title="Inbox Alerts"
-          description="Get instant alerts for replies and messages"
-          theme={theme}
-        />
-        <FeatureItem
-          icon={<Ionicons name="filter" size={24} color={theme.text} />}
-          title="Advanced Post Filtering"
-          description="Post filtering powered by machine learning"
-          theme={theme}
-        />
-        <FeatureItem
-          icon={<Ionicons name="document-text" size={24} color={theme.text} />}
-          title="Post & Comment Summaries"
-          description="Quick summaries of long posts and threads"
-          theme={theme}
-        />
-        <FeatureItem
-          icon={<Ionicons name="color-palette" size={24} color={theme.text} />}
-          title="Additional Themes"
-          description="Customize your app with premium themes"
-          theme={theme}
-        />
-        <FeatureItem
-          icon={<Ionicons name="heart" size={24} color={theme.text} />}
-          title="Support Hydra"
-          description="Support me with Hydra's ongoing development costs"
-          theme={theme}
-        />
+        <HydraProFeatureList />
       </View>
 
       <TouchableOpacity
@@ -231,33 +173,6 @@ const styles = StyleSheet.create({
   },
   featuresContainer: {
     paddingHorizontal: 16,
-  },
-  featureItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  featureIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 16,
-  },
-  featureTextContainer: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  featureDescription: {
-    fontSize: 14,
-    opacity: 0.8,
   },
   upgradeButton: {
     padding: 15,
