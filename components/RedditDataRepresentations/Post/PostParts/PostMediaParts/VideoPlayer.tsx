@@ -97,11 +97,18 @@ export default function VideoPlayer({
 
   useEffect(() => {
     player.volume = 0;
-    if (autoPlayVideos) {
-      player.play();
-    } else {
-      player.pause();
-    }
+    setTimeout(() => {
+      /**
+       * Adding a timeout to fix this crash:
+       * https://github.com/expo/expo/issues/15329#issuecomment-997283623
+       * https://dimitrie-milinovich.sentry.io/issues/6761973529/?environment=production&query=is%3Aunresolved%20error.unhandled%3ATrue&referrer=issue-stream&statsPeriod=30d
+       */
+      if (autoPlayVideos) {
+        player.play();
+      } else {
+        player.pause();
+      }
+    }, 10);
   }, [source, autoPlayVideos]);
 
   return (
