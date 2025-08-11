@@ -9,6 +9,7 @@ import Purchases, {
 import { registerCustomer } from "../api/Customer";
 import { USING_CUSTOM_HYDRA_SERVER } from "../constants/HydraServer";
 
+Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
 Purchases.configure({
   apiKey: "appl_okkBpjboHClPttmFHfsSWRaGSFd",
 });

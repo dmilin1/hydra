@@ -38,7 +38,8 @@ type OverridableFlashListProps<T> = Omit<
 >;
 
 type RedditDataScrollerProps<T> = OverridableFlashListProps<T> & {
-  scrollViewRef?: React.RefObject<FlashList<T>>;
+  scrollViewRef?: React.RefObject<typeof FlashList<T>>;
+  showInitialLoader?: boolean;
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   data: T[];
@@ -54,7 +55,9 @@ function RedditDataScroller<T extends RedditDataObject>(
   const { handleScrollForTabBar } = useContext(TabScrollContext);
 
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(!!props.loadMore);
+  const [isLoadingMore, setIsLoadingMore] = useState(
+    props.showInitialLoader ?? true,
+  );
 
   const lastScrollPosition = useRef(0);
 
@@ -73,7 +76,6 @@ function RedditDataScroller<T extends RedditDataObject>(
   return (
     <FlashList<T>
       {...props}
-      estimatedItemSize={300}
       scrollEnabled={!scrollDisabled}
       indicatorStyle={theme.systemModeStyle === "dark" ? "white" : "black"}
       refreshControl={
