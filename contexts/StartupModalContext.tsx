@@ -30,7 +30,7 @@ const modals: { id: ModalId; wantsToShow: boolean }[] = [
   {
     id: "promptForReview",
     wantsToShow:
-      (getStat(Stat.APP_LAUNCHES) ?? 0) > 20 &&
+      (getStat(Stat.APP_LAUNCHES) ?? 0) > 30 &&
       !KeyStore.getBoolean(STORE_REVIEW_REQUESTED_KEY),
   },
   {

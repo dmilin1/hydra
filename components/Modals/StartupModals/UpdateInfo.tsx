@@ -17,57 +17,60 @@ import KeyStore from "../../../utils/KeyStore";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "2.9.0-1",
+  updateKey: "2.10.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
-  proFeatures: [] as { title: string; description: string }[],
+  proFeatures: [
+    {
+      title: "Stats Tracking",
+      description:
+        "Private on device analytics to track your usage and explore your data. You can view your stats in Settings => Stats.",
+    },
+  ] as { title: string; description: string }[],
   features: [
     {
-      title: "Hide Tabs on Scroll",
+      title: "View Post Flairs",
       description:
-        "You can now hide the tabs while scrolling down infinite scroll pages. You can enable this in Settings => Appearance => Tab Appearance Settings => Hide on infinite scroll.",
+        "If a post has a flair, you'll now see it as a tag at the end of the post title. You can disable this in Settings => Appearance => Post Appearance Settings => Show Post Flairs.",
     },
     {
-      title: "Swipe Anywhere to Navigate",
+      title: "Make Posts with Flairs",
       description:
-        "Added a setting to swipe anywhere on screen to get back to the previous page like in the default Reddit app. You can enable this in Settings => General => Gestures => Swipe Anywhere to Navigate.",
+        "If a subreddit has flairs, you'll now see a \"Select Flair\" button on the post creation screen. This should fix most of the errors you've been getting preventing post creation.",
     },
     {
-      title: "Full Support for Long Press",
+      title: "Better Post Failure Messages",
       description:
-        "Long presses should now allow you to do anything you can do with swipes.",
+        "If a post can't be submitted, you'll get a better message like \"Text body must be at least x length\" instead of a generic error message.",
     },
     {
-      title: "Go to Previous Comment",
+      title: "Live Text on Images",
       description:
-        "Long pressing on the go to next comment floating arrow will now take you to the previous comment.",
+        "You can now extract text from images using Live Text. You can enable this in Settings => Appearance => Post Appearance Settings => Live Text.",
     },
     {
-      title: "Video Player Rewrite",
+      title: "Press Tab to Go Back",
       description:
-        "The video player has been rewritten to be more stable and to fix audio synchronization issues.",
+        "Tapping the current tab will take you back a page. Easier than reaching the left corner back button.",
     },
     {
-      title: "Disable Video Autoplay",
+      title: "Smoother Scrolling",
       description:
-        "You can disable autoplay for videos in Settings => Appearance => Post Appearance Settings => Auto play videos.",
+        "The underlying infinite scroll library has been updated. Deeply scrolling should be more responsive now.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
       description:
-        "Fixed authentication issues. Hydra now uses a new authentication system.",
+        "Fixed a bunch of video player issues, particularly involving sound.",
     },
     {
       description:
-        "Fixed posts that link to comments not having a link to click on. Subreddits like /r/bestof should now be more usable.",
+        'Fixed videos continuing to play after exiting fullscreen if "Auto play videos" is disabled.',
     },
     {
       description:
-        "Indicate when subreddits are banned or private instead of failing to load.",
-    },
-    {
-      description: "Fixed some bugs with handling incoming URLs.",
+        "Lots of small tweaks in an attempt to fix some obscure crashes.",
     },
   ] as { description: string }[],
 };

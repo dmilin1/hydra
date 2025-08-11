@@ -17,6 +17,12 @@ export default function HydraProFeatureList({
       description: "Get instant alerts for replies and messages",
     },
     {
+      icon: <Ionicons name="stats-chart" size={24} color={theme.text} />,
+      title: "Stats Tracking",
+      description:
+        "Private on device analytics to track your usage and explore your data",
+    },
+    {
       icon: <Ionicons name="filter" size={24} color={theme.text} />,
       title: "Advanced Post Filtering",
       description: "Post filtering powered by machine learning",
