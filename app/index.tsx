@@ -79,7 +79,9 @@ function RootLayout() {
   };
 
   useEffect(() => {
-    doDBMaintenanceAsync();
+    if (migrationsComplete) {
+      doDBMaintenanceAsync();
+    }
   }, [migrationsComplete]);
 
   return (
