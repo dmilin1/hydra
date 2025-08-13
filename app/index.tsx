@@ -11,7 +11,7 @@ import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { LogBox } from "react-native";
+import { AppState, LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableFreeze } from "react-native-screens";
 
@@ -32,6 +32,7 @@ import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
 import { TabScrollProvider } from "../contexts/TabScrollContext";
 import { StartupModalProvider } from "../contexts/StartupModalContext";
+import { modifyStat, Stat } from "../db/functions/Stats";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -81,6 +82,13 @@ function RootLayout() {
   useEffect(() => {
     if (migrationsComplete) {
       doDBMaintenanceAsync();
+      modifyStat(Stat.APP_LAUNCHES, 1);
+      modifyStat(Stat.APP_FOREGROUNDS, 1);
+      AppState.addEventListener("change", (state) => {
+        if (state === "active") {
+          modifyStat(Stat.APP_FOREGROUNDS, 1);
+        }
+      });
     }
   }, [migrationsComplete]);
 

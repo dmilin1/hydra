@@ -1,4 +1,3 @@
-import { AppState } from "react-native";
 import db from "..";
 import { CounterStats, SubredditVisits } from "../schema";
 import { eq, sql } from "drizzle-orm";
@@ -81,11 +80,3 @@ export function incrementSubredditVisitCount(subreddit: string) {
     })
     .execute();
 }
-
-modifyStat(Stat.APP_LAUNCHES, 1);
-modifyStat(Stat.APP_FOREGROUNDS, 1);
-AppState.addEventListener("change", (state) => {
-  if (state === "active") {
-    modifyStat(Stat.APP_FOREGROUNDS, 1);
-  }
-});

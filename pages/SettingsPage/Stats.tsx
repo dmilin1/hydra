@@ -51,7 +51,7 @@ export default function Stats() {
 
   const startedTrackingTime = Math.max(
     installTime ?? 0,
-    new Date("2025-08-11").getTime(),
+    new Date("2025-08-12").getTime(),
   );
 
   const stats = getStats();
