@@ -122,6 +122,7 @@ export default function SearchPage() {
         }}
       />
       <RedditDataScroller<SearchResult>
+        showInitialLoader={false}
         loadMore={loadMoreSearchResults}
         refresh={refreshSearchResults}
         fullyLoaded={fullyLoaded}

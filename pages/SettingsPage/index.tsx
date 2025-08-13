@@ -20,6 +20,7 @@ import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroll
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
 import Gestures from "./General/Gestures";
+import Stats from "./Stats";
 
 export default function SettingsPage({
   route,
@@ -60,6 +61,7 @@ export default function SettingsPage({
         {relativePath === "settings/themeMaker" && <ThemeMaker />}
         {relativePath === "settings/appearance" && <Appearance />}
         {relativePath === "settings/dataUse" && <DataUse />}
+        {relativePath === "settings/stats" && <Stats />}
         {relativePath === "settings/privacy" && <Privacy />}
         {relativePath === "settings/advanced" && <Advanced />}
         {relativePath === "settings/hydraPro" && <HydraPro />}

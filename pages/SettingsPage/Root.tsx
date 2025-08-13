@@ -1,4 +1,5 @@
 import {
+  AntDesign,
   Feather,
   FontAwesome,
   FontAwesome5,
@@ -9,15 +10,15 @@ import * as Updates from "expo-updates";
 import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { LAST_SEEN_UPDATE_KEY } from "../../components/Modals/UpdateInfo";
 import GetHydraProButton from "../../components/UI/GetHydraProButton";
 import List from "../../components/UI/List";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
-import KeyStore from "../../utils/KeyStore";
 import { useURLNavigation } from "../../utils/navigation";
+import { StartupModalContext } from "../../contexts/StartupModalContext";
 
 export default function Root() {
   const { theme } = useContext(ThemeContext);
+  const { setStartupModal } = useContext(StartupModalContext);
   const { pushURL } = useURLNavigation();
 
   return (
@@ -56,6 +57,12 @@ export default function Root() {
             onPress: () => pushURL("hydra://settings/dataUse"),
           },
           {
+            key: "stats",
+            icon: <AntDesign name="barschart" size={24} color={theme.text} />,
+            text: "Stats",
+            onPress: () => pushURL("hydra://settings/stats"),
+          },
+          {
             key: "privacy",
             icon: <Feather name="lock" size={24} color={theme.text} />,
             text: "Privacy",
@@ -77,7 +84,7 @@ export default function Root() {
               />
             ),
             text: "Patch Notes",
-            onPress: () => KeyStore.delete(LAST_SEEN_UPDATE_KEY),
+            onPress: () => setStartupModal("updateInfo"),
           },
           {
             key: "requestFeature",

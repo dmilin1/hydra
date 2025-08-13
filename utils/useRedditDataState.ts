@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { RedditDataObject } from "../api/RedditApi";
 
@@ -125,6 +125,10 @@ export default function useRedditDataState<T extends RedditDataObject>({
       );
     });
   };
+
+  useEffect(() => {
+    loadMoreData();
+  }, []);
 
   return {
     data,

@@ -31,12 +31,17 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
   const { params } = useRoute<URLRoutes>();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
-  const { postCompactMode, subredditAtTop, postTitleLength, postTextLength } =
-    useContext(PostSettingsContext);
+  const {
+    postCompactMode,
+    subredditAtTop,
+    postTitleLength,
+    postTextLength,
+    showPostFlair,
+  } = useContext(PostSettingsContext);
 
   const redditURL = params?.url ? new RedditURL(params.url) : null;
 
-  const shouldShowSubreddits =
+  const isOnMultiSubredditPage =
     !redditURL ||
     redditURL.getPageType() !== PageType.SUBREDDIT ||
     ["popular", "all"].includes(redditURL.getSubreddit());
@@ -157,7 +162,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
             </View>
           )}
           <View style={styles.bodyContainer}>
-            {subredditAtTop && shouldShowSubreddits && (
+            {subredditAtTop && isOnMultiSubredditPage && (
               <TouchableOpacity
                 style={[
                   styles.subredditAtTopContainer,
@@ -193,6 +198,27 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
             >
               {post.title.trim()}
             </Text>
+            {!isOnMultiSubredditPage && showPostFlair && post.postFlair && (
+              <View
+                style={[
+                  styles.postFlairContainer,
+                  {
+                    backgroundColor: theme.divider,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.postFlair,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  {post.postFlair.text}
+                </Text>
+              </View>
+            )}
             <View
               style={[
                 styles.postBody,
@@ -223,7 +249,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                       ]}
                     />
                   )}
-                  {!subredditAtTop && shouldShowSubreddits && (
+                  {!subredditAtTop && isOnMultiSubredditPage && (
                     <>
                       <TouchableOpacity
                         style={styles.subredditContainer}
@@ -374,6 +400,16 @@ const styles = StyleSheet.create({
   postTitle: {
     paddingHorizontal: 10,
   },
+  postFlairContainer: {
+    marginLeft: 10,
+    marginTop: 5,
+    marginBottom: -5,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 5,
+    alignSelf: "flex-start",
+  },
+  postFlair: {},
   postBody: {
     flex: 1,
   },

@@ -7,6 +7,7 @@ import { api } from "./RedditApi";
 import { UserContent } from "./User";
 import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
+import { modifyStat, Stat } from "../db/functions/Stats";
 
 export type Comment = {
   id: string;
@@ -190,6 +191,23 @@ export async function vote(
       },
     },
   );
+
+  if (dir !== VoteOption.NoVote) {
+    if (item.type === "post" || item.type === "postDetail") {
+      modifyStat(
+        dir === VoteOption.UpVote ? Stat.POST_UPVOTES : Stat.POST_DOWNVOTES,
+        1,
+      );
+    } else if (item.type === "comment" || item.type === "commentReply") {
+      modifyStat(
+        dir === VoteOption.UpVote
+          ? Stat.COMMENT_UPVOTES
+          : Stat.COMMENT_DOWNVOTES,
+        1,
+      );
+    }
+  }
+
   return dir;
 }
 
@@ -207,14 +225,20 @@ export async function reloadComment(
   return formattedComment;
 }
 
+export class CaptchaError extends Error {}
+
+export class ParseableError extends Error {}
+
 export async function submitPost(
   subreddit: string,
   kind: "self" | "link" | "image",
   title: string,
   content: string,
-): Promise<{ url?: string; success: boolean }> {
+  flairId?: string,
+): Promise<string | undefined> {
   const response = await api(
-    "https://www.reddit.com/api/submit?api_type=json",
+    // Must use old.reddit.com because only oauth.reddit.com is supported otherwise
+    "https://old.reddit.com/api/submit?api_type=json",
     {
       method: "POST",
     },
@@ -224,6 +248,7 @@ export async function submitPost(
         sr: subreddit,
         kind,
         title,
+        flair_id: flairId,
         [kind === "self" ? "text" : "url"]: content,
         extension: "json",
       },
@@ -231,10 +256,25 @@ export async function submitPost(
   );
   const errors = response?.json?.errors;
   const data = response?.json?.data;
-  return {
-    url: data?.url,
-    success: Array.isArray(errors) && errors.length === 0,
-  };
+  if (
+    Array.isArray(errors) &&
+    Array.isArray(errors[0]) &&
+    errors[0][0] === "BAD_CAPTCHA"
+  ) {
+    throw new CaptchaError("Invalid captcha");
+  }
+  if (
+    Array.isArray(errors) &&
+    Array.isArray(errors[0]) &&
+    typeof errors[0][1] === "string"
+  ) {
+    throw new ParseableError(errors[0][1]);
+  }
+  if (!Array.isArray(errors) || (Array.isArray(errors) && errors.length > 0)) {
+    throw new Error("Unknown error when submitting post");
+  }
+  modifyStat(Stat.POSTS_CREATED, 1);
+  return data?.url;
 }
 
 export async function submitComment(
@@ -254,6 +294,9 @@ export async function submitComment(
       },
     },
   );
+  if (response?.success) {
+    modifyStat(Stat.COMMENTS_CREATED, 1);
+  }
   return response?.success ?? false;
 }
 

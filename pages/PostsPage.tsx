@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import {
   getPosts,
@@ -17,11 +17,14 @@ import { markPostSeen } from "../db/functions/SeenPosts";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
 import RedditURL from "../utils/RedditURL";
+import { incrementSubredditVisitCount } from "../db/functions/Stats";
 
 export default function PostsPage({
   route,
 }: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
   const { url } = route.params;
+
+  const subreddit = new RedditURL(url).getSubreddit();
 
   const { theme } = useContext(ThemeContext);
   const {
@@ -82,6 +85,12 @@ export default function PostsPage({
     }
   };
 
+  useEffect(() => {
+    if (subreddit && subreddit !== "all" && subreddit !== "popular") {
+      incrementSubredditVisitCount(subreddit);
+    }
+  }, []);
+
   return (
     <View
       style={[
@@ -100,8 +109,7 @@ export default function PostsPage({
             },
           ]}
         >
-          🔑 r/{new RedditURL(url).getSubreddit()} has been set to private by
-          its subreddit moderators
+          🔑 r/{subreddit} has been set to private by its subreddit moderators
         </Text>
       ) : accessFailure === "banned" ? (
         <Text
@@ -112,8 +120,8 @@ export default function PostsPage({
             },
           ]}
         >
-          🚫 r/{new RedditURL(url).getSubreddit()} has been banned by Reddit
-          Administrators for breaking Reddit rules
+          🚫 r/{subreddit} has been banned by Reddit Administrators for breaking
+          Reddit rules
         </Text>
       ) : (
         <RedditDataScroller<Post>

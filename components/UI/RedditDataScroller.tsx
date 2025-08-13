@@ -1,6 +1,6 @@
 import { FlashList, FlashListProps } from "@shopify/flash-list";
 import * as Haptics from "expo-haptics";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import {
   StyleSheet,
   RefreshControl,
@@ -16,6 +16,7 @@ import {
 } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
+import { modifyStat, Stat } from "../../db/functions/Stats";
 
 /**
  * Future note for when I'm an idiot and the scroller gets all glitchy again.
@@ -37,7 +38,8 @@ type OverridableFlashListProps<T> = Omit<
 >;
 
 type RedditDataScrollerProps<T> = OverridableFlashListProps<T> & {
-  scrollViewRef?: React.RefObject<FlashList<T>>;
+  scrollViewRef?: React.RefObject<typeof FlashList<T>>;
+  showInitialLoader?: boolean;
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   data: T[];
@@ -53,7 +55,11 @@ function RedditDataScroller<T extends RedditDataObject>(
   const { handleScrollForTabBar } = useContext(TabScrollContext);
 
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(!!props.loadMore);
+  const [isLoadingMore, setIsLoadingMore] = useState(
+    props.showInitialLoader ?? true,
+  );
+
+  const lastScrollPosition = useRef(0);
 
   const loadMoreData = async (refresh = false) => {
     if (props.fullyLoaded && !refresh) return;
@@ -70,7 +76,6 @@ function RedditDataScroller<T extends RedditDataObject>(
   return (
     <FlashList<T>
       {...props}
-      estimatedItemSize={300}
       scrollEnabled={!scrollDisabled}
       indicatorStyle={theme.systemModeStyle === "dark" ? "white" : "black"}
       refreshControl={
@@ -87,6 +92,12 @@ function RedditDataScroller<T extends RedditDataObject>(
       scrollEventThrottle={100}
       onScroll={(e) => {
         handleScrollForTabBar(e);
+        const scrollPosition = e.nativeEvent.contentOffset.y;
+        modifyStat(
+          Stat.SCROLL_DISTANCE,
+          Math.abs(scrollPosition - lastScrollPosition.current),
+        );
+        lastScrollPosition.current = scrollPosition;
       }}
       onEndReachedThreshold={2}
       onEndReached={() => {

@@ -8,17 +8,15 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Sentry from "@sentry/react-native";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { registerRootComponent } from "expo";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { LogBox } from "react-native";
+import { AppState, LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableFreeze } from "react-native-screens";
 
 import Tabs from "./tabs";
 import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
-import UpdateInfo from "../components/Modals/UpdateInfo";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { MediaViewerProvider } from "../contexts/MediaViewerContext";
@@ -27,12 +25,14 @@ import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
 import { SubscriptionsProvider } from "../contexts/SubscriptionsContext";
-import db, { expoDb } from "../db";
+import db from "../db";
 import { doDBMaintenance } from "../db/functions/Maintenance";
 import migrations from "../drizzle/migrations";
 import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
 import { TabScrollProvider } from "../contexts/TabScrollContext";
+import { StartupModalProvider } from "../contexts/StartupModalContext";
+import { modifyStat, Stat } from "../db/functions/Stats";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -60,11 +60,6 @@ SplashScreen.preventAutoHideAsync();
 enableFreeze(true);
 
 function RootLayout() {
-  if (__DEV__) {
-    // Not a real conditional render since __DEV__ is a compile time constant
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useDrizzleStudio(expoDb);
-  }
   const { success: migrationsComplete, error } = useMigrations(db, migrations);
 
   const [fontsLoaded, _fontsError] = useFonts({
@@ -85,7 +80,16 @@ function RootLayout() {
   };
 
   useEffect(() => {
-    doDBMaintenanceAsync();
+    if (migrationsComplete) {
+      doDBMaintenanceAsync();
+      modifyStat(Stat.APP_LAUNCHES, 1);
+      modifyStat(Stat.APP_FOREGROUNDS, 1);
+      AppState.addEventListener("change", (state) => {
+        if (state === "active") {
+          modifyStat(Stat.APP_FOREGROUNDS, 1);
+        }
+      });
+    }
   }, [migrationsComplete]);
 
   return (
@@ -103,9 +107,10 @@ function RootLayout() {
                       <ModalProvider>
                         <MediaViewerProvider>
                           <SubredditProvider>
-                            <UpdateInfo />
-                            <SubscribeToHydra />
-                            <Tabs />
+                            <StartupModalProvider>
+                              <SubscribeToHydra />
+                              <Tabs />
+                            </StartupModalProvider>
                           </SubredditProvider>
                         </MediaViewerProvider>
                       </ModalProvider>

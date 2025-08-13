@@ -8,10 +8,12 @@ const initialValues = {
   postTitleLength: 2,
   postTextLength: 3,
   linkDescriptionLength: 10,
+  showPostFlair: true,
   blurSpoilers: true,
   blurNSFW: true,
   showPostSummary: true,
   autoPlayVideos: true,
+  liveTextInteraction: false,
 };
 
 const initialPostSettingsContext = {
@@ -22,10 +24,12 @@ const initialPostSettingsContext = {
   changePostTitleLength: (_newValue: number) => {},
   changePostTextLength: (_newValue: number) => {},
   changeLinkDescriptionLength: (_newValue: number) => {},
+  toggleShowPostFlair: (_newValue?: boolean) => {},
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
   toggleAutoPlayVideos: (_newValue?: boolean) => {},
+  toggleLiveTextInteraction: (_newValue?: boolean) => {},
 };
 
 export const PostSettingsContext = createContext(initialPostSettingsContext);
@@ -60,6 +64,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const linkDescriptionLength =
     storedLinkDescriptionLength ?? initialValues.linkDescriptionLength;
 
+  const [storedShowPostFlair, setShowPostFlair] =
+    useMMKVBoolean("showPostFlair");
+  const showPostFlair = storedShowPostFlair ?? initialValues.showPostFlair;
+
   const [storedBlurSpoilers, setBlurSpoilers] = useMMKVBoolean("blurSpoilers");
   const blurSpoilers = storedBlurSpoilers ?? initialValues.blurSpoilers;
 
@@ -74,6 +82,12 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [storedAutoPlayVideos, setAutoPlayVideos] =
     useMMKVBoolean("autoPlayVideos");
   const autoPlayVideos = storedAutoPlayVideos ?? initialValues.autoPlayVideos;
+
+  const [storedliveTextInteraction, setliveTextInteraction] = useMMKVBoolean(
+    "liveTextInteraction",
+  );
+  const liveTextInteraction =
+    storedliveTextInteraction ?? initialValues.liveTextInteraction;
 
   return (
     <PostSettingsContext.Provider
@@ -102,6 +116,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         changeLinkDescriptionLength: (newValue: number) =>
           setLinkDescriptionLength(newValue),
 
+        showPostFlair: showPostFlair ?? initialValues.showPostFlair,
+        toggleShowPostFlair: (newValue = !showPostFlair) =>
+          setShowPostFlair(newValue),
+
         blurSpoilers: blurSpoilers ?? initialValues.blurSpoilers,
         toggleBlurSpoilers: (newValue = !blurSpoilers) =>
           setBlurSpoilers(newValue),
@@ -116,6 +134,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         autoPlayVideos: autoPlayVideos ?? initialValues.autoPlayVideos,
         toggleAutoPlayVideos: (newValue = !autoPlayVideos) =>
           setAutoPlayVideos(newValue),
+
+        liveTextInteraction:
+          liveTextInteraction ?? initialValues.liveTextInteraction,
+        toggleLiveTextInteraction: (newValue = !liveTextInteraction) =>
+          setliveTextInteraction(newValue),
       }}
     >
       {children}

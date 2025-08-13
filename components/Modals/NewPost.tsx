@@ -17,9 +17,10 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Clipboard from "expo-clipboard";
 
 import { uploadImage } from "../../api/Media";
-import { submitPost } from "../../api/PostDetail";
+import { CaptchaError, ParseableError, submitPost } from "../../api/PostDetail";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useDraftState } from "../../db/functions/Drafts";
@@ -27,11 +28,16 @@ import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
 import RedditURL from "../../utils/RedditURL";
+import { PostFlair, useAllowedPostFlairs } from "../../api/PostFlair";
+import useContextMenu from "../../utils/useContextMenu";
+import WebView from "react-native-webview";
 
 type NewPostProps = {
   contentSent: (text: string) => void;
   subreddit: string;
 };
+
+type PostType = "self" | "link" | "image";
 
 const DRAFT_PREFIX = "newPostDraft-";
 
@@ -42,6 +48,10 @@ export default function NewPostEditor({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
+  const openContextMenu = useContextMenu();
+
+  const allowedPostFlairs = useAllowedPostFlairs(subreddit);
+
   const [title, setTitle, clearTitleDraft] = useDraftState(
     DRAFT_PREFIX + "title-" + subreddit,
   );
@@ -49,36 +59,83 @@ export default function NewPostEditor({
     DRAFT_PREFIX + "text-" + subreddit,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [kind, setKind] = useState<"self" | "link" | "image">("self");
+  const [kind, setKind] = useState<PostType>("self");
 
   const [isUploadingImg, setIsUploadingImg] = useState(false);
   const [localImgUrl, setLocalImgUrl] = useState<string>();
 
   const [mediaAccess, requestMediaAccess] = useMediaLibraryPermissions();
 
+  const [selectedFlair, setSelectedFlair] = useState<PostFlair | null>(null);
+
+  const [submitThroughBrowser, setSubmitThroughBrowser] = useState(false);
+
+  const selectFlair = async () => {
+    const flair = await openContextMenu({
+      options: ["No Flair", ...allowedPostFlairs.map((flair) => flair.text)],
+    });
+    if (flair === "No Flair") {
+      setSelectedFlair(null);
+    } else {
+      setSelectedFlair(allowedPostFlairs.find((f) => f.text === flair) ?? null);
+    }
+  };
+
   const submit = async () => {
     setIsSubmitting(true);
     try {
-      const newPost = await submitPost(subreddit, kind, title, text);
-      if (newPost.success) {
-        if (newPost.url) {
-          contentSent(newPost.url);
-        } else {
-          /**
-           * Image uploads don't return a URL. They do give a websocket, so there
-           * might be a way to get the URL from that. But that's a future problem.
-           */
-          Alert.alert(`Submitted post successfully`, "Post is being processed");
-        }
-        clearTitleDraft();
-        clearTextDraft();
-        setModal(undefined);
+      const newPostUrl = await submitPost(
+        subreddit,
+        kind,
+        title,
+        text,
+        selectedFlair?.id,
+      );
+      if (newPostUrl) {
+        contentSent(newPostUrl);
       } else {
-        throw new Error(`Failed to submit post`);
+        /**
+         * Image uploads don't return a URL. They do give a websocket, so there
+         * might be a way to get the URL from that. But that's a future problem.
+         */
+        Alert.alert(`Submitted post successfully`, "Post is being processed");
       }
-    } catch {
-      setIsSubmitting(false);
-      Alert.alert(`Failed to submit post`);
+      clearTitleDraft();
+      clearTextDraft();
+      setModal(undefined);
+    } catch (e) {
+      if (e instanceof CaptchaError) {
+        Alert.alert(
+          "Captcha Required",
+          "Reddit is requesting a captcha to be completed to submit this post. Would you like to retry submitting this post through the in app browser?",
+          [
+            {
+              text: "Cancel",
+            },
+            {
+              text: "Ok",
+              isPreferred: true,
+              onPress: () => {
+                setSubmitThroughBrowser(true);
+                if (kind === "self" && text) {
+                  Clipboard.setStringAsync(text);
+                  Alert.alert(
+                    "Your post's body has been copied to your clipboard.",
+                  );
+                }
+              },
+            },
+          ],
+        );
+        setIsSubmitting(false);
+      } else if (e instanceof ParseableError) {
+        Alert.alert("Failed to submit post", e.message);
+        setIsSubmitting(false);
+      } else {
+        setIsSubmitting(false);
+        Alert.alert(`Failed to submit post`, "Unknown error");
+        throw e;
+      }
     }
   };
 
@@ -140,6 +197,12 @@ export default function NewPostEditor({
             ]}
           >
             <TouchableOpacity
+              style={[
+                styles.topBarButton,
+                {
+                  left: 0,
+                },
+              ]}
               onPress={() => {
                 setIsSubmitting(false);
                 setModal(undefined);
@@ -147,7 +210,7 @@ export default function NewPostEditor({
             >
               <Text
                 style={[
-                  styles.topBarButton,
+                  styles.topBarButtonText,
                   {
                     color: theme.iconOrTextButton,
                   },
@@ -166,15 +229,28 @@ export default function NewPostEditor({
             >
               New Post
             </Text>
-            {isSubmitting ? (
-              <ActivityIndicator size="small" color={theme.iconOrTextButton} />
+            {submitThroughBrowser ? null : isSubmitting ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.iconOrTextButton}
+                style={{ position: "absolute", right: 0 }}
+              />
             ) : (
-              <TouchableOpacity onPress={() => submit()}>
+              <TouchableOpacity
+                style={[
+                  styles.topBarButton,
+                  {
+                    right: 0,
+                  },
+                ]}
+                onPress={() => submit()}
+              >
                 <Text
                   style={[
-                    styles.topBarButton,
+                    styles.topBarButtonText,
                     {
                       color: theme.iconOrTextButton,
+                      textAlign: "right",
                     },
                   ]}
                 >
@@ -183,154 +259,178 @@ export default function NewPostEditor({
               </TouchableOpacity>
             )}
           </View>
-          <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View
-              style={[
-                styles.titleContainer,
-                {
-                  borderBottomColor: theme.divider,
-                  backgroundColor: theme.tint,
-                },
-              ]}
+          {submitThroughBrowser ? (
+            <WebView
+              source={{
+                uri: `https://new.reddit.com/r/${subreddit}/submit/?type=${kind === "self" ? "text" : kind}`,
+              }}
+              sharedCookiesEnabled={true}
+              thirdPartyCookiesEnabled={true}
+            ></WebView>
+          ) : (
+            <ScrollView
+              contentContainerStyle={{ flexGrow: 1 }}
+              keyboardShouldPersistTaps="handled"
             >
-              <TextInput
-                style={[
-                  styles.titleInput,
-                  {
-                    color: theme.text,
-                  },
-                ]}
-                placeholder="Title"
-                placeholderTextColor={theme.verySubtleText}
-                value={title}
-                onChangeText={setTitle}
-                scrollEnabled={false}
-              />
-              <TouchableOpacity
-                style={[
-                  styles.postTypeBtn,
-                  {
-                    backgroundColor: theme.iconSecondary,
-                  },
-                ]}
-                onPress={() =>
-                  setKind((kind) => {
-                    setLocalImgUrl(undefined);
-                    if (kind === "self") return "link";
-                    if (kind === "link") return "image";
-                    return "self";
-                  })
-                }
-              >
-                <Text>
-                  {kind === "self"
-                    ? "Text Post"
-                    : kind === "link"
-                      ? "Link Post"
-                      : "Image Post"}
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {kind === "self" ? (
-              <>
-                <MarkdownEditor
-                  setText={setText}
-                  text={text}
-                  placeholder="Write your post..."
-                  showCustomThemeOption={new RedditURL(
-                    `https://www.reddit.com/r/${subreddit}`,
-                  ).supportsSharingThemes()}
-                />
-                <View
-                  style={[
-                    styles.previewTypeContainer,
-                    {
-                      backgroundColor: theme.tint,
-                      borderBottomColor: theme.divider,
-                    },
-                  ]}
-                >
-                  <Text
+              <View style={styles.postTypeContainer}>
+                {(["self", "link", "image"] as PostType[]).map((btnKind) => (
+                  <TouchableOpacity
+                    key={btnKind}
                     style={[
-                      styles.previewTypeText,
+                      styles.postTypeBtn,
                       {
-                        color: theme.text,
+                        backgroundColor:
+                          btnKind === kind ? theme.tint : theme.background,
                       },
                     ]}
+                    onPress={() => setKind(btnKind)}
                   >
-                    Preview
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.renderHTMLContainer,
-                    {
-                      backgroundColor: theme.background,
-                    },
-                  ]}
-                >
-                  <RenderHtml
-                    html={
-                      Snudown.markdown(text).replaceAll(/>\s+</g, "><") // Remove whitespace between tags
-                    }
-                  />
-                </View>
-              </>
-            ) : kind === "link" ? (
-              <TextInput
+                    <Text style={{ color: theme.text, textAlign: "center" }}>
+                      {btnKind === "self"
+                        ? "Text Post"
+                        : btnKind === "link"
+                          ? "Link Post"
+                          : "Image Post"}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View
                 style={[
-                  styles.urlInput,
+                  styles.titleContainer,
                   {
-                    color: theme.text,
                     borderBottomColor: theme.divider,
                     backgroundColor: theme.tint,
                   },
                 ]}
-                placeholder="URL"
-                placeholderTextColor={theme.verySubtleText}
-                value={text}
-                onChangeText={setText}
-                scrollEnabled={false}
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="off"
-              />
-            ) : kind === "image" ? (
-              <>
-                <TouchableOpacity
+              >
+                <TextInput
                   style={[
-                    styles.uploadImageButton,
+                    styles.titleInput,
                     {
-                      backgroundColor: theme.iconPrimary,
+                      color: theme.text,
                     },
                   ]}
-                  activeOpacity={0.5}
-                  onPress={() => selectImage()}
-                >
-                  {isUploadingImg ? (
-                    <ActivityIndicator size="small" color={theme.text} />
-                  ) : (
+                  placeholder="Title"
+                  placeholderTextColor={theme.verySubtleText}
+                  value={title}
+                  onChangeText={setTitle}
+                  scrollEnabled={false}
+                />
+                {allowedPostFlairs.length > 0 && (
+                  <TouchableOpacity
+                    style={[
+                      styles.flairBtn,
+                      {
+                        backgroundColor: theme.buttonBg,
+                      },
+                    ]}
+                    onPress={() => selectFlair()}
+                  >
+                    <Text style={{ color: theme.buttonText }} numberOfLines={1}>
+                      {selectedFlair?.text ?? "Select Flair"}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              {kind === "self" ? (
+                <>
+                  <MarkdownEditor
+                    setText={setText}
+                    text={text}
+                    placeholder="Write your post..."
+                    showCustomThemeOption={new RedditURL(
+                      `https://www.reddit.com/r/${subreddit}`,
+                    ).supportsSharingThemes()}
+                  />
+                  <View
+                    style={[
+                      styles.previewTypeContainer,
+                      {
+                        backgroundColor: theme.tint,
+                        borderBottomColor: theme.divider,
+                      },
+                    ]}
+                  >
                     <Text
                       style={[
-                        styles.uploadImageText,
+                        styles.previewTypeText,
                         {
                           color: theme.text,
                         },
                       ]}
                     >
-                      Select Image
+                      Preview
                     </Text>
-                  )}
-                </TouchableOpacity>
-                {localImgUrl ? (
-                  <Image src={localImgUrl} style={styles.image} />
-                ) : null}
-              </>
-            ) : null}
-          </ScrollView>
+                  </View>
+                  <View
+                    style={[
+                      styles.renderHTMLContainer,
+                      {
+                        backgroundColor: theme.background,
+                      },
+                    ]}
+                  >
+                    <RenderHtml
+                      html={
+                        Snudown.markdown(text).replaceAll(/>\s+</g, "><") // Remove whitespace between tags
+                      }
+                    />
+                  </View>
+                </>
+              ) : kind === "link" ? (
+                <TextInput
+                  style={[
+                    styles.urlInput,
+                    {
+                      color: theme.text,
+                      borderBottomColor: theme.divider,
+                      backgroundColor: theme.tint,
+                    },
+                  ]}
+                  placeholder="URL"
+                  placeholderTextColor={theme.verySubtleText}
+                  value={text}
+                  onChangeText={setText}
+                  scrollEnabled={false}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="off"
+                />
+              ) : kind === "image" ? (
+                <>
+                  <TouchableOpacity
+                    style={[
+                      styles.uploadImageButton,
+                      {
+                        backgroundColor: theme.iconPrimary,
+                      },
+                    ]}
+                    activeOpacity={0.5}
+                    onPress={() => selectImage()}
+                  >
+                    {isUploadingImg ? (
+                      <ActivityIndicator size="small" color={theme.text} />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.uploadImageText,
+                          {
+                            color: theme.text,
+                          },
+                        ]}
+                      >
+                        Select Image
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                  {localImgUrl ? (
+                    <Image src={localImgUrl} style={styles.image} />
+                  ) : null}
+                </>
+              ) : null}
+            </ScrollView>
+          )}
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
@@ -351,18 +451,23 @@ const styles = StyleSheet.create({
   },
   topBar: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     paddingTop: 5,
     paddingBottom: 10,
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
     borderBottomWidth: 1,
+    position: "relative",
+  },
+  topBarButton: {
+    position: "absolute",
   },
   topBarTitle: {
     fontSize: 18,
   },
-  topBarButton: {
+  topBarButtonText: {
     fontSize: 18,
+    width: 100,
   },
   titleContainer: {
     flexDirection: "row",
@@ -378,10 +483,21 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
   },
+  postTypeContainer: {
+    flexDirection: "row",
+    marginHorizontal: 5,
+    marginVertical: 10,
+  },
   postTypeBtn: {
-    marginRight: 10,
+    flexGrow: 1,
+    width: 0,
     padding: 10,
     borderRadius: 15,
+  },
+  flairBtn: {
+    padding: 10,
+    borderRadius: 15,
+    maxWidth: 100,
   },
   urlInput: {
     fontSize: 16,
