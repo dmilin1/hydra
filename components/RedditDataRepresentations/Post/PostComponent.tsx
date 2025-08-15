@@ -21,13 +21,19 @@ import RedditURL, { PageType } from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
+import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
 
 type PostComponentProps = {
   post: Post;
   setPost: (post: Post) => void;
+  deletePost: () => void;
 };
 
-export default function PostComponent({ post, setPost }: PostComponentProps) {
+export default function PostComponent({
+  post,
+  setPost,
+  deletePost,
+}: PostComponentProps) {
   const { params } = useRoute<URLRoutes>();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
@@ -38,6 +44,8 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
     postTextLength,
     showPostFlair,
   } = useContext(PostSettingsContext);
+
+  const { toggleFilterSubreddit } = useContext(FiltersContext);
 
   const redditURL = params?.url ? new RedditURL(params.url) : null;
 
@@ -135,6 +143,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                 "Upvote",
                 "Downvote",
                 ...(seen ? ["Mark as Unread"] : ["Mark as Read"]),
+                ...(isOnMultiSubredditPage ? ["Filter Subreddit"] : []),
                 ...(post.saved ? ["Unsave"] : ["Save"]),
                 "Share",
               ],
@@ -148,6 +157,9 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
               result === "Mark as Read"
             ) {
               setSeenValue(!seen);
+            } else if (result == "Filter Subreddit") {
+              toggleFilterSubreddit(post.subreddit);
+              deletePost();
             } else if (result === "Save" || result === "Unsave") {
               await saveItem(post, !post.saved);
               setPost({ ...post, saved: !post.saved });

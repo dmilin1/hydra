@@ -32,8 +32,6 @@
 
 - 🚀 Change swipe actions
 
-- 🚀 Block specific subreddits from appearing
-
 - 🐛 Enable landscape mode in the browser
 
 - 🚀 Use the faster post search API
