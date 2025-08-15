@@ -5,6 +5,7 @@ import { UserAuth } from "../api/Authentication";
 import { User, getUser } from "../api/User";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
+import { Alert } from "react-native";
 
 type AccountContextType = {
   loginInitialized: boolean;
@@ -35,10 +36,10 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   const [accounts, setAccounts] = useState<AccountContextType["accounts"]>([]);
 
   const logInContext = async (username?: string): Promise<boolean> => {
-    if (username) {
-      await RedditCookies.restoreSessionCookies(username);
-    }
     try {
+      if (username) {
+        await RedditCookies.restoreSessionCookies(username);
+      }
       const user = await getUser("/user/me");
       if (username && user.userName !== username) {
         throw new Error("Authenticated session out of sync");
@@ -54,6 +55,10 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       await addUser(user.userName);
       return true;
     } catch (_e) {
+      Alert.alert(
+        "Login Session Expired",
+        "You can login again by pressing the + button in the top right corner of the Account tab.",
+      );
       await logOutContext();
       return false;
     }
@@ -114,7 +119,9 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       const usernames: string[] = JSON.parse(usernamesJSON);
       setAccounts(usernames);
       const currentUsername = KeyStore.getString("currentUser");
-      await logInContext(currentUsername);
+      if (currentUsername) {
+        await logInContext(currentUsername);
+      }
     }
     setLoginInitialized(true);
   };
