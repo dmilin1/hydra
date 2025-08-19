@@ -396,7 +396,7 @@ export function CommentComponent({
                             style={[
                               styles.flairText,
                               {
-                                color: theme.verySubtleText,
+                                color: theme.text,
                               },
                             ]}
                             numberOfLines={1}
