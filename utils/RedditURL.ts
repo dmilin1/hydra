@@ -17,6 +17,7 @@ export enum PageType {
   HOME,
   POST_DETAILS,
   SUBREDDIT,
+  SUBREDDIT_SEARCH,
   MULTIREDDIT,
   USER,
   SEARCH,
@@ -82,21 +83,33 @@ export default class RedditURL extends URL {
     }
   }
 
-  getSort(): string | null {
+  getSort(): [string | null, string | null] {
     const pageType = this.getPageType();
     if ([PageType.HOME, PageType.SUBREDDIT].includes(pageType)) {
       const sort = this.url.split(/\/r\/|\/|\?/).slice(3, 5) ?? [];
       for (const check of ["best", "hot", "new", "top", "rising"]) {
         if (sort.includes(check)) {
-          return check;
+          return [check, this.getQueryParam("t")];
         }
       }
+    } else if (pageType === PageType.MULTIREDDIT) {
+      const sort = this.url.split(/\/m\/|\/|\?/).slice(6, 7)[0];
+      for (const check of ["hot", "new", "top", "rising", "controversial"]) {
+        if (sort === check) {
+          return [
+            check,
+            check === "top" ? (this.getQueryParam("t") ?? "day") : null,
+          ];
+        }
+      }
+    } else if (pageType === PageType.SUBREDDIT_SEARCH) {
+      return [this.getQueryParam("sort"), null];
     } else if (pageType === PageType.POST_DETAILS) {
-      return this.getQueryParam("sort");
+      return [this.getQueryParam("sort"), this.getQueryParam("t")];
     } else if (pageType === PageType.USER) {
-      return this.getQueryParam("sort") ?? "new";
+      return [this.getQueryParam("sort") ?? "new", this.getQueryParam("t")];
     }
-    return null;
+    return [null, null];
   }
 
   changeSort(sort: string, time?: string): RedditURL {
@@ -106,10 +119,15 @@ export default class RedditURL extends URL {
     if (sort === "Q&A") {
       sort = "qa";
     }
+    if (sort === "Comment Count") {
+      sort = "comments";
+    }
     if (pageType === PageType.HOME) {
       this.url = `https://www.reddit.com/${sort.toLowerCase()}/?${urlParams}`;
     } else if (pageType === PageType.SUBREDDIT) {
       this.url = `https://www.reddit.com/r/${subreddit}/${sort.toLowerCase()}/?${urlParams}`;
+    } else if (pageType === PageType.SUBREDDIT_SEARCH) {
+      this.changeQueryParam("sort", sort.toLowerCase());
     } else if (pageType === PageType.POST_DETAILS) {
       this.changeQueryParam("sort", sort.toLowerCase());
     } else if (pageType === PageType.MULTIREDDIT) {
@@ -156,6 +174,11 @@ export default class RedditURL extends URL {
       return PageType.HOME;
     } else if (relativePath.includes("/comments/")) {
       return PageType.POST_DETAILS;
+    } else if (
+      relativePath.startsWith("/r/") &&
+      relativePath.includes("/search/")
+    ) {
+      return PageType.SUBREDDIT_SEARCH;
     } else if (
       relativePath.startsWith("/r/") &&
       relativePath.includes("/wiki/")

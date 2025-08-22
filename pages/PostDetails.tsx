@@ -229,7 +229,7 @@ function PostDetails({ route }: PostDetailsProps) {
 
   useEffect(() => {
     loadPostDetails();
-  }, []);
+  }, [url]);
 
   return (
     <View
@@ -245,6 +245,7 @@ function PostDetails({ route }: PostDetailsProps) {
           ref={scrollView}
           refreshControl={
             <RefreshControl
+              tintColor={theme.text}
               refreshing={refreshing}
               onRefresh={() => loadPostDetails()}
             />

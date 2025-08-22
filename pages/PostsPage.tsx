@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import {
   getPosts,
@@ -16,17 +16,30 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { markPostSeen } from "../db/functions/SeenPosts";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
-import RedditURL from "../utils/RedditURL";
+import RedditURL, { PageType } from "../utils/RedditURL";
 import { incrementSubredditVisitCount } from "../db/functions/Stats";
+import { useURLNavigation } from "../utils/navigation";
+import SortAndContext, {
+  ContextTypes,
+  SortTypes,
+} from "../components/Navbar/SortAndContext";
+import { SubredditContext } from "../contexts/SubredditContext";
 
 export default function PostsPage({
   route,
 }: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
   const { url } = route.params;
+  const navigation = useURLNavigation<
+    "PostsPage" | "Home" | "MultiredditPage"
+  >();
 
   const subreddit = new RedditURL(url).getSubreddit();
+  const [sort, sortTime] = new RedditURL(url).getSort();
+  const searchText = new RedditURL(url).getQueryParam("q");
 
   const { theme } = useContext(ThemeContext);
+  const { subreddits } = useContext(SubredditContext);
+
   const {
     filterPostsByText,
     filterPostsByAI,
@@ -53,7 +66,6 @@ export default function PostsPage({
       try {
         return await getPosts(url, {
           after,
-          search: search.current,
           limit,
         });
       } catch (e) {
@@ -74,9 +86,8 @@ export default function PostsPage({
       filterPostsByAI,
     ],
     limitRampUp: [10, 20, 40, 70, 100],
+    refreshDependencies: [searchText, sort, sortTime],
   });
-
-  const search = useRef<string>("");
 
   const handleScrolledPastPost = (post: Post) => {
     if (autoMarkAsSeen) {
@@ -90,6 +101,48 @@ export default function PostsPage({
       incrementSubredditVisitCount(subreddit);
     }
   }, []);
+
+  useEffect(() => {
+    const pageType = new RedditURL(url).getPageType();
+    let contextOptions: ContextTypes[];
+    let sortOptions: SortTypes[];
+    if (pageType === PageType.HOME) {
+      contextOptions = [
+        shouldFilterSeen ? "Show Seen Posts" : "Hide Seen Posts",
+        "Share",
+      ];
+      sortOptions = ["Best", "Hot", "New", "Top", "Rising"];
+    } else if (pageType === PageType.SUBREDDIT) {
+      contextOptions = [
+        "New Post",
+        subreddits.subscriber.find((sub) => sub.name === subreddit)
+          ? "Unsubscribe"
+          : "Subscribe",
+        subreddits.favorites.find((sub) => sub.name === subreddit)
+          ? "Unfavorite"
+          : "Favorite",
+        "Add to Multireddit",
+        shouldFilterSeen ? "Show Seen Posts" : "Hide Seen Posts",
+        "Sidebar",
+        "Wiki",
+        "Share",
+      ];
+      sortOptions = ["Best", "Hot", "New", "Top", "Rising"];
+    } else if (pageType === PageType.MULTIREDDIT) {
+      contextOptions = ["Share"];
+      sortOptions = ["Hot", "New", "Top", "Rising", "Controversial"];
+    }
+    navigation.setOptions({
+      headerRight: () => (
+        <SortAndContext
+          route={route}
+          navigation={navigation}
+          sortOptions={sortOptions}
+          contextOptions={contextOptions}
+        />
+      ),
+    });
+  }, [subreddits, shouldFilterSeen, sort, sortTime]);
 
   return (
     <View
@@ -128,9 +181,16 @@ export default function PostsPage({
           ListHeaderComponent={
             route.name === "PostsPage" ? (
               <SearchBar
+                clearOnSearch={true}
+                searchOnBlur={false}
                 onSearch={(text) => {
-                  search.current = text;
-                  refreshPosts();
+                  if (!text) return;
+                  const newURL = new RedditURL(
+                    `https://www.reddit.com/r/${subreddit}/search/`,
+                  );
+                  newURL.changeQueryParam("q", text);
+                  newURL.changeQueryParam("restrict_sr", "true");
+                  navigation.pushURL(newURL.toString());
                 }}
               />
             ) : null

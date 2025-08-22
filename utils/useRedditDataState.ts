@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { DependencyList, useEffect, useRef, useState } from "react";
 
 import { RedditDataObject } from "../api/RedditApi";
 
@@ -15,6 +15,7 @@ type UseRedditDataStateProps<T extends RedditDataObject> = {
   filterRules?: FilterFunction<T>[];
   filterRetries?: number;
   limitRampUp?: number[];
+  refreshDependencies?: DependencyList;
 };
 
 const filterExisting = async <T extends RedditDataObject>(
@@ -34,6 +35,7 @@ export default function useRedditDataState<T extends RedditDataObject>({
   filterRules = [],
   filterRetries = 5,
   limitRampUp,
+  refreshDependencies = [],
 }: UseRedditDataStateProps<T>) {
   const unfilteredAfter = useRef<string | undefined>(undefined);
 
@@ -72,7 +74,10 @@ export default function useRedditDataState<T extends RedditDataObject>({
     setData([...data, ...newData]);
   };
 
-  const refreshData = async () => {
+  const refreshData = async ({ clearBeforeLoading = false } = {}) => {
+    if (clearBeforeLoading) {
+      setData([]);
+    }
     unfilteredAfter.current = undefined;
     let newData: T[] = [];
     for (let i = 0; i < filterRetries; i++) {
@@ -92,6 +97,7 @@ export default function useRedditDataState<T extends RedditDataObject>({
       }
       setHitFilterLimit(true);
     }
+    setFullyLoaded(false);
     setData(newData);
   };
 
@@ -126,9 +132,15 @@ export default function useRedditDataState<T extends RedditDataObject>({
     });
   };
 
+  const initialLoad = useRef(true);
   useEffect(() => {
-    loadMoreData();
-  }, []);
+    if (initialLoad.current) {
+      loadMoreData();
+      initialLoad.current = false;
+    } else {
+      refreshData({ clearBeforeLoading: true });
+    }
+  }, refreshDependencies);
 
   return {
     data,
