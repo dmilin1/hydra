@@ -212,11 +212,13 @@ export default function PostComponent({
             >
               {post.title.trim()}
             </Text>
-            {!isOnMultiSubredditPage && showPostFlair && post.postFlair && (
+            {showPostFlair && post.postFlair && (
               <View
                 style={[
                   styles.postFlairContainer,
                   {
+                    marginTop: postCompactMode ? 2 : 5,
+                    marginBottom: postCompactMode ? -3 : -5,
                     backgroundColor: theme.divider,
                   },
                 ]}
@@ -416,8 +418,6 @@ const styles = StyleSheet.create({
   },
   postFlairContainer: {
     marginLeft: 10,
-    marginTop: 5,
-    marginBottom: -5,
     paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 5,
