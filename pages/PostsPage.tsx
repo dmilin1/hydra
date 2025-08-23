@@ -43,6 +43,7 @@ export default function PostsPage({
   const {
     filterPostsByText,
     filterPostsByAI,
+    filterPostsBySubreddit,
     autoMarkAsSeen,
     getHideSeenURLStatus,
   } = useContext(FiltersContext);
@@ -59,6 +60,7 @@ export default function PostsPage({
     loadMoreData: loadMorePosts,
     refreshData: refreshPosts,
     modifyData: modifyPosts,
+    deleteData: deletePosts,
     fullyLoaded,
     hitFilterLimit,
   } = useRedditDataState<Post>({
@@ -84,6 +86,7 @@ export default function PostsPage({
       ...(shouldFilterSeen ? [filterSeenItems] : []),
       filterPostsByText,
       filterPostsByAI,
+      filterPostsBySubreddit,
     ],
     limitRampUp: [10, 20, 40, 70, 100],
     refreshDependencies: [searchText, sort, sortTime],
@@ -207,6 +210,9 @@ export default function PostsPage({
               setPost={(newPost) => {
                 modifyPosts([newPost]);
               }}
+              deletePost={() => {
+                deletePosts([item]);
+              }}
             />
           )}
           onViewableItemsChanged={(data) => {
@@ -216,7 +222,7 @@ export default function PostsPage({
             changedItems
               .filter(
                 (item) =>
-                  !item.isViewable && (item?.index ?? 0) < maxVisibleItem,
+                  !item.isViewable && (item?.index ?? 0) < maxVisibleItem
               )
               .forEach((viewToken) => {
                 const post = viewToken.item as Post;
