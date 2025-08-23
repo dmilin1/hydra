@@ -21,6 +21,8 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
 import Gestures from "./General/Gestures";
 import Stats from "./Stats";
+import AppIcon from "./General/AppIcon/AppIcon";
+import AppIconDetails from "./General/AppIcon/AppIconDetails";
 
 export default function SettingsPage({
   route,
@@ -60,6 +62,12 @@ export default function SettingsPage({
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/themeMaker" && <ThemeMaker />}
         {relativePath === "settings/appearance" && <Appearance />}
+
+        {relativePath === "settings/appIcon" && <AppIcon />}
+        {relativePath.includes("settings/appIconDetails/") && (
+          <AppIconDetails />
+        )}
+
         {relativePath === "settings/dataUse" && <DataUse />}
         {relativePath === "settings/stats" && <Stats />}
         {relativePath === "settings/privacy" && <Privacy />}

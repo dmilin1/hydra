@@ -28,6 +28,7 @@
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-orm": "^0.44.4",
     "expo": "^53.0.20",
+    "expo-alternate-app-icons": "^2.2.0",
     "expo-application": "~6.1.5",
     "expo-blur": "~14.1.5",
     "expo-clipboard": "~7.1.5",

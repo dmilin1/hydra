@@ -4,11 +4,13 @@ import {
   FontAwesome,
   FontAwesome5,
   MaterialIcons,
+  Octicons,
 } from "@expo/vector-icons";
 import * as Application from "expo-application";
 import * as Updates from "expo-updates";
 import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { supportsAlternateIcons } from "expo-alternate-app-icons";
 
 import GetHydraProButton from "../../components/UI/GetHydraProButton";
 import List from "../../components/UI/List";
@@ -44,6 +46,18 @@ export default function Root() {
             text: "Appearance",
             onPress: () => pushURL("hydra://settings/appearance"),
           },
+          ...(supportsAlternateIcons
+            ? [
+                {
+                  key: "appIcon",
+                  icon: (
+                    <Octicons name="paintbrush" size={24} color={theme.text} />
+                  ),
+                  text: "App Icon",
+                  onPress: () => pushURL("hydra://settings/appIcon"),
+                },
+              ]
+            : []),
           {
             key: "account",
             icon: <FontAwesome5 name="user" size={24} color={theme.text} />,
