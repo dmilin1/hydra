@@ -155,7 +155,7 @@ export default function Filters() {
           text: "Maybe Later",
           style: "cancel",
         },
-      ]
+      ],
     );
   };
 
@@ -176,6 +176,7 @@ export default function Filters() {
         make load times slower because more items have to be loaded before
         showing results.
       </Text>
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
       <List
         title="Post Settings"
         items={[
@@ -247,6 +248,7 @@ export default function Filters() {
           ))}
         </View>
       )}
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
       <SectionTitle text="Text Filter List" />
       <TextInput
         style={[
@@ -277,6 +279,7 @@ export default function Filters() {
         insensitive and won't match subwords. For example, "cat" won't match
         "caterpillar".
       </Text>
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
       <SectionTitle text="Smart Post Filter" />
       <TextInput
         style={[
@@ -344,18 +347,20 @@ export default function Filters() {
           },
         }))}
       />
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
       <SectionTitle text="Filtered subreddits" />
       <Text
         style={[
           styles.textDescription,
           {
+            marginTop: 0,
             color: theme.text,
           },
         ]}
       >
-        You can filter subreddits by long-pressing posts on subreddits such as
-        /r/all or multireddits. Once filtered, subreddits will apear here.
-        Delete the filter to begin seeing posts from this subreddit again.
+        You can filter subreddits by long-pressing posts on /r/all or
+        /r/popular. Once filtered, subreddits will apear here. Delete the filter
+        to begin seeing posts from the subreddit again.
       </Text>
       {filteredSubreddits.length > 0 && (
         <List
@@ -378,13 +383,13 @@ export default function Filters() {
               />
             ),
             onPress: () => {
-              Alert.alert(`Remove ${subreddit} from filter?`, "", [
+              Alert.alert(`Stop filtering /r/${subreddit}?`, "", [
                 {
                   text: "Cancel",
                   style: "cancel",
                 },
                 {
-                  text: "Remove",
+                  text: "Stop Filtering",
                   style: "destructive",
                   onPress: () => {
                     toggleHideSubreddit(subreddit);
@@ -401,12 +406,20 @@ export default function Filters() {
 }
 
 const styles = StyleSheet.create({
+  divider: {
+    marginTop: 25,
+    marginBottom: 10,
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
+  },
   textDescription: {
-    margin: 15,
+    marginTop: 10,
+    marginHorizontal: 15,
     lineHeight: 20,
   },
   hideSeenURLsContainer: {
-    margin: 15,
+    marginTop: 10,
+    marginHorizontal: 15,
     gap: 5,
   },
   filterText: {

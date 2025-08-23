@@ -63,7 +63,7 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
   const { customerId, isPro } = useContext(SubscriptionsContext);
 
   const [storedFilterSeenPosts, setFilterSeenPosts] = useMMKVBoolean(
-    FILTER_SEEN_POSTS_KEY
+    FILTER_SEEN_POSTS_KEY,
   );
   const filterSeenPosts =
     storedFilterSeenPosts ?? initialValues.filterSeenPosts;
@@ -89,7 +89,7 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
 
   const textFilterMap = useMemo(
     () => makeTextFilterMap(filterText),
-    [filterText]
+    [filterText],
   );
 
   const filterPostsByText: FilterFunction<Post> = (posts) =>
@@ -155,7 +155,7 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
             "Restart the app for this change to take effect.",
             newValue && filterSeenPosts
               ? "You may notice slower loads with this setting enabled because all the hidden posts still have to be loaded in the background."
-              : undefined
+              : undefined,
           );
           setAutoMarkAsSeen(newValue);
         },

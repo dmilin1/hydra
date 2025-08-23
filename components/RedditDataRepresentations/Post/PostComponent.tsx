@@ -26,7 +26,7 @@ import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContex
 type PostComponentProps = {
   post: Post;
   setPost: (post: Post) => void;
-  deletePost: () => void;
+  deletePost?: () => void;
 };
 
 export default function PostComponent({
@@ -49,10 +49,12 @@ export default function PostComponent({
 
   const redditURL = params?.url ? new RedditURL(params.url) : null;
 
+  const subreddit = redditURL?.getSubreddit() ?? "";
+  const isPopularOrAll = ["popular", "all"].includes(subreddit);
   const isOnMultiSubredditPage =
     !redditURL ||
     redditURL.getPageType() !== PageType.SUBREDDIT ||
-    ["popular", "all"].includes(redditURL.getSubreddit());
+    isPopularOrAll;
 
   const seen = isPostSeen(post);
 
@@ -143,7 +145,7 @@ export default function PostComponent({
                 "Upvote",
                 "Downvote",
                 ...(seen ? ["Mark as Unread"] : ["Mark as Read"]),
-                ...(isOnMultiSubredditPage ? ["Filter Subreddit"] : []),
+                ...(isPopularOrAll && deletePost ? ["Filter Subreddit"] : []),
                 ...(post.saved ? ["Unsave"] : ["Save"]),
                 "Share",
               ],
@@ -157,7 +159,7 @@ export default function PostComponent({
               result === "Mark as Read"
             ) {
               setSeenValue(!seen);
-            } else if (result == "Filter Subreddit") {
+            } else if (result === "Filter Subreddit" && deletePost) {
               toggleFilterSubreddit(post.subreddit);
               deletePost();
             } else if (result === "Save" || result === "Unsave") {

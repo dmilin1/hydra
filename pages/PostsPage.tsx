@@ -222,7 +222,7 @@ export default function PostsPage({
             changedItems
               .filter(
                 (item) =>
-                  !item.isViewable && (item?.index ?? 0) < maxVisibleItem
+                  !item.isViewable && (item?.index ?? 0) < maxVisibleItem,
               )
               .forEach((viewToken) => {
                 const post = viewToken.item as Post;
