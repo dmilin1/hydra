@@ -24,6 +24,7 @@ import SidebarScreen from "./SidebarScreen";
 import WikiScreen from "./WikiScreen";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import SubredditSearchScreen from "./SubredditSearchScreen";
 
 export type StackParamsList = {
   Subreddits: object;
@@ -35,6 +36,9 @@ export type StackParamsList = {
     url: string;
   };
   PostsPage: {
+    url: string;
+  };
+  SubredditSearchPage: {
     url: string;
   };
   PostDetailsPage: {
@@ -71,6 +75,7 @@ export type URLRoutes =
   | "Home"
   | "PostsPage"
   | "PostDetailsPage"
+  | "SubredditSearchPage"
   | "MultiredditPage"
   | "UserPage"
   | "Accounts"
@@ -85,6 +90,7 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   InboxPage: true,
   MessagesPage: false,
   PostsPage: true,
+  SubredditSearchPage: true,
   PostDetailsPage: true,
   MultiredditPage: true,
   UserPage: true,
@@ -117,6 +123,7 @@ export default function Stack() {
     InboxScreen,
     MessagesScreen,
     PostsScreen,
+    SubredditSearchScreen,
     PostDetailsScreen,
     MultiredditScreen,
     UserScreen,

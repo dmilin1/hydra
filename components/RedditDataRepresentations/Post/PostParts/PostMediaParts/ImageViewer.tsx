@@ -4,8 +4,8 @@ import {
   Text,
   StyleSheet,
   View,
-  TouchableHighlight,
   Dimensions,
+  TouchableWithoutFeedback,
 } from "react-native";
 
 import { default as ImageView } from "./ImageView/ImageViewing";
@@ -90,7 +90,7 @@ export default function ImageViewer({
         />
       )}
       {imgRefs.map((img, index, imgs) => (
-        <TouchableHighlight
+        <TouchableWithoutFeedback
           key={index}
           onPress={() => {
             setLoadLowData(false);
@@ -112,7 +112,7 @@ export default function ImageViewer({
             source={img}
             transition={250}
           />
-        </TouchableHighlight>
+        </TouchableWithoutFeedback>
       ))}
       {images.length >= 2 && (
         <View

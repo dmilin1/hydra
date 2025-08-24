@@ -5,20 +5,34 @@ import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type SearchBarProps = {
+  initialSearch?: string;
+  clearOnSearch?: boolean;
+  searchOnBlur?: boolean;
   onSearch: (text: string) => void;
 };
 
-export default function SearchBar({ onSearch }: SearchBarProps) {
+export default function SearchBar({
+  initialSearch,
+  clearOnSearch,
+  onSearch,
+  searchOnBlur = true,
+}: SearchBarProps) {
   const { theme } = useContext(ThemeContext);
   const search = useRef<string>("");
   const prevSearch = useRef<string>("");
   const textInputRef = useRef<TextInput>(null);
-  const [showX, setShowX] = useState(false);
+  const [showX, setShowX] = useState(!!initialSearch);
 
   const doSearch = () => {
     if (search.current !== prevSearch.current) {
       onSearch(search.current);
       prevSearch.current = search.current;
+    }
+    if (clearOnSearch) {
+      search.current = "";
+      textInputRef.current?.clear();
+      setShowX(false);
+      prevSearch.current = "";
     }
   };
 
@@ -38,6 +52,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         style={styles.searchBarIcon}
       />
       <TextInput
+        defaultValue={initialSearch}
         ref={textInputRef}
         style={[
           styles.searchBar,
@@ -50,7 +65,11 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           search.current = text;
           setShowX(!!text);
         }}
-        onBlur={() => doSearch()}
+        onSubmitEditing={() => doSearch()}
+        onBlur={() => {
+          if (!searchOnBlur) return;
+          doSearch();
+        }}
       />
       {showX && (
         <TouchableOpacity

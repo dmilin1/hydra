@@ -248,7 +248,7 @@ export async function submitPost(
         sr: subreddit,
         kind,
         title,
-        flair_id: flairId,
+        ...(flairId ? { flair_id: flairId } : {}),
         [kind === "self" ? "text" : "url"]: content,
         extension: "json",
       },

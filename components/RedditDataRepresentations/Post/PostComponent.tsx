@@ -21,13 +21,19 @@ import RedditURL, { PageType } from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
+import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
 
 type PostComponentProps = {
   post: Post;
   setPost: (post: Post) => void;
+  deletePost?: () => void;
 };
 
-export default function PostComponent({ post, setPost }: PostComponentProps) {
+export default function PostComponent({
+  post,
+  setPost,
+  deletePost,
+}: PostComponentProps) {
   const { params } = useRoute<URLRoutes>();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
@@ -39,12 +45,16 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
     showPostFlair,
   } = useContext(PostSettingsContext);
 
+  const { toggleFilterSubreddit } = useContext(FiltersContext);
+
   const redditURL = params?.url ? new RedditURL(params.url) : null;
 
+  const subreddit = redditURL?.getSubreddit() ?? "";
+  const isPopularOrAll = ["popular", "all"].includes(subreddit);
   const isOnMultiSubredditPage =
     !redditURL ||
     redditURL.getPageType() !== PageType.SUBREDDIT ||
-    ["popular", "all"].includes(redditURL.getSubreddit());
+    isPopularOrAll;
 
   const seen = isPostSeen(post);
 
@@ -135,6 +145,7 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
                 "Upvote",
                 "Downvote",
                 ...(seen ? ["Mark as Unread"] : ["Mark as Read"]),
+                ...(isPopularOrAll && deletePost ? ["Filter Subreddit"] : []),
                 ...(post.saved ? ["Unsave"] : ["Save"]),
                 "Share",
               ],
@@ -148,6 +159,9 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
               result === "Mark as Read"
             ) {
               setSeenValue(!seen);
+            } else if (result === "Filter Subreddit" && deletePost) {
+              toggleFilterSubreddit(post.subreddit);
+              deletePost();
             } else if (result === "Save" || result === "Unsave") {
               await saveItem(post, !post.saved);
               setPost({ ...post, saved: !post.saved });
@@ -198,11 +212,13 @@ export default function PostComponent({ post, setPost }: PostComponentProps) {
             >
               {post.title.trim()}
             </Text>
-            {!isOnMultiSubredditPage && showPostFlair && post.postFlair && (
+            {showPostFlair && post.postFlair && (
               <View
                 style={[
                   styles.postFlairContainer,
                   {
+                    marginTop: postCompactMode ? 2 : 5,
+                    marginBottom: postCompactMode ? -3 : -5,
                     backgroundColor: theme.divider,
                   },
                 ]}
@@ -402,8 +418,6 @@ const styles = StyleSheet.create({
   },
   postFlairContainer: {
     marginLeft: 10,
-    marginTop: 5,
-    marginBottom: -5,
     paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 5,

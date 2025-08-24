@@ -20,15 +20,21 @@ import RedditURL from "../../utils/RedditURL";
 
 type HideSeenURLs = Record<string, boolean>;
 
+type HideFilteredSubreddits = Record<string, boolean>;
+
 export const FILTER_SEEN_POSTS_KEY = "filterSeenPosts";
 export const FILTER_SEEN_POSTS_DEFAULT = false;
 
 export const HIDE_SEEN_URLS_KEY = "hideSeenURLs";
 export const HIDE_SEEN_URLS_DEFAULT = {} as HideSeenURLs;
 
+export const HIDE_FILTERED_SUBREDDITS_KEY = "filteredSubreddits";
+export const HIDE_FILTERED_SUBREDDITS_DEFAULT = {} as HideFilteredSubreddits;
+
 const initialValues = {
   filterSeenPosts: FILTER_SEEN_POSTS_DEFAULT,
   hideSeenURLs: HIDE_SEEN_URLS_DEFAULT,
+  hideFilteredSubreddits: HIDE_FILTERED_SUBREDDITS_DEFAULT,
   autoMarkAsSeen: false,
   filterText: "",
   aiFilterText: "",
@@ -38,12 +44,14 @@ const initialValues = {
 const initialPostSettingsContext = {
   ...initialValues,
   toggleFilterSeenPosts: (_newValue?: boolean) => {},
+  toggleFilterSubreddit: (_subreddit: string) => {},
   hideSeenURLs: HIDE_SEEN_URLS_DEFAULT,
   getHideSeenURLStatus: (_url: string) => false as boolean,
   toggleHideSeenURL: (_url: string) => {},
   toggleAutoMarkAsSeen: (_newValue?: boolean) => {},
   setFilterText: (_newValue?: string) => {},
   filterPostsByText: ((posts) => posts) as FilterFunction<Post>,
+  filterPostsBySubreddit: ((posts) => posts) as FilterFunction<Post>,
   doesCommentPassTextFilter: (_comment: Comment) => true,
   setAiFilterText: (_newValue?: string) => {},
   filterPostsByAI: ((posts) => posts) as FilterFunction<Post>,
@@ -63,6 +71,11 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
   const [storedHideSeenURLs, setHideSeenURLs] =
     useMMKVObject<HideSeenURLs>(HIDE_SEEN_URLS_KEY);
   const hideSeenURLs = storedHideSeenURLs ?? HIDE_SEEN_URLS_DEFAULT;
+
+  const [storedHideFilteredSubreddits, setHideFilteredSubreddits] =
+    useMMKVObject<HideFilteredSubreddits>(HIDE_FILTERED_SUBREDDITS_KEY);
+  const hideFilteredSubreddits =
+    storedHideFilteredSubreddits ?? initialValues.hideFilteredSubreddits;
 
   const [storedAutoMarkAsSeen, setAutoMarkAsSeen] =
     useMMKVBoolean("autoMarkAsSeen");
@@ -98,6 +111,9 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  const filterPostsBySubreddit: FilterFunction<Post> = (posts) =>
+    posts.filter((post) => !hideFilteredSubreddits[post.subreddit]);
+
   return (
     <FiltersContext.Provider
       value={{
@@ -120,6 +136,18 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
           }
           setHideSeenURLs(hideSeenURLs);
         },
+
+        hideFilteredSubreddits,
+        toggleFilterSubreddit: (subreddit: string) => {
+          const newFilteredSubreddits = { ...hideFilteredSubreddits };
+          if (newFilteredSubreddits[subreddit]) {
+            delete newFilteredSubreddits[subreddit];
+          } else {
+            newFilteredSubreddits[subreddit] = true;
+          }
+          setHideFilteredSubreddits(newFilteredSubreddits);
+        },
+        filterPostsBySubreddit,
 
         autoMarkAsSeen,
         toggleAutoMarkAsSeen: (newValue = !autoMarkAsSeen) => {

@@ -124,7 +124,7 @@ const themes: Themes = {
     tint: "#f2f3f7",
     iconPrimary: "#2282fe",
     iconSecondary: "#ccc",
-    divider: "#999",
+    divider: "#ddd",
     commentDepthColors: rainbow,
     upvote: "#ff6c00",
     downvote: "#565fe3",

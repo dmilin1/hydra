@@ -20,6 +20,7 @@ import useRedditDataState from "../utils/useRedditDataState";
 
 export default function UserPage({ route }: StackPageProps<"UserPage">) {
   const url = route.params.url;
+  const [sort, sortTime] = new RedditURL(url).getSort();
 
   const navigation = useURLNavigation();
 
@@ -40,6 +41,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     hitFilterLimit,
   } = useRedditDataState<UserContent>({
     loadData: async (after) => await getUserContent(url, { after }),
+    refreshDependencies: [sort, sortTime],
   });
 
   const isDeepPath = !!new URL(url).getBasePath().split("/")[5]; // More than just /user/username like /user/username/comments
@@ -52,8 +54,15 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
       .join("/");
     const userData = await getUser(`https://www.reddit.com${userUrl}`);
     setUser(userData);
+  };
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  useEffect(() => {
     const contextOptions: ContextTypes[] = ["Block", "Share"];
-    if (currentUser?.userName !== userData.userName) {
+    if (currentUser?.userName !== user?.userName) {
       contextOptions.unshift("Message");
     }
     const sortOptions: SortTypes[] | undefined =
@@ -68,16 +77,12 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
             navigation={navigation}
             sortOptions={sortOptions}
             contextOptions={contextOptions}
-            pageData={userData}
+            pageData={user}
           />
         );
       },
     });
-  };
-
-  useEffect(() => {
-    loadUser();
-  }, []);
+  }, [sort, sortTime, user]);
 
   return (
     <View

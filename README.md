@@ -42,7 +42,7 @@ brew install watchman
 To launch the app in the iOS Simulator:
 
 ```bash
-npx expo run:ios
+SENTRY_DISABLE_AUTO_UPLOAD=true npx expo run:ios
 ```
 
 > 🛠 **Note**: If you're targeting Android, use:

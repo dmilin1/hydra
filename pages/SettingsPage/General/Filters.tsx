@@ -128,6 +128,8 @@ export default function Filters() {
     setFilterText,
     aiFilterText,
     setAiFilterText,
+    hideFilteredSubreddits,
+    toggleFilterSubreddit: toggleHideSubreddit,
   } = useContext(FiltersContext);
 
   const { isPro } = useContext(SubscriptionsContext);
@@ -157,6 +159,8 @@ export default function Filters() {
     );
   };
 
+  const filteredSubreddits = Object.keys(hideFilteredSubreddits);
+
   return (
     <>
       <Text
@@ -172,6 +176,7 @@ export default function Filters() {
         make load times slower because more items have to be loaded before
         showing results.
       </Text>
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
       <List
         title="Post Settings"
         items={[
@@ -243,6 +248,7 @@ export default function Filters() {
           ))}
         </View>
       )}
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
       <SectionTitle text="Text Filter List" />
       <TextInput
         style={[
@@ -273,6 +279,7 @@ export default function Filters() {
         insensitive and won't match subwords. For example, "cat" won't match
         "caterpillar".
       </Text>
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
       <SectionTitle text="Smart Post Filter" />
       <TextInput
         style={[
@@ -340,18 +347,79 @@ export default function Filters() {
           },
         }))}
       />
+      <View style={[styles.divider, { borderColor: theme.divider }]} />
+      <SectionTitle text="Filtered subreddits" />
+      <Text
+        style={[
+          styles.textDescription,
+          {
+            marginTop: 0,
+            color: theme.text,
+          },
+        ]}
+      >
+        You can filter subreddits by long-pressing posts on /r/all or
+        /r/popular. Once filtered, subreddits will apear here. Delete the filter
+        to begin seeing posts from the subreddit again.
+      </Text>
+      {filteredSubreddits.length > 0 && (
+        <List
+          title="Subreddits"
+          items={filteredSubreddits.map((subreddit) => ({
+            key: subreddit,
+            text: subreddit,
+            icon: (
+              <MaterialCommunityIcons
+                name="view-compact-outline"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            rightIcon: (
+              <MaterialCommunityIcons
+                name="trash-can-outline"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            onPress: () => {
+              Alert.alert(`Stop filtering /r/${subreddit}?`, "", [
+                {
+                  text: "Cancel",
+                  style: "cancel",
+                },
+                {
+                  text: "Stop Filtering",
+                  style: "destructive",
+                  onPress: () => {
+                    toggleHideSubreddit(subreddit);
+                  },
+                },
+              ]);
+            },
+          }))}
+        />
+      )}
       <View style={{ marginBottom: 50 }} />
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  divider: {
+    marginTop: 25,
+    marginBottom: 10,
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
+  },
   textDescription: {
-    margin: 15,
+    marginTop: 10,
+    marginHorizontal: 15,
     lineHeight: 20,
   },
   hideSeenURLsContainer: {
-    margin: 15,
+    marginTop: 10,
+    marginHorizontal: 15,
     gap: 5,
   },
   filterText: {

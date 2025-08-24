@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   itemButtonContainer: {
     paddingVertical: 15,
     paddingHorizontal: 10,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemButtonSubContainer: {
     flex: 1,

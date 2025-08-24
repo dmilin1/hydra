@@ -4,6 +4,7 @@ import {
   MaterialIcons,
   SimpleLineIcons,
   Entypo,
+  FontAwesome,
 } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext } from "react";
@@ -41,7 +42,9 @@ export type SortTypes =
   | "Rising"
   | "Controversial"
   | "Old"
-  | "Q&A";
+  | "Q&A"
+  | "Relevance"
+  | "Comment Count";
 
 export type ContextTypes =
   | "Share"
@@ -83,19 +86,23 @@ export default function SortAndContext({
     useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
 
-  const { replaceURL, pushURL } = useURLNavigation(navigation);
+  const { replaceURL, pushURL, setParams } = useURLNavigation();
 
   const showContextMenu = useContextMenu();
 
   const currentPath = route.params.url;
   const pageType = new RedditURL(currentPath).getPageType();
-  const currentSort = currentPath ? new RedditURL(currentPath).getSort() : null;
+  const [currentSort, _] = currentPath
+    ? new RedditURL(currentPath).getSort()
+    : ([null, null] as [string | null, string | null]);
 
   const changeSort = (sort: string, time?: string) => {
     const redditUrl = new RedditURL(currentPath).changeSort(sort, time);
     const pageType = redditUrl.getPageType();
     const subreddit = redditUrl.getSubreddit();
-    replaceURL(redditUrl.toString());
+    setParams({
+      url: redditUrl.toString(),
+    });
     if (
       pageType === PageType.SUBREDDIT &&
       KeyStore.getBoolean(REMEMBER_POST_SUBREDDIT_SORT_KEY)
@@ -209,6 +216,22 @@ export default function SortAndContext({
             (currentSort === "qa" && (
               <AntDesign
                 name="message1"
+                size={24}
+                color={theme.iconOrTextButton}
+                style={{ marginRight: 20 }}
+              />
+            )) ||
+            (currentSort === "relevance" && (
+              <MaterialCommunityIcons
+                name="archive-search-outline"
+                size={24}
+                color={theme.iconOrTextButton}
+                style={{ marginRight: 20 }}
+              />
+            )) ||
+            (currentSort === "comments" && (
+              <FontAwesome
+                name="comment-o"
                 size={24}
                 color={theme.iconOrTextButton}
                 style={{ marginRight: 20 }}

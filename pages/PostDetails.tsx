@@ -1,4 +1,3 @@
-import { AntDesign } from "@expo/vector-icons";
 import React, {
   useContext,
   useCallback,
@@ -12,7 +11,6 @@ import {
   View,
   Text,
   ActivityIndicator,
-  TouchableOpacity,
   ScrollView,
   RefreshControl,
 } from "react-native";
@@ -36,8 +34,8 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 import { TabScrollContext } from "../contexts/TabScrollContext";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { modifyStat, Stat } from "../db/functions/Stats";
+import ScrollToNextButton from "../components/UI/ScrollToNextButton";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -51,8 +49,6 @@ function PostDetails({ route }: PostDetailsProps) {
   const url = route.params.url;
 
   const navigation = useURLNavigation();
-
-  const tabBarHeight = useBottomTabBarHeight();
 
   const { theme } = useContext(ThemeContext);
   const { scrollDisabled } = useContext(ScrollerContext);
@@ -233,7 +229,7 @@ function PostDetails({ route }: PostDetailsProps) {
 
   useEffect(() => {
     loadPostDetails();
-  }, []);
+  }, [url]);
 
   return (
     <View
@@ -249,6 +245,7 @@ function PostDetails({ route }: PostDetailsProps) {
           ref={scrollView}
           refreshControl={
             <RefreshControl
+              tintColor={theme.text}
               refreshing={refreshing}
               onRefresh={() => loadPostDetails()}
             />
@@ -301,21 +298,10 @@ function PostDetails({ route }: PostDetailsProps) {
       ) : (
         <ActivityIndicator size="small" />
       )}
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={[
-          styles.skipToNextButton,
-          {
-            bottom: tabBarHeight + 20,
-            backgroundColor: theme.buttonBg,
-          },
-        ]}
-        onPress={() => scrollToNextComment()}
-        onLongPress={() => scrollToNextComment(true)}
-        delayLongPress={300}
-      >
-        <AntDesign name="down" size={18} color={theme.buttonText} />
-      </TouchableOpacity>
+      <ScrollToNextButton
+        scrollToNext={() => scrollToNextComment()}
+        scrollToPrevious={() => scrollToNextComment(true)}
+      />
     </View>
   );
 }
@@ -395,14 +381,5 @@ const styles = StyleSheet.create({
   },
   noCommentsText: {
     fontSize: 15,
-  },
-  skipToNextButton: {
-    right: 20,
-    position: "absolute",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 1000,
-    width: 40,
-    height: 40,
   },
 });

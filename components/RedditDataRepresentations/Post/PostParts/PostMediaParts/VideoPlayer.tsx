@@ -196,9 +196,6 @@ export default function VideoPlayer({
                 <VideoView
                   ref={(videoRef) => {
                     video.current = videoRef;
-                    if (straightToFullscreen) {
-                      videoRef?.enterFullscreen();
-                    }
                   }}
                   allowsPictureInPicture={isFullscreen || isPictureInPicture}
                   player={player}

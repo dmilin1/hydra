@@ -67,6 +67,19 @@ module.exports = {
         {
           "supportsPictureInPicture": true,
         }
+      ],
+      [
+        "expo-alternate-app-icons",
+        [
+          {
+            "name": "cerberus",
+            "ios": "./assets/images/custom_icons/cerberus.png",
+            "android": {
+              "foregroundImage": "./assets/images/custom_icons/cerberus.png",
+              "backgroundColor": "#FFFFFF",
+            },
+          },
+        ]
       ]
     ],
     updates: {
