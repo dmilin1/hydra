@@ -36,6 +36,8 @@
 
 - 🚀 Use the faster post search API
 
+- 🚀 Add option to open links in device browser instead of in app browser
+
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
