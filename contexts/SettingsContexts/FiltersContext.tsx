@@ -123,12 +123,12 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
 
         hideSeenURLs,
         getHideSeenURLStatus: (url: string) => {
-          const baseURL = new RedditURL(url).getBasePath();
+          const baseURL = new RedditURL(url).getBasePage();
           return hideSeenURLs[baseURL] ?? filterSeenPosts;
         },
         toggleHideSeenURL: (url: string) => {
-          const baseURL = new RedditURL(url).getBasePath();
-          const newSetting = !hideSeenURLs[baseURL];
+          const baseURL = new RedditURL(url).getBasePage();
+          const newSetting = !(hideSeenURLs[baseURL] ?? filterSeenPosts);
           if (newSetting === filterSeenPosts) {
             delete hideSeenURLs[baseURL];
           } else {

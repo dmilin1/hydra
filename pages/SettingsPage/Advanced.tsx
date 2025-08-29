@@ -1,6 +1,4 @@
 import { Entypo, Feather } from "@expo/vector-icons";
-import { useIsFocused } from "@react-navigation/native";
-import { Directory, File, Paths } from "expo-file-system/next";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
@@ -24,31 +22,16 @@ import TextInput from "../../components/UI/TextInput";
 import KeyStore from "../../utils/KeyStore";
 import { hydraServerStatus } from "../../api/HydraServerStatus";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
-
-const imageCacheDir = new Directory(
-  `${Paths.cache.uri}/com.hackemist.SDImageCache/default`,
-);
-
-const calcDirectorySize = (dir: Directory) => {
-  let size = 0;
-  if (!dir.exists) return 0;
-  dir.list().forEach((file) => {
-    if (file instanceof File) {
-      size += file?.size ?? 0;
-    }
-  });
-  return (size / 1024 / 1024).toFixed(0);
-};
+import ImageCache from "../../utils/ImageCache";
 
 export default function Advanced() {
   const { customerId } = useContext(SubscriptionsContext);
   const { theme } = useContext(ThemeContext);
 
-  const isFocused = useIsFocused();
+  const { cacheSize, clearCache } = ImageCache.useCache();
 
-  const [imageCacheMb, setImageCacheMb] = useState(
-    calcDirectorySize(imageCacheDir),
-  );
+  const imageCacheMB = (cacheSize / 1024 / 1024).toFixed(0);
+
   const [storedUseCustomHydraServer, setUseCustomHydraServer] = useMMKVBoolean(
     USE_CUSTOM_HYDRA_SERVER_KEY,
   );
@@ -70,23 +53,6 @@ export default function Advanced() {
     }
   };
 
-  const clearCache = async () => {
-    if (imageCacheDir.exists) {
-      imageCacheDir.list().forEach((file) => {
-        if (file instanceof File) {
-          file.delete();
-        }
-      });
-    }
-    setImageCacheMb(calcDirectorySize(imageCacheDir));
-    Alert.alert("Cache Cleared", "The image cache has been cleared.");
-  };
-
-  useEffect(() => {
-    if (!isFocused) return;
-    setImageCacheMb(calcDirectorySize(imageCacheDir));
-  }, [isFocused]);
-
   useEffect(() => {
     if (customServerUrl) {
       validateCustomServerUrl(customServerUrl);
@@ -102,7 +68,7 @@ export default function Advanced() {
             key: "errorReporting",
             icon: <Entypo name="image" size={24} color={theme.text} />,
             rightIcon: <></>,
-            text: `Clear Image Cache (${imageCacheMb} MB)`,
+            text: `Clear Image Cache (${imageCacheMB} MB)`,
             onPress: () => clearCache(),
           },
         ]}

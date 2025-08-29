@@ -143,6 +143,17 @@ export default class RedditURL extends URL {
     return this;
   }
 
+  getBasePage(): string {
+    const pageType = this.getPageType();
+    if (pageType === PageType.HOME) {
+      return this.getBasePath().replace(/(reddit\.com).*/, "$1");
+    }
+    if (pageType === PageType.SUBREDDIT) {
+      return this.getBasePath().replace(/(\/r\/.+)\/.*/, "$1");
+    }
+    return this.getBasePath();
+  }
+
   getSubreddit(): string {
     return this.url.split("/r/")[1]?.split(/\/|\?/)[0] ?? "";
   }
