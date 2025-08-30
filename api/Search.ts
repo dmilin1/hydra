@@ -13,15 +13,24 @@ type SearchOptions = {
   limit?: string;
   after?: string;
   time?: "all" | "year" | "month" | "week" | "day" | "hour";
+  sr_detail?: "true" | "false";
 };
 
 export type SearchResult = Post | Subreddit | User;
 
-export async function getSearchResults(
+type SearchResults<T extends SearchType> =
+  | never[]
+  | (T extends "posts"
+      ? Post[]
+      : T extends "subreddits"
+        ? Subreddit[]
+        : User[]);
+
+export async function getSearchResults<T extends SearchType>(
   type: SearchType,
   text: string,
   options: SearchOptions = {},
-): Promise<SearchResult[]> {
+): Promise<SearchResults<T>> {
   const typeMap = {
     posts: "link",
     subreddits: "sr",
@@ -29,10 +38,10 @@ export async function getSearchResults(
   };
   const redditURL = new RedditURL(`https://www.reddit.com/search/`);
   redditURL.setQueryParams({
-    ...options,
     type: typeMap[type],
     q: text,
     sr_detail: "true",
+    ...options,
   });
   redditURL.jsonify();
   const res = await api(redditURL.toString());
@@ -53,5 +62,5 @@ export async function getSearchResults(
       }),
     )
   ).filter((result: any) => result !== undefined);
-  return results;
+  return results as never[];
 }

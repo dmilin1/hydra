@@ -34,8 +34,6 @@
 
 - 🐛 Enable landscape mode in the browser
 
-- 🚀 Use the faster post search API
-
 - 🚀 Add option to open links in device browser instead of in app browser
 
 ### Easy

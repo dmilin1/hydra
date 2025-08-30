@@ -187,7 +187,7 @@ export default function PostComponent({
                   pushURL(`https://www.reddit.com/r/${post.subreddit}`)
                 }
               >
-                <SubredditIcon post={post} />
+                <SubredditIcon subredditIcon={post.subredditIcon} />
                 <Text
                   style={[
                     styles.subredditAtTopText,
@@ -274,7 +274,7 @@ export default function PostComponent({
                           pushURL(`https://www.reddit.com/r/${post.subreddit}`)
                         }
                       >
-                        <SubredditIcon post={post} />
+                        <SubredditIcon subredditIcon={post.subredditIcon} />
                         <Text
                           style={[
                             styles.boldedSmallText,

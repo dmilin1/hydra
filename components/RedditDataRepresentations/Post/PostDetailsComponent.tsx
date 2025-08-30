@@ -165,7 +165,7 @@ export default function PostDetailsComponent({
                 activeOpacity={0.5}
                 onPress={() => pushURL(`/r/${postDetail.subreddit}`)}
               >
-                <SubredditIcon post={postDetail} />
+                <SubredditIcon subredditIcon={postDetail.subredditIcon} />
                 <Text
                   style={[
                     styles.boldedSmallText,
