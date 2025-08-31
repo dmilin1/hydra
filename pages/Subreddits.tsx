@@ -5,7 +5,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   LayoutChangeEvent,
   GestureResponderEvent,
 } from "react-native";
@@ -15,6 +14,40 @@ import SubredditCompactLink from "../components/RedditDataRepresentations/Subred
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
 import { useURLNavigation } from "../utils/navigation";
+import { FlashList, FlashListRef } from "@shopify/flash-list";
+import { Subreddit } from "../api/Subreddits";
+import { Multi } from "../api/Multireddit";
+
+type TopButtonItem = {
+  type: "topButton";
+  title: string;
+  path: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+};
+
+type SectionDividerItem = {
+  type: "sectionDivider";
+  title: string;
+};
+
+type SubredditItem = {
+  type: "subreddit";
+  subreddit: Subreddit;
+  category: string;
+};
+
+type MultiItem = {
+  type: "multireddit";
+  multi: Multi;
+};
+
+type ScrollItem =
+  | TopButtonItem
+  | SectionDividerItem
+  | SubredditItem
+  | MultiItem;
 
 function SectionHeading({ title }: { title: string }) {
   const { theme } = useContext(ThemeContext);
@@ -131,184 +164,222 @@ function AlphabetScroller({
   );
 }
 
+function TopButton({ item }: { item: TopButtonItem }) {
+  const { theme } = useContext(ThemeContext);
+  const { pushURL } = useURLNavigation();
+  return (
+    <TouchableOpacity
+      onPress={() => pushURL(item.path)}
+      activeOpacity={0.5}
+      style={[
+        styles.bigButtonContainer,
+        {
+          borderBottomColor: theme.tint,
+        },
+      ]}
+    >
+      <View
+        key={item.path}
+        style={[
+          styles.bigButtonSubContainer,
+          {
+            borderBottomColor: theme.tint,
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.bigButtonIconContainer,
+            {
+              backgroundColor: item.color,
+            },
+          ]}
+        >
+          {item.icon}
+        </View>
+        <View>
+          <Text
+            style={[
+              styles.subredditText,
+              {
+                color: theme.text,
+              },
+            ]}
+          >
+            {item.title}
+          </Text>
+          <Text
+            style={[
+              styles.subredditDescription,
+              {
+                color: theme.subtleText,
+              },
+            ]}
+          >
+            {item.description}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
 export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
   const { subreddits, multis } = useContext(SubredditContext);
-  const scrollViewRef = useRef<ScrollView>(null);
-  const letterPositionsRef = useRef<{ [key: string]: number }>({});
+  const flashListRef = useRef<FlashListRef<ScrollItem>>(null);
 
-  const { pushURL } = useURLNavigation();
+  const scrollItems: ScrollItem[] = [
+    {
+      type: "topButton",
+      title: "Home",
+      path: "https://www.reddit.com/",
+      description: "Posts from subscriptions",
+      icon: <FontAwesome5 name="home" size={24} color={theme.text} />,
+      color: "#fa045e",
+    },
+    {
+      type: "topButton",
+      title: "Popular",
+      path: "https://www.reddit.com/r/popular",
+      description: "Most popular posts across Reddit",
+      icon: <Feather name="trending-up" size={24} color={theme.text} />,
+      color: "#008ffe",
+    },
+    {
+      type: "topButton",
+      title: "All",
+      path: "https://www.reddit.com/r/all",
+      description: "Posts across all subreddits",
+      icon: (
+        <FontAwesome5 name="sort-amount-up-alt" size={24} color={theme.text} />
+      ),
+      color: "#02d82b",
+    },
+  ];
 
-  const sliderSubreddits = subreddits["subscriber"].length
-    ? subreddits["subscriber"]
-    : subreddits["trending"];
+  if (subreddits["favorites"].length > 0) {
+    scrollItems.push({
+      type: "sectionDivider",
+      title: "favorites",
+    });
+    scrollItems.push(
+      ...subreddits["favorites"].map((sub) => ({
+        type: "subreddit" as const,
+        subreddit: sub,
+        category: "favorites",
+      })),
+    );
+  }
 
-  const handleSubredditLayout = (index: number, event: LayoutChangeEvent) => {
-    const { y } = event.nativeEvent.layout;
-    const previousSubredditLetter = sliderSubreddits?.[index - 1]?.name
-      .charAt(0)
-      .toUpperCase();
-    const subredditLetter = sliderSubreddits?.[index]?.name
-      .charAt(0)
-      .toUpperCase();
-    if (previousSubredditLetter !== subredditLetter) {
-      letterPositionsRef.current[subredditLetter] = y;
-    }
-  };
+  if (multis.length > 0) {
+    scrollItems.push({
+      type: "sectionDivider",
+      title: "multireddits",
+    });
+    scrollItems.push(
+      ...multis.map((multi) => ({
+        type: "multireddit" as const,
+        multi: multi,
+      })),
+    );
+  }
+
+  if (subreddits["moderator"].length > 0) {
+    scrollItems.push({
+      type: "sectionDivider",
+      title: "moderator",
+    });
+    scrollItems.push(
+      ...subreddits["moderator"].map((sub) => ({
+        type: "subreddit" as const,
+        subreddit: sub,
+        category: "moderator",
+      })),
+    );
+  }
+
+  if (subreddits["subscriber"].length > 0) {
+    scrollItems.push({
+      type: "sectionDivider",
+      title: "subscriber",
+    });
+    scrollItems.push(
+      ...subreddits["subscriber"].map((sub) => ({
+        type: "subreddit" as const,
+        subreddit: sub,
+        category: "subscriber",
+      })),
+    );
+  }
+
+  if (subreddits["trending"].length > 0) {
+    scrollItems.push({
+      type: "sectionDivider",
+      title: "trending",
+    });
+    scrollItems.push(
+      ...subreddits["trending"].map((sub) => ({
+        type: "subreddit" as const,
+        subreddit: sub,
+        category: "trending",
+      })),
+    );
+  }
+
+  const letterMap = "abcdefghijklmnopqrstuvwxyz".split("").reduce(
+    (acc, letter) => {
+      acc[letter] = scrollItems.findIndex(
+        (item) =>
+          item.type === "subreddit" &&
+          ["subscriber", "trending"].includes(item.category) &&
+          item.subreddit.name.charAt(0).toLowerCase() === letter,
+      );
+      return acc;
+    },
+    {} as { [key: string]: number },
+  );
 
   const scrollToLetter = (letter: string) => {
-    const position = letterPositionsRef.current[letter];
-    if (position !== undefined && scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: position, animated: false });
+    const targetItem = letterMap[letter.toLowerCase()];
+    if (targetItem) {
+      flashListRef.current?.scrollToIndex({
+        index: targetItem,
+        animated: false,
+      });
     }
   };
 
   return (
     <View style={styles.subredditsContainer}>
-      <ScrollView
-        ref={scrollViewRef}
-        style={[
-          styles.scrollView,
-          {
-            backgroundColor: theme.background,
-          },
-        ]}
-      >
-        {[
-          {
-            title: "Home",
-            path: "https://www.reddit.com/",
-            description: "Posts from subscriptions",
-            icon: <FontAwesome5 name="home" size={24} color={theme.text} />,
-            color: "#fa045e",
-          },
-          {
-            title: "Popular",
-            path: "https://www.reddit.com/r/popular",
-            description: "Most popular posts across Reddit",
-            icon: <Feather name="trending-up" size={24} color={theme.text} />,
-            color: "#008ffe",
-          },
-          {
-            title: "All",
-            path: "https://www.reddit.com/r/all",
-            description: "Posts across all subreddits",
-            icon: (
-              <FontAwesome5
-                name="sort-amount-up-alt"
-                size={24}
-                color={theme.text}
-              />
-            ),
-            color: "#02d82b",
-          },
-        ].map((link) => (
-          <TouchableOpacity
-            key={link.title}
-            onPress={() => pushURL(link.path)}
-            activeOpacity={0.5}
-            style={[
-              styles.bigButtonContainer,
-              {
-                borderBottomColor: theme.tint,
-              },
-            ]}
-          >
-            <View
-              key={link.path}
-              style={[
-                styles.bigButtonSubContainer,
-                {
-                  borderBottomColor: theme.tint,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.bigButtonIconContainer,
-                  {
-                    backgroundColor: link.color,
-                  },
-                ]}
-              >
-                {link.icon}
-              </View>
-              <View>
-                <Text
-                  style={[
-                    styles.subredditText,
-                    {
-                      color: theme.text,
-                    },
-                  ]}
-                >
-                  {link.title}
-                </Text>
-                <Text
-                  style={[
-                    styles.subredditDescription,
-                    {
-                      color: theme.subtleText,
-                    },
-                  ]}
-                >
-                  {link.description}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-        {subreddits["favorites"].length > 0 && (
-          <>
-            <SectionHeading title="favorites" />
-            {subreddits["favorites"].map((sub) => (
-              <SubredditCompactLink key={sub.name} subreddit={sub} />
-            ))}
-          </>
-        )}
-        {multis.length > 0 && (
-          <>
-            <SectionHeading title="multireddits" />
-            {multis.map((multi) => (
-              <MultiredditLink key={multi.name} multi={multi} />
-            ))}
-          </>
-        )}
-        {subreddits["moderator"].length > 0 && (
-          <>
-            <SectionHeading title="moderator" />
-            {subreddits["moderator"].map((sub) => (
-              <SubredditCompactLink key={sub.name} subreddit={sub} />
-            ))}
-          </>
-        )}
-        {subreddits["subscriber"].length > 0 && (
-          <>
-            <SectionHeading title="subscriber" />
-            {subreddits["subscriber"].map((sub, index) => (
-              <View
-                key={sub.name}
-                onLayout={(event) => handleSubredditLayout(index, event)}
-              >
-                <SubredditCompactLink subreddit={sub} />
-              </View>
-            ))}
-          </>
-        )}
-        {subreddits["trending"].length > 0 && (
-          <>
-            <SectionHeading title="trending" />
-            {subreddits["trending"].map((sub, index) => (
-              <View
-                key={sub.name}
-                onLayout={(event) => handleSubredditLayout(index, event)}
-              >
-                <SubredditCompactLink key={sub.name} subreddit={sub} />
-              </View>
-            ))}
-          </>
-        )}
-      </ScrollView>
+      <FlashList
+        ref={flashListRef}
+        data={scrollItems}
+        renderItem={({ item }) =>
+          item.type === "topButton" ? (
+            <TopButton item={item} />
+          ) : item.type === "sectionDivider" ? (
+            <SectionHeading title={item.title} />
+          ) : item.type === "subreddit" ? (
+            <SubredditCompactLink subreddit={item.subreddit} />
+          ) : item.type === "multireddit" ? (
+            <MultiredditLink multi={item.multi} />
+          ) : null
+        }
+        getItemType={(item) => item.type}
+        keyExtractor={(item) => {
+          if (item.type === "topButton") {
+            return item.title;
+          } else if (item.type === "sectionDivider") {
+            return item.title;
+          } else if (item.type === "subreddit") {
+            return item.subreddit.name;
+          } else if (item.type === "multireddit") {
+            return item.multi.name;
+          }
+          return "";
+        }}
+      />
       <AlphabetScroller onLetterPress={scrollToLetter} />
     </View>
   );

@@ -19,7 +19,6 @@ export default function SubredditCompactLink({
 
   return (
     <TouchableOpacity
-      key={subreddit.name}
       onPress={() => pushURL(subreddit.url)}
       activeOpacity={0.5}
       style={[
