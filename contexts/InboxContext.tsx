@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { AccountContext } from "./AccountContext";
 import { getInboxItems } from "../api/Messages";
+import { UserAuth } from "../api/Authentication";
 
 type InboxContextType = {
   inboxCount: number;
@@ -24,18 +25,23 @@ export function InboxProvider({ children }: React.PropsWithChildren) {
   const [inboxCount, setInboxCount] = useState(initialInboxContext.inboxCount);
 
   const checkForMessages = async () => {
+    /**
+     * Account is set but user is not logged in. We should wait a bit.
+     * User might be swapping accounts.
+     */
+    if (!UserAuth.modhash) return;
     const messages = await getInboxItems();
     const newMessages = messages.filter((m) => m.new);
     setInboxCount(newMessages.length);
   };
 
-  // set up an interval to run every 30 seconds to check for new messages if the user is logged in
+  // set up an interval to run every 60 seconds to check for new messages if the user is logged in
   useEffect(() => {
     if (!currentUser) {
       setInboxCount(0);
       return;
     }
-    const interval = setInterval(checkForMessages, 30_000);
+    const interval = setInterval(checkForMessages, 1_000 * 60);
     checkForMessages();
     return () => clearInterval(interval);
   }, [currentUser]);

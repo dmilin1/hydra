@@ -100,7 +100,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   itemButtonSubContainer: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
   },

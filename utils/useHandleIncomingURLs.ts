@@ -1,5 +1,5 @@
 import * as Clipboard from "expo-clipboard";
-import { useLinkingURL } from "expo-linking";
+import * as Linking from "expo-linking";
 import { useEffect, useRef } from "react";
 import { Alert, AppState } from "react-native";
 
@@ -22,8 +22,6 @@ export default function useHandleIncomingURLs() {
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
   const isAsking = useRef(false);
 
-  const deepLink = useLinkingURL()?.toLocaleLowerCase();
-
   const handleURL = (url: string) => {
     const pageType = RedditURL.getPageType(url);
     if (pageType === PageType.UNKNOWN) {
@@ -38,9 +36,10 @@ export default function useHandleIncomingURLs() {
     );
   };
 
-  const handleDeepLink = () => {
-    if (!deepLink || !deepLink.startsWith("hydra://openurl?url=")) return;
-    const url = deepLink.replace("hydra://openurl?url=", "");
+  const handleDeepLink = (deepLink: string) => {
+    if (!deepLink || !deepLink.toLowerCase().startsWith("hydra://openurl?url="))
+      return;
+    const url = deepLink.replace(/hydra:\/\/openurl\?url=/i, "");
     handleURL(url);
   };
 
@@ -96,7 +95,19 @@ export default function useHandleIncomingURLs() {
   }, []);
 
   useEffect(() => {
-    if (!navigation.isReady()) return;
-    handleDeepLink();
-  }, [deepLink, navigation.isReady()]);
+    const startupLinkHandler = () => {
+      const deepLink = Linking.getLinkingURL();
+      if (deepLink) {
+        handleDeepLink(deepLink);
+      }
+    };
+    navigation.addListener("ready", startupLinkHandler);
+    const subscription = Linking.addEventListener("url", (event) => {
+      handleDeepLink(event.url);
+    });
+    return () => {
+      subscription.remove();
+      navigation.removeListener("ready", startupLinkHandler);
+    };
+  }, []);
 }

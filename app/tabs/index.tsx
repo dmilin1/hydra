@@ -7,7 +7,7 @@ import {
 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SplashScreen, useNavigation } from "expo-router";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainerRef, StackActions } from "@react-navigation/native";
 
@@ -22,6 +22,8 @@ import useHandleIncomingURLs from "../../utils/useHandleIncomingURLs";
 import { AppNavigationProp } from "../../utils/navigationTypes";
 import { expoDb } from "../../db";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import QuickSubredditSearch from "../../components/Modals/QuickSubredditSearch";
+import { oneTimeAlert } from "../../utils/oneTimeAlert";
 
 export type TabParamsList = {
   Posts: undefined;
@@ -49,6 +51,8 @@ export default function Tabs() {
   const { showUsername } = useContext(TabSettingsContext);
   const { tabBarTranslateY } = useContext(TabScrollContext);
 
+  const [showSubredditSearch, setShowSubredditSearch] = useState(false);
+
   useHandleIncomingURLs();
 
   useEffect(() => {
@@ -62,6 +66,10 @@ export default function Tabs() {
       style={{ flex: 1, backgroundColor: theme.background }}
       edges={["right", "top", "left"]}
     >
+      <QuickSubredditSearch
+        show={showSubredditSearch}
+        onExit={() => setShowSubredditSearch(false)}
+      />
       {loginInitialized ? (
         <Tab.Navigator
           screenOptions={{
@@ -82,6 +90,18 @@ export default function Tabs() {
               if (isCurrentTab && stackHeight && stackHeight > 0) {
                 navigation.dispatch(StackActions.pop());
                 e.preventDefault();
+              }
+              if (e.target?.startsWith("Search")) {
+                oneTimeAlert(
+                  "quickSearchGuideAlert",
+                  "Did you know?",
+                  "You can quick search for subreddits by long pressing the search tab.",
+                );
+              }
+            },
+            tabLongPress: (e) => {
+              if (e.target?.startsWith("Search")) {
+                setShowSubredditSearch(true);
               }
             },
           })}

@@ -39,7 +39,7 @@ export default function CrossPost({ post }: CrossPostProps) {
               pushURL(`https://www.reddit.com/r/${post.subreddit}`)
             }
           >
-            <SubredditIcon post={post} />
+            <SubredditIcon subredditIcon={post.subredditIcon} />
             <Text style={[styles.subredditText, { color: theme.subtleText }]}>
               r/{post.subreddit}
             </Text>

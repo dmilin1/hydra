@@ -26,7 +26,6 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
   return (
     <>
       <TouchableOpacity
-        key={multi.name}
         onPress={() => pushURL(multi.url)}
         activeOpacity={0.5}
         style={[
