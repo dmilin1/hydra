@@ -22,6 +22,7 @@ import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
 import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
+import { GesturesContext } from "../../../contexts/SettingsContexts/GesturesContext";
 
 type PostComponentProps = {
   post: Post;
@@ -44,6 +45,8 @@ export default function PostComponent({
     postTextLength,
     showPostFlair,
   } = useContext(PostSettingsContext);
+
+  const { postSwipeOptions } = useContext(GesturesContext);
 
   const { toggleFilterSubreddit } = useContext(FiltersContext);
 
@@ -94,20 +97,21 @@ export default function PostComponent({
       }}
     >
       <Slideable
-        left={[
+        options={[
           {
+            name: "upvote",
             icon: <AntDesign name="arrowup" />,
             color: theme.upvote,
             action: async () => await voteOnPost(VoteOption.UpVote),
           },
           {
+            name: "downvote",
             icon: <AntDesign name="arrowdown" />,
             color: theme.downvote,
             action: async () => await voteOnPost(VoteOption.DownVote),
           },
-        ]}
-        right={[
           {
+            name: "hide",
             icon: <Feather name={seen ? "eye-off" : "eye"} />,
             color: theme.showHide,
             action: async () => {
@@ -115,6 +119,7 @@ export default function PostComponent({
             },
           },
           {
+            name: "bookmark",
             icon: <FontAwesome name={post.saved ? "bookmark" : "bookmark-o"} />,
             color: theme.bookmark,
             action: async () => {
@@ -122,7 +127,17 @@ export default function PostComponent({
               setPost({ ...post, saved: !post.saved });
             },
           },
+          {
+            name: "share",
+            icon: <FontAwesome name="share" />,
+            color: theme.share,
+            action: async () => {
+              Share.share({ url: post.link });
+            },
+          },
         ]}
+        leftNames={[postSwipeOptions.right, postSwipeOptions.farRight]}
+        rightNames={[postSwipeOptions.left, postSwipeOptions.farLeft]}
       >
         <TouchableOpacity
           activeOpacity={0.8}

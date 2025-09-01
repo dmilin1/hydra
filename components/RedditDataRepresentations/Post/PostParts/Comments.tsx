@@ -42,6 +42,7 @@ import EditComment from "../../../Modals/EditComment";
 import NewComment from "../../../Modals/NewComment";
 import SelectText from "../../../Modals/SelectText";
 import Slideable from "../../../UI/Slideable";
+import { GesturesContext } from "../../../../contexts/SettingsContexts/GesturesContext";
 
 interface CommentProps {
   loadMoreComments?: LoadMoreCommentsFunc;
@@ -72,6 +73,7 @@ export function CommentComponent({
   const { voteIndicator, collapseAutoModerator, commentFlairs } = useContext(
     CommentSettingsContext,
   );
+  const { commentSwipeOptions } = useContext(GesturesContext);
   const { doesCommentPassTextFilter } = useContext(FiltersContext);
   const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
@@ -209,25 +211,27 @@ export function CommentComponent({
           {comment.depth >= 0 && (
             <Slideable
               xScrollToEngage={15}
-              left={[
+              options={[
                 {
+                  name: "upvote",
                   icon: <AntDesign name="arrowup" />,
                   color: theme.upvote,
                   action: async () => await voteOnComment(VoteOption.UpVote),
                 },
                 {
+                  name: "downvote",
                   icon: <AntDesign name="arrowdown" />,
                   color: theme.downvote,
                   action: async () => await voteOnComment(VoteOption.DownVote),
                 },
-              ]}
-              right={[
                 {
+                  name: "reply",
                   icon: <Octicons name="reply" />,
                   color: theme.reply,
                   action: () => replyToComment(),
                 },
                 {
+                  name: "bookmark",
                   icon: (
                     <FontAwesome
                       name={comment.saved ? "bookmark" : "bookmark-o"}
@@ -236,6 +240,24 @@ export function CommentComponent({
                   color: theme.bookmark,
                   action: () => saveComment(),
                 },
+                {
+                  name: "share",
+                  icon: <FontAwesome name="share" />,
+                  color: theme.share,
+                  action: async () => {
+                    Share.share({
+                      url: new RedditURL(comment.link).toString(),
+                    });
+                  },
+                },
+              ]}
+              leftNames={[
+                commentSwipeOptions.right,
+                commentSwipeOptions.farRight,
+              ]}
+              rightNames={[
+                commentSwipeOptions.left,
+                commentSwipeOptions.farLeft,
               ]}
             >
               <TouchableHighlight

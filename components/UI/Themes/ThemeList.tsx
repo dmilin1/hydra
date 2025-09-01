@@ -85,13 +85,15 @@ export default function ThemeList({
           {customThemes.map((customTheme) => (
             <Slideable
               key={customTheme.name}
-              right={[
+              options={[
                 {
+                  name: "delete",
                   icon: <Feather name="trash-2" size={24} color={theme.text} />,
-                  color: theme.downvote,
+                  color: theme.delete,
                   action: () => handleDelete(customTheme),
                 },
               ]}
+              rightNames={["delete"]}
             >
               <ThemeRow
                 theme={customTheme}
