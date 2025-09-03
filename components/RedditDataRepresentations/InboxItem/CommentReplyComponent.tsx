@@ -53,25 +53,28 @@ export default function CommentReplyComponent({
 
   return (
     <Slideable
-      left={[
+      options={[
         {
+          name: "upvote",
           icon: <AntDesign name="arrowup" />,
           color: theme.upvote,
           action: async () => voteOnMessage(VoteOption.UpVote),
         },
         {
+          name: "downvote",
           icon: <AntDesign name="arrowdown" />,
           color: theme.downvote,
           action: async () => voteOnMessage(VoteOption.DownVote),
         },
-      ]}
-      right={[
         {
+          name: "markAsRead",
           icon: <Feather name="mail" size={18} color={theme.subtleText} />,
-          color: theme.iconPrimary,
+          color: theme.showHide,
           action: () => toggleSeen(),
         },
       ]}
+      leftNames={["upvote", "downvote"]}
+      rightNames={["markAsRead"]}
     >
       <TouchableOpacity
         activeOpacity={0.8}

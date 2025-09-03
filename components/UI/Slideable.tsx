@@ -1,29 +1,39 @@
 import * as Haptics from "expo-haptics";
-import { ReactNode, cloneElement, useContext, useRef, useState } from "react";
+import {
+  PropsWithChildren,
+  ReactElement,
+  cloneElement,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import { View, StyleSheet, Animated, ColorValue } from "react-native";
 
 import { ScrollerContext } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { IconProps } from "@expo/vector-icons/build/createIconSet";
 
-type SlideItem = {
-  icon: ReactNode;
+type SlideItem<SlideName extends string> = {
+  name: SlideName;
+  icon: ReactElement<IconProps<string>>;
   color: ColorValue;
   action: () => void;
 };
 
-type SlideableProps = {
-  left?: SlideItem[];
-  right?: SlideItem[];
+type SlideableProps<SlideName extends string> = {
+  options: SlideItem<SlideName>[];
+  leftNames?: SlideName[];
+  rightNames?: SlideName[];
   xScrollToEngage?: number;
 };
 
-export default function Slideable({
+export default function Slideable<SlideName extends string>({
   children,
-  left,
-  right,
+  options,
+  leftNames,
+  rightNames,
   xScrollToEngage,
-}: React.PropsWithChildren<SlideableProps>) {
+}: PropsWithChildren<SlideableProps<SlideName>>) {
   const { theme } = useContext(ThemeContext);
   const { setScrollDisabled } = useContext(ScrollerContext);
 
@@ -31,8 +41,15 @@ export default function Slideable({
   const touchX = useRef(new Animated.Value(0)).current;
 
   const [slideItem, setSlideItem] = useState<
-    SlideItem & { side: keyof SlideableProps }
+    SlideItem<SlideName> & { side: "left" | "right" }
   >();
+
+  const left = leftNames
+    ?.map((name) => options.find((option) => option.name === name))
+    .filter((option) => option !== undefined);
+  const right = rightNames
+    ?.map((name) => options.find((option) => option.name === name))
+    .filter((option) => option !== undefined);
 
   let icon = null;
   if (slideItem?.icon) {
@@ -43,7 +60,7 @@ export default function Slideable({
     icon = right[0].icon;
   }
 
-  const calcItem = (list: SlideItem[], delta: number) => {
+  const calcItem = (list: SlideItem<SlideName>[], delta: number) => {
     const baseSlideDistance = 20;
     const distanceBetweenItems = 55;
     return list[
@@ -92,7 +109,7 @@ export default function Slideable({
           if (delta < 0 && right) {
             item = calcItem(right, delta);
           }
-          if (item && item.color !== slideItem?.color) {
+          if (item && item.name !== slideItem?.name) {
             setSlideItem({
               side: delta > 0 ? "left" : "right",
               ...item,
@@ -101,7 +118,7 @@ export default function Slideable({
           if (!item && slideItem) {
             setSlideItem(undefined);
           }
-          if (item && item.color !== slideItem?.color) {
+          if (item && item.name !== slideItem?.name) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           }
         }
@@ -163,7 +180,7 @@ export default function Slideable({
           ]}
         >
           {icon &&
-            cloneElement(icon as React.ReactElement<IconProps<string>>, {
+            cloneElement(icon, {
               color: slideItem?.color ? theme.text : theme.subtleText,
               size: slideItem?.color ? 32 : 28,
             })}

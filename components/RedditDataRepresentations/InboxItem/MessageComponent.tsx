@@ -36,13 +36,15 @@ export default function MessageComponent({
 
   return (
     <Slideable
-      right={[
+      options={[
         {
+          name: "markAsRead",
           icon: <Feather name="mail" size={18} color={theme.subtleText} />,
-          color: theme.iconPrimary,
+          color: theme.showHide,
           action: () => toggleSeen(),
         },
       ]}
+      rightNames={["markAsRead"]}
     >
       <TouchableOpacity
         activeOpacity={0.8}

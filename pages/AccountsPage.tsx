@@ -41,17 +41,15 @@ export default function AccountsPage() {
           {[...accounts, "Logged Out"].map((username) => (
             <Slideable
               key={username}
-              right={
-                username === "Logged Out"
-                  ? undefined
-                  : [
-                      {
-                        icon: <Feather name="trash" style={{ fontSize: 24 }} />,
-                        color: theme.delete,
-                        action: async () => await handleDelete(username),
-                      },
-                    ]
-              }
+              options={[
+                {
+                  name: "delete",
+                  icon: <Feather name="trash" style={{ fontSize: 24 }} />,
+                  color: theme.delete,
+                  action: async () => await handleDelete(username),
+                },
+              ]}
+              rightNames={username === "Logged Out" ? undefined : ["delete"]}
             >
               <TouchableOpacity
                 style={[

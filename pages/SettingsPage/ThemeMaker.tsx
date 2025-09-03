@@ -134,6 +134,11 @@ const COLOR_GROUPS = {
       description: "Color of the reply slider and other reply related elements",
     },
     {
+      field: "share",
+      label: "Share",
+      description: "Color of the share slider and other share related elements",
+    },
+    {
       field: "bookmark",
       label: "Bookmark",
       description:

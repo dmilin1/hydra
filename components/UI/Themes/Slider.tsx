@@ -27,7 +27,7 @@ interface SliderProps {
   thumbSize?: number;
 }
 
-const Slider: React.FC<SliderProps> = ({
+export default function Slider({
   value = 0,
   minimumValue = 0,
   maximumValue = 100,
@@ -42,7 +42,7 @@ const Slider: React.FC<SliderProps> = ({
   trackStyle,
   thumbStyle,
   thumbSize = 20,
-}) => {
+}: SliderProps) {
   const [sliderWidth, setSliderWidth] = useState(0);
   const [currentValue, setCurrentValue] = useState(value);
   const animatedValue = useRef(new Animated.Value(0)).current;
@@ -169,7 +169,7 @@ const Slider: React.FC<SliderProps> = ({
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -207,5 +207,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-
-export default Slider;

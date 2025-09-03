@@ -14,9 +14,9 @@ export function useSetTheme() {
 
   return (
     themeKey: string,
-    colorScheme: "light" | "dark" = useDifferentDarkTheme
+    colorScheme: "light" | "dark" | undefined = useDifferentDarkTheme
       ? systemColorScheme
-      : "light",
+      : undefined,
   ) => {
     setCurrentTheme(themeKey, colorScheme);
 
