@@ -1,7 +1,7 @@
 import { AnyNode, Text as TextNode, Element as ElementNode } from "domhandler";
 import * as WebBrowser from "expo-web-browser";
 import { parseDocument, ElementType } from "htmlparser2";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   Dimensions,
   Platform,
@@ -115,7 +115,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     wrapperStyles.marginVertical = 10;
     inheritedStyles.textAlign = "center";
   } else if (element.name === "p") {
-    Wrapper = Text;
+    Wrapper = View;
     wrapperStyles.marginVertical = 5;
   } else if (element.name === "hr") {
     Wrapper = View;
@@ -293,6 +293,9 @@ export function TextNodeElem({
 
   const { customThemes, remainingText } = extractThemeFromText(textNode.data);
 
+  const [height, setHeight] = useState<number | undefined>(undefined);
+  const heightFixed = useRef(false);
+
   const TextComponment = (
     <Text
       key={index}
@@ -301,8 +304,22 @@ export function TextNodeElem({
         {
           color: theme.subtleText,
           ...inheritedStyles,
+          height: height,
         },
       ]}
+      onLayout={(event) => {
+        /**
+         * Horrible evil hack to fix what I think is an Apple text rendering bug.
+         * https://www.reddit.com/r/HydraApp/comments/1n7scvs/comment/ncbmi3e/
+         */
+        if (heightFixed.current) return;
+        const height = event.nativeEvent.layout.height;
+        const roundedHeight = Math.round(height);
+        if (height < roundedHeight) {
+          setHeight(roundedHeight + 0.1);
+          heightFixed.current = true;
+        }
+      }}
     >
       {remainingText}
     </Text>
@@ -351,7 +368,7 @@ export function Node({ node, index, inheritedStyles }: NodeProps) {
 export default function RenderHtml({ html }: { html: string }) {
   const document = parseDocument(html);
   return (
-    <View>
+    <View style={{ width: "100%" }}>
       {document.children.map((c, i) => (
         <Node
           key={makeChildNodeKey(c, i)}
@@ -368,7 +385,6 @@ const styles = StyleSheet.create({
   basicText: {
     fontSize: 16,
     lineHeight: lineHeight(16),
-    marginVertical: 5,
   },
   liContainer: {
     flexDirection: "row",
@@ -383,30 +399,5 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 150,
     width: 200,
-  },
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-  },
-  name: {
-    width: 100,
-    fontSize: 18,
-    marginRight: 15,
-  },
-  swatches: {
-    flex: 1,
-    flexDirection: "row",
-    borderWidth: 1,
-  },
-  swatch: {
-    flex: 1,
-    height: 20,
-  },
-  icon: {
-    width: 30,
-    alignItems: "flex-end",
   },
 });
