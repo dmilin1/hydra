@@ -29,6 +29,7 @@ export type Post = {
   upvotes: number;
   scoreHidden: boolean;
   saved: boolean;
+  hidden: boolean;
   userVote: VoteOption;
   flair: Flair | null;
   postFlair: PostFlair | null;
@@ -202,6 +203,7 @@ export async function formatPostData(child: any): Promise<Post> {
     upvotes: child.data.ups,
     scoreHidden: child.data.score_hidden,
     saved: child.data.saved,
+    hidden: child.data.hidden,
     userVote,
     flair: formatFlair(child.data),
     postFlair: formatPostFlair(child.data),
