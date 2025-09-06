@@ -6,7 +6,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { TouchableOpacity, View, Text, StyleSheet, Share } from "react-native";
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  StyleSheet,
+  Share,
+  TouchableHighlight,
+} from "react-native";
 
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
@@ -349,7 +356,9 @@ export default function PostDetailsComponent({
         </TouchableOpacity>
       )}
       {summary?.comments && (
-        <TouchableOpacity
+        <TouchableHighlight
+          activeOpacity={1}
+          underlayColor={theme.tint}
           onPress={() => setCommentSummaryCollapsed(!commentSummaryCollapsed)}
           style={[
             styles.commentsSummaryContainer,
@@ -358,7 +367,7 @@ export default function PostDetailsComponent({
             },
           ]}
         >
-          <>
+          <View>
             <Text
               style={[
                 styles.commentsSummaryTitle,
@@ -381,8 +390,8 @@ export default function PostDetailsComponent({
                 {summary.comments}
               </Text>
             )}
-          </>
-        </TouchableOpacity>
+          </View>
+        </TouchableHighlight>
       )}
     </View>
   );
