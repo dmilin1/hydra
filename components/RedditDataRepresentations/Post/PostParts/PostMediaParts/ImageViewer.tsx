@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View,
   Dimensions,
-  TouchableWithoutFeedback,
+  TouchableHighlight,
 } from "react-native";
 
 import { default as ImageView } from "./ImageView/ImageViewing";
@@ -90,7 +90,12 @@ export default function ImageViewer({
         />
       )}
       {imgRefs.map((img, index, imgs) => (
-        <TouchableWithoutFeedback
+        /**
+         * Don't change this to TouchableWithoutFeedback, it will break images in comments
+         * by making them offset weirdly. I have no idea why.
+         */
+        <TouchableHighlight
+          activeOpacity={1}
           key={index}
           onPress={() => {
             setLoadLowData(false);
@@ -112,7 +117,7 @@ export default function ImageViewer({
             source={img}
             transition={250}
           />
-        </TouchableWithoutFeedback>
+        </TouchableHighlight>
       ))}
       {images.length >= 2 && (
         <View
