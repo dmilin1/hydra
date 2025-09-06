@@ -178,13 +178,13 @@ export default function Appearance() {
               <Picker
                 ref={postTextLengthRef}
                 onValueChange={(value: string | number) => {
-                  if (value) {
+                  if (value !== undefined && value !== null) {
                     changePostTextLength(Number(value));
                   }
                 }}
-                items={[...Array(10).keys()].map((i) => ({
-                  label: (i + 1).toString(),
-                  value: i + 1,
+                items={[...Array(10 + 1).keys()].map((i) => ({
+                  label: i.toString(),
+                  value: i,
                 }))}
                 value={postTextLength}
               />
@@ -199,13 +199,13 @@ export default function Appearance() {
               <Picker
                 ref={linkDescriptionLengthRef}
                 onValueChange={(value: string | number) => {
-                  if (value) {
+                  if (value !== undefined && value !== null) {
                     changeLinkDescriptionLength(Number(value));
                   }
                 }}
-                items={[...Array(30).keys()].map((i) => ({
-                  label: (i + 1).toString(),
-                  value: i + 1,
+                items={[...Array(30 + 1).keys()].map((i) => ({
+                  label: i.toString(),
+                  value: i,
                 }))}
                 value={linkDescriptionLength}
               />

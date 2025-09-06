@@ -77,17 +77,19 @@ export default function Link({ post }: { post: Post | PostDetail }) {
           >
             {post.openGraphData.title}
           </Text>
-          <Text
-            style={[
-              styles.descriptionText,
-              {
-                color: theme.subtleText,
-              },
-            ]}
-            numberOfLines={linkDescriptionLength}
-          >
-            {post.openGraphData.description}
-          </Text>
+          {linkDescriptionLength !== 0 && (
+            <Text
+              style={[
+                styles.descriptionText,
+                {
+                  color: theme.subtleText,
+                },
+              ]}
+              numberOfLines={linkDescriptionLength}
+            >
+              {post.openGraphData.description}
+            </Text>
+          )}
           <Text
             numberOfLines={1}
             style={[
@@ -123,18 +125,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 10,
     borderWidth: 3,
+    gap: 10,
   },
   title: {
-    padding: 10,
+    paddingHorizontal: 10,
   },
   descriptionText: {
     fontSize: 13,
     paddingHorizontal: 10,
-    paddingBottom: 10,
   },
   linkText: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingBottom: 5,
     fontSize: 11,
   },
   linkOnlyText: {
