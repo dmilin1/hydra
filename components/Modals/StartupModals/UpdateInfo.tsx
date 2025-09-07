@@ -17,60 +17,121 @@ import KeyStore from "../../../utils/KeyStore";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "2.10.0-1",
+  updateKey: "3.0.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [
     {
-      title: "Stats Tracking",
+      title: "Better Summaries",
       description:
-        "Private on device analytics to track your usage and explore your data. You can view your stats in Settings => Stats.",
+        "Post and comment summaries have been upgraded to use a more powerful model making them more accurate and easier to read.",
     },
   ] as { title: string; description: string }[],
   features: [
     {
-      title: "View Post Flairs",
+      title: "Custom Icons",
       description:
-        "If a post has a flair, you'll now see it as a tag at the end of the post title. You can disable this in Settings => Appearance => Post Appearance Settings => Show Post Flairs.",
+        "Change Hydra's app icon! Our first icon called \"Cerberus\" by /u/batjake is available under Settings => App Icon. Reach out to me /u/dmilin, if you'd like to contribute a custom icon!",
     },
     {
-      title: "Make Posts with Flairs",
+      title: "Move Next Comment Button",
       description:
-        "If a subreddit has flairs, you'll now see a \"Select Flair\" button on the post creation screen. This should fix most of the errors you've been getting preventing post creation.",
+        "Drag the next comment button to move it to a different spot. There are now 10 different spots you can lock it to.",
     },
     {
-      title: "Better Post Failure Messages",
+      title: "Quick Subreddit Search",
       description:
-        "If a post can't be submitted, you'll get a better message like \"Text body must be at least x length\" instead of a generic error message.",
+        "Quickly search for subreddits by long pressing on the search tab.",
     },
     {
-      title: "Live Text on Images",
+      title: "Search + Sort",
       description:
-        "You can now extract text from images using Live Text. You can enable this in Settings => Appearance => Post Appearance Settings => Live Text.",
+        "Apply a sort after searching a subreddit. Sorting no longer requires a full page reload.",
     },
     {
-      title: "Press Tab to Go Back",
+      title: "Customize Swipe Actions",
       description:
-        "Tapping the current tab will take you back a page. Easier than reaching the left corner back button.",
+        "Customize the swipe actions when swiping on posts and comments. Change these in Settings => General => Gestures.",
     },
     {
-      title: "Smoother Scrolling",
+      title: "Subreddit Filtering",
       description:
-        "The underlying infinite scroll library has been updated. Deeply scrolling should be more responsive now.",
+        "Filter subreddits from your /r/all and /r/popular feeds by long pressing on posts while on those feeds. To stop filtering, go to Settings => General => Filters => Filtered Subreddits.",
+    },
+    {
+      title: "Hide Post/Link Text",
+      description:
+        'The "Post text max lines" and "Link text max lines" settings can now be set to 0 to hide the text completely. You can set this under Settings => Appearance => Post Appearance Settings.',
+    },
+    {
+      title: "Optimized Subreddit List",
+      description:
+        "Some of you are subscribed to an absurd number of subreddits and I think it's been causing performance problems. Hydra no longer prerenders them all in the background resulting in much better overall app performance.",
+    },
+    {
+      title: "Image Cache Improvements",
+      description:
+        "The image cache now auto clears on startup if bigger than 512MB. Long time users should notice better performance and less storage usage.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
       description:
-        "Fixed a bunch of video player issues, particularly involving sound.",
+        "Fixed text rendering bug causing the ends of comments to be cut off. Finally... This one took me 2 years to solve! If you see this come up again, please send me a screenshot.",
     },
     {
       description:
-        'Fixed videos continuing to play after exiting fullscreen if "Auto play videos" is disabled.',
+        "Fixed duplicate incoming hydra://openURL links with the same URL not triggering.",
     },
     {
       description:
-        "Lots of small tweaks in an attempt to fix some obscure crashes.",
+        "Fixed case sensitivity of incoming hydra://openURL links. Now it's case insensitive to reduce errors.",
+    },
+    {
+      description:
+        "Hydra will now pop a message when your Reddit session expires. You can log back in by pressing the + button in the top right corner of the account tab.",
+    },
+    {
+      description:
+        "Cleaned up some unnecessary video player code. Hopefully resulting in a smoother experience.",
+    },
+    {
+      description:
+        "Fixed a post submission error on subreddits that don't support flairs.",
+    },
+    {
+      description:
+        "Fixed comment flairs being difficult to read when using certain themes.",
+    },
+    {
+      description:
+        "Fixed the reload indicator missing on the post details page.",
+    },
+    {
+      description:
+        "Fixed infinite scroll sometimes not loading beyond the first page after refreshing.",
+    },
+    {
+      description: "Better post flair alignment in compact mode.",
+    },
+    {
+      description: "Tweaked divider color in light mode for better contrast.",
+    },
+    {
+      description:
+        "Fixed image flicker if your scroll gesture starts over an image.",
+    },
+    {
+      description:
+        'Fixed a bug causing "Show Seen Posts" to not work on a specific subreddit when "Hide Seen Posts" is enabled globally.',
+    },
+    {
+      description:
+        "Small tweaks to inbox fetching that should reduce rate limit errors.",
+    },
+    {
+      description:
+        "Fixed being unable to try pro themes when the system is in dark mode.",
     },
   ] as { description: string }[],
 };
@@ -141,7 +202,15 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                 </Text>
                 <View style={styles.listContainer}>
                   {updateInfo.proFeatures.map((feature) => (
-                    <View key={feature.title}>
+                    <View
+                      key={feature.title}
+                      style={[
+                        styles.featureContainer,
+                        {
+                          backgroundColor: theme.divider,
+                        },
+                      ]}
+                    >
                       <Text
                         style={[
                           styles.featureTitle,
@@ -150,7 +219,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                           },
                         ]}
                       >
-                        • {feature.title}
+                        {feature.title}
                       </Text>
                       <Text
                         style={[
@@ -179,7 +248,15 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             </Text>
             <View style={styles.listContainer}>
               {updateInfo.features.map((feature) => (
-                <View key={feature.title}>
+                <View
+                  key={feature.title}
+                  style={[
+                    styles.featureContainer,
+                    {
+                      backgroundColor: theme.divider,
+                    },
+                  ]}
+                >
                   <Text
                     style={[
                       styles.featureTitle,
@@ -188,7 +265,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       },
                     ]}
                   >
-                    • {feature.title}
+                    {feature.title}
                   </Text>
                   <Text
                     style={[
@@ -215,7 +292,15 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             </Text>
             <View style={styles.listContainer}>
               {updateInfo.bugfixes.map((bugfix) => (
-                <View key={bugfix.description}>
+                <View
+                  key={bugfix.description}
+                  style={[
+                    styles.featureContainer,
+                    {
+                      backgroundColor: theme.divider,
+                    },
+                  ]}
+                >
                   <Text
                     style={[
                       styles.bugfixDescription,
@@ -224,7 +309,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       },
                     ]}
                   >
-                    • {bugfix.description}
+                    {bugfix.description}
                   </Text>
                 </View>
               ))}
@@ -327,22 +412,26 @@ const styles = StyleSheet.create({
   },
   heading: {
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 22,
+    fontWeight: 500,
     marginTop: 25,
     marginBottom: 10,
   },
+  featureContainer: {
+    padding: 15,
+    marginHorizontal: 20,
+    borderRadius: 10,
+  },
   featureTitle: {
     fontSize: 18,
-    marginHorizontal: 20,
+    fontWeight: 500,
   },
   featureDescription: {
-    fontSize: 12,
+    fontSize: 14,
     marginTop: 5,
-    marginHorizontal: 32,
   },
   bugfixDescription: {
     fontSize: 14,
-    marginHorizontal: 20,
   },
   helpContainer: {
     flexDirection: "row",
@@ -363,6 +452,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   listContainer: {
-    gap: 20,
+    gap: 15,
   },
 });
