@@ -83,7 +83,8 @@ export default function PostMedia({
               <RenderHtml html={post.html} />
             </View>
           )
-        : postText && (
+        : postText &&
+          maxLines !== 0 && (
             <View style={styles.bodyTextContainer}>
               <Text
                 numberOfLines={maxLines}
