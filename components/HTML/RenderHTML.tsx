@@ -115,7 +115,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     wrapperStyles.marginVertical = 10;
     inheritedStyles.textAlign = "center";
   } else if (element.name === "p") {
-    Wrapper = View;
+    Wrapper = Text;
     wrapperStyles.marginVertical = 5;
   } else if (element.name === "hr") {
     Wrapper = View;
