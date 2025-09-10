@@ -373,7 +373,7 @@ export default function Subreddits() {
           } else if (item.type === "sectionDivider") {
             return item.title;
           } else if (item.type === "subreddit") {
-            return item.subreddit.name;
+            return `${item.category}-${item.subreddit.name}`;
           } else if (item.type === "multireddit") {
             return item.multi.name;
           }
