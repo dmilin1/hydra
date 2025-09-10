@@ -49,11 +49,9 @@ export default function ThemeList({
           style: "destructive",
           onPress: () => {
             deleteCustomTheme(customTheme);
-            setCurrentTheme(
-              currentTheme === customTheme.name
-                ? DEFAULT_THEME.key
-                : currentTheme,
-            );
+            if (currentTheme === customTheme.name) {
+              setCurrentTheme(DEFAULT_THEME.key);
+            }
           },
         },
       ],
