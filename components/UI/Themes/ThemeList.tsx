@@ -14,6 +14,7 @@ import {
   getCustomThemes,
 } from "../../../db/functions/CustomThemes";
 import useContextMenu from "../../../utils/useContextMenu";
+import { useURLNavigation } from "../../../utils/navigation";
 
 type ThemeListProps = {
   currentTheme: string;
@@ -34,6 +35,8 @@ export default function ThemeList({
   showCustomOnly,
 }: ThemeListProps) {
   const { theme, setCurrentTheme } = useContext(ThemeContext);
+
+  const { pushURL } = useURLNavigation();
 
   const openContextMenu = useContextMenu();
   const customThemes = getCustomThemes();
@@ -100,8 +103,13 @@ export default function ThemeList({
                 onLongPress={async (e) => {
                   if (e.nativeEvent.touches.length > 1) return;
                   const result = await openContextMenu({
-                    options: ["Delete"],
+                    options: ["Edit", "Delete"],
                   });
+                  if (result === "Edit") {
+                    pushURL(
+                      "hydra://settings/themeMaker?edit=" + customTheme.name,
+                    );
+                  }
                   if (result === "Delete") {
                     handleDelete(customTheme);
                   }
