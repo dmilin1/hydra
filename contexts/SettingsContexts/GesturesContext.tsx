@@ -76,6 +76,10 @@ export const COMMENT_SWIPE_OPTIONS = [
     label: "Share",
     value: "share",
   },
+  {
+    label: "Collapse",
+    value: "collapse",
+  },
 ] as const;
 
 export type PostSwipeOption = (typeof POST_SWIPE_OPTIONS)[number]["value"];

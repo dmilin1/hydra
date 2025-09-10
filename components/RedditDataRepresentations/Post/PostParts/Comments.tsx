@@ -1,4 +1,4 @@
-import { AntDesign, FontAwesome, Octicons } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, Ionicons, Octicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, {
   useContext,
@@ -249,6 +249,16 @@ export function CommentComponent({
                       url: new RedditURL(comment.link).toString(),
                     });
                   },
+                },
+                {
+                  name: "collapse",
+                  icon: (
+                    <Ionicons
+                      name={collapsed ? "chevron-expand" : "chevron-collapse"}
+                    />
+                  ),
+                  color: theme.collapse,
+                  action: () => setCollapsed(!collapsed),
                 },
               ]}
               leftNames={[

@@ -139,6 +139,12 @@ const COLOR_GROUPS = {
       description: "Color of the share slider and other share related elements",
     },
     {
+      field: "collapse",
+      label: "Collapse",
+      description:
+        "Color of the collapse slider and other collapse related elements",
+    },
+    {
       field: "bookmark",
       label: "Bookmark",
       description:

@@ -64,6 +64,7 @@ export type Theme = {
   reply: ColorValue;
   bookmark: ColorValue;
   share: ColorValue;
+  collapse: ColorValue;
   moderator: ColorValue;
 };
 
@@ -108,6 +109,7 @@ const themes: Themes = {
     reply: "#23b5ff",
     bookmark: "#00ac37",
     share: "#ffd700",
+    collapse: "#9370db",
     moderator: "#00940f",
   },
   light: {
@@ -135,6 +137,7 @@ const themes: Themes = {
     reply: "#23b5ff",
     bookmark: "#00ac37",
     share: "#ff8c00",
+    collapse: "#9932cc",
     moderator: "#00940f",
   },
   midnight: {
@@ -162,6 +165,7 @@ const themes: Themes = {
     reply: "#23b5ff",
     bookmark: "#00ac37",
     share: "#9370db",
+    collapse: "#40e0d0",
     moderator: "#00940f",
   },
   discord: {
@@ -189,6 +193,7 @@ const themes: Themes = {
     reply: "#23b5ff",
     bookmark: "#00ac37",
     share: "#faa61a",
+    collapse: "#9370db",
     moderator: "#00940f",
   },
   spotify: {
@@ -216,6 +221,7 @@ const themes: Themes = {
     reply: "#23b5ff",
     bookmark: "#00ac37",
     share: "#ff6b35",
+    collapse: "#8a2be2",
     moderator: "#4687d6",
   },
   strawberry: {
@@ -243,6 +249,7 @@ const themes: Themes = {
     reply: "#4CAF50",
     bookmark: "#2E8B57",
     share: "#ff9500",
+    collapse: "#9370db",
     moderator: "#2E8B57",
   },
   spiderman: {
@@ -270,6 +277,7 @@ const themes: Themes = {
     reply: "#4169E1",
     bookmark: "#32CD32",
     share: "#FFD700",
+    collapse: "#ff69b4",
     moderator: "#1E90FF",
   },
   gilded: {
@@ -297,6 +305,7 @@ const themes: Themes = {
     reply: "#4FB3CC",
     bookmark: "#FFA500",
     share: "#F4A460",
+    collapse: "#9370db",
     moderator: "#2E8B57",
   },
   mulberry: {
@@ -324,6 +333,7 @@ const themes: Themes = {
     reply: "#66D9EF",
     bookmark: "#FFC0CB",
     share: "#DDA0DD",
+    collapse: "#32cd32",
     moderator: "#4682B4",
   },
   ocean: {
@@ -351,6 +361,7 @@ const themes: Themes = {
     reply: "#FFB4B4",
     bookmark: "#00CED1",
     share: "#20B2AA",
+    collapse: "#ff6347",
     moderator: "#32CD32",
   },
   aurora: {
@@ -378,6 +389,7 @@ const themes: Themes = {
     reply: "#FFD700",
     bookmark: "#98FB98",
     share: "#40E0D0",
+    collapse: "#da70d6",
     moderator: "#4169E1",
   },
   royal: {
@@ -405,6 +417,7 @@ const themes: Themes = {
     reply: "#66D9EF",
     bookmark: "#9370DB",
     share: "#FFB347",
+    collapse: "#32cd32",
     moderator: "#4682B4",
   },
 };
