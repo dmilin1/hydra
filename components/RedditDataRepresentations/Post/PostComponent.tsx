@@ -8,6 +8,7 @@ import SubredditIcon from "./PostParts/SubredditIcon";
 import { vote } from "../../../api/PostDetail";
 import { Post, VoteOption } from "../../../api/Posts";
 import { saveItem } from "../../../api/Save";
+import { hideItem } from "../../../api/Hide";
 import { URLRoutes } from "../../../app/stack";
 import { PostInteractionProvider } from "../../../contexts/PostInteractionContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
@@ -162,6 +163,7 @@ export default function PostComponent({
                 ...(seen ? ["Mark as Unread"] : ["Mark as Read"]),
                 ...(isPopularOrAll && deletePost ? ["Filter Subreddit"] : []),
                 ...(post.saved ? ["Unsave"] : ["Save"]),
+                ...(post.hidden ? ["Unhide"] : ["Hide"]),
                 "Share",
               ],
             });
@@ -180,6 +182,13 @@ export default function PostComponent({
             } else if (result === "Save" || result === "Unsave") {
               await saveItem(post, !post.saved);
               setPost({ ...post, saved: !post.saved });
+            } else if (
+              (result === "Hide" || result === "Unhide") &&
+              deletePost
+            ) {
+              await hideItem(post, !post.hidden);
+              setPost({ ...post, hidden: !post.hidden });
+              deletePost();
             } else if (result === "Share") {
               Share.share({ url: post.link });
             }

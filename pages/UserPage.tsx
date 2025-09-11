@@ -108,6 +108,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
               <PostComponent
                 post={content}
                 setPost={(newPost) => modifyUserContent([newPost])}
+                deletePost={() => deleteUserContent([content])}
               />
             );
           }
