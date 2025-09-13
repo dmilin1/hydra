@@ -20,6 +20,8 @@ import {
   saveCustomTheme,
 } from "../../db/functions/CustomThemes";
 import ColorPicker from "../../components/UI/Themes/ColorPicker";
+import { useRoute } from "../../utils/navigation";
+import URL from "../../utils/URL";
 
 type ColorGroups = Record<
   | "Core Colors"
@@ -139,6 +141,12 @@ const COLOR_GROUPS = {
       description: "Color of the share slider and other share related elements",
     },
     {
+      field: "collapse",
+      label: "Collapse",
+      description:
+        "Color of the collapse slider and other collapse related elements",
+    },
+    {
       field: "bookmark",
       label: "Bookmark",
       description:
@@ -156,6 +164,8 @@ const COLOR_GROUPS = {
 export default function ThemeMaker() {
   const { baseTheme, customThemeData, setCustomThemeData, setCurrentTheme } =
     useContext(ThemeContext);
+  const { params } = useRoute<"SettingsPage">();
+  const themeToEdit = new URL(params.url).getQueryParam("edit");
   const navigation = useNavigation();
   const [selectedColorField, setSelectedColorField] =
     useState<CustomThemeColorKeys>("background");
@@ -203,10 +213,22 @@ export default function ThemeMaker() {
     doSave();
   };
 
-  useEffect(() => {
+  const setDefaultCustomThemeData = () => {
     setCustomThemeData({ ...NEW_CUSTOM_THEME, extends: baseTheme.key });
-    return () =>
-      setCustomThemeData({ ...NEW_CUSTOM_THEME, extends: baseTheme.key });
+  };
+
+  useEffect(() => {
+    if (themeToEdit) {
+      const theme = getCustomTheme(themeToEdit);
+      if (theme) {
+        setCustomThemeData(theme);
+      } else {
+        setDefaultCustomThemeData();
+      }
+    } else {
+      setDefaultCustomThemeData();
+    }
+    return () => setDefaultCustomThemeData();
   }, []);
 
   return (

@@ -115,7 +115,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     wrapperStyles.marginVertical = 10;
     inheritedStyles.textAlign = "center";
   } else if (element.name === "p") {
-    Wrapper = Text;
+    Wrapper = TextWithRepairedHeight;
     wrapperStyles.marginVertical = 5;
   } else if (element.name === "hr") {
     Wrapper = View;
@@ -266,16 +266,47 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
               (c.data === "\n" || c.data === "\n\n")
             ),
         )
-        .map((c, i) => (
-          <Node
-            key={makeChildNodeKey(c, i)}
-            node={c}
-            index={i}
-            inheritedStyles={inheritedStyles}
-          />
-        ))}
+        .map((c, i) =>
+          getNode({
+            key: makeChildNodeKey(c, i),
+            node: c,
+            index: i,
+            inheritedStyles: inheritedStyles,
+          }),
+        )}
     </Wrapper>
   ) : null;
+}
+
+/**
+ * Horrible evil hack to fix what I think is an Apple text rendering bug.
+ * https://www.reddit.com/r/HydraApp/comments/1n7scvs/comment/ncbmi3e/
+ */
+export function TextWithRepairedHeight(props: TextProps) {
+  const [height, setHeight] = useState<number | undefined>(undefined);
+  const heightFixed = useRef(false);
+
+  return (
+    <Text
+      {...props}
+      style={[
+        props.style,
+        {
+          height: height,
+        },
+      ]}
+      onLayout={({ nativeEvent }) => {
+        if (heightFixed.current) return;
+        const height = nativeEvent.layout.height;
+        const roundedHeight = Math.round(height);
+
+        if (height !== roundedHeight) {
+          setHeight(roundedHeight + 1);
+          heightFixed.current = true;
+        }
+      }}
+    />
+  );
 }
 
 type TextNodeProps = {
@@ -293,9 +324,6 @@ export function TextNodeElem({
 
   const { customThemes, remainingText } = extractThemeFromText(textNode.data);
 
-  const [height, setHeight] = useState<number | undefined>(undefined);
-  const heightFixed = useRef(false);
-
   const TextComponment = (
     <Text
       key={index}
@@ -304,22 +332,8 @@ export function TextNodeElem({
         {
           color: theme.subtleText,
           ...inheritedStyles,
-          height: height,
         },
       ]}
-      onLayout={(event) => {
-        /**
-         * Horrible evil hack to fix what I think is an Apple text rendering bug.
-         * https://www.reddit.com/r/HydraApp/comments/1n7scvs/comment/ncbmi3e/
-         */
-        if (heightFixed.current) return;
-        const height = event.nativeEvent.layout.height;
-        const roundedHeight = Math.round(height);
-        if (height < roundedHeight) {
-          setHeight(roundedHeight + 0.1);
-          heightFixed.current = true;
-        }
-      }}
     >
       {remainingText}
     </Text>
@@ -338,16 +352,18 @@ export function TextNodeElem({
 }
 
 type NodeProps = {
+  key: string;
   node: AnyNode;
   index: number;
   inheritedStyles: InheritedStyles;
 };
 
-export function Node({ node, index, inheritedStyles }: NodeProps) {
+export function getNode({ key, node, index, inheritedStyles }: NodeProps) {
   switch (node.type) {
     case ElementType.Text:
       return (
         <TextNodeElem
+          key={key}
           textNode={node}
           index={index}
           inheritedStyles={{ ...inheritedStyles }}
@@ -356,6 +372,7 @@ export function Node({ node, index, inheritedStyles }: NodeProps) {
     case ElementType.Tag:
       return (
         <Element
+          key={key}
           element={node}
           index={index}
           inheritedStyles={{ ...inheritedStyles }}
@@ -369,14 +386,14 @@ export default function RenderHtml({ html }: { html: string }) {
   const document = parseDocument(html);
   return (
     <View style={{ width: "100%" }}>
-      {document.children.map((c, i) => (
-        <Node
-          key={makeChildNodeKey(c, i)}
-          node={c}
-          index={i}
-          inheritedStyles={{}}
-        />
-      ))}
+      {document.children.map((c, i) =>
+        getNode({
+          key: makeChildNodeKey(c, i),
+          node: c,
+          index: i,
+          inheritedStyles: {},
+        }),
+      )}
     </View>
   );
 }

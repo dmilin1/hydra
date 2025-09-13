@@ -285,8 +285,8 @@ export default class RedditURL extends URL {
 
   applyPreferredSorts(): RedditURL {
     const pageType = this.getPageType();
-    const existingSort = this.getSort();
-    if (existingSort) return this;
+    const [sort, _sortTime] = this.getSort();
+    if (sort) return this;
 
     const shouldApplySortToHomePage = KeyStore.getBoolean(SORT_HOME_PAGE);
 

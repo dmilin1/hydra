@@ -85,7 +85,9 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
 
   const setCurrentTheme = (
     themeKey: string,
-    colorScheme: "light" | "dark" = systemColorScheme,
+    colorScheme: "light" | "dark" | undefined = useDifferentDarkTheme
+      ? systemColorScheme
+      : undefined,
   ) => {
     clearTemporaryTheme();
     if (cantUseTheme(themeKey)) {
@@ -93,7 +95,7 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
         grantThemeTemporarily(themeKey);
       }
     } else {
-      if (colorScheme === "light") {
+      if (!colorScheme || colorScheme === "light") {
         setStoredTheme(themeKey);
       } else {
         setStoredDarkTheme(themeKey);
