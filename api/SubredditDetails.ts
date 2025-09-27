@@ -9,7 +9,6 @@ export type Rule = {
 };
 
 export type Sidebar = {
-  activeUsers: number;
   subscribers: number;
   descriptionHTML: string;
 };
@@ -20,8 +19,7 @@ export type Wiki = {
 
 function formatSidebarData(data: any): Sidebar {
   return {
-    activeUsers: data.active_user_count,
-    subscribers: data.subscribers,
+    subscribers: data.subscribers || 0,
     descriptionHTML: decode(data.description_html),
   };
 }
