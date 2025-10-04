@@ -65,10 +65,6 @@ export default function SidebarPage() {
                 label: "Subscribers",
                 value: sidebar.subscribers.toLocaleString(),
               },
-              {
-                label: "Active",
-                value: sidebar.activeUsers.toLocaleString(),
-              },
             ].map((stat) => (
               <View style={styles.statItem} key={stat.label}>
                 <Text
