@@ -30,11 +30,13 @@
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
-- 🚀 Change swipe actions
-
 - 🐛 Enable landscape mode in the browser
 
 - 🚀 Add option to open links in device browser instead of in app browser
+
+- 🚀 Add sort to search tab
+
+- 🚀 Add swipe and long press option to collapse entire comment thread.
 
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash

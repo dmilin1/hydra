@@ -459,16 +459,6 @@ const styles = StyleSheet.create({
   noCommentsText: {
     fontSize: 15,
   },
-  skipToNextButton: {
-    bottom: 20,
-    right: 20,
-    position: "absolute",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 1000,
-    width: 40,
-    height: 40,
-  },
   postSummaryContainer: {
     marginHorizontal: 15,
     marginTop: 10,

@@ -35,7 +35,7 @@ import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 import { TabScrollContext } from "../contexts/TabScrollContext";
 import { modifyStat, Stat } from "../db/functions/Stats";
-import ScrollToNextButton from "../components/UI/ScrollToNextButton";
+import { useScrollToNextButton } from "../utils/useScrollToNextButton";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -231,6 +231,11 @@ function PostDetails({ route }: PostDetailsProps) {
     loadPostDetails();
   }, [url]);
 
+  useScrollToNextButton({
+    scrollToNext: () => scrollToNextComment(),
+    scrollToPrevious: () => scrollToNextComment(true),
+  });
+
   return (
     <View
       style={[
@@ -298,10 +303,6 @@ function PostDetails({ route }: PostDetailsProps) {
       ) : (
         <ActivityIndicator size="small" />
       )}
-      <ScrollToNextButton
-        scrollToNext={() => scrollToNextComment()}
-        scrollToPrevious={() => scrollToNextComment(true)}
-      />
     </View>
   );
 }
