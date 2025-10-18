@@ -1,6 +1,6 @@
 import { useEvent, useEventListener } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
-import React, { useRef, useState, useContext, useEffect } from "react";
+import React, { useRef, useState, useContext } from "react";
 import {
   Animated,
   StyleSheet,
@@ -64,6 +64,10 @@ export default function VideoPlayer({
 
   const isPlaying = useEvent(player, "playingChange")?.isPlaying;
 
+  useEventListener(player, "sourceChange", () => {
+    player.volume = 0;
+  });
+
   useEventListener(player, "timeUpdate", (e) => {
     progress.setValue(e.currentTime / player.duration);
   });
@@ -71,8 +75,13 @@ export default function VideoPlayer({
   useEventListener(player, "statusChange", (e) => {
     if (e.error) {
       setFailedToLoadErr(e.error.message);
-    } else if (e.status === "readyToPlay" && straightToFullscreen) {
-      video.current?.enterFullscreen();
+    } else if (e.status === "readyToPlay") {
+      if (straightToFullscreen) {
+        video.current?.enterFullscreen();
+      }
+      if (autoPlayVideos) {
+        player.play();
+      }
     }
   });
 
@@ -94,22 +103,6 @@ export default function VideoPlayer({
     inputRange: [0, 1],
     outputRange: ["0%", "100%"],
   });
-
-  useEffect(() => {
-    player.volume = 0;
-    setTimeout(() => {
-      /**
-       * Adding a timeout to fix this crash:
-       * https://github.com/expo/expo/issues/15329#issuecomment-997283623
-       * https://dimitrie-milinovich.sentry.io/issues/6761973529/?environment=production&query=is%3Aunresolved%20error.unhandled%3ATrue&referrer=issue-stream&statsPeriod=30d
-       */
-      if (autoPlayVideos) {
-        player.play();
-      } else {
-        player.pause();
-      }
-    }, 10);
-  }, [source, autoPlayVideos]);
 
   return (
     <View

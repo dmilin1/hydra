@@ -27,6 +27,8 @@
 
 - 🐛 Lists in lists render improperly (https://www.reddit.com/r/MacOSBeta/comments/1lat3xv/guide_how_to_try_macos_26_developer_beta_in_a/)
 
+- 🚀 Add Liquid Glass
+
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
