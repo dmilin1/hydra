@@ -33,6 +33,10 @@ export default function AccountsScreen({
             }
             onPress={() => setModal(<Login />)}
             justifyContent="flex-end"
+            touchableOpacityProps={{
+              accessibilityLabel: "Add account",
+              accessibilityRole: "button",
+            }}
           />
         ),
         headerBackTitle: "Subreddits",

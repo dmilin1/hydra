@@ -69,12 +69,37 @@ export default function AccountsPage() {
                   setLoading(false);
                 }}
                 onLongPress={async (e) => {
-                  if (e.nativeEvent.touches.length > 1) return;
+                  if (
+                    username === "Logged Out" ||
+                    e.nativeEvent.touches.length > 1
+                  )
+                    return;
                   const result = await openContextMenu({
                     options: ["Delete"],
                   });
                   if (result === "Delete") {
                     await handleDelete(username);
+                  }
+                }}
+                accessibilityLabel={
+                  username === "Logged Out" ? "" : `Log in as `
+                }
+                accessibilityState={{
+                  selected:
+                    currentUser?.userName === username ||
+                    (!currentUser && username === "Logged Out"),
+                }}
+                accessibilityRole="button"
+                accessibilityValue={{ text: username }}
+                accessibilityActions={
+                  username === "Logged Out"
+                    ? []
+                    : [{ name: "delete", label: `Delete account ${username}` }]
+                }
+                onAccessibilityAction={(event) => {
+                  const action = event.nativeEvent.actionName;
+                  if (action === "delete") {
+                    handleDelete(username);
                   }
                 }}
               >

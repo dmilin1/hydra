@@ -1,6 +1,14 @@
 import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
-import React, { useContext, useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Share } from "react-native";
+import React, { useContext, useMemo, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Share,
+  AccessibilityInfo,
+} from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
@@ -17,12 +25,13 @@ import {
   markPostSeen,
   markPostUnseen,
 } from "../../../db/functions/SeenPosts";
+import URL from "../../../utils/URL";
 import RedditURL, { PageType } from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
-import useContextMenu from "../../../utils/useContextMenu";
 import Slideable from "../../UI/Slideable";
 import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
 import { GesturesContext } from "../../../contexts/SettingsContexts/GesturesContext";
+import useComponentActions from "../../../utils/useComponentActions";
 
 type PostComponentProps = {
   post: Post;
@@ -63,7 +72,85 @@ export default function PostComponent({
 
   const [_, rerender] = useState(0);
 
-  const openContextMenu = useContextMenu();
+  const {
+    accessibilityActions,
+    handleAction,
+    handleAccessibilityAction,
+    handleLongPress,
+  } = useComponentActions([
+    {
+      label: "Read post contents",
+      isLongPressOption: false,
+      handle: async () => {
+        let text = "";
+        if (post.externalLink) {
+          text += `An external link to ${new URL(post.externalLink).getPrettyHostName()}. `;
+        }
+        if (post.text.trim().length > 0) {
+          text += `Post contents: ${post.text.trim()}. `;
+        }
+        if (post.images.length > 0) {
+          text += `${post.images.length} ${post.images.length === 1 ? "image" : "images"}. `;
+        }
+        if (post.video) {
+          text += "A video. ";
+        }
+        if (post.poll) {
+          text += "A poll. ";
+        }
+        AccessibilityInfo.announceForAccessibility(
+          text.length > 0 ? text : "No post contents",
+        );
+      },
+    },
+    {
+      label: `Open external link to ${post.externalLink ? new URL(post.externalLink).getPrettyHostName() : ""}`,
+      isAllowed: !!post.externalLink,
+      isLongPressOption: false,
+      handle: async () => {
+        if (!post.externalLink) return;
+        try {
+          new RedditURL(post.externalLink);
+          pushURL(post.externalLink);
+        } catch (_) {
+          WebBrowser.openBrowserAsync(post.externalLink);
+        }
+      },
+    },
+    {
+      label: "Upvote",
+      handle: async () => await voteOnPost(VoteOption.UpVote),
+    },
+    {
+      label: "Downvote",
+      handle: async () => await voteOnPost(VoteOption.DownVote),
+    },
+    {
+      label: seen ? "Mark as Unread" : "Mark as Read",
+      handle: async () => setSeenValue(!seen),
+    },
+    {
+      label: "Filter Subreddit",
+      isAllowed: !!deletePost,
+      handle: async () => {
+        toggleFilterSubreddit(post.subreddit);
+        deletePost?.();
+      },
+    },
+    {
+      label: post.saved ? "Unsave" : "Save",
+      handle: async () => {
+        await saveItem(post, !post.saved);
+        setPost({ ...post, saved: !post.saved });
+      },
+    },
+    {
+      label: "Share",
+      handle: async () => {
+        await Share.share({ url: post.link });
+      },
+    },
+  ]);
 
   const currentVoteColor =
     post.userVote === VoteOption.UpVote
@@ -90,6 +177,29 @@ export default function PostComponent({
     });
   };
 
+  const accessibilityLabel = useMemo(() => {
+    let text = post.title.trim();
+    if (post.images.length > 0) {
+      text +=
+        ` with ${post.images.length} ` +
+        (post.images.length === 1 ? "image" : "images");
+    }
+    if (post.video) {
+      text += ` with a video`;
+    }
+    if (post.poll) {
+      text += ` with a poll`;
+    }
+    if (post.externalLink) {
+      text += ` with an external link to ${new URL(post.externalLink).getPrettyHostName()}`;
+    }
+    text += ` with ${post.upvotes} ${post.upvotes === 1 ? "upvote" : "upvotes"} and ${post.commentCount} ${post.commentCount === 1 ? "comment" : "comments"}`;
+    text += ` by ${post.author}`;
+    text += ` in the ${post.subreddit} subreddit`;
+    text += `. Posted ${post.timeSince}`;
+    return text;
+  }, [post.id]);
+
   return (
     <PostInteractionProvider
       onPostInteraction={() => {
@@ -102,44 +212,44 @@ export default function PostComponent({
             name: "upvote",
             icon: <AntDesign name="arrowup" />,
             color: theme.upvote,
-            action: async () => await voteOnPost(VoteOption.UpVote),
+            action: () => handleAction("Upvote"),
           },
           {
             name: "downvote",
             icon: <AntDesign name="arrowdown" />,
             color: theme.downvote,
-            action: async () => await voteOnPost(VoteOption.DownVote),
+            action: () => handleAction("Downvote"),
           },
           {
             name: "hide",
             icon: <Feather name={seen ? "eye-off" : "eye"} />,
             color: theme.showHide,
-            action: async () => {
-              setSeenValue(!seen);
-            },
+            action: () =>
+              handleAction(seen ? "Mark as Unread" : "Mark as Read"),
           },
           {
             name: "bookmark",
             icon: <FontAwesome name={post.saved ? "bookmark" : "bookmark-o"} />,
             color: theme.bookmark,
-            action: async () => {
-              await saveItem(post, !post.saved);
-              setPost({ ...post, saved: !post.saved });
-            },
+            action: () => handleAction(post.saved ? "Unsave" : "Save"),
           },
           {
             name: "share",
             icon: <FontAwesome name="share" />,
             color: theme.share,
-            action: async () => {
-              Share.share({ url: post.link });
-            },
+            action: () => handleAction("Share"),
           },
         ]}
         leftNames={[postSwipeOptions.right, postSwipeOptions.farRight]}
         rightNames={[postSwipeOptions.left, postSwipeOptions.farLeft]}
       >
         <TouchableOpacity
+          accessible={true}
+          accessibilityLabel={accessibilityLabel}
+          accessibilityRole="button"
+          accessibilityHint="Open the post"
+          accessibilityActions={accessibilityActions}
+          onAccessibilityAction={handleAccessibilityAction}
           activeOpacity={0.8}
           style={[
             styles.postContainer,
@@ -155,34 +265,7 @@ export default function PostComponent({
           }}
           onLongPress={async (e) => {
             if (e.nativeEvent.touches.length > 1) return;
-            const result = await openContextMenu({
-              options: [
-                "Upvote",
-                "Downvote",
-                ...(seen ? ["Mark as Unread"] : ["Mark as Read"]),
-                ...(isPopularOrAll && deletePost ? ["Filter Subreddit"] : []),
-                ...(post.saved ? ["Unsave"] : ["Save"]),
-                "Share",
-              ],
-            });
-            if (result === "Upvote") {
-              await voteOnPost(VoteOption.UpVote);
-            } else if (result === "Downvote") {
-              await voteOnPost(VoteOption.DownVote);
-            } else if (
-              result === "Mark as Unread" ||
-              result === "Mark as Read"
-            ) {
-              setSeenValue(!seen);
-            } else if (result === "Filter Subreddit" && deletePost) {
-              toggleFilterSubreddit(post.subreddit);
-              deletePost();
-            } else if (result === "Save" || result === "Unsave") {
-              await saveItem(post, !post.saved);
-              setPost({ ...post, saved: !post.saved });
-            } else if (result === "Share") {
-              Share.share({ url: post.link });
-            }
+            handleLongPress();
           }}
         >
           {postCompactMode && (
@@ -281,27 +364,25 @@ export default function PostComponent({
                     />
                   )}
                   {!subredditAtTop && isOnMultiSubredditPage && (
-                    <>
-                      <TouchableOpacity
-                        style={styles.subredditContainer}
-                        activeOpacity={0.5}
-                        onPress={() =>
-                          pushURL(`https://www.reddit.com/r/${post.subreddit}`)
-                        }
+                    <TouchableOpacity
+                      style={styles.subredditContainer}
+                      activeOpacity={0.5}
+                      onPress={() =>
+                        pushURL(`https://www.reddit.com/r/${post.subreddit}`)
+                      }
+                    >
+                      <SubredditIcon subredditIcon={post.subredditIcon} />
+                      <Text
+                        style={[
+                          styles.boldedSmallText,
+                          {
+                            color: theme.subtleText,
+                          },
+                        ]}
                       >
-                        <SubredditIcon subredditIcon={post.subredditIcon} />
-                        <Text
-                          style={[
-                            styles.boldedSmallText,
-                            {
-                              color: theme.subtleText,
-                            },
-                          ]}
-                        >
-                          {post.subreddit}{" "}
-                        </Text>
-                      </TouchableOpacity>
-                    </>
+                        {post.subreddit}{" "}
+                      </Text>
+                    </TouchableOpacity>
                   )}
                   <Text
                     style={[

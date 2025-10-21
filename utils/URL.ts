@@ -23,6 +23,10 @@ export default class URL {
     return this.url;
   }
 
+  getPrettyHostName(): string {
+    return this.getHostName().replace("www.", "");
+  }
+
   getHostName(): string {
     return this.url.split("https://")[1]?.split("/")[0] ?? "";
   }

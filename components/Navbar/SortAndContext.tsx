@@ -138,6 +138,22 @@ export default function SortAndContext({
         <TouchableOpacity
           style={{ width: 44, height: 24 }}
           activeOpacity={0.5}
+          accessibilityLabel="Sort options"
+          accessibilityRole="button"
+          accessibilityHint="Sort the posts by the selected option"
+          accessibilityValue={{ text: currentSort ?? "Default" }}
+          accessibilityActions={sortOptions.map((sort) => ({
+            name: sort,
+            label: `Sort the posts by ${sort}`,
+          }))}
+          onAccessibilityAction={(event) => {
+            const sort = event.nativeEvent.actionName;
+            if (sort === "Top") {
+              handleTopSort();
+            } else if (sort) {
+              changeSort(sort);
+            }
+          }}
           onPress={async () => {
             const sort = await showContextMenu({
               options: sortOptions,
