@@ -120,7 +120,7 @@ export default function Login() {
           ) : (
             <WebView
               source={{
-                uri: "https://www.reddit.com/login?dest=https://www.reddit.com/r/HydraApp",
+                uri: "https://www.reddit.com/login?dest=https://www.reddit.com/r/HydraClient",
               }}
               style={styles.webView}
               sharedCookiesEnabled={true}

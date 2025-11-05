@@ -341,7 +341,7 @@ export default class RedditURL extends URL {
 
   supportsSharingThemes(): boolean {
     const subreddit = this.getSubreddit().toLowerCase();
-    return ["hydraapp", "hydrafeaturerequests", "hydrathemes"].includes(
+    return ["hydraclient", "hydrafeaturerequest", "hydrathemes"].includes(
       subreddit,
     );
   }

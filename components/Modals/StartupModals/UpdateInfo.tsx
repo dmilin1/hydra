@@ -330,7 +330,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                 ]}
               >
                 If you have any feature requests, you can submit them on
-                /r/HydraFeatureRequests which can be found in the settings tab
+                /r/HydraFeatureRequest which can be found in the settings tab
               </Text>
             </View>
             <View style={styles.helpContainer}>

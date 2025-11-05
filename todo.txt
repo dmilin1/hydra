@@ -42,6 +42,8 @@
 - 🚀 Add swipe and long press option to collapse entire comment thread.
 
 ### Easy
+- 🐛 Max length doesn't apply to crosspost card
+
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
 - 🐛 Favorite subreddits you aren't subscribed to
