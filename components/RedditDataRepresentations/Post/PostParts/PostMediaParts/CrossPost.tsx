@@ -7,6 +7,7 @@ import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeCont
 import { useURLNavigation } from "../../../../../utils/navigation";
 import PostMedia from "../PostMedia";
 import SubredditIcon from "../SubredditIcon";
+import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 
 type CrossPostProps = {
   post: Post;
@@ -15,6 +16,7 @@ type CrossPostProps = {
 export default function CrossPost({ post }: CrossPostProps) {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
+  const { postTextLength } = useContext(PostSettingsContext);
 
   return (
     <TouchableOpacity
@@ -27,7 +29,7 @@ export default function CrossPost({ post }: CrossPostProps) {
       </Text>
 
       <View style={styles.mediaContainer}>
-        <PostMedia post={post} renderHTML={false} />
+        <PostMedia post={post} renderHTML={false} maxLines={postTextLength} />
       </View>
 
       <View style={styles.footer}>
