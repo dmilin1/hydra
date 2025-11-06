@@ -103,6 +103,7 @@ export default function ImageViewer({
             setVisible(true);
           }}
           style={styles.touchableZone}
+          underlayColor={theme.background}
           onLongPress={() => showImageMenu(images[index])}
         >
           <Image
