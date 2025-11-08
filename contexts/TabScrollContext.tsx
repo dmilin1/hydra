@@ -13,8 +13,6 @@ const initialTabScrollContext = {
 
 export const TabScrollContext = createContext(initialTabScrollContext);
 
-const TAB_BAR_HEIGHT = 90;
-
 export function TabScrollProvider({ children }: React.PropsWithChildren) {
   const { hideTabsOnScroll } = useContext(TabSettingsContext);
 
@@ -37,7 +35,7 @@ export function TabScrollProvider({ children }: React.PropsWithChildren) {
     isAnimating.current = true;
 
     Animated.timing(tabBarTranslateY, {
-      toValue: scrollDirection === "down" ? TAB_BAR_HEIGHT : 0,
+      toValue: scrollDirection === "down" ? 1 : 0,
       duration: 200,
       useNativeDriver: true,
     }).start(() => {

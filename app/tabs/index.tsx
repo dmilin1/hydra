@@ -35,6 +35,8 @@ export type TabParamsList = {
 
 const Tab = createBottomTabNavigator();
 
+const TAB_BAR_HEIGHT = 90;
+
 export default function Tabs() {
   if (__DEV__) {
     // Not a real conditional render since __DEV__ is a compile time constant
@@ -78,7 +80,18 @@ export default function Tabs() {
               bottom: 0,
               backgroundColor: theme.background,
               borderTopWidth: 0,
-              transform: [{ translateY: tabBarTranslateY }],
+              transform: [
+                {
+                  translateY: tabBarTranslateY.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, TAB_BAR_HEIGHT],
+                  }),
+                },
+              ],
+              opacity: tabBarTranslateY.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1, 0],
+              }),
             },
           }}
           screenListeners={() => ({
