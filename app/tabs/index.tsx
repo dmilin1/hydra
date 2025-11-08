@@ -66,7 +66,7 @@ export default function Tabs() {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: theme.background }}
-      edges={["right", "top", "left"]}
+      edges={["right", "left"]}
     >
       <QuickSubredditSearch
         show={showSubredditSearch}
@@ -77,7 +77,8 @@ export default function Tabs() {
           screenOptions={{
             tabBarStyle: {
               position: "absolute",
-              bottom: 0,
+              paddingHorizontal: 10,
+              bottom: -15,
               backgroundColor: theme.background,
               borderTopWidth: 0,
               transform: [
