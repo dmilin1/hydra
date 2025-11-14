@@ -45,7 +45,9 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
   const useDifferentDarkTheme =
     storedUseDifferentDarkTheme ?? initialThemeContext.useDifferentDarkTheme;
 
-  const temporaryThemeTimeout = useRef<number | null>(null);
+  const temporaryThemeTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const [temporaryTheme, setTemporaryTheme] = useState<string | null>(null);
 
   const lightTheme = storedCurrentTheme ?? initialThemeContext.currentTheme;

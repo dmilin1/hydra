@@ -62,7 +62,6 @@ export default function InboxScreen({ StackNavigator }: InboxScreenProps) {
                 },
               ]);
             }}
-            justifyContent="flex-end"
             touchableOpacityProps={{
               accessibilityLabel: "Mark all messages as read",
               accessibilityRole: "button",

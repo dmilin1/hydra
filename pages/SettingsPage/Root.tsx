@@ -72,7 +72,7 @@ export default function Root() {
           },
           {
             key: "stats",
-            icon: <AntDesign name="barschart" size={24} color={theme.text} />,
+            icon: <AntDesign name="bar-chart" size={24} color={theme.text} />,
             text: "Stats",
             onPress: () => pushURL("hydra://settings/stats"),
           },

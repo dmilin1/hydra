@@ -4,6 +4,7 @@ import {
   FontAwesome,
   Entypo,
   MaterialIcons,
+  Feather,
 } from "@expo/vector-icons";
 import React, { useContext, useRef } from "react";
 import { Alert, Switch, View } from "react-native";
@@ -118,7 +119,7 @@ export default function Appearance() {
           },
           {
             key: "subredditAtTop",
-            icon: <AntDesign name="totop" size={24} color={theme.text} />,
+            icon: <AntDesign name="to-top" size={24} color={theme.text} />,
             rightIcon: (
               <Switch
                 trackColor={{
@@ -215,7 +216,7 @@ export default function Appearance() {
           },
           {
             key: "showPostFlair",
-            icon: <AntDesign name="tago" size={24} color={theme.text} />,
+            icon: <AntDesign name="tag" size={24} color={theme.text} />,
             rightIcon: (
               <Switch
                 trackColor={{
@@ -347,7 +348,7 @@ export default function Appearance() {
         items={[
           {
             key: "voteIndicator",
-            icon: <AntDesign name="arrowup" size={24} color={theme.text} />,
+            icon: <Feather name="arrow-up" size={24} color={theme.text} />,
             rightIcon: (
               <Switch
                 trackColor={{
@@ -385,7 +386,7 @@ export default function Appearance() {
           },
           {
             key: "commentFlairs",
-            icon: <AntDesign name="tago" size={24} color={theme.text} />,
+            icon: <AntDesign name="tag" size={24} color={theme.text} />,
             rightIcon: (
               <Switch
                 trackColor={{

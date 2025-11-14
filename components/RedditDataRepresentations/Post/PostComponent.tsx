@@ -210,13 +210,15 @@ export default function PostComponent({
         options={[
           {
             name: "upvote",
-            icon: <AntDesign name="arrowup" />,
+            icon: <Feather name="arrow-up" />,
+            size: 38,
             color: theme.upvote,
             action: () => handleAction("Upvote"),
           },
           {
             name: "downvote",
-            icon: <AntDesign name="arrowdown" />,
+            icon: <Feather name="arrow-down" />,
+            size: 38,
             color: theme.downvote,
             action: () => handleAction("Downvote"),
           },

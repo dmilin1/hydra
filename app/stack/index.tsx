@@ -4,6 +4,7 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import React, { Fragment, useContext, useRef } from "react";
+import { View } from "react-native";
 
 import AccountsScreen from "./AccountsScreen";
 import ErrorScreen from "./ErrorScreen";
@@ -106,6 +107,8 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
 export type StackPageProps<Pages extends keyof StackParamsList> =
   NativeStackScreenProps<StackParamsList, Pages>;
 
+export const TAB_BAR_REMOVED_PADDING_BOTTOM = 15;
+
 export default function Stack() {
   const StackNavigator = createNativeStackNavigator<StackParamsList>();
   const { theme } = useContext(ThemeContext);
@@ -139,29 +142,33 @@ export default function Stack() {
   ));
 
   return (
-    <StackNavigator.Navigator
-      screenOptions={({ route }) => ({
-        headerTintColor: theme.iconOrTextButton.toString(),
-        navigationBarColor: theme.background.toString(),
-        headerStyle: {
-          backgroundColor: theme.background.toString(),
-        },
-        headerTitleStyle: {
-          color: theme.text.toString(),
-        },
-        fullScreenGestureEnabled: swipeAnywhereToNavigate,
-        contentStyle: {
-          paddingBottom: SHOWS_BENEATH_TABS[route.name] ? 0 : tabBarHeight,
-          backgroundColor: theme.background,
-        },
-      })}
-      screenLayout={({ children }) => (
-        <StackFutureProvider futureRoutes={futureRoutes}>
-          {children}
-        </StackFutureProvider>
-      )}
-    >
-      {screens}
-    </StackNavigator.Navigator>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
+      <StackNavigator.Navigator
+        screenOptions={({ route }) => ({
+          headerTintColor: theme.iconOrTextButton.toString(),
+          navigationBarColor: theme.background.toString(),
+          headerStyle: {
+            backgroundColor: theme.background.toString(),
+          },
+          headerTitleStyle: {
+            color: theme.text.toString(),
+          },
+          fullScreenGestureEnabled: swipeAnywhereToNavigate,
+          contentStyle: {
+            paddingBottom: SHOWS_BENEATH_TABS[route.name]
+              ? 0
+              : tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+            backgroundColor: theme.background,
+          },
+        })}
+        screenLayout={({ children }) => (
+          <StackFutureProvider futureRoutes={futureRoutes}>
+            {children}
+          </StackFutureProvider>
+        )}
+      >
+        {screens}
+      </StackNavigator.Navigator>
+    </View>
   );
 }

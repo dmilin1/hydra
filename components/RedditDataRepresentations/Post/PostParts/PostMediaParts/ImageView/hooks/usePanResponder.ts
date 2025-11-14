@@ -52,7 +52,7 @@ const usePanResponder = ({
   let tmpTranslate: Position | null = null;
   let isDoubleTapPerformed = false;
   let lastTapTS: number | null = null;
-  let longPressHandlerRef: number | null = null;
+  let longPressHandlerRef: ReturnType<typeof setTimeout> | null = null;
 
   const meaningfulShift = MIN_DIMENSION * 0.01;
   const scaleValue = new Animated.Value(initialScale);

@@ -34,6 +34,7 @@ import { TabScrollProvider } from "../contexts/TabScrollContext";
 import { StartupModalProvider } from "../contexts/StartupModalContext";
 import { modifyStat, Stat } from "../db/functions/Stats";
 import ScrollToNextButtonProvider from "../contexts/ScrollToNextButtonProvider";
+import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -105,18 +106,20 @@ function RootLayout() {
                 <NavigationProvider>
                   <ScrollToNextButtonProvider>
                     <ActionSheetProvider>
-                      <InboxProvider>
-                        <ModalProvider>
-                          <MediaViewerProvider>
-                            <SubredditProvider>
-                              <StartupModalProvider>
-                                <SubscribeToHydra />
-                                <Tabs />
-                              </StartupModalProvider>
-                            </SubredditProvider>
-                          </MediaViewerProvider>
-                        </ModalProvider>
-                      </InboxProvider>
+                      <ActionSheetBgProvider>
+                        <InboxProvider>
+                          <ModalProvider>
+                            <MediaViewerProvider>
+                              <SubredditProvider>
+                                <StartupModalProvider>
+                                  <SubscribeToHydra />
+                                  <Tabs />
+                                </StartupModalProvider>
+                              </SubredditProvider>
+                            </MediaViewerProvider>
+                          </ModalProvider>
+                        </InboxProvider>
+                      </ActionSheetBgProvider>
                     </ActionSheetProvider>
                   </ScrollToNextButtonProvider>
                 </NavigationProvider>

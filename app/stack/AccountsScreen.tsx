@@ -32,7 +32,6 @@ export default function AccountsScreen({
               <Entypo name="plus" size={24} color={theme.iconOrTextButton} />
             }
             onPress={() => setModal(<Login />)}
-            justifyContent="flex-end"
             touchableOpacityProps={{
               accessibilityLabel: "Add account",
               accessibilityRole: "button",

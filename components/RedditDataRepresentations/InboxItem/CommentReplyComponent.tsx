@@ -1,4 +1,4 @@
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
@@ -56,13 +56,13 @@ export default function CommentReplyComponent({
       options={[
         {
           name: "upvote",
-          icon: <AntDesign name="arrowup" />,
+          icon: <Feather name="arrow-up" />,
           color: theme.upvote,
           action: async () => voteOnMessage(VoteOption.UpVote),
         },
         {
-          name: "downvote",
-          icon: <AntDesign name="arrowdown" />,
+          name: "Feather",
+          icon: <Feather name="arrow-down" />,
           color: theme.downvote,
           action: async () => voteOnMessage(VoteOption.DownVote),
         },

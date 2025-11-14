@@ -16,7 +16,7 @@ import { PostInteractionContext } from "../../../../../contexts/PostInteractionC
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import useVideoMenu from "../../../../../utils/useVideoMenu";
-import { AntDesign } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 
 type VideoPlayerProps = {
@@ -183,7 +183,11 @@ export default function VideoPlayer({
               <View style={styles.videoContainer}>
                 {!isPlaying && (
                   <View style={styles.playButtonContainer}>
-                    <AntDesign name="play" size={50} color={theme.text} />
+                    <FontAwesome
+                      name="play-circle"
+                      size={50}
+                      color={theme.text}
+                    />
                   </View>
                 )}
                 <VideoView

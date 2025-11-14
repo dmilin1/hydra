@@ -1,4 +1,10 @@
-import { AntDesign, FontAwesome, Ionicons, Octicons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Feather,
+  FontAwesome,
+  Ionicons,
+  Octicons,
+} from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, {
   useContext,
@@ -214,13 +220,15 @@ export function CommentComponent({
               options={[
                 {
                   name: "upvote",
-                  icon: <AntDesign name="arrowup" />,
+                  icon: <Feather name="arrow-up" />,
+                  size: 38,
                   color: theme.upvote,
                   action: async () => await voteOnComment(VoteOption.UpVote),
                 },
                 {
                   name: "downvote",
-                  icon: <AntDesign name="arrowdown" />,
+                  icon: <Feather name="arrow-down" />,
+                  size: 38,
                   color: theme.downvote,
                   action: async () => await voteOnComment(VoteOption.DownVote),
                 },
@@ -377,8 +385,8 @@ export function CommentComponent({
                       <AntDesign
                         name={
                           comment.userVote === VoteOption.DownVote
-                            ? "arrowdown"
-                            : "arrowup"
+                            ? "arrow-down"
+                            : "arrow-up"
                         }
                         size={14}
                         color={

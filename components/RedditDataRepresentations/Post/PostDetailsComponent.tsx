@@ -213,7 +213,7 @@ export default function PostDetailsComponent({
               </TouchableOpacity>
             </View>
             <View style={[styles.metadataRow, { marginTop: 5 }]}>
-              <AntDesign name="arrowup" size={15} color={theme.subtleText} />
+              <Feather name="arrow-up" size={15} color={theme.subtleText} />
               <Text
                 style={[
                   styles.smallText,
@@ -259,9 +259,9 @@ export default function PostDetailsComponent({
           ]}
           onPress={() => voteOnPost(VoteOption.UpVote)}
         >
-          <AntDesign
-            name="arrowup"
-            size={28}
+          <Feather
+            name="arrow-up"
+            size={32}
             color={
               postDetail.userVote === VoteOption.UpVote
                 ? theme.text
@@ -281,9 +281,9 @@ export default function PostDetailsComponent({
           ]}
           onPress={() => voteOnPost(VoteOption.DownVote)}
         >
-          <AntDesign
-            name="arrowdown"
-            size={28}
+          <Feather
+            name="arrow-down"
+            size={32}
             color={
               postDetail.userVote === VoteOption.DownVote
                 ? theme.text
@@ -439,12 +439,15 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    height: 46,
     paddingHorizontal: 15,
     paddingVertical: 5,
   },
   buttonsContainer: {
     padding: 3,
     borderRadius: 5,
+    marginVertical: -100,
   },
   showContextContainer: {
     borderTopWidth: 1,

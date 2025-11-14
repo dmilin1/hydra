@@ -1,9 +1,9 @@
 import {
-  AntDesign,
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
   Entypo,
+  Feather,
 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SplashScreen, useNavigation } from "expo-router";
@@ -16,7 +16,7 @@ import { AccountContext } from "../../contexts/AccountContext";
 import { InboxContext } from "../../contexts/InboxContext";
 import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
-import Stack from "../stack";
+import Stack, { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../stack";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
 import useHandleIncomingURLs from "../../utils/useHandleIncomingURLs";
 import { AppNavigationProp } from "../../utils/navigationTypes";
@@ -78,7 +78,7 @@ export default function Tabs() {
             tabBarStyle: {
               position: "absolute",
               paddingHorizontal: 10,
-              bottom: -15,
+              bottom: -TAB_BAR_REMOVED_PADDING_BOTTOM,
               backgroundColor: theme.background,
               borderTopWidth: 0,
               transform: [
@@ -94,6 +94,9 @@ export default function Tabs() {
                 outputRange: [1, 0],
               }),
             },
+            // This is broken in the latest version of react-navigation:
+            // https://github.com/react-navigation/react-navigation/issues/12755
+            // animation: 'fade',
           }}
           screenListeners={() => ({
             tabPress: (e) => {
@@ -135,7 +138,6 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Posts",
-              animation: "fade",
             }}
             component={Stack}
           />
@@ -155,7 +157,6 @@ export default function Tabs() {
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Inbox",
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
-              animation: "fade",
             }}
             component={Stack}
           />
@@ -176,7 +177,6 @@ export default function Tabs() {
               tabBarLabel: showUsername
                 ? (currentUser?.userName ?? "Account")
                 : "Account",
-              animation: "fade",
             }}
             component={Stack}
           />
@@ -186,8 +186,8 @@ export default function Tabs() {
               title: "Search",
               headerShown: false,
               tabBarIcon: ({ focused, size }) => (
-                <AntDesign
-                  name="search1"
+                <Feather
+                  name="search"
                   size={size}
                   color={focused ? theme.iconPrimary : theme.subtleText}
                 />
@@ -195,7 +195,6 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Search",
-              animation: "fade",
             }}
             component={Stack}
           />
@@ -214,7 +213,6 @@ export default function Tabs() {
               tabBarActiveTintColor: theme.iconOrTextButton as string,
               tabBarInactiveTintColor: theme.subtleText as string,
               tabBarLabel: "Settings",
-              animation: "fade",
             }}
             component={Stack}
           />

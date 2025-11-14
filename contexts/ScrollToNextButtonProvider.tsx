@@ -112,8 +112,10 @@ export default function ScrollToNextButtonProvider({
 
   const inMoveMode = useRef(false);
 
-  const scrollToPreviousTimeout = useRef<number | null>(null);
-  const startDragTimeout = useRef<number | null>(null);
+  const scrollToPreviousTimeout = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const startDragTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearTimeouts = () => {
     if (scrollToPreviousTimeout.current) {

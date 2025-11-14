@@ -5,10 +5,18 @@ import {
   SimpleLineIcons,
   Entypo,
   FontAwesome,
+  Ionicons,
 } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
-import React, { useContext } from "react";
-import { Share, StyleSheet, View, TouchableOpacity, Alert } from "react-native";
+import React, { useContext, useRef } from "react";
+import {
+  Share,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Alert,
+  findNodeHandle,
+} from "react-native";
 
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
 import { blockUser, User } from "../../api/User";
@@ -90,6 +98,9 @@ export default function SortAndContext({
 
   const showContextMenu = useContextMenu();
 
+  const sortButtonRef = useRef<View>(null);
+  const contextButtonRef = useRef<View>(null);
+
   const currentPath = route.params.url;
   const pageType = new RedditURL(currentPath).getPageType();
   const [currentSort, _] = currentPath
@@ -126,6 +137,7 @@ export default function SortAndContext({
   const handleTopSort = async () => {
     const topSort = await showContextMenu({
       options: ["Hour", "Day", "Week", "Month", "Year", "All"],
+      anchor: findNodeHandle(sortButtonRef.current) ?? undefined,
     });
     if (topSort) {
       changeSort("top", topSort);
@@ -136,7 +148,8 @@ export default function SortAndContext({
     <View style={styles.sectionContainer}>
       {sortOptions && (
         <TouchableOpacity
-          style={{ width: 44, height: 24 }}
+          ref={sortButtonRef}
+          style={styles.sortButton}
           activeOpacity={0.5}
           accessibilityLabel="Sort options"
           accessibilityRole="button"
@@ -156,6 +169,7 @@ export default function SortAndContext({
           }}
           onPress={async () => {
             const sort = await showContextMenu({
+              anchor: findNodeHandle(sortButtonRef.current) ?? undefined,
               options: sortOptions,
             });
             if (
@@ -174,11 +188,10 @@ export default function SortAndContext({
           }}
         >
           {(currentSort === "best" && (
-            <AntDesign
-              name="Trophy"
+            <Ionicons
+              name="trophy-outline"
               size={24}
               color={theme.iconOrTextButton}
-              style={{ marginRight: 20 }}
             />
           )) ||
             (currentSort === "hot" && (
@@ -186,15 +199,13 @@ export default function SortAndContext({
                 name="fire"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "new" && (
               <AntDesign
-                name="clockcircleo"
+                name="clock-circle"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "top" && (
@@ -202,7 +213,6 @@ export default function SortAndContext({
                 name="podium-gold"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "rising" && (
@@ -210,7 +220,6 @@ export default function SortAndContext({
                 name="trending-up"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "controversial" && (
@@ -218,7 +227,6 @@ export default function SortAndContext({
                 name="sword-cross"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "old" && (
@@ -226,15 +234,13 @@ export default function SortAndContext({
                 name="timer-sand-complete"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "qa" && (
               <AntDesign
-                name="message1"
+                name="message"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "relevance" && (
@@ -242,7 +248,6 @@ export default function SortAndContext({
                 name="archive-search-outline"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) ||
             (currentSort === "comments" && (
@@ -250,25 +255,25 @@ export default function SortAndContext({
                 name="comment-o"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )) || (
-              <AntDesign
-                name="Trophy"
+              <Ionicons
+                name="trophy-outline"
                 size={24}
                 color={theme.iconOrTextButton}
-                style={{ marginRight: 20 }}
               />
             )}
         </TouchableOpacity>
       )}
       {contextOptions && (
         <TouchableOpacity
-          style={{ width: 24, height: 24 }}
+          ref={contextButtonRef}
+          style={styles.contextButton}
           activeOpacity={0.5}
           onPress={async () => {
             const result = await showContextMenu({
               options: contextOptions,
+              anchor: findNodeHandle(contextButtonRef.current) ?? undefined,
             });
             if (result === "Share") {
               Share.share({ url: new RedditURL(currentPath).toString() });
@@ -382,9 +387,22 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     flexDirection: "row",
+    gap: 5,
   },
   centerText: {
     fontSize: 17,
     fontWeight: "600",
+  },
+  sortButton: {
+    width: 35,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  contextButton: {
+    width: 35,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

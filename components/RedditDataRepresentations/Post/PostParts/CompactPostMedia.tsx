@@ -1,4 +1,4 @@
-import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons";
+import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import * as WebBrowser from "expo-web-browser";
 import React, { useContext, useState } from "react";
@@ -68,7 +68,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           onPress={() => setMediaOpen(!mediaOpen)}
         >
           <View style={styles.iconContainer}>
-            <AntDesign name="play" style={styles.icon} />
+            <FontAwesome name="play-circle" style={styles.icon} />
           </View>
           {post.imageThumbnail && (
             <Image src={post.imageThumbnail} style={styles.image} />
@@ -96,7 +96,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           onPress={() => setMediaOpen(!mediaOpen)}
         >
           <View style={styles.iconContainer}>
-            {isGif && <AntDesign name="play" style={styles.icon} />}
+            {isGif && <FontAwesome name="play-circle" style={styles.icon} />}
             {post.images.length > 1 && (
               <Text style={styles.imageCount}>{post.images.length}</Text>
             )}

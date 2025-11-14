@@ -10,6 +10,7 @@ export function useScrollToNextButton({
   scrollToNext: () => void;
   scrollToPrevious: () => void;
 }) {
+  // Maybe broken because of this: https://github.com/react-navigation/react-navigation/issues/12801
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
 

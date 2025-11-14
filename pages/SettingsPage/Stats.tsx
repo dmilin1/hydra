@@ -1,10 +1,10 @@
 import {
-  AntDesign,
   Feather,
   MaterialIcons,
   FontAwesome5,
   MaterialCommunityIcons,
   FontAwesome6,
+  FontAwesome,
 } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View, ScrollView, Alert } from "react-native";
@@ -160,13 +160,17 @@ export default function Stats() {
       title: "Upvotes Given",
       value: prettyNum(positiveVotes, 0),
       subtitle: `${prettyNum(stats[Stat.POST_UPVOTES] ?? 0, 0, "post", "posts")}, ${prettyNum(stats[Stat.COMMENT_UPVOTES] ?? 0, 0, "comment", "comments")}`,
-      icon: <AntDesign name="like1" size={24} color={theme.iconPrimary} />,
+      icon: (
+        <FontAwesome name="thumbs-up" size={24} color={theme.iconPrimary} />
+      ),
     },
     {
       title: "Downvotes Given",
       value: prettyNum(negativeVotes, 0),
       subtitle: `${prettyNum(stats[Stat.POST_DOWNVOTES] ?? 0, 0, "post", "posts")}, ${prettyNum(stats[Stat.COMMENT_DOWNVOTES] ?? 0, 0, "comment", "comments")}`,
-      icon: <AntDesign name="dislike1" size={24} color={theme.iconPrimary} />,
+      icon: (
+        <FontAwesome name="thumbs-down" size={24} color={theme.iconPrimary} />
+      ),
     },
     {
       title: "Content Created",

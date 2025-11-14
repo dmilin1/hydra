@@ -16,6 +16,7 @@ import { IconProps } from "@expo/vector-icons/build/createIconSet";
 type SlideItem<SlideName extends string> = {
   name: SlideName;
   icon: ReactElement<IconProps<string>>;
+  size?: number;
   color: ColorValue;
   action: () => void;
 };
@@ -181,8 +182,8 @@ export default function Slideable<SlideName extends string>({
         >
           {icon &&
             cloneElement(icon, {
-              color: slideItem?.color ? theme.text : theme.subtleText,
-              size: slideItem?.color ? 32 : 28,
+              color: theme.text,
+              size: slideItem?.size ?? 32,
             })}
         </View>
       </View>

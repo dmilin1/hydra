@@ -1,4 +1,4 @@
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
@@ -50,7 +50,7 @@ export default function CrossPost({ post }: CrossPostProps) {
 
         <View style={styles.metadataContainer}>
           <View style={styles.metadataItem}>
-            <AntDesign name="arrowup" size={16} color={theme.subtleText} />
+            <Feather name="arrow-up" size={16} color={theme.subtleText} />
             <Text style={[styles.metadataText, { color: theme.subtleText }]}>
               {post.upvotes}
             </Text>

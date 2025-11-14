@@ -1,4 +1,4 @@
-import { AntDesign, FontAwesome6 } from "@expo/vector-icons";
+import { Feather, FontAwesome6 } from "@expo/vector-icons";
 import { useContext, useRef, useState } from "react";
 import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 
@@ -45,8 +45,8 @@ export default function SearchBar({
         },
       ]}
     >
-      <AntDesign
-        name="search1"
+      <Feather
+        name="search"
         size={18}
         color={theme.text}
         style={styles.searchBarIcon}
