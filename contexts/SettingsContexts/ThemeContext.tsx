@@ -93,7 +93,7 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
   ) => {
     clearTemporaryTheme();
     if (cantUseTheme(themeKey)) {
-      if (colorScheme === systemColorScheme) {
+      if (!colorScheme || colorScheme === systemColorScheme) {
         grantThemeTemporarily(themeKey);
       }
     } else {
