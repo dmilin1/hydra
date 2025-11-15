@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  ColorValue,
 } from "react-native";
 
 import {
@@ -236,6 +237,18 @@ function PostDetails({ route }: PostDetailsProps) {
     scrollToPrevious: () => scrollToNextComment(true),
   });
 
+  /**
+   * The tintColor prop on the RefreshControl component is broken in React Native 0.81.5.
+   * This is a workaround to fix the bug. Same fix is used in the RedditDataScroller component.
+   * https://github.com/facebook/react-native/issues/53987
+   */
+  const [refreshControlColor, setRefreshControlColor] = useState<ColorValue>();
+  useEffect(() => {
+    setTimeout(() => {
+      setRefreshControlColor(theme.text);
+    }, 500);
+  }, []);
+
   return (
     <View
       style={[
@@ -250,7 +263,7 @@ function PostDetails({ route }: PostDetailsProps) {
           ref={scrollView}
           refreshControl={
             <RefreshControl
-              tintColor={theme.text}
+              tintColor={refreshControlColor}
               refreshing={refreshing}
               onRefresh={() => loadPostDetails()}
             />

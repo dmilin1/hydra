@@ -1,12 +1,13 @@
 import { FlashList, FlashListProps } from "@shopify/flash-list";
 import * as Haptics from "expo-haptics";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
   Text,
   View,
+  ColorValue,
 } from "react-native";
 
 import { RedditDataObject } from "../../api/RedditApi";
@@ -73,6 +74,18 @@ function RedditDataScroller<T extends RedditDataObject>(
     setIsLoadingMore(false);
   };
 
+  /**
+   * The tintColor prop on the RefreshControl component is broken in React Native 0.81.5.
+   * This is a workaround to fix the bug. Same fix is used in the PostDetails component.
+   * https://github.com/facebook/react-native/issues/53987
+   */
+  const [refreshControlColor, setRefreshControlColor] = useState<ColorValue>();
+  useEffect(() => {
+    setTimeout(() => {
+      setRefreshControlColor(theme.text);
+    }, 500);
+  }, []);
+
   return (
     <FlashList<T>
       {...props}
@@ -80,7 +93,8 @@ function RedditDataScroller<T extends RedditDataObject>(
       indicatorStyle={theme.systemModeStyle === "dark" ? "white" : "black"}
       refreshControl={
         <RefreshControl
-          tintColor={theme.text}
+          style={{ backgroundColor: "red" }}
+          tintColor={refreshControlColor}
           refreshing={refreshing}
           onRefresh={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
