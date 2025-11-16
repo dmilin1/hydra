@@ -1,5 +1,5 @@
 import { AnyNode, Text as TextNode, Element as ElementNode } from "domhandler";
-import * as WebBrowser from "expo-web-browser";
+import { openExternalLink } from "../../utils/openExternalLink";
 import { parseDocument, ElementType } from "htmlparser2";
 import React, { useContext, useRef, useState } from "react";
 import {
@@ -204,7 +204,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
           pushURL(new RedditURL(url).toString());
         }
       } catch {
-        WebBrowser.openBrowserAsync(element.attribs.href);
+        openExternalLink(element.attribs.href);
       }
     };
   } else if (

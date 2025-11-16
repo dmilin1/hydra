@@ -1,6 +1,6 @@
 import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import * as WebBrowser from "expo-web-browser";
+import { openExternalLink } from "../../../../utils/openExternalLink";
 import React, { useContext, useState } from "react";
 import {
   Text,
@@ -144,7 +144,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               new RedditURL(url);
               pushURL(url);
             } catch (_) {
-              WebBrowser.openBrowserAsync(url);
+              openExternalLink(url);
             }
           }}
         >

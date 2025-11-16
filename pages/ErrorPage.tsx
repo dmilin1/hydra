@@ -1,5 +1,5 @@
 import { Entypo } from "@expo/vector-icons";
-import * as WebBrowser from "expo-web-browser";
+import { openExternalLink } from "../utils/openExternalLink";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text, TouchableHighlight } from "react-native";
 
@@ -34,7 +34,7 @@ export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
             below: {"\n"}
           </Text>
           <TouchableHighlight
-            onPress={() => WebBrowser.openBrowserAsync(url)}
+            onPress={() => openExternalLink(url)}
             style={styles.linkContainer}
           >
             <Text style={[styles.linkText, { color: theme.iconOrTextButton }]}>

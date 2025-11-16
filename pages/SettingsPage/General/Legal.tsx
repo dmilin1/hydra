@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import * as WebBrowser from "expo-web-browser";
+import { openExternalLink } from "../../../utils/openExternalLink";
 
 import List from "../../../components/UI/List";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -17,7 +17,7 @@ export default function Legal() {
           icon: <Feather name="shield" size={24} color={theme.text} />,
           text: "Privacy Policy",
           onPress: () => {
-            WebBrowser.openBrowserAsync("https://www.hydraapp.io/privacy");
+            openExternalLink("https://www.hydraapp.io/privacy");
           },
         },
         {
@@ -25,7 +25,7 @@ export default function Legal() {
           icon: <Feather name="file-text" size={24} color={theme.text} />,
           text: "End User License Agreement",
           onPress: () => {
-            WebBrowser.openBrowserAsync(
+            openExternalLink(
               "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
             );
           },

@@ -8,7 +8,7 @@ import {
   Share,
   AccessibilityInfo,
 } from "react-native";
-import * as WebBrowser from "expo-web-browser";
+import { openExternalLink } from "../../../utils/openExternalLink";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
@@ -113,7 +113,7 @@ export default function PostComponent({
           new RedditURL(post.externalLink);
           pushURL(post.externalLink);
         } catch (_) {
-          WebBrowser.openBrowserAsync(post.externalLink);
+          openExternalLink(post.externalLink);
         }
       },
     },

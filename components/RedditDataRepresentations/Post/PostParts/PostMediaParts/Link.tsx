@@ -1,5 +1,5 @@
 import { Image, useImage } from "expo-image";
-import * as WebBrowser from "expo-web-browser";
+import { openExternalLink } from "../../../../../utils/openExternalLink";
 import React, { useContext } from "react";
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -49,7 +49,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
           new RedditURL(url);
           pushURL(url);
         } catch (_) {
-          WebBrowser.openBrowserAsync(url);
+          openExternalLink(url);
         }
       }}
     >
