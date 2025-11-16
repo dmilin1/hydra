@@ -1,5 +1,5 @@
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   StyleSheet,
   ColorValue,
@@ -9,10 +9,8 @@ import {
   Text,
 } from "react-native";
 import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
-import RNPickerSelect from "react-native-picker-select";
 
 import List from "../../../components/UI/List";
-import Picker from "../../../components/UI/Picker";
 import {
   DEFAULT_COMMENT_SORT_KEY,
   DEFAULT_POST_SORT_KEY,
@@ -23,6 +21,7 @@ import {
 } from "../../../constants/SettingsKeys";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import KeyStore from "../../../utils/KeyStore";
+import { useSettingsPicker } from "../../../utils/useSettingsPicker";
 
 const POST_SORT_OPTIONS = [
   {
@@ -112,10 +111,6 @@ const COMMENT_SORT_OPTIONS = [
 export default function General() {
   const { theme } = useContext(ThemeContext);
 
-  const defaultPostSortRef = useRef<RNPickerSelect>(null);
-  const defaultPostSortTopRef = useRef<RNPickerSelect>(null);
-  const defaultCommentSortRef = useRef<RNPickerSelect>(null);
-
   const [storedDefaultPostSort, setDefaultPostSort] = useMMKVString(
     DEFAULT_POST_SORT_KEY,
   );
@@ -138,6 +133,33 @@ export default function General() {
   const rememberCommentSubredditSort =
     storedRememberCommentSubredditSort ?? false;
   const sortHomePage = storedSortHomePage ?? false;
+
+  const {
+    openPicker: openDefaultPostSortPicker,
+    rightIcon: rightIconDefaultPostSort,
+  } = useSettingsPicker({
+    items: POST_SORT_OPTIONS,
+    value: defaultPostSort,
+    onChange: setDefaultPostSort,
+  });
+
+  const {
+    openPicker: openDefaultPostSortTopPicker,
+    rightIcon: rightIconDefaultPostSortTop,
+  } = useSettingsPicker({
+    items: TOP_SORT_OPTIONS,
+    value: defaultPostSortTop,
+    onChange: setDefaultPostSortTop,
+  });
+
+  const {
+    openPicker: openDefaultCommentSortPicker,
+    rightIcon: rightIconDefaultCommentSort,
+  } = useSettingsPicker({
+    items: COMMENT_SORT_OPTIONS,
+    value: defaultCommentSort,
+    onChange: setDefaultCommentSort,
+  });
 
   const keys = KeyStore.getAllKeys();
 
@@ -181,19 +203,8 @@ export default function General() {
               />
             ),
             text: "Default sort",
-            rightIcon: (
-              <Picker
-                ref={defaultPostSortRef}
-                onValueChange={(value: string) => {
-                  if (value) {
-                    setDefaultPostSort(value);
-                  }
-                }}
-                items={POST_SORT_OPTIONS}
-                value={defaultPostSort}
-              />
-            ),
-            onPress: () => defaultPostSortRef.current?.togglePicker(true),
+            rightIcon: rightIconDefaultPostSort,
+            onPress: () => openDefaultPostSortPicker(),
           },
           ...(defaultPostSort === "top"
             ? [
@@ -207,20 +218,8 @@ export default function General() {
                     />
                   ),
                   text: "Default top sort",
-                  rightIcon: (
-                    <Picker
-                      ref={defaultPostSortTopRef}
-                      onValueChange={(value: string) => {
-                        if (value) {
-                          setDefaultPostSortTop(value);
-                        }
-                      }}
-                      items={TOP_SORT_OPTIONS}
-                      value={defaultPostSortTop}
-                    />
-                  ),
-                  onPress: () =>
-                    defaultPostSortTopRef.current?.togglePicker(true),
+                  rightIcon: rightIconDefaultPostSortTop,
+                  onPress: () => openDefaultPostSortTopPicker(),
                 },
               ]
             : []),
@@ -302,19 +301,8 @@ export default function General() {
               />
             ),
             text: "Default sort",
-            rightIcon: (
-              <Picker
-                ref={defaultCommentSortRef}
-                onValueChange={(value: string) => {
-                  if (value) {
-                    setDefaultCommentSort(value);
-                  }
-                }}
-                items={COMMENT_SORT_OPTIONS}
-                value={defaultCommentSort}
-              />
-            ),
-            onPress: () => defaultCommentSortRef.current?.togglePicker(true),
+            rightIcon: rightIconDefaultCommentSort,
+            onPress: () => openDefaultCommentSortPicker(),
           },
           {
             key: "rememberCommentSubredditSort",

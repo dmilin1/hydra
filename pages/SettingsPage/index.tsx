@@ -9,6 +9,7 @@ import GeneralRoot from "./General/GeneralRoot";
 import HydraPro from "./HydraPro";
 import Legal from "./General/Legal";
 import OpenInHydra from "./General/OpenInHydra";
+import ExternalLinks from "./General/ExternalLinks";
 import Privacy from "./Privacy";
 import Root from "./Root";
 import Sorting from "./General/Sorting";
@@ -58,6 +59,7 @@ export default function SettingsPage({
         {relativePath === "settings/general/filters" && <Filters />}
         {relativePath === "settings/general/startup" && <Startup />}
         {relativePath === "settings/general/legal" && <Legal />}
+        {relativePath === "settings/general/externalLinks" && <ExternalLinks />}
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/themeMaker" && <ThemeMaker />}

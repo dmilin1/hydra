@@ -1,18 +1,15 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { Switch } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
 
 import List from "../../../components/UI/List";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import {
   COMMENT_SWIPE_OPTIONS,
-  CommentSwipeOption,
   GesturesContext,
   POST_SWIPE_OPTIONS,
-  PostSwipeOption,
 } from "../../../contexts/SettingsContexts/GesturesContext";
-import Picker from "../../../components/UI/Picker";
+import { useSettingsPicker } from "../../../utils/useSettingsPicker";
 
 export default function Gestures() {
   const { theme } = useContext(ThemeContext);
@@ -25,15 +22,80 @@ export default function Gestures() {
     setCommentSwipeOption,
   } = useContext(GesturesContext);
 
-  const postSwipeFarRightRef = useRef<RNPickerSelect>(null);
-  const postSwipeShortRightRef = useRef<RNPickerSelect>(null);
-  const postSwipeFarLeftRef = useRef<RNPickerSelect>(null);
-  const postSwipeShortLeftRef = useRef<RNPickerSelect>(null);
+  const postSwipeOptionsItems = [...POST_SWIPE_OPTIONS];
+  const commentSwipeOptionsItems = [...COMMENT_SWIPE_OPTIONS];
 
-  const commentSwipeFarRightRef = useRef<RNPickerSelect>(null);
-  const commentSwipeShortRightRef = useRef<RNPickerSelect>(null);
-  const commentSwipeFarLeftRef = useRef<RNPickerSelect>(null);
-  const commentSwipeShortLeftRef = useRef<RNPickerSelect>(null);
+  const {
+    openPicker: openPostSwipeFarRightPicker,
+    rightIcon: rightIconPostSwipeFarRight,
+  } = useSettingsPicker({
+    items: postSwipeOptionsItems,
+    value: postSwipeOptions.farRight,
+    onChange: (newValue) => setPostSwipeOption("farRight", newValue),
+  });
+
+  const {
+    openPicker: openPostSwipeShortRightPicker,
+    rightIcon: rightIconPostSwipeShortRight,
+  } = useSettingsPicker({
+    items: postSwipeOptionsItems,
+    value: postSwipeOptions.right,
+    onChange: (newValue) => setPostSwipeOption("right", newValue),
+  });
+
+  const {
+    openPicker: openPostSwipeFarLeftPicker,
+    rightIcon: rightIconPostSwipeFarLeft,
+  } = useSettingsPicker({
+    items: postSwipeOptionsItems,
+    value: postSwipeOptions.farLeft,
+    onChange: (newValue) => setPostSwipeOption("farLeft", newValue),
+  });
+
+  const {
+    openPicker: openPostSwipeShortLeftPicker,
+    rightIcon: rightIconPostSwipeShortLeft,
+  } = useSettingsPicker({
+    items: postSwipeOptionsItems,
+    value: postSwipeOptions.left,
+    onChange: (newValue) => setPostSwipeOption("left", newValue),
+  });
+
+  const {
+    openPicker: openCommentSwipeFarRightPicker,
+    rightIcon: rightIconCommentSwipeFarRight,
+  } = useSettingsPicker({
+    items: commentSwipeOptionsItems,
+    value: commentSwipeOptions.farRight,
+    onChange: (newValue) => setCommentSwipeOption("farRight", newValue),
+  });
+
+  const {
+    openPicker: openCommentSwipeShortRightPicker,
+    rightIcon: rightIconCommentSwipeShortRight,
+  } = useSettingsPicker({
+    items: commentSwipeOptionsItems,
+    value: commentSwipeOptions.right,
+    onChange: (newValue) => setCommentSwipeOption("right", newValue),
+  });
+
+  const {
+    openPicker: openCommentSwipeFarLeftPicker,
+    rightIcon: rightIconCommentSwipeFarLeft,
+  } = useSettingsPicker({
+    items: commentSwipeOptionsItems,
+    value: commentSwipeOptions.farLeft,
+    onChange: (newValue) => setCommentSwipeOption("farLeft", newValue),
+  });
+
+  const {
+    openPicker: openCommentSwipeShortLeftPicker,
+    rightIcon: rightIconCommentSwipeShortLeft,
+  } = useSettingsPicker({
+    items: commentSwipeOptionsItems,
+    value: commentSwipeOptions.left,
+    onChange: (newValue) => setCommentSwipeOption("left", newValue),
+  });
 
   return (
     <>
@@ -79,20 +141,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={postSwipeFarRightRef}
-                onValueChange={(value: PostSwipeOption) => {
-                  if (value) {
-                    setPostSwipeOption("farRight", value);
-                  }
-                }}
-                items={[...POST_SWIPE_OPTIONS]}
-                value={postSwipeOptions.farRight}
-              />
-            ),
+            rightIcon: rightIconPostSwipeFarRight,
             text: "Long Right Swipe",
-            onPress: () => postSwipeFarRightRef.current?.togglePicker(true),
+            onPress: () => openPostSwipeFarRightPicker(),
           },
           {
             key: "swipeShortRight",
@@ -103,20 +154,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={postSwipeShortRightRef}
-                onValueChange={(value: PostSwipeOption) => {
-                  if (value) {
-                    setPostSwipeOption("right", value);
-                  }
-                }}
-                items={[...POST_SWIPE_OPTIONS]}
-                value={postSwipeOptions.right}
-              />
-            ),
+            rightIcon: rightIconPostSwipeShortRight,
             text: "Short Right Swipe",
-            onPress: () => postSwipeShortRightRef.current?.togglePicker(true),
+            onPress: () => openPostSwipeShortRightPicker(),
           },
           {
             key: "swipeFarLeft",
@@ -127,20 +167,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={postSwipeFarLeftRef}
-                onValueChange={(value: PostSwipeOption) => {
-                  if (value) {
-                    setPostSwipeOption("farLeft", value);
-                  }
-                }}
-                items={[...POST_SWIPE_OPTIONS]}
-                value={postSwipeOptions.farLeft}
-              />
-            ),
+            rightIcon: rightIconPostSwipeFarLeft,
             text: "Long Left Swipe",
-            onPress: () => postSwipeFarLeftRef.current?.togglePicker(true),
+            onPress: () => openPostSwipeFarLeftPicker(),
           },
           {
             key: "swipeShortLeft",
@@ -151,20 +180,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={postSwipeShortLeftRef}
-                onValueChange={(value: PostSwipeOption) => {
-                  if (value) {
-                    setPostSwipeOption("left", value);
-                  }
-                }}
-                items={[...POST_SWIPE_OPTIONS]}
-                value={postSwipeOptions.left}
-              />
-            ),
+            rightIcon: rightIconPostSwipeShortLeft,
             text: "Short Left Swipe",
-            onPress: () => postSwipeShortLeftRef.current?.togglePicker(true),
+            onPress: () => openPostSwipeShortLeftPicker(),
           },
         ]}
       />
@@ -180,20 +198,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={commentSwipeFarRightRef}
-                onValueChange={(value: CommentSwipeOption) => {
-                  if (value) {
-                    setCommentSwipeOption("farRight", value);
-                  }
-                }}
-                items={[...COMMENT_SWIPE_OPTIONS]}
-                value={commentSwipeOptions.farRight}
-              />
-            ),
+            rightIcon: rightIconCommentSwipeFarRight,
             text: "Long Right Swipe",
-            onPress: () => commentSwipeFarRightRef.current?.togglePicker(true),
+            onPress: () => openCommentSwipeFarRightPicker(),
           },
           {
             key: "swipeShortRight",
@@ -204,21 +211,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={commentSwipeShortRightRef}
-                onValueChange={(value: CommentSwipeOption) => {
-                  if (value) {
-                    setCommentSwipeOption("right", value);
-                  }
-                }}
-                items={[...COMMENT_SWIPE_OPTIONS]}
-                value={commentSwipeOptions.right}
-              />
-            ),
+            rightIcon: rightIconCommentSwipeShortRight,
             text: "Short Right Swipe",
-            onPress: () =>
-              commentSwipeShortRightRef.current?.togglePicker(true),
+            onPress: () => openCommentSwipeShortRightPicker(),
           },
           {
             key: "swipeFarLeft",
@@ -229,20 +224,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={commentSwipeFarLeftRef}
-                onValueChange={(value: CommentSwipeOption) => {
-                  if (value) {
-                    setCommentSwipeOption("farLeft", value);
-                  }
-                }}
-                items={[...COMMENT_SWIPE_OPTIONS]}
-                value={commentSwipeOptions.farLeft}
-              />
-            ),
+            rightIcon: rightIconCommentSwipeFarLeft,
             text: "Long Left Swipe",
-            onPress: () => commentSwipeFarLeftRef.current?.togglePicker(true),
+            onPress: () => openCommentSwipeFarLeftPicker(),
           },
           {
             key: "swipeShortLeft",
@@ -253,20 +237,9 @@ export default function Gestures() {
                 color={theme.text}
               />
             ),
-            rightIcon: (
-              <Picker
-                ref={commentSwipeShortLeftRef}
-                onValueChange={(value: CommentSwipeOption) => {
-                  if (value) {
-                    setCommentSwipeOption("left", value);
-                  }
-                }}
-                items={[...COMMENT_SWIPE_OPTIONS]}
-                value={commentSwipeOptions.left}
-              />
-            ),
+            rightIcon: rightIconCommentSwipeShortLeft,
             text: "Short Left Swipe",
-            onPress: () => commentSwipeShortLeftRef.current?.togglePicker(true),
+            onPress: () => openCommentSwipeShortLeftPicker(),
           },
         ]}
       />

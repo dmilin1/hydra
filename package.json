@@ -1,6 +1,6 @@
 {
   "name": "hydra",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "main": "./app/index.tsx",
   "scripts": {
     "start": "expo start",
@@ -19,7 +19,6 @@
     "@expo/vector-icons": "^15.0.3",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native-cookies/cookies": "^6.2.1",
-    "@react-native-picker/picker": "2.11.4",
     "@react-navigation/bottom-tabs": "^7.8.5",
     "@react-navigation/native": "^7.1.20",
     "@react-navigation/native-stack": "^7.6.3",
@@ -59,7 +58,6 @@
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-mmkv": "^3.3.0",
-    "react-native-picker-select": "^9.3.1",
     "react-native-purchases": "^8.9.3",
     "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "~4.18.0",

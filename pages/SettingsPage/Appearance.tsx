@@ -6,18 +6,17 @@ import {
   MaterialIcons,
   Feather,
 } from "@expo/vector-icons";
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { Alert, Switch, View } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
 
 import List from "../../components/UI/List";
-import Picker from "../../components/UI/Picker";
 import { CommentSettingsContext } from "../../contexts/SettingsContexts/CommentSettingsContext";
 import { PostSettingsContext } from "../../contexts/SettingsContexts/PostSettingsContext";
 import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import { useURLNavigation } from "../../utils/navigation";
+import { useSettingsPicker } from "../../utils/useSettingsPicker";
 
 export default function Appearance() {
   const { theme } = useContext(ThemeContext);
@@ -70,9 +69,41 @@ export default function Appearance() {
     toggleHideTabsOnScroll,
   } = useContext(TabSettingsContext);
 
-  const postTitleLengthRef = useRef<RNPickerSelect>(null);
-  const postTextLengthRef = useRef<RNPickerSelect>(null);
-  const linkDescriptionLengthRef = useRef<RNPickerSelect>(null);
+  const {
+    openPicker: openPostTitleLengthPicker,
+    rightIcon: rightIconPostTitleLength,
+  } = useSettingsPicker({
+    items: [...Array(10).keys()].map((i) => ({
+      label: (i + 1).toString(),
+      value: i + 1,
+    })),
+    value: postTitleLength,
+    onChange: changePostTitleLength,
+  });
+
+  const {
+    openPicker: openPostTextLengthPicker,
+    rightIcon: rightIconPostTextLength,
+  } = useSettingsPicker({
+    items: [...Array(10 + 1).keys()].map((i) => ({
+      label: i.toString(),
+      value: i,
+    })),
+    value: postTextLength,
+    onChange: changePostTextLength,
+  });
+
+  const {
+    openPicker: openLinkDescriptionLengthPicker,
+    rightIcon: rightIconLinkDescriptionLength,
+  } = useSettingsPicker({
+    items: [...Array(30 + 1).keys()].map((i) => ({
+      label: i.toString(),
+      value: i,
+    })),
+    value: linkDescriptionLength,
+    onChange: changeLinkDescriptionLength,
+  });
 
   const showProAlert = (title: string, message: string) => {
     Alert.alert(title, message, [
@@ -154,65 +185,23 @@ export default function Appearance() {
           {
             key: "postTitleLength",
             icon: <MaterialIcons name="title" size={24} color={theme.text} />,
-            rightIcon: (
-              <Picker
-                ref={postTitleLengthRef}
-                onValueChange={(value: string | number) => {
-                  if (value) {
-                    changePostTitleLength(Number(value));
-                  }
-                }}
-                items={[...Array(10).keys()].map((i) => ({
-                  label: (i + 1).toString(),
-                  value: i + 1,
-                }))}
-                value={postTitleLength}
-              />
-            ),
+            rightIcon: rightIconPostTitleLength,
             text: "Post title max lines",
-            onPress: () => postTitleLengthRef.current?.togglePicker(true),
+            onPress: () => openPostTitleLengthPicker(),
           },
           {
             key: "postTextlength",
             icon: <Entypo name="text" size={24} color={theme.text} />,
-            rightIcon: (
-              <Picker
-                ref={postTextLengthRef}
-                onValueChange={(value: string | number) => {
-                  if (value !== undefined && value !== null) {
-                    changePostTextLength(Number(value));
-                  }
-                }}
-                items={[...Array(10 + 1).keys()].map((i) => ({
-                  label: i.toString(),
-                  value: i,
-                }))}
-                value={postTextLength}
-              />
-            ),
+            rightIcon: rightIconPostTextLength,
             text: "Post text max lines",
-            onPress: () => postTextLengthRef.current?.togglePicker(true),
+            onPress: () => openPostTextLengthPicker(),
           },
           {
             key: "linkDescriptionLength",
             icon: <MaterialIcons name="link" size={24} color={theme.text} />,
-            rightIcon: (
-              <Picker
-                ref={linkDescriptionLengthRef}
-                onValueChange={(value: string | number) => {
-                  if (value !== undefined && value !== null) {
-                    changeLinkDescriptionLength(Number(value));
-                  }
-                }}
-                items={[...Array(30 + 1).keys()].map((i) => ({
-                  label: i.toString(),
-                  value: i,
-                }))}
-                value={linkDescriptionLength}
-              />
-            ),
+            rightIcon: rightIconLinkDescriptionLength,
             text: "Link description max lines",
-            onPress: () => linkDescriptionLengthRef.current?.togglePicker(true),
+            onPress: () => openLinkDescriptionLengthPicker(),
           },
           {
             key: "showPostFlair",

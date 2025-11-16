@@ -1,11 +1,9 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Text } from "react-native";
 import { useMMKVString } from "react-native-mmkv";
-import RNPickerSelect from "react-native-picker-select";
 
 import List from "../../../components/UI/List";
-import Picker from "../../../components/UI/Picker";
 import SectionTitle from "../../../components/UI/SectionTitle";
 import TextInput from "../../../components/UI/TextInput";
 import {
@@ -16,13 +14,12 @@ import {
 } from "../../../contexts/NavigationContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../../../utils/RedditURL";
+import { useSettingsPicker } from "../../../utils/useSettingsPicker";
 
 const INITIAL_TAB_OPTIONS = Object.keys(TabIndices);
 
 export default function General() {
   const { theme } = useContext(ThemeContext);
-
-  const initialTabRef = useRef<RNPickerSelect>(null);
 
   const [storedInitialTab, setInitialTab] = useMMKVString(
     INITIAL_TAB_STORAGE_KEY,
@@ -39,6 +36,16 @@ export default function General() {
     startupURLIsValid = false;
   }
 
+  const { openPicker: openInitialTabPicker, rightIcon: rightIconInitialTab } =
+    useSettingsPicker({
+      items: INITIAL_TAB_OPTIONS.map((option) => ({
+        label: option,
+        value: option,
+      })),
+      value: initialTab,
+      onChange: setInitialTab,
+    });
+
   return (
     <>
       <List
@@ -54,22 +61,8 @@ export default function General() {
               />
             ),
             text: "Start Hydra on this tab",
-            rightIcon: (
-              <Picker
-                ref={initialTabRef}
-                onValueChange={(value: string) => {
-                  if (value) {
-                    setInitialTab(value);
-                  }
-                }}
-                items={INITIAL_TAB_OPTIONS.map((option) => ({
-                  label: option,
-                  value: option,
-                }))}
-                value={initialTab}
-              />
-            ),
-            onPress: () => initialTabRef.current?.togglePicker(true),
+            rightIcon: rightIconInitialTab,
+            onPress: () => openInitialTabPicker(),
           },
         ]}
       />
