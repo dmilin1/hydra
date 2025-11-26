@@ -17,121 +17,89 @@ import KeyStore from "../../../utils/KeyStore";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "3.0.0-1",
+  updateKey: "v3.1.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
-  proFeatures: [
-    {
-      title: "Better Summaries",
-      description:
-        "Post and comment summaries have been upgraded to use a more powerful model making them more accurate and easier to read.",
-    },
-  ] as { title: string; description: string }[],
+  proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Custom Icons",
+      title: "Edit Custom Themes",
       description:
-        "Change Hydra's app icon! Our first icon called \"Cerberus\" by /u/batjake is available under Settings => App Icon. Reach out to me /u/dmilin, if you'd like to contribute a custom icon!",
+        "Long press on a custom theme, then tap edit to continue where you left off.",
     },
     {
-      title: "Move Next Comment Button",
+      title: "Navbar & Tabs Changes",
       description:
-        "Drag the next comment button to move it to a different spot. There are now 10 different spots you can lock it to.",
+        "Navbar updated to match iOS 26 design changes. Top navbar and bottom tabs have been realigned to make better use of vertical space. The tab bar hide animation was tweaked to look smoother.",
     },
     {
-      title: "Quick Subreddit Search",
+      title: "Improved Accessibility Support",
       description:
-        "Quickly search for subreddits by long pressing on the search tab.",
+        "Hydra should be a little easier to use for VoiceOver users. There's still a long way to go on this, but it's important to me and I'm making progress.",
     },
     {
-      title: "Search + Sort",
+      title: "Edited Indicator",
       description:
-        "Apply a sort after searching a subreddit. Sorting no longer requires a full page reload.",
+        "Posts and comments now indicate when they have been edited with a pencil icon. Tap the icon to see the specific time of the edit.",
     },
     {
-      title: "Customize Swipe Actions",
+      title: "Swipe to Collapse Comments",
       description:
-        "Customize the swipe actions when swiping on posts and comments. Change these in Settings => General => Gestures.",
+        "New swipe gesture can be set in Settings => General => Gestures.",
     },
     {
-      title: "Subreddit Filtering",
+      title: "Open In External Browser",
       description:
-        "Filter subreddits from your /r/all and /r/popular feeds by long pressing on posts while on those feeds. To stop filtering, go to Settings => General => Filters => Filtered Subreddits.",
+        "Hydra can open links in an external browser of your choice. Configure this under Settings => General => External Links.",
     },
     {
-      title: "Hide Post/Link Text",
+      title: "Swipe To Close Browser",
       description:
-        'The "Post text max lines" and "Link text max lines" settings can now be set to 0 to hide the text completely. You can set this under Settings => Appearance => Post Appearance Settings.',
-    },
-    {
-      title: "Optimized Subreddit List",
-      description:
-        "Some of you are subscribed to an absurd number of subreddits and I think it's been causing performance problems. Hydra no longer prerenders them all in the background resulting in much better overall app performance.",
-    },
-    {
-      title: "Image Cache Improvements",
-      description:
-        "The image cache now auto clears on startup if bigger than 512MB. Long time users should notice better performance and less storage usage.",
+        "Hydra's internal browser can now be swiped away like other screens.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description:
-        "Fixed text rendering bug causing the ends of comments to be cut off. Finally... This one took me 2 years to solve! If you see this come up again, please send me a screenshot.",
+      description: "Swapped out broken links to old /r/HydraApp subreddit.",
+    },
+    {
+      description: "Video player was causing crashes in certain conditions.",
     },
     {
       description:
-        "Fixed duplicate incoming hydra://openURL links with the same URL not triggering.",
+        "Scroll to next comment button was not movable when swipe anywhere to navigate is turned on.",
     },
     {
       description:
-        "Fixed case sensitivity of incoming hydra://openURL links. Now it's case insensitive to reduce errors.",
+        'Crosspost text was not truncating. Crossposts now follow the "Post text max lines" setting under Settings => Appearance.',
+    },
+    {
+      description: "Regression of text cutoff rendering bug.",
+    },
+    {
+      description: "Refresh indicator was invisible on certain themes.",
     },
     {
       description:
-        "Hydra will now pop a message when your Reddit session expires. You can log back in by pressing the + button in the top right corner of the account tab.",
+        "Fixed settings picker being hard to read with certain themes.",
     },
     {
       description:
-        "Cleaned up some unnecessary video player code. Hopefully resulting in a smoother experience.",
+        "Image of certain dimensions would have their backgrounds flash when on light color themes.",
+    },
+    {
+      description: "Custom sorts were sometimes not being remembered.",
+    },
+    {
+      description: "Favorites would not showing up in subreddit list.",
     },
     {
       description:
-        "Fixed a post submission error on subreddits that don't support flairs.",
+        "Changing the theme would not working in certain conditions.",
     },
     {
       description:
-        "Fixed comment flairs being difficult to read when using certain themes.",
-    },
-    {
-      description:
-        "Fixed the reload indicator missing on the post details page.",
-    },
-    {
-      description:
-        "Fixed infinite scroll sometimes not loading beyond the first page after refreshing.",
-    },
-    {
-      description: "Better post flair alignment in compact mode.",
-    },
-    {
-      description: "Tweaked divider color in light mode for better contrast.",
-    },
-    {
-      description:
-        "Fixed image flicker if your scroll gesture starts over an image.",
-    },
-    {
-      description:
-        'Fixed a bug causing "Show Seen Posts" to not work on a specific subreddit when "Hide Seen Posts" is enabled globally.',
-    },
-    {
-      description:
-        "Small tweaks to inbox fetching that should reduce rate limit errors.",
-    },
-    {
-      description:
-        "Fixed being unable to try pro themes when the system is in dark mode.",
+        "Sidebar was failing to render due to Reddit removing user counts.",
     },
   ] as { description: string }[],
 };
@@ -152,6 +120,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             styles.updateInfoSubContainer,
             {
               backgroundColor: theme.tint,
+              borderColor: theme.divider,
             },
           ]}
         >
@@ -159,13 +128,29 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             style={[
               styles.exitButton,
               {
-                backgroundColor: theme.verySubtleText,
+                backgroundColor: theme.divider,
               },
             ]}
             onPress={() => exitUpdateInfo()}
           >
             <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
           </TouchableOpacity>
+          <View style={styles.versionBadge}>
+            <Text
+              style={[
+                styles.versionBadgeText,
+                { color: theme.iconPrimary, opacity: 1 },
+              ]}
+            >
+              {updateInfo.updateKey}
+            </Text>
+            <View
+              style={[
+                styles.versionBadgeBackground,
+                { backgroundColor: theme.iconPrimary },
+              ]}
+            />
+          </View>
           <Text
             style={[
               styles.title,
@@ -253,7 +238,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   style={[
                     styles.featureContainer,
                     {
-                      backgroundColor: theme.divider,
+                      backgroundColor: theme.background,
+                      borderColor: theme.divider,
                     },
                   ]}
                 >
@@ -291,17 +277,19 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               🐛 Bugfixes
             </Text>
             <View style={styles.listContainer}>
-              {updateInfo.bugfixes.map((bugfix) => (
-                <View
-                  key={bugfix.description}
-                  style={[
-                    styles.featureContainer,
-                    {
-                      backgroundColor: theme.divider,
-                    },
-                  ]}
-                >
+              <View
+                style={[
+                  styles.featureContainer,
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.divider,
+                    gap: 12,
+                  },
+                ]}
+              >
+                {updateInfo.bugfixes.map((bugfix) => (
                   <Text
+                    key={bugfix.description}
                     style={[
                       styles.bugfixDescription,
                       {
@@ -309,10 +297,10 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       },
                     ]}
                   >
-                    {bugfix.description}
+                    - {bugfix.description}
                   </Text>
-                </View>
-              ))}
+                ))}
+              </View>
             </View>
             <View style={styles.helpContainer}>
               <View style={styles.helpIcon}>
@@ -380,11 +368,11 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
     width: Dimensions.get("window").width,
     backgroundColor: "black",
-    opacity: 0.7,
+    opacity: 0.75,
     zIndex: 1,
   },
   updateInfoSubContainer: {
-    borderRadius: 10,
+    borderRadius: 16,
     borderWidth: 1,
   },
   exitButton: {
@@ -398,29 +386,51 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 3,
   },
+  versionBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginVertical: 8,
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  versionBadgeText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  versionBadgeBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.3,
+    borderRadius: 100,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: 20,
-    marginBottom: 15,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 14,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   heading: {
     textAlign: "center",
-    fontSize: 22,
+    fontSize: 17,
     fontWeight: 500,
     marginTop: 25,
     marginBottom: 10,
+    marginLeft: -8,
   },
   featureContainer: {
     padding: 15,
     marginHorizontal: 20,
-    borderRadius: 10,
+    borderRadius: 16,
+    borderWidth: 1,
   },
   featureTitle: {
     fontSize: 18,
@@ -429,9 +439,11 @@ const styles = StyleSheet.create({
   featureDescription: {
     fontSize: 14,
     marginTop: 5,
+    lineHeight: 18,
   },
   bugfixDescription: {
     fontSize: 14,
+    lineHeight: 18,
   },
   helpContainer: {
     flexDirection: "row",
