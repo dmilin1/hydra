@@ -19,6 +19,7 @@ export type Comment = {
   isOP: boolean;
   isModerator: boolean;
   isStickied: boolean;
+  editedAt: number | undefined;
   upvotes: number;
   scoreHidden: boolean;
   saved: boolean;
@@ -79,6 +80,7 @@ export function formatComments(
       isOP: comment.data.is_submitter,
       isModerator: comment.data.distinguished === "moderator",
       isStickied: comment.data.stickied,
+      editedAt: comment.data.edited ? comment.data.edited * 1_000 : undefined,
       upvotes: comment.data.ups,
       scoreHidden: comment.data.score_hidden,
       saved: comment.data.saved,
@@ -136,6 +138,7 @@ export async function getPostsDetail(
     depth: -1,
     path: [],
     isOP: postData.data.is_submitter,
+    editedAt: postData.data.edited ? postData.data.edited * 1_000 : undefined,
     postTitle: postData.data.link_title,
     postLink: postData.data.link_permalink,
     comments: formattedComments,

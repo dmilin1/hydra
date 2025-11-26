@@ -13,7 +13,7 @@ import React, {
   forwardRef,
   ForwardedRef,
   useRef,
-  ElementRef,
+  ComponentRef,
 } from "react";
 import {
   StyleSheet,
@@ -49,6 +49,7 @@ import NewComment from "../../../Modals/NewComment";
 import SelectText from "../../../Modals/SelectText";
 import Slideable from "../../../UI/Slideable";
 import { GesturesContext } from "../../../../contexts/SettingsContexts/GesturesContext";
+import Time from "../../../../utils/Time";
 
 interface CommentProps {
   loadMoreComments?: LoadMoreCommentsFunc;
@@ -62,7 +63,7 @@ interface CommentProps {
   // This comment prop ref thing is horrific. Don't do it. We're using it so
   // the post details page can reach into the comments inside of it to get to
   // the element it needs to scroll to.
-  commentPropRef?: { current: ElementRef<typeof TouchableHighlight> | null };
+  commentPropRef?: { current: ComponentRef<typeof TouchableHighlight> | null };
 }
 
 export function CommentComponent({
@@ -91,7 +92,7 @@ export function CommentComponent({
     !displayInList &&
     !doesCommentPassTextFilter(comment);
 
-  const commentRef = useRef<ElementRef<typeof TouchableHighlight>>(null);
+  const commentRef = useRef<ComponentRef<typeof TouchableHighlight>>(null);
 
   if (commentPropRef) {
     commentPropRef.current = commentRef.current;
@@ -415,6 +416,27 @@ export function CommentComponent({
                           : comment.upvotes}
                       </Text>
                     </TouchableOpacity>
+                    {comment.editedAt && (
+                      <TouchableOpacity
+                        style={styles.editedAtContainer}
+                        onPress={() => {
+                          if (!comment.editedAt) return;
+                          const timeSinceEdited = new Time(
+                            comment.editedAt,
+                          ).prettyTimeSince();
+                          Alert.alert(
+                            `Edited ${timeSinceEdited} ago`,
+                            `Comment was edited at ${new Date(comment.editedAt).toLocaleString()}`,
+                          );
+                        }}
+                      >
+                        <FontAwesome
+                          name="pencil"
+                          size={14}
+                          color={theme.subtleText}
+                        />
+                      </TouchableOpacity>
+                    )}
                     {commentFlairs && comment.flair && (
                       <View
                         style={[
@@ -705,6 +727,11 @@ const styles = StyleSheet.create({
   },
   flairText: {
     flexShrink: 1,
+  },
+  editedAtContainer: {
+    padding: 8,
+    margin: -8,
+    marginLeft: -3,
   },
   topBarEnd: {
     flexGrow: 1,

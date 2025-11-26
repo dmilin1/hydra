@@ -13,6 +13,7 @@ import {
   StyleSheet,
   Share,
   TouchableHighlight,
+  Alert,
 } from "react-native";
 
 import PostMedia from "./PostParts/PostMedia";
@@ -29,6 +30,7 @@ import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import RedditURL from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import NewComment from "../../Modals/NewComment";
+import Time from "../../../utils/Time";
 
 type Summary = {
   post: string | null;
@@ -235,6 +237,27 @@ export default function PostDetailsComponent({
                 {"  •  "}
                 {postDetail.timeSince}
               </Text>
+              {postDetail.editedAt && (
+                <TouchableOpacity
+                  style={styles.editedAtContainer}
+                  onPress={() => {
+                    if (!postDetail.editedAt) return;
+                    const timeSinceEdited = new Time(
+                      postDetail.editedAt,
+                    ).prettyTimeSince();
+                    Alert.alert(
+                      `Edited ${timeSinceEdited} ago`,
+                      `Post was edited at ${new Date(postDetail.editedAt).toLocaleString()}`,
+                    );
+                  }}
+                >
+                  <FontAwesome
+                    name="pencil"
+                    size={14}
+                    color={theme.subtleText}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
@@ -430,6 +453,11 @@ const styles = StyleSheet.create({
   },
   smallText: {
     fontSize: 14,
+  },
+  editedAtContainer: {
+    padding: 8,
+    margin: -8,
+    marginLeft: -3,
   },
   boldedSmallText: {
     fontSize: 14,
