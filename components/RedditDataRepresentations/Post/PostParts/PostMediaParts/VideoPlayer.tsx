@@ -190,6 +190,11 @@ export default function VideoPlayer({
                     />
                   </View>
                 )}
+                {/* 
+                  When playing videos, if you swipe a bit, but not enough to exit fullscreen,
+                  everything will become unresponsive. It's been fixed in this PR, but not released yet:
+                  https://github.com/software-mansion/react-native-screens/pull/3311
+                 */}
                 <VideoView
                   ref={(videoRef) => {
                     video.current = videoRef;

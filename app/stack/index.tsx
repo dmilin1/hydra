@@ -142,6 +142,8 @@ export default function Stack() {
   ));
 
   return (
+    // Wrapped view is a fix for this bug:
+    // https://github.com/expo/expo/issues/39969
     <View style={{ flex: 1, backgroundColor: theme.background }}>
       <StackNavigator.Navigator
         screenOptions={({ route }) => ({
