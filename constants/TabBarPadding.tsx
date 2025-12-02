@@ -1,0 +1,1 @@
+export const TAB_BAR_REMOVED_PADDING_BOTTOM = 15;

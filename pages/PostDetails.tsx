@@ -36,7 +36,8 @@ import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 import { TabScrollContext } from "../contexts/TabScrollContext";
 import { modifyStat, Stat } from "../db/functions/Stats";
-import { useScrollToNextButton } from "../utils/useScrollToNextButton";
+import ScrollToNextButtonProvider from "../contexts/ScrollToNextButtonProvider";
+import { ScrollToNextButtonContext } from "../contexts/ScrollToNextButtonContext";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -55,6 +56,9 @@ function PostDetails({ route }: PostDetailsProps) {
   const { scrollDisabled } = useContext(ScrollerContext);
   const { currentUser } = useContext(AccountContext);
   const { handleScrollForTabBar } = useContext(TabScrollContext);
+  const { setScrollToNext, setScrollToPrevious } = useContext(
+    ScrollToNextButtonContext,
+  );
 
   const topOfScroll = useRef<View>(null);
   const scrollView = useRef<ScrollView>(null);
@@ -232,10 +236,10 @@ function PostDetails({ route }: PostDetailsProps) {
     loadPostDetails();
   }, [url]);
 
-  useScrollToNextButton({
-    scrollToNext: () => scrollToNextComment(),
-    scrollToPrevious: () => scrollToNextComment(true),
-  });
+  useEffect(() => {
+    setScrollToNext(() => scrollToNextComment());
+    setScrollToPrevious(() => scrollToNextComment(true));
+  }, [commentsView.current]);
 
   /**
    * The tintColor prop on the RefreshControl component is broken in React Native 0.81.5.
@@ -323,9 +327,11 @@ function PostDetails({ route }: PostDetailsProps) {
 export default (props: PostDetailsProps) => {
   modifyStat(Stat.POSTS_VIEWED, 1);
   return (
-    <ScrollerProvider>
-      <PostDetails {...props} />
-    </ScrollerProvider>
+    <ScrollToNextButtonProvider>
+      <ScrollerProvider>
+        <PostDetails {...props} />
+      </ScrollerProvider>
+    </ScrollToNextButtonProvider>
   );
 };
 

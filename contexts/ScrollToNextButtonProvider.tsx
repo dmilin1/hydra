@@ -1,6 +1,5 @@
 import {
   Animated,
-  Dimensions,
   GestureResponderEvent,
   StyleSheet,
   View,
@@ -12,14 +11,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemeContext } from "./SettingsContexts/ThemeContext";
 import { AntDesign } from "@expo/vector-icons";
 import { useMMKVString } from "react-native-mmkv";
 import { ScrollToNextButtonContext } from "./ScrollToNextButtonContext";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../constants/TabBarPadding";
 
-const WINDOW_WIDTH = Dimensions.get("window").width;
-const WINDOW_HEIGHT = Dimensions.get("window").height;
 const BUTTON_SIZE = 40;
 const EDGE_PADDING = 20;
 
@@ -27,73 +25,55 @@ export default function ScrollToNextButtonProvider({
   children,
 }: PropsWithChildren) {
   const { theme } = useContext(ThemeContext);
-  const insets = useSafeAreaInsets();
 
-  const [showButton, setShowButton] = useState(false);
+  const tabBarHeight = useBottomTabBarHeight();
+
   const scrollToNext = useRef<(() => void) | null>(null);
   const scrollToPrevious = useRef<(() => void) | null>(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const [tabBarHeight, setTabBarHeight] = useState(0);
-
-  const CONTAINER_HEIGHT =
-    WINDOW_HEIGHT - insets.top - headerHeight - tabBarHeight;
-  const CONTAINER_WIDTH = WINDOW_WIDTH;
+  const [containerHeight, setContainerHeight] = useState(100);
+  const [containerWidth, setContainerWidth] = useState(100);
+  const [containerVerticalOffset, setContainerVerticalOffset] = useState(0);
 
   const LOCKED_POSITIONS = {
     "bottom-right": {
-      x: CONTAINER_WIDTH - BUTTON_SIZE - EDGE_PADDING,
-      y:
-        CONTAINER_HEIGHT -
-        BUTTON_SIZE -
-        EDGE_PADDING +
-        insets.top +
-        headerHeight,
+      x: containerWidth - BUTTON_SIZE - EDGE_PADDING,
+      y: containerHeight - BUTTON_SIZE - EDGE_PADDING,
     },
     "top-right": {
-      x: CONTAINER_WIDTH - BUTTON_SIZE - EDGE_PADDING,
-      y: EDGE_PADDING + insets.top + headerHeight,
+      x: containerWidth - BUTTON_SIZE - EDGE_PADDING,
+      y: EDGE_PADDING,
     },
     "bottom-left": {
       x: EDGE_PADDING,
-      y:
-        CONTAINER_HEIGHT -
-        BUTTON_SIZE -
-        EDGE_PADDING +
-        insets.top +
-        headerHeight,
+      y: containerHeight - BUTTON_SIZE - EDGE_PADDING,
     },
     "top-left": {
       x: EDGE_PADDING,
-      y: EDGE_PADDING + insets.top + headerHeight,
+      y: EDGE_PADDING,
     },
     "bottom-center": {
-      x: CONTAINER_WIDTH / 2 - BUTTON_SIZE / 2,
-      y:
-        CONTAINER_HEIGHT -
-        BUTTON_SIZE -
-        EDGE_PADDING +
-        insets.top +
-        headerHeight,
+      x: containerWidth / 2 - BUTTON_SIZE / 2,
+      y: containerHeight - BUTTON_SIZE - EDGE_PADDING,
     },
     "top-center": {
-      x: CONTAINER_WIDTH / 2 - BUTTON_SIZE / 2,
-      y: EDGE_PADDING + insets.top + headerHeight,
+      x: containerWidth / 2 - BUTTON_SIZE / 2,
+      y: EDGE_PADDING,
     },
     "left-center": {
       x: EDGE_PADDING,
-      y: CONTAINER_HEIGHT / 2 - BUTTON_SIZE / 2 + insets.top + headerHeight,
+      y: containerHeight / 2 - BUTTON_SIZE / 2,
     },
     "right-center": {
-      x: CONTAINER_WIDTH - BUTTON_SIZE - EDGE_PADDING,
-      y: CONTAINER_HEIGHT / 2 - BUTTON_SIZE / 2 + insets.top + headerHeight,
+      x: containerWidth - BUTTON_SIZE - EDGE_PADDING,
+      y: containerHeight / 2 - BUTTON_SIZE / 2,
     },
     "left-three-quarters-bottom": {
       x: EDGE_PADDING,
-      y: (CONTAINER_HEIGHT * 3) / 4 - BUTTON_SIZE + insets.top + headerHeight,
+      y: (containerHeight * 3) / 4 - BUTTON_SIZE,
     },
     "right-three-quarters-bottom": {
-      x: CONTAINER_WIDTH - BUTTON_SIZE - EDGE_PADDING,
-      y: (CONTAINER_HEIGHT * 3) / 4 - BUTTON_SIZE + insets.top + headerHeight,
+      x: containerWidth - BUTTON_SIZE - EDGE_PADDING,
+      y: (containerHeight * 3) / 4 - BUTTON_SIZE,
     },
   };
 
@@ -102,8 +82,6 @@ export default function ScrollToNextButtonProvider({
   );
   const buttonPosition = (storedButtonPosition ??
     "bottom-right") as keyof typeof LOCKED_POSITIONS;
-
-  const [showOverlay, setShowOverlay] = useState(false);
 
   const position = useRef(new Animated.ValueXY()).current;
   const touchStartedTime = useRef<number | null>(null);
@@ -129,7 +107,7 @@ export default function ScrollToNextButtonProvider({
   const getButtonOffsetPosition = (e: GestureResponderEvent) => {
     return {
       x: e.nativeEvent.pageX - BUTTON_SIZE / 2,
-      y: e.nativeEvent.pageY - BUTTON_SIZE / 2 - 30,
+      y: e.nativeEvent.pageY - BUTTON_SIZE / 2 - 30 - containerVerticalOffset,
     };
   };
 
@@ -153,7 +131,6 @@ export default function ScrollToNextButtonProvider({
   const startDrag = () => {
     clearTimeouts();
     inMoveMode.current = true;
-    setShowOverlay(true);
     overlayOpacity.setValue(0);
     Animated.timing(overlayOpacity, {
       toValue: 1,
@@ -164,117 +141,122 @@ export default function ScrollToNextButtonProvider({
 
   useEffect(() => {
     position.setValue(LOCKED_POSITIONS[buttonPosition]);
-  }, [headerHeight]);
+  }, [containerHeight, containerWidth]);
 
   return (
     <ScrollToNextButtonContext.Provider
       value={{
-        setShowButton,
         setScrollToNext: (fn) => {
           scrollToNext.current = fn;
         },
         setScrollToPrevious: (fn) => {
           scrollToPrevious.current = fn;
         },
-        setHeaderHeight,
-        setTabBarHeight,
       }}
     >
-      {showButton && (
-        <Animated.View
-          style={[
-            styles.skipToNextButton,
-            {
-              top: 0,
-              left: 0,
-              transform: [
-                { translateX: position.x },
-                { translateY: position.y },
-              ],
-              backgroundColor: theme.buttonBg,
-              opacity: buttonOpacity,
-              zIndex: 1000,
-            },
-          ]}
-          onTouchStart={() => {
-            touchStartedTime.current = Date.now();
-            buttonOpacity.setValue(0.7);
-            scrollToPreviousTimeout.current = setTimeout(() => {
-              scrollToPrevious.current?.();
-            }, 300);
-            startDragTimeout.current = setTimeout(() => {
+      <Animated.View
+        style={[
+          styles.skipToNextButton,
+          {
+            top: 0,
+            left: 0,
+            transform: [{ translateX: position.x }, { translateY: position.y }],
+            backgroundColor: theme.buttonBg,
+            opacity: buttonOpacity,
+            zIndex: 1000,
+          },
+        ]}
+        onTouchStart={() => {
+          touchStartedTime.current = Date.now();
+          buttonOpacity.setValue(0.7);
+          scrollToPreviousTimeout.current = setTimeout(() => {
+            scrollToPrevious.current?.();
+          }, 300);
+          startDragTimeout.current = setTimeout(() => {
+            startDrag();
+          }, 1000);
+        }}
+        onTouchMove={(event) => {
+          if (!inMoveMode.current) {
+            const distance = Math.sqrt(
+              event.nativeEvent.locationX ** 2 +
+                event.nativeEvent.locationY ** 2,
+            );
+            if (distance > 30) {
               startDrag();
-            }, 1000);
-          }}
-          onTouchMove={(event) => {
-            if (!inMoveMode.current) {
-              const distance = Math.sqrt(
-                event.nativeEvent.locationX ** 2 +
-                  event.nativeEvent.locationY ** 2,
-              );
-              if (distance > 30) {
-                startDrag();
-              }
             }
-            if (inMoveMode.current) {
-              const btnPosition = getButtonOffsetPosition(event);
-              const hoveredLockedPosition =
-                getHoveredLockedPosition(btnPosition);
-              if (hoveredLockedPosition) {
-                position.setValue(hoveredLockedPosition.position);
-                return;
-              }
-              position.setValue(btnPosition);
+          }
+          if (inMoveMode.current) {
+            const btnPosition = getButtonOffsetPosition(event);
+            const hoveredLockedPosition = getHoveredLockedPosition(btnPosition);
+            if (hoveredLockedPosition) {
+              position.setValue(hoveredLockedPosition.position);
+              return;
             }
-          }}
-          onTouchEnd={(e) => {
-            buttonOpacity.setValue(1);
-            if (inMoveMode.current) {
-              const hoveredLockedPosition = getHoveredLockedPosition(
-                getButtonOffsetPosition(e),
-              );
-              if (hoveredLockedPosition) {
-                setButtonPosition(hoveredLockedPosition.positionName);
-              } else {
-                Animated.spring(position, {
-                  toValue: LOCKED_POSITIONS[buttonPosition],
-                  useNativeDriver: true,
-                }).start();
-              }
-              inMoveMode.current = false;
-              setShowOverlay(false);
+            position.setValue(btnPosition);
+          }
+        }}
+        onTouchEnd={(e) => {
+          buttonOpacity.setValue(1);
+          if (inMoveMode.current) {
+            const hoveredLockedPosition = getHoveredLockedPosition(
+              getButtonOffsetPosition(e),
+            );
+            if (hoveredLockedPosition) {
+              setButtonPosition(hoveredLockedPosition.positionName);
+            } else {
+              Animated.spring(position, {
+                toValue: LOCKED_POSITIONS[buttonPosition],
+                useNativeDriver: true,
+              }).start();
             }
-            if (!touchStartedTime.current) return;
-            const delay = Date.now() - touchStartedTime.current;
-            if (touchStartedTime.current && delay < 300) {
-              clearTimeouts();
-              scrollToNext.current?.();
-            }
-            if (startDragTimeout.current && delay < 1000) {
-              clearTimeouts();
-            }
-          }}
-        >
-          <AntDesign name="down" size={18} color={theme.buttonText} />
-        </Animated.View>
-      )}
-      {showOverlay && (
-        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
-          {Object.entries(LOCKED_POSITIONS).map(([key, lockedPosition]) => (
-            <View
-              key={key}
-              style={[
-                styles.lockedPosition,
-                {
-                  left: lockedPosition.x,
-                  top: lockedPosition.y,
-                  borderColor: theme.buttonBg,
-                },
-              ]}
-            />
-          ))}
-        </Animated.View>
-      )}
+            inMoveMode.current = false;
+            overlayOpacity.setValue(0);
+          }
+          if (!touchStartedTime.current) return;
+          const delay = Date.now() - touchStartedTime.current;
+          if (touchStartedTime.current && delay < 300) {
+            clearTimeouts();
+            scrollToNext.current?.();
+          }
+          if (startDragTimeout.current && delay < 1000) {
+            clearTimeouts();
+          }
+        }}
+      >
+        <AntDesign name="down" size={18} color={theme.buttonText} />
+      </Animated.View>
+      <Animated.View
+        style={[
+          styles.overlay,
+          {
+            opacity: overlayOpacity,
+            bottom: tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+            pointerEvents: "none",
+          },
+        ]}
+        onLayout={(event) => {
+          event.target.measure((_x, _y, width, height, _pageX, pageY) => {
+            setContainerVerticalOffset(pageY);
+            setContainerHeight(height);
+            setContainerWidth(width);
+          });
+        }}
+      >
+        {Object.entries(LOCKED_POSITIONS).map(([key, lockedPosition]) => (
+          <View
+            key={key}
+            style={[
+              styles.lockedPosition,
+              {
+                left: lockedPosition.x,
+                top: lockedPosition.y,
+                borderColor: theme.buttonBg,
+              },
+            ]}
+          />
+        ))}
+      </Animated.View>
       {children}
     </ScrollToNextButtonContext.Provider>
   );
@@ -297,7 +279,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   lockedPosition: {

@@ -33,7 +33,6 @@ import KeyStore from "../utils/KeyStore";
 import { TabScrollProvider } from "../contexts/TabScrollContext";
 import { StartupModalProvider } from "../contexts/StartupModalContext";
 import { modifyStat, Stat } from "../db/functions/Stats";
-import ScrollToNextButtonProvider from "../contexts/ScrollToNextButtonProvider";
 import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
 
 LogBox.ignoreLogs([
@@ -104,24 +103,22 @@ function RootLayout() {
             <SettingsProvider>
               <TabScrollProvider>
                 <NavigationProvider>
-                  <ScrollToNextButtonProvider>
-                    <ActionSheetProvider>
-                      <ActionSheetBgProvider>
-                        <InboxProvider>
-                          <ModalProvider>
-                            <MediaViewerProvider>
-                              <SubredditProvider>
-                                <StartupModalProvider>
-                                  <SubscribeToHydra />
-                                  <Tabs />
-                                </StartupModalProvider>
-                              </SubredditProvider>
-                            </MediaViewerProvider>
-                          </ModalProvider>
-                        </InboxProvider>
-                      </ActionSheetBgProvider>
-                    </ActionSheetProvider>
-                  </ScrollToNextButtonProvider>
+                  <ActionSheetProvider>
+                    <ActionSheetBgProvider>
+                      <InboxProvider>
+                        <ModalProvider>
+                          <MediaViewerProvider>
+                            <SubredditProvider>
+                              <StartupModalProvider>
+                                <SubscribeToHydra />
+                                <Tabs />
+                              </StartupModalProvider>
+                            </SubredditProvider>
+                          </MediaViewerProvider>
+                        </ModalProvider>
+                      </InboxProvider>
+                    </ActionSheetBgProvider>
+                  </ActionSheetProvider>
                 </NavigationProvider>
               </TabScrollProvider>
             </SettingsProvider>

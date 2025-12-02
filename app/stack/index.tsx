@@ -26,6 +26,7 @@ import WikiScreen from "./WikiScreen";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SubredditSearchScreen from "./SubredditSearchScreen";
+import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
 
 export type StackParamsList = {
   Subreddits: object;
@@ -106,8 +107,6 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
 
 export type StackPageProps<Pages extends keyof StackParamsList> =
   NativeStackScreenProps<StackParamsList, Pages>;
-
-export const TAB_BAR_REMOVED_PADDING_BOTTOM = 15;
 
 export default function Stack() {
   const StackNavigator = createNativeStackNavigator<StackParamsList>();
