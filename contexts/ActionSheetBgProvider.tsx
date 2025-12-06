@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ActionSheetBgContext } from "./ActionSheetBgContext";
 import { Animated, StyleSheet } from "react-native";
 
@@ -14,13 +14,19 @@ export function ActionSheetBgProvider({ children }: React.PropsWithChildren) {
     }).start();
   }, [isActionSheetShowing]);
 
+  /**
+   * Since this provider only provides functions, we need to memoize the value
+   * or all consumers will re-render when the provider re-renders.
+   */
+  const value = useMemo(
+    () => ({
+      setIsActionSheetShowing,
+    }),
+    [],
+  );
+
   return (
-    <ActionSheetBgContext.Provider
-      value={{
-        isActionSheetShowing,
-        setIsActionSheetShowing,
-      }}
-    >
+    <ActionSheetBgContext.Provider value={value}>
       <Animated.View
         style={[
           styles.actionSheetBg,
