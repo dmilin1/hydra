@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 
 import ImageView from "../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView";
 import useImageMenu from "../utils/useImageMenu";
@@ -14,12 +14,19 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
 
   const showImageMenu = useImageMenu();
 
+  /**
+   * Since this provider only provides functions, we need to memoize the value
+   * or all consumers will re-render when the provider re-renders.
+   */
+  const value = useMemo(
+    () => ({
+      displayMedia: setUrl,
+    }),
+    [],
+  );
+
   return (
-    <MediaViewerContext.Provider
-      value={{
-        displayMedia: setUrl,
-      }}
-    >
+    <MediaViewerContext.Provider value={value}>
       {url && (
         <ImageView
           images={[{ uri: url }]}

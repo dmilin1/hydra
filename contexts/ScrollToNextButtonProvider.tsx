@@ -8,6 +8,7 @@ import React, {
   PropsWithChildren,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -143,17 +144,24 @@ export default function ScrollToNextButtonProvider({
     position.setValue(LOCKED_POSITIONS[buttonPosition]);
   }, [containerHeight, containerWidth]);
 
+  /**
+   * Since this provider only provides functions, we need to memoize the value
+   * or all consumers will re-render when the provider re-renders.
+   */
+  const value = useMemo(
+    () => ({
+      setScrollToNext: (fn: () => void) => {
+        scrollToNext.current = fn;
+      },
+      setScrollToPrevious: (fn: () => void) => {
+        scrollToPrevious.current = fn;
+      },
+    }),
+    [],
+  );
+
   return (
-    <ScrollToNextButtonContext.Provider
-      value={{
-        setScrollToNext: (fn) => {
-          scrollToNext.current = fn;
-        },
-        setScrollToPrevious: (fn) => {
-          scrollToPrevious.current = fn;
-        },
-      }}
-    >
+    <ScrollToNextButtonContext.Provider value={value}>
       <Animated.View
         style={[
           styles.skipToNextButton,

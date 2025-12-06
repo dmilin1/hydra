@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useEffect, useRef, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Animated, Dimensions, StyleSheet } from "react-native";
 
 type ModalContextType = {
@@ -25,12 +32,19 @@ export function ModalProvider({ children }: React.PropsWithChildren) {
     }).start();
   }, [modal]);
 
+  /**
+   * Since this provider only provides functions, we need to memoize the value
+   * or all consumers will re-render when the provider re-renders.
+   */
+  const value = useMemo(
+    () => ({
+      setModal,
+    }),
+    [],
+  );
+
   return (
-    <ModalContext.Provider
-      value={{
-        setModal,
-      }}
-    >
+    <ModalContext.Provider value={value}>
       <Animated.View
         style={[
           styles.modalContainer,

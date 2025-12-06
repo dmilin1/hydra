@@ -202,9 +202,15 @@ export default function PostComponent({
 
   return (
     <PostInteractionProvider
-      onPostInteraction={() => {
-        setSeenValue(true);
-      }}
+      /**
+       * memoize so consumers don't re-render when this component re-renders
+       */
+      onPostInteraction={useMemo(
+        () => () => {
+          setSeenValue(true);
+        },
+        [],
+      )}
     >
       <Slideable
         options={[
