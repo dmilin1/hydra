@@ -11,6 +11,7 @@ import { View, StyleSheet, Animated, ColorValue } from "react-native";
 
 import { ScrollerContext } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
 import { IconProps } from "@expo/vector-icons/build/createIconSet";
 
 type SlideItem<SlideName extends string> = {
@@ -37,6 +38,7 @@ export default function Slideable<SlideName extends string>({
 }: PropsWithChildren<SlideableProps<SlideName>>) {
   const { theme } = useContext(ThemeContext);
   const { setScrollDisabled } = useContext(ScrollerContext);
+  const { swipeAnywhereToNavigate } = useContext(GesturesContext);
 
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchX = useRef(new Animated.Value(0)).current;
@@ -84,11 +86,14 @@ export default function Slideable<SlideName extends string>({
       onResponderGrant={() => setScrollDisabled(true)}
       onResponderReject={() => setScrollDisabled(false)}
       onMoveShouldSetResponder={(e) => {
+        if (!touchStart.current) return false;
+        const deltaX = e.nativeEvent.pageX - touchStart.current.x;
+        const deltaY = e.nativeEvent.pageY - touchStart.current.y;
+        const isSwipeAllowed = !swipeAnywhereToNavigate || deltaX < 0;
         if (
-          touchStart.current &&
-          Math.abs(e.nativeEvent.pageX - touchStart.current?.x) >
-            (xScrollToEngage ?? 20) &&
-          Math.abs(e.nativeEvent.pageY - touchStart.current?.y) < 10
+          Math.abs(deltaX) > (xScrollToEngage ?? 20) &&
+          Math.abs(deltaY) < 10 &&
+          isSwipeAllowed
         ) {
           touchStart.current = {
             x: e.nativeEvent.pageX,
@@ -100,7 +105,10 @@ export default function Slideable<SlideName extends string>({
       }}
       onResponderMove={(e) => {
         if (touchStart.current) {
-          const delta = e.nativeEvent.pageX - touchStart.current?.x;
+          const delta = Math.min(
+            e.nativeEvent.pageX - touchStart.current?.x,
+            swipeAnywhereToNavigate ? 0 : -1000,
+          );
           touchX.setValue(delta);
 
           let item = null;
@@ -127,6 +135,10 @@ export default function Slideable<SlideName extends string>({
       onResponderEnd={(e) => {
         if (touchStart.current) {
           const delta = e.nativeEvent.pageX - touchStart.current?.x;
+          if (swipeAnywhereToNavigate && delta > 0) {
+            setScrollDisabled(false);
+            return;
+          }
           let item = null;
           if (delta > 0 && left) {
             item = calcItem(left, delta);
