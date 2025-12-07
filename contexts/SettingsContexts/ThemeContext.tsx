@@ -9,7 +9,7 @@ import Themes, {
 } from "../../constants/Themes";
 import { SubscriptionsContext } from "../SubscriptionsContext";
 import { getCustomTheme } from "../../db/functions/CustomThemes";
-import { useColorScheme } from "react-native";
+import { Appearance, useColorScheme } from "react-native";
 
 const initialThemeContext = {
   systemColorScheme: "light" as "light" | "dark",
@@ -125,6 +125,12 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
   useEffect(() => {
     setStatusBarStyle(theme.statusBar);
   }, [theme.statusBar]);
+
+  useEffect(() => {
+    Appearance.setColorScheme(
+      useDifferentDarkTheme ? null : theme.systemModeStyle,
+    );
+  }, [useDifferentDarkTheme, theme.systemModeStyle]);
 
   useEffect(() => {
     if (
