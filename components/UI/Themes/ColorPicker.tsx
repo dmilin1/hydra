@@ -6,9 +6,10 @@ import {
   Text,
   ColorValue,
   Keyboard,
-  SafeAreaView,
   Modal,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import Slider from "./Slider";
 import TextInput from "../TextInput";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";

@@ -1,6 +1,7 @@
 import { AntDesign, Entypo, FontAwesome } from "@expo/vector-icons";
 import React, {
   Dispatch,
+  RefObject,
   SetStateAction,
   useContext,
   useRef,
@@ -11,13 +12,13 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  TextInputSelectionChangeEventData,
+  TextInputSelectionChangeEvent,
   Alert,
   Modal,
   ScrollView,
   Text,
-  SafeAreaView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import {
@@ -36,8 +37,8 @@ type MarkdownEditorProps = {
 
 const getSelected = (
   text: string,
-  selection: React.MutableRefObject<
-    TextInputSelectionChangeEventData["selection"]
+  selection: RefObject<
+    TextInputSelectionChangeEvent["nativeEvent"]["selection"]
   >,
 ) => {
   return text.slice(selection.current.start, selection.current.end);
@@ -46,8 +47,8 @@ const getSelected = (
 const replaceText = (
   text: string,
   replacement: string,
-  selection: React.MutableRefObject<
-    TextInputSelectionChangeEventData["selection"]
+  selection: RefObject<
+    TextInputSelectionChangeEvent["nativeEvent"]["selection"]
   >,
 ) => {
   return (
@@ -66,7 +67,9 @@ export default function MarkdownEditor({
   const { theme, currentTheme } = useContext(ThemeContext);
   const [showThemeModal, setShowThemeModal] = useState(false);
 
-  const selection = useRef<TextInputSelectionChangeEventData["selection"]>({
+  const selection = useRef<
+    TextInputSelectionChangeEvent["nativeEvent"]["selection"]
+  >({
     start: 0,
     end: 0,
   });

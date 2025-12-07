@@ -3,12 +3,12 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   TextInput,
   Animated,
   useAnimatedValue,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { getSearchResults } from "../../api/Search";
