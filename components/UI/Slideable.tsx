@@ -107,7 +107,7 @@ export default function Slideable<SlideName extends string>({
         if (touchStart.current) {
           const delta = Math.min(
             e.nativeEvent.pageX - touchStart.current?.x,
-            swipeAnywhereToNavigate ? 0 : -1000,
+            swipeAnywhereToNavigate ? 0 : 1000,
           );
           touchX.setValue(delta);
 
