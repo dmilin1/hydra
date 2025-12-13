@@ -26,7 +26,7 @@ import {
   markPostUnseen,
 } from "../../../db/functions/SeenPosts";
 import URL from "../../../utils/URL";
-import RedditURL, { PageType } from "../../../utils/RedditURL";
+import RedditURL from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import Slideable from "../../UI/Slideable";
 import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
@@ -61,12 +61,7 @@ export default function PostComponent({
 
   const redditURL = params?.url ? new RedditURL(params.url) : null;
 
-  const subreddit = redditURL?.getSubreddit() ?? "";
-  const isPopularOrAll = ["popular", "all"].includes(subreddit);
-  const isOnMultiSubredditPage =
-    !redditURL ||
-    redditURL.getPageType() !== PageType.SUBREDDIT ||
-    isPopularOrAll;
+  const isOnMultiSubredditPage = redditURL?.isCombinedSubredditFeed() ?? false;
 
   const seen = isPostSeen(post);
 

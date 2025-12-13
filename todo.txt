@@ -55,3 +55,5 @@
 - 🐛 Rapid double backwards swipe to the Subreddits page causes weird glitch (https://discord.com/channels/1257191666771558492/1257773342283268297/1347806977748766750)
 
 - 🚀 Add link to /r/friends (https://www.reddit.com/r/HydraApp/comments/1jt0wcw/possibility_to_see_rfriends/)
+
+- 🐛 "x" button on certain modals doesn't work with Apple Pencil (https://discord.com/channels/1257191666771558492/1257773342283268297/1448156327586173110)

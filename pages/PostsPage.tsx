@@ -33,9 +33,13 @@ export default function PostsPage({
     "PostsPage" | "Home" | "MultiredditPage"
   >();
 
-  const subreddit = new RedditURL(url).getSubreddit();
-  const [sort, sortTime] = new RedditURL(url).getSort();
-  const searchText = new RedditURL(url).getQueryParam("q");
+  const redditURL = new RedditURL(url);
+
+  const subreddit = redditURL.getSubreddit();
+  const [sort, sortTime] = redditURL.getSort();
+  const searchText = redditURL.getQueryParam("q");
+
+  const isCombinedSubredditFeed = redditURL.isCombinedSubredditFeed();
 
   const { theme } = useContext(ThemeContext);
   const { subreddits } = useContext(SubredditContext);
@@ -86,7 +90,7 @@ export default function PostsPage({
       ...(shouldFilterSeen ? [filterSeenItems] : []),
       filterPostsByText,
       filterPostsByAI,
-      filterPostsBySubreddit,
+      ...(isCombinedSubredditFeed ? [filterPostsBySubreddit] : []),
     ],
     limitRampUp: [10, 20, 40, 70, 100],
     refreshDependencies: [searchText, sort, sortTime],
@@ -100,7 +104,7 @@ export default function PostsPage({
   };
 
   useEffect(() => {
-    if (subreddit && subreddit !== "all" && subreddit !== "popular") {
+    if (subreddit && !isCombinedSubredditFeed) {
       incrementSubredditVisitCount(subreddit);
     }
   }, []);

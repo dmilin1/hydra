@@ -345,4 +345,12 @@ export default class RedditURL extends URL {
       subreddit,
     );
   }
+
+  isCombinedSubredditFeed(): boolean {
+    const subreddit = this.getSubreddit().toLowerCase();
+    return (
+      this.getPageType() !== PageType.SUBREDDIT ||
+      ["popular", "all"].includes(subreddit)
+    );
+  }
 }
