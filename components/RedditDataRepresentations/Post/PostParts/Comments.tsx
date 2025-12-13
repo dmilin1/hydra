@@ -189,6 +189,8 @@ export function CommentComponent({
     const options = [
       "Upvote",
       "Downvote",
+      ...(comment.collapsed ? ["Expand"] : ["Collapse"]),
+      "Collapse Thread",
       "Select Text",
       "Reply",
       ...(comment.saved ? ["Unsave"] : ["Save"]),
@@ -201,6 +203,10 @@ export function CommentComponent({
       await voteOnComment(VoteOption.UpVote);
     } else if (result === "Downvote") {
       await voteOnComment(VoteOption.DownVote);
+    } else if (result === "Collapse" || result === "Expand") {
+      toggleCollapse();
+    } else if (result === "Collapse Thread" && comment.type === "comment") {
+      collapseThread(comment);
     } else if (result === "Reply") {
       replyToComment();
     } else if (result === "Save" || result === "Unsave") {

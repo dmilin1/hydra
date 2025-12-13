@@ -37,8 +37,6 @@
 
 - 🚀 Add sort to search tab
 
-- 🚀 Add swipe and long press option to collapse entire comment thread.
-
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
