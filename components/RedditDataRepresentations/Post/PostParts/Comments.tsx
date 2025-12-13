@@ -456,13 +456,16 @@ export function CommentComponent({
                       </TouchableOpacity>
                     )}
                     {commentFlairs && comment.flair && (
-                      <View
+                      <TouchableOpacity
                         style={[
                           styles.flairContainer,
                           {
                             backgroundColor: theme.divider,
                           },
                         ]}
+                        onPress={() =>
+                          alert(comment.flair?.text ?? "No flair text")
+                        }
                       >
                         {comment.flair.emojis.map((emoji, index) => (
                           <Image
@@ -484,7 +487,7 @@ export function CommentComponent({
                             {comment.flair.text}
                           </Text>
                         )}
-                      </View>
+                      </TouchableOpacity>
                     )}
                     <View style={styles.topBarEnd}>
                       <Text
