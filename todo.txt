@@ -35,25 +35,15 @@
 
 - 🐛 Enable landscape mode in the browser
 
-- 🚀 Add option to open links in device browser instead of in app browser
-
 - 🚀 Add sort to search tab
 
 - 🚀 Add swipe and long press option to collapse entire comment thread.
 
 ### Easy
-- 🐛 Max length doesn't apply to crosspost card
-
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
 - 🐛 Favorite subreddits you aren't subscribed to
 
-- 🐛 Favorite subreddits when logged out (or say you have to be logged in)
-
 - 🐛 Giant emoji in comments (https://discord.com/channels/1257191666771558492/1257773342283268297/1346887957612593272)
-
-- 🐛 Rapid double backwards swipe to the Subreddits page causes weird glitch (https://discord.com/channels/1257191666771558492/1257773342283268297/1347806977748766750)
-
-- 🚀 Add link to /r/friends (https://www.reddit.com/r/HydraApp/comments/1jt0wcw/possibility_to_see_rfriends/)
 
 - 🐛 "x" button on certain modals doesn't work with Apple Pencil (https://discord.com/channels/1257191666771558492/1257773342283268297/1448156327586173110)

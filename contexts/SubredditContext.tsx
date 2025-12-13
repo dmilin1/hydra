@@ -93,6 +93,7 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
         (sub) => sub.name === subredditName,
       );
       if (!subToFavorite) {
+        alert("You must be subscribed to a subreddit to favorite it");
         throw new NeedsSubscriptionToFavorite();
       }
 
