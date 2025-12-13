@@ -232,6 +232,34 @@ function PostDetails({ route }: PostDetailsProps) {
     }
   };
 
+  const collapseThread = async (comment: Comment) => {
+    if (!postDetail) return;
+
+    const currentScrollHeight = (
+      await asyncMeasure(topOfScroll.current, "measureInWindow")
+    )[1];
+    const commentRef = (commentsView.current as any).__internalInstanceHandle
+      .child.child.child.child.memoizedProps[0][comment.path[0]].props
+      .commentPropRef.current;
+    const commentMeasures = await asyncMeasure(commentRef, "measureInWindow");
+    const commentY = commentMeasures[1];
+    const delta = commentY - currentScrollHeight;
+    scrollView.current?.scrollTo({
+      y: delta,
+      animated: true,
+    });
+
+    const topOfThread = getCommentFromPath(
+      postDetail,
+      comment.path.slice(0, 1),
+    );
+    changeComment({
+      ...topOfThread,
+      collapsed: true,
+      renderCount: topOfThread.renderCount + 1,
+    });
+  };
+
   useEffect(() => {
     loadPostDetails();
   }, [url]);
@@ -294,6 +322,7 @@ function PostDetails({ route }: PostDetailsProps) {
               scrollChange={scrollChange}
               changeComment={(comment: Comment) => changeComment(comment)}
               deleteComment={(comment: Comment) => deleteComment(comment)}
+              collapseThread={(comment: Comment) => collapseThread(comment)}
             />
           ) : postDetail !== deferredPostDetail ? (
             <View

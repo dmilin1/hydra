@@ -8,6 +8,7 @@ import { UserContent } from "./User";
 import RedditURL from "../utils/RedditURL";
 import Time from "../utils/Time";
 import { modifyStat, Stat } from "../db/functions/Stats";
+import KeyStore from "../utils/KeyStore";
 
 export type Comment = {
   id: string;
@@ -15,6 +16,7 @@ export type Comment = {
   type: "comment";
   depth: number;
   path: number[];
+  collapsed: boolean;
   author: string;
   isOP: boolean;
   isModerator: boolean;
@@ -55,6 +57,9 @@ export function formatComments(
   commentPath: number[] = [],
   childStartIndex = 0,
   renderCount = 0,
+
+  // This is weird, but it's so we don't have to repeatedly refetch from the keystore every time
+  collapseAutoModerator = KeyStore.getBoolean("collapseAutoModerator") ?? true,
 ): Comment[] {
   const formattedComments: Comment[] = [];
   for (let i = 0; i < comments.length; i++) {
@@ -76,6 +81,10 @@ export function formatComments(
       type: "comment",
       depth: commentPath.length,
       path: childCommentPath,
+      collapsed:
+        collapseAutoModerator &&
+        commentPath.length === 0 &&
+        comment.data.author === "AutoModerator",
       author: comment.data.author,
       isOP: comment.data.is_submitter,
       isModerator: comment.data.distinguished === "moderator",
@@ -93,7 +102,13 @@ export function formatComments(
       text: decode(comment.data.body),
       html: decode(comment.data.body_html),
       comments: comment.data.replies
-        ? formatComments(comment.data.replies.data.children, childCommentPath)
+        ? formatComments(
+            comment.data.replies.data.children,
+            childCommentPath,
+            undefined,
+            undefined,
+            collapseAutoModerator,
+          )
         : [],
       renderCount,
       loadMore: loadMoreChild
@@ -137,6 +152,7 @@ export async function getPostsDetail(
     type: "postDetail",
     depth: -1,
     path: [],
+    collapsed: false,
     isOP: postData.data.is_submitter,
     editedAt: postData.data.edited ? postData.data.edited * 1_000 : undefined,
     postTitle: postData.data.link_title,
