@@ -204,7 +204,7 @@ export default function PostComponent({
         () => () => {
           setSeenValue(true);
         },
-        [],
+        [post.id],
       )}
     >
       <Slideable
