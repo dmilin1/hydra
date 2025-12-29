@@ -71,7 +71,8 @@ export type ContextTypes =
   | "Show Seen Posts"
   | "Hide Seen Posts"
   | "Sidebar"
-  | "Wiki";
+  | "Wiki"
+  | "Open in Gallery Mode";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes>;
@@ -94,7 +95,7 @@ export default function SortAndContext({
     useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
 
-  const { replaceURL, pushURL, setParams } = useURLNavigation();
+  const { replaceURL, pushURL, setParams, openGallery } = useURLNavigation();
 
   const showContextMenu = useContextMenu();
 
@@ -368,6 +369,8 @@ export default function SortAndContext({
             } else if (result === "Wiki") {
               const subreddit = new RedditURL(currentPath).getSubreddit();
               pushURL(`https://www.reddit.com/r/${subreddit}/wiki/index`);
+            } else if (result === "Open in Gallery Mode") {
+              openGallery(currentPath);
             }
           }}
         >

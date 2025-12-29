@@ -24,14 +24,13 @@ import SortAndContext, {
   SortTypes,
 } from "../components/Navbar/SortAndContext";
 import { SubredditContext } from "../contexts/SubredditContext";
+import GalleryComponent from "../components/UI/Gallery/GalleryComponent";
 
-export default function PostsPage({
+export default function GalleryPage({
   route,
-}: StackPageProps<"PostsPage" | "Home" | "MultiredditPage">) {
+}: StackPageProps<"GalleryPage">) {
   const { url } = route.params;
-  const navigation = useURLNavigation<
-    "PostsPage" | "Home" | "MultiredditPage"
-  >();
+  const navigation = useURLNavigation<"GalleryPage">();
 
   const redditURL = new RedditURL(url);
 
@@ -115,14 +114,12 @@ export default function PostsPage({
     let sortOptions: SortTypes[];
     if (pageType === PageType.HOME) {
       contextOptions = [
-        "Open in Gallery Mode",
         shouldFilterSeen ? "Show Seen Posts" : "Hide Seen Posts",
         "Share",
       ];
       sortOptions = ["Best", "Hot", "New", "Top", "Rising"];
     } else if (pageType === PageType.SUBREDDIT) {
       contextOptions = [
-        "Open in Gallery Mode",
         "New Post",
         subreddits.subscriber.find((sub) => sub.name === subreddit)
           ? "Unsubscribe"
@@ -138,7 +135,7 @@ export default function PostsPage({
       ];
       sortOptions = ["Best", "Hot", "New", "Top", "Rising"];
     } else if (pageType === PageType.MULTIREDDIT) {
-      contextOptions = ["Open in Gallery Mode", "Share"];
+      contextOptions = ["Share"];
       sortOptions = ["Hot", "New", "Top", "Rising", "Controversial"];
     }
     navigation.setOptions({
@@ -186,56 +183,9 @@ export default function PostsPage({
           Reddit rules
         </Text>
       ) : (
-        <RedditDataScroller<Post>
-          ListHeaderComponent={
-            route.name === "PostsPage" ? (
-              <SearchBar
-                clearOnSearch={true}
-                searchOnBlur={false}
-                onSearch={(text) => {
-                  if (!text) return;
-                  const newURL = new RedditURL(
-                    `https://www.reddit.com/r/${subreddit}/search/`,
-                  );
-                  newURL.changeQueryParam("q", text);
-                  newURL.changeQueryParam("restrict_sr", "true");
-                  navigation.pushURL(newURL.toString());
-                }}
-              />
-            ) : null
-          }
-          loadMore={loadMorePosts}
-          refresh={refreshPosts}
-          fullyLoaded={fullyLoaded}
-          hitFilterLimit={hitFilterLimit}
-          data={posts}
-          extraData={rerenderCount} // This triggers a rerender of the visible list items
-          renderItem={({ item }) => (
-            <PostComponent
-              post={item}
-              setPost={(newPost) => {
-                modifyPosts([newPost]);
-              }}
-              deletePost={() => {
-                deletePosts([item]);
-              }}
-            />
-          )}
-          onViewableItemsChanged={(data) => {
-            const maxVisibleItem =
-              data.viewableItems[data.viewableItems.length - 1]?.index ?? -1;
-            const changedItems = data.changed;
-            changedItems
-              .filter(
-                (item) =>
-                  !item.isViewable && (item?.index ?? 0) < maxVisibleItem,
-              )
-              .forEach((viewToken) => {
-                const post = viewToken.item as Post;
-                handleScrolledPastPost(post);
-              });
-          }}
-        />
+        <GalleryComponent
+          posts={posts}
+          loadMore={loadMorePosts} />
       )}
     </View>
   );
