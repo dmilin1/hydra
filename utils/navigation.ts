@@ -69,5 +69,6 @@ export function useURLNavigation<
     ...navigation,
     pushURL: (url: string) => doNavigationAction(url, "push"),
     replaceURL: (url: string) => doNavigationAction(url, "replace"),
+    openGallery: (url: string) => navigation.push("GalleryPage", { url }),
   };
 }

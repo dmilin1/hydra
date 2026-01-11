@@ -152,7 +152,7 @@ const ImageItem = ({
           height: SCREEN_HEIGHT + (loaded ? 1 : 10),
           width: SCREEN_WIDTH,
         }}
-        scrollEnabled={swipeToCloseEnabled}
+        scrollEnabled={swipeToCloseEnabled || scaled}
         onScrollEndDrag={onScrollEndDrag}
         scrollEventThrottle={1}
         {...(swipeToCloseEnabled && {

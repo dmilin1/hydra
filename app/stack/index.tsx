@@ -27,6 +27,7 @@ import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SubredditSearchScreen from "./SubredditSearchScreen";
 import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
+import GalleryScreen from "./GalleryScreen";
 
 export type StackParamsList = {
   Subreddits: object;
@@ -58,6 +59,9 @@ export type StackParamsList = {
   WikiPage: {
     url: string;
   };
+  GalleryPage: {
+    url: string;
+  };
   SidebarPage: {
     url: string;
   };
@@ -84,7 +88,8 @@ export type URLRoutes =
   | "SettingsPage"
   | "WebviewPage"
   | "SidebarPage"
-  | "WikiPage";
+  | "WikiPage"
+  | "GalleryPage";
 
 const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   Subreddits: false,
@@ -98,6 +103,7 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   UserPage: true,
   Accounts: false,
   WikiPage: false,
+  GalleryPage: false,
   SidebarPage: false,
   SettingsPage: false,
   SearchPage: true,
@@ -132,6 +138,7 @@ export default function Stack() {
     AccountsScreen,
     SidebarScreen,
     WikiScreen,
+    GalleryScreen,
     SettingsScreen,
     SearchScreen,
     WebviewScreen,

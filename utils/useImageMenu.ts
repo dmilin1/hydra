@@ -3,7 +3,7 @@ import { Alert, Share } from "react-native";
 
 import useContextMenu from "./useContextMenu";
 
-async function getBase64Img(img: string) {
+export async function getBase64Img(img: string) {
   const res = await fetch(img);
   const blob = await res.blob();
   const base64 = await new Promise<string>((resolve, reject) => {

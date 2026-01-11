@@ -56,7 +56,7 @@ export default function GetHydraPro({ onExit }: GetHydraProProps) {
               />
             </View>
 
-            <ScrollView>
+            <ScrollView style={styles.scrollView}>
               <Text style={[styles.title, { color: theme.text }]}>
                 Hydra Pro
               </Text>
@@ -102,8 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    paddingHorizontal: 10,
-    paddingVertical: 125,
+    paddingVertical: 100,
   },
   background: {
     position: "absolute",
@@ -120,7 +119,6 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
     borderRadius: 16,
     borderWidth: 1,
-    paddingHorizontal: 18,
     paddingTop: 22,
     paddingBottom: 16,
     overflow: "hidden",
@@ -129,6 +127,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 16,
     elevation: 6,
+  },
+  scrollView: {
+    paddingHorizontal: 18,
   },
   exitButton: {
     width: 30,
