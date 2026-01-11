@@ -8,7 +8,6 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
 import RedditURL, { PageType } from "../utils/RedditURL";
-import { incrementSubredditVisitCount } from "../db/functions/Stats";
 import { useURLNavigation } from "../utils/navigation";
 import SortAndContext, {
   ContextTypes,
@@ -27,7 +26,6 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
 
   const subreddit = redditURL.getSubreddit();
   const [sort, sortTime] = redditURL.getSort();
-  const searchText = redditURL.getQueryParam("q");
 
   const isCombinedSubredditFeed = redditURL.isCombinedSubredditFeed();
 
@@ -60,14 +58,8 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
     ],
     limitRampUp: [10, 30, 50],
     filterRetries: 3,
-    refreshDependencies: [searchText, sort, sortTime],
+    refreshDependencies: [sort, sortTime],
   });
-
-  useEffect(() => {
-    if (subreddit && !isCombinedSubredditFeed) {
-      incrementSubredditVisitCount(subreddit);
-    }
-  }, []);
 
   useEffect(() => {
     const pageType = new RedditURL(url).getPageType();

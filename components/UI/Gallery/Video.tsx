@@ -38,6 +38,12 @@ export default function Video({ uri }: { uri: string }) {
         nativeControls={false}
         allowsVideoFrameAnalysis={false}
       />
+      <View
+        style={[
+          styles.progressBarBackground,
+          { backgroundColor: theme.background },
+        ]}
+      />
       <Animated.View
         style={[
           styles.progressBar,
@@ -65,6 +71,13 @@ const styles = StyleSheet.create({
   video: {
     width: "100%",
     flex: 1,
+  },
+  progressBarBackground: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: 2,
+    backgroundColor: "black",
   },
   progressBar: {
     position: "absolute",

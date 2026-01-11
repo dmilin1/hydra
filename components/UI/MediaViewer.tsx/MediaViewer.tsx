@@ -318,7 +318,7 @@ export default function MediaViewer({
               setIsVisible(false);
             }
           }}
-          drawDistance={1000}
+          drawDistance={100}
           showsVerticalScrollIndicator={false}
         />
       </Animated.View>

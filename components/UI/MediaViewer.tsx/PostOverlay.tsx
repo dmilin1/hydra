@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  StyleSheet,
 } from "react-native";
 import { File, Paths } from "expo-file-system/next";
 import { Post } from "../../../api/Posts";
@@ -79,16 +80,7 @@ export default function PostOverlay({
   return (
     <View onTouchEnd={(e) => e.stopPropagation()}>
       <TouchableOpacity
-        style={{
-          alignSelf: "flex-end",
-          width: 40,
-          aspectRatio: 1,
-          backgroundColor: "rgba(50, 50, 50, 0.65)",
-          marginRight: 10,
-          borderRadius: 100,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        style={styles.shareButton}
         onPress={() => shareMedia()}
         disabled={isDownloading}
       >
@@ -99,55 +91,73 @@ export default function PostOverlay({
             name="ios-share"
             size={22}
             color="white"
-            style={{ marginTop: -4 }}
+            style={styles.shareButtonIcon}
           />
         )}
       </TouchableOpacity>
-      <View
-        style={{
-          padding: 10,
-          margin: 10,
-          borderRadius: 10,
-          backgroundColor: "rgba(50, 50, 50, 0.65)",
-        }}
+      <TouchableOpacity
+        style={styles.postOverlay}
+        onPress={() => openLink(post.link)}
+        activeOpacity={0.7}
       >
-        <TouchableOpacity
-          style={{ gap: 5 }}
-          onPress={() => openLink(post.link)}
-          activeOpacity={0.7}
-        >
-          <Text
-            style={{ color: "white", fontSize: 16, fontWeight: 500 }}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {post.title}
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+          {post.title}
+        </Text>
+        {post.text && (
+          <Text style={styles.body} numberOfLines={2} ellipsizeMode="tail">
+            {post.text}
           </Text>
-          {post.text && (
-            <Text
-              style={{ color: "white" }}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {post.text}
-            </Text>
-          )}
-          <View style={{ flexDirection: "row" }}>
-            <Text style={{ color: "white", fontSize: 12 }}> in </Text>
-            <TouchableOpacity onPress={() => openLink(`/r/${post.subreddit}`)}>
-              <Text style={{ color: "white", fontSize: 12 }}>
-                /r/{post.subreddit}
-              </Text>
-            </TouchableOpacity>
-            <Text style={{ color: "white", fontSize: 12 }}> by </Text>
-            <TouchableOpacity onPress={() => openLink(`/user/${post.author}`)}>
-              <Text style={{ color: "white", fontSize: 12 }}>
-                {post.author}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </View>
+        )}
+        <View style={styles.metadataContainer}>
+          <Text style={styles.metadataText}> in </Text>
+          <TouchableOpacity onPress={() => openLink(`/r/${post.subreddit}`)}>
+            <Text style={styles.metadataText}>/r/{post.subreddit}</Text>
+          </TouchableOpacity>
+          <Text style={styles.metadataText}> by </Text>
+          <TouchableOpacity onPress={() => openLink(`/user/${post.author}`)}>
+            <Text style={styles.metadataText}>{post.author}</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  shareButton: {
+    alignSelf: "flex-end",
+    width: 40,
+    aspectRatio: 1,
+    backgroundColor: "rgba(50, 50, 50, 0.65)",
+    marginRight: 10,
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shareButtonIcon: {
+    marginTop: -4,
+  },
+  postOverlay: {
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+    backgroundColor: "rgba(50, 50, 50, 0.65)",
+    gap: 5,
+  },
+  title: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: 500,
+  },
+  body: {
+    color: "white",
+    fontSize: 14,
+  },
+  metadataContainer: {
+    flexDirection: "row",
+  },
+  metadataText: {
+    color: "white",
+    fontSize: 12,
+  },
+});

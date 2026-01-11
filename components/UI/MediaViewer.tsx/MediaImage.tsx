@@ -116,6 +116,7 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
         contentFit="contain"
         onLoad={() => setIsLoaded(true)}
         transition={150}
+        allowDownscaling={false}
       />
     </ScrollView>
   );

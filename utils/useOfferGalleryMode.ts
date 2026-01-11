@@ -10,7 +10,7 @@ type OfferGalleryModeProps = {
   posts: Post[];
 };
 
-const MIN_POST_COUNT_TO_OFFER_GALLERY_MODE = 20;
+const MIN_POST_COUNT_TO_OFFER_GALLERY_MODE = 100;
 const PERCENT_OF_MEDIA_TO_OFFER_GALLERY_MODE = 0.85;
 
 const HAS_ALREADY_OFFERED_KEY = "has_already_offered_gallery_mode";
@@ -40,7 +40,7 @@ export default function useOfferGalleryMode({
       return;
 
     Alert.alert(
-      "Gallery Mode",
+      "Try Gallery Mode?",
       "Media heavy subreddits look great in gallery mode. Would you like to try it out?",
       [
         { text: "Cancel", style: "cancel" },

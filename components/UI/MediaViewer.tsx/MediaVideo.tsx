@@ -1,14 +1,14 @@
 import { useEvent, useEventListener } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   TouchableOpacity,
   useWindowDimensions,
   View,
   Text,
+  StyleSheet,
 } from "react-native";
-import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { FontAwesome } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -34,7 +34,6 @@ export default function MediaVideo({
   focused: boolean;
   overlayOpacity: Animated.Value;
 }) {
-  const { theme } = useContext(ThemeContext);
   const { width, height } = useWindowDimensions();
   const { top } = useSafeAreaInsets();
 
@@ -120,7 +119,7 @@ export default function MediaVideo({
 
   return (
     <View
-      style={{ width, height, justifyContent: "center" }}
+      style={[styles.container, { width, height }]}
       onTouchStart={(e) => {
         touchStart.current = {
           x: e.nativeEvent.pageX,
@@ -152,37 +151,29 @@ export default function MediaVideo({
       }}
     >
       <View
-        style={{ position: "relative", width, height: width / aspectRatio }}
+        style={[styles.videoContainer, { width, height: width / aspectRatio }]}
       >
         <VideoView
           player={player}
-          style={{ width, flex: 1 }}
+          style={[styles.video, { width }]}
           contentFit="contain"
           nativeControls={false}
           allowsVideoFrameAnalysis={false}
         />
         <Animated.View
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            opacity: overlayOpacity,
-          }}
+          style={[
+            styles.playButtonContainer,
+            {
+              opacity: overlayOpacity,
+            },
+          ]}
           onTouchStart={(e) => {
             e.preventDefault();
             e.stopPropagation();
           }}
         >
           <TouchableOpacity
-            style={{
-              borderRadius: 100,
-              padding: 15,
-              aspectRatio: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-              transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
-            }}
+            style={styles.playButton}
             onPress={() => {
               if (isPlaying) {
                 player.pause();
@@ -198,20 +189,16 @@ export default function MediaVideo({
                 name="play"
                 size={24}
                 color="white"
-                style={{ marginRight: -5 }}
+                style={styles.playButtonIcon}
               />
             )}
           </TouchableOpacity>
         </Animated.View>
+        <View style={styles.progressBarBackground} />
         <Animated.View
           style={[
+            styles.progressBar,
             {
-              position: "absolute",
-              bottom: 0,
-              width: "200%",
-              left: "-100%",
-              height: 2,
-              backgroundColor: theme.subtleText,
               transform: [
                 {
                   scaleX: progress,
@@ -222,26 +209,20 @@ export default function MediaVideo({
         />
       </View>
       <Animated.View
-        style={{
-          position: "absolute",
-          top: top + 10,
-          left: 10,
-          opacity: overlayOpacity,
-        }}
+        style={[
+          styles.playbackRateContainer,
+          {
+            top: top + 10,
+            opacity: overlayOpacity,
+          },
+        ]}
         onTouchStart={(e) => {
           e.preventDefault();
           e.stopPropagation();
         }}
       >
         <TouchableOpacity
-          style={{
-            borderRadius: 100,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(100, 100, 100, 0.5)",
-            width: 40,
-            aspectRatio: 1,
-          }}
+          style={styles.playbackRateButton}
           onPress={() => {
             const currentIndex = PLAYBACK_RATES.indexOf(playbackRate ?? 1);
             const newIndex = (currentIndex + 1) % PLAYBACK_RATES.length;
@@ -254,3 +235,59 @@ export default function MediaVideo({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+  },
+  videoContainer: {
+    position: "relative",
+  },
+  video: {
+    flex: 1,
+  },
+  playButtonContainer: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+  },
+  playButton: {
+    borderRadius: 100,
+    padding: 15,
+    aspectRatio: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
+  },
+  playButtonIcon: {
+    marginRight: -5,
+  },
+  progressBarBackground: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    height: 2,
+    backgroundColor: "black",
+  },
+  progressBar: {
+    position: "absolute",
+    bottom: 0,
+    width: "200%",
+    left: "-100%",
+    height: 2,
+    backgroundColor: "#ccc",
+  },
+  playbackRateContainer: {
+    position: "absolute",
+    left: 10,
+  },
+  playbackRateButton: {
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(100, 100, 100, 0.5)",
+    width: 40,
+    aspectRatio: 1,
+  },
+});
