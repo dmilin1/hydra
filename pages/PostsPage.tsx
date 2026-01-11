@@ -1,11 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
-import {
-  getPosts,
-  Post,
-  PrivateSubredditError,
-  BannedSubredditError,
-} from "../api/Posts";
+import { StyleSheet, View } from "react-native";
+import { getPosts, Post } from "../api/Posts";
 
 import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
@@ -24,6 +19,8 @@ import SortAndContext, {
   SortTypes,
 } from "../components/Navbar/SortAndContext";
 import { SubredditContext } from "../contexts/SubredditContext";
+import AccessFailureComponent from "../components/UI/AccessFailureComponent";
+import useOfferGalleryMode from "../utils/useOfferGalleryMode";
 
 export default function PostsPage({
   route,
@@ -53,9 +50,6 @@ export default function PostsPage({
   } = useContext(FiltersContext);
 
   const [rerenderCount, rerender] = useState(0);
-  const [accessFailure, setAccessFailure] = useState<
-    "private" | "banned" | null
-  >(null);
 
   const shouldFilterSeen = getHideSeenURLStatus(url);
 
@@ -67,25 +61,9 @@ export default function PostsPage({
     deleteData: deletePosts,
     fullyLoaded,
     hitFilterLimit,
+    accessFailure,
   } = useRedditDataState<Post>({
-    loadData: async (after, limit) => {
-      try {
-        return await getPosts(url, {
-          after,
-          limit,
-        });
-      } catch (e) {
-        if (e instanceof BannedSubredditError) {
-          setAccessFailure("banned");
-          return [];
-        } else if (e instanceof PrivateSubredditError) {
-          setAccessFailure("private");
-          return [];
-        } else {
-          throw e;
-        }
-      }
-    },
+    loadData: async (after, limit) => await getPosts(url, { after, limit }),
     filterRules: [
       ...(shouldFilterSeen ? [filterSeenItems] : []),
       filterPostsByText,
@@ -95,6 +73,8 @@ export default function PostsPage({
     limitRampUp: [10, 20, 40, 70, 100],
     refreshDependencies: [searchText, sort, sortTime],
   });
+
+  useOfferGalleryMode({ url, posts });
 
   const handleScrolledPastPost = (post: Post) => {
     if (autoMarkAsSeen) {
@@ -162,30 +142,10 @@ export default function PostsPage({
         },
       ]}
     >
-      {accessFailure === "private" ? (
-        <Text
-          style={[
-            styles.accessFailureText,
-            {
-              color: theme.subtleText,
-            },
-          ]}
-        >
-          🔑 r/{subreddit} has been set to private by its subreddit moderators
-        </Text>
-      ) : accessFailure === "banned" ? (
-        <Text
-          style={[
-            styles.accessFailureText,
-            {
-              color: theme.subtleText,
-            },
-          ]}
-        >
-          🚫 r/{subreddit} has been banned by Reddit Administrators for breaking
-          Reddit rules
-        </Text>
-      ) : (
+      <AccessFailureComponent
+        accessFailure={accessFailure}
+        subreddit={subreddit}
+      >
         <RedditDataScroller<Post>
           ListHeaderComponent={
             route.name === "PostsPage" ? (
@@ -236,7 +196,7 @@ export default function PostsPage({
               });
           }}
         />
-      )}
+      </AccessFailureComponent>
     </View>
   );
 }

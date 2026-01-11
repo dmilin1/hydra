@@ -1,13 +1,5 @@
-import React, {
-  useEffect,
-  useContext,
-} from "react";
-import {
-  StyleSheet,
-  View,
-  ModalProps,
-  Modal,
-} from "react-native";
+import React, { useEffect, useContext } from "react";
+import { View, ModalProps, Modal } from "react-native";
 
 import StatusBarManager from "./components/StatusBarManager";
 import useRequestClose from "./hooks/useRequestClose";
@@ -21,12 +13,7 @@ type ImageViewingProps = ImageSliderProps & {
 };
 
 export default function ImageViewing(props: ImageViewingProps) {
-  const {
-    visible,
-    presentationStyle,
-    animationType,
-    onRequestClose,
-  } = props;
+  const { visible, presentationStyle, animationType, onRequestClose } = props;
 
   const { interactedWithPost } = useContext(PostInteractionContext);
 
@@ -76,36 +63,3 @@ export default function ImageViewing(props: ImageViewingProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0)",
-  },
-  header: {
-    position: "absolute",
-    width: "100%",
-    zIndex: 1,
-    top: 0,
-  },
-  footer: {
-    position: "absolute",
-    width: "100%",
-    zIndex: 1,
-    bottom: 0,
-  },
-  imageCounterPill: {
-    position: "absolute",
-    right: 16,
-    bottom: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: "rgba(0,0,0,0.6)",
-  },
-  counterText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-});

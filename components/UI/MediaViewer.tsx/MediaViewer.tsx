@@ -1,38 +1,24 @@
 import { FontAwesome6 } from "@expo/vector-icons";
-import {
-  FlashList,
-  FlashListRef,
-  useRecyclingState,
-} from "@shopify/flash-list";
-import { Image } from "expo-image";
+import { FlashList, FlashListRef } from "@shopify/flash-list";
 import { Ref, useEffect, useImperativeHandle, useRef, useState } from "react";
 import {
+  StyleSheet,
   Animated,
   Modal,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Video from "./Video";
-
-type ImageItem = {
-  type: "image";
-  uri: string;
-};
-
-type VideoItem = {
-  type: "video";
-  uri: string;
-};
+import MediaVideo, { VideoItem } from "./MediaVideo";
+import { ImageItem, MediaImage } from "./MediaImage";
 
 type MediaItem = ImageItem | VideoItem;
 
 type MediaItemRow = MediaItem[];
 
-type MediaItemCollection = MediaItemRow[];
+export type MediaItemCollection = MediaItemRow[];
 
 export type MediaViewerRef = {
   open: (index?: number) => void;
@@ -42,7 +28,7 @@ export type MediaViewerRef = {
 type MediaViewerProps = {
   media: MediaItemCollection;
   ref?: Ref<MediaViewerRef>;
-  overlayComponent?: (index: number) => React.ReactNode;
+  overlayComponent?: (index: number, rowIndex: number) => React.ReactNode;
   onFocusedItemChange?: (columnIndex: number, rowIndex: number) => void;
 };
 
@@ -142,26 +128,36 @@ export default function MediaViewer({
       transparent={true}
     >
       <Animated.View
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "black",
-          opacity,
-        }}
+        style={[
+          styles.background,
+          {
+            opacity,
+          },
+        ]}
       />
+      <TouchableOpacity
+        onPress={() => setIsVisible(false)}
+        style={[
+          styles.closeButton,
+          {
+            top: top + 10,
+          },
+        ]}
+      >
+        <FontAwesome6 name="xmark" size={20} color="white" />
+      </TouchableOpacity>
       <Animated.View
-        style={{
-          flex: 1,
-          opacity,
-          transform: [
-            {
-              scale,
-            },
-          ],
-        }}
+        style={[
+          styles.contentContainer,
+          {
+            opacity,
+            transform: [
+              {
+                scale,
+              },
+            ],
+          },
+        ]}
         onTouchStart={(e) =>
           (overlayTapStart.current = {
             x: e.nativeEvent.locationX,
@@ -189,58 +185,31 @@ export default function MediaViewer({
         }}
       >
         <Animated.View
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            justifyContent: "flex-end",
-            paddingTop: top,
-            paddingBottom: bottom,
-            zIndex: 1,
-            pointerEvents: "box-none",
-            opacity: overlayOpacity.current,
-          }}
+          style={[
+            styles.overlayContainer,
+            {
+              paddingTop: top,
+              paddingBottom: bottom,
+              opacity: overlayOpacity.current,
+            },
+          ]}
         >
-          {overlayComponent?.(currentIndex)}
+          {overlayComponent?.(currentIndex, currentRowIndex)}
         </Animated.View>
-        <TouchableOpacity
-          onPress={() => setIsVisible(false)}
-          style={{
-            position: "absolute",
-            top: top + 10,
-            right: 10,
-            backgroundColor: "rgba(100, 100, 100, 0.5)",
-            padding: 10,
-            borderRadius: 100,
-            width: 40,
-            aspectRatio: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1,
-          }}
-        >
-          <FontAwesome6 name="xmark" size={20} color="white" />
-        </TouchableOpacity>
         {currentRowSize > 1 && (
           <Animated.View
-            style={{
-              position: "absolute",
-              bottom: bottom + 10,
-              right: 10,
-              backgroundColor: "rgba(100, 100, 100, 0.5)",
-              padding: 10,
-              borderRadius: 10,
-              aspectRatio: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1,
-              opacity: overlayOpacity.current.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            }}
+            style={[
+              styles.itemIndexContainer,
+              {
+                bottom: bottom + 10,
+                opacity: overlayOpacity.current.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 0],
+                }),
+              },
+            ]}
           >
-            <Text style={{ color: "white" }}>
+            <Text style={styles.itemIndexText}>
               {currentRowIndex + 1} / {currentRowSize}
             </Text>
           </Animated.View>
@@ -264,7 +233,7 @@ export default function MediaViewer({
                       setIsScrollLocked={setIsScrollLocked}
                     />
                   ) : mediaItem.type === "video" ? (
-                    <Video
+                    <MediaVideo
                       uri={mediaItem.uri}
                       focused={rowIndex === currentIndex}
                       overlayOpacity={overlayOpacity.current}
@@ -357,119 +326,50 @@ export default function MediaViewer({
   );
 }
 
-type MediaImageProps = {
-  item: MediaItem;
-  setIsScrollLocked: (isScrollLocked: boolean) => void;
-};
-
-function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
-  const { width, height } = useWindowDimensions();
-
-  const scrollViewRef = useRef<ScrollView>(null);
-  const previousTouchStart = useRef<{
-    x: number;
-    y: number;
-    timestamp: number;
-  } | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  const [isZoomed, setIsZoomed] = useRecyclingState(false, [item.uri], () => {
-    scrollViewRef.current?.scrollResponderZoomTo({
-      x: 0,
-      y: 0,
-      width: width,
-      height: height,
-      animated: false,
-    });
-  });
-
-  useEffect(() => {
-    return () => {
-      scrollViewRef.current?.scrollResponderZoomTo({
-        x: 0,
-        y: 0,
-        width: width,
-        height: height,
-        animated: false,
-      });
-    };
-  }, []);
-
-  return (
-    <ScrollView
-      ref={scrollViewRef}
-      minimumZoomScale={1}
-      maximumZoomScale={10}
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      style={{
-        height,
-        width,
-      }}
-      /**
-       * These weird numbers fix some bugs where the images become offset when scrolling
-       * deeply.
-       *
-       * The changing content container height fixes a bug where when pressing the X button
-       * while zoomed in, the image would be offset weirdly after closing and reopening the
-       * modal. For some magical reason, changing the height of the content container seems
-       * to trigger a reflow which fixes it.
-       */
-      contentOffset={{ x: 0, y: 0.5 }}
-      contentContainerStyle={{
-        height: height + (isLoaded ? -1 : 10),
-      }}
-      bounces={isZoomed}
-      onTouchStart={(event) => {
-        const { pageX: currentX, pageY: currentY } =
-          event.nativeEvent.touches[0];
-        const newTouchStart = {
-          x: currentX,
-          y: currentY,
-          timestamp: Date.now(),
-        };
-        if (
-          // Previous touch exists
-          previousTouchStart.current &&
-          // Double touch is rapid enough
-          newTouchStart.timestamp - previousTouchStart.current.timestamp <
-            300 &&
-          // Double touch is close enough
-          Math.abs(currentX - previousTouchStart.current.x) < 20 &&
-          Math.abs(currentY - previousTouchStart.current.y) < 20 &&
-          // Only one touch is active
-          event.nativeEvent.touches.length === 1
-        ) {
-          scrollViewRef.current?.scrollResponderZoomTo({
-            x: newTouchStart.x - width / 4,
-            y: newTouchStart.y - height / 4,
-            width: width / (isZoomed ? 1 : 2),
-            height: height / (isZoomed ? 1 : 2),
-            animated: true,
-          });
-        }
-        previousTouchStart.current = newTouchStart;
-      }}
-      onScroll={(event) => {
-        const { zoomScale } = event.nativeEvent;
-        const newIsZoomed = zoomScale > 1;
-        if (newIsZoomed !== isZoomed) {
-          setIsZoomed(newIsZoomed);
-          setIsScrollLocked(newIsZoomed);
-        }
-      }}
-    >
-      <Image
-        source={{ uri: item.uri }}
-        style={{ width, height }}
-        contentFit="contain"
-        onLoad={() => setIsLoaded(true)}
-        transition={150}
-      />
-    </ScrollView>
-  );
-}
-
-type MediaVideoProps = {
-  item: VideoItem;
-};
+const styles = StyleSheet.create({
+  background: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "black",
+  },
+  closeButton: {
+    position: "absolute",
+    right: 10,
+    backgroundColor: "rgba(100, 100, 100, 0.5)",
+    padding: 10,
+    borderRadius: 100,
+    width: 40,
+    aspectRatio: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  overlayContainer: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end",
+    zIndex: 1,
+    pointerEvents: "box-none",
+  },
+  itemIndexContainer: {
+    position: "absolute",
+    right: 10,
+    backgroundColor: "rgba(100, 100, 100, 0.5)",
+    padding: 10,
+    borderRadius: 10,
+    aspectRatio: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1,
+  },
+  itemIndexText: {
+    color: "white",
+  },
+});

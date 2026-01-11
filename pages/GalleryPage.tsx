@@ -1,19 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
-import {
-  getPosts,
-  Post,
-  PrivateSubredditError,
-  BannedSubredditError,
-} from "../api/Posts";
+import React, { useContext, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { getPosts, Post } from "../api/Posts";
 
 import { StackPageProps } from "../app/stack";
-import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
-import RedditDataScroller from "../components/UI/RedditDataScroller";
-import SearchBar from "../components/UI/SearchBar";
 import { FiltersContext } from "../contexts/SettingsContexts/FiltersContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
-import { markPostSeen } from "../db/functions/SeenPosts";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
 import RedditURL, { PageType } from "../utils/RedditURL";
@@ -25,10 +16,10 @@ import SortAndContext, {
 } from "../components/Navbar/SortAndContext";
 import { SubredditContext } from "../contexts/SubredditContext";
 import GalleryComponent from "../components/UI/Gallery/GalleryComponent";
+import { filterNonMediaItems } from "../utils/filters/filterNonMediaItems";
+import AccessFailureComponent from "../components/UI/AccessFailureComponent";
 
-export default function GalleryPage({
-  route,
-}: StackPageProps<"GalleryPage">) {
+export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
   const { url } = route.params;
   const navigation = useURLNavigation<"GalleryPage">();
 
@@ -47,60 +38,30 @@ export default function GalleryPage({
     filterPostsByText,
     filterPostsByAI,
     filterPostsBySubreddit,
-    autoMarkAsSeen,
     getHideSeenURLStatus,
   } = useContext(FiltersContext);
-
-  const [rerenderCount, rerender] = useState(0);
-  const [accessFailure, setAccessFailure] = useState<
-    "private" | "banned" | null
-  >(null);
 
   const shouldFilterSeen = getHideSeenURLStatus(url);
 
   const {
     data: posts,
     loadMoreData: loadMorePosts,
-    refreshData: refreshPosts,
-    modifyData: modifyPosts,
-    deleteData: deletePosts,
     fullyLoaded,
     hitFilterLimit,
+    accessFailure,
   } = useRedditDataState<Post>({
-    loadData: async (after, limit) => {
-      try {
-        return await getPosts(url, {
-          after,
-          limit,
-        });
-      } catch (e) {
-        if (e instanceof BannedSubredditError) {
-          setAccessFailure("banned");
-          return [];
-        } else if (e instanceof PrivateSubredditError) {
-          setAccessFailure("private");
-          return [];
-        } else {
-          throw e;
-        }
-      }
-    },
+    loadData: async (after, limit) => await getPosts(url, { after, limit }),
     filterRules: [
+      filterNonMediaItems,
       ...(shouldFilterSeen ? [filterSeenItems] : []),
       filterPostsByText,
       filterPostsByAI,
       ...(isCombinedSubredditFeed ? [filterPostsBySubreddit] : []),
     ],
-    limitRampUp: [10, 20, 40, 70, 100],
+    limitRampUp: [10, 30, 50],
+    filterRetries: 3,
     refreshDependencies: [searchText, sort, sortTime],
   });
-
-  const handleScrolledPastPost = (post: Post) => {
-    if (autoMarkAsSeen) {
-      markPostSeen(post);
-      rerender((prev) => prev + 1);
-    }
-  };
 
   useEffect(() => {
     if (subreddit && !isCombinedSubredditFeed) {
@@ -159,34 +120,17 @@ export default function GalleryPage({
         },
       ]}
     >
-      {accessFailure === "private" ? (
-        <Text
-          style={[
-            styles.accessFailureText,
-            {
-              color: theme.subtleText,
-            },
-          ]}
-        >
-          🔑 r/{subreddit} has been set to private by its subreddit moderators
-        </Text>
-      ) : accessFailure === "banned" ? (
-        <Text
-          style={[
-            styles.accessFailureText,
-            {
-              color: theme.subtleText,
-            },
-          ]}
-        >
-          🚫 r/{subreddit} has been banned by Reddit Administrators for breaking
-          Reddit rules
-        </Text>
-      ) : (
+      <AccessFailureComponent
+        accessFailure={accessFailure}
+        subreddit={subreddit}
+      >
         <GalleryComponent
           posts={posts}
-          loadMore={loadMorePosts} />
-      )}
+          loadMore={loadMorePosts}
+          fullyLoaded={fullyLoaded}
+          hitFilterLimit={hitFilterLimit}
+        />
+      </AccessFailureComponent>
     </View>
   );
 }

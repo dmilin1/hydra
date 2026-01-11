@@ -18,9 +18,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
  * https://github.com/expo/expo/pull/40203
  */
 
+export type VideoItem = {
+  type: "video";
+  uri: string;
+};
+
 const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
 
-export default function Video({
+export default function MediaVideo({
   uri,
   focused,
   overlayOpacity,
@@ -57,6 +62,29 @@ export default function Video({
 
   const playbackRate = useEvent(player, "playbackRateChange")?.playbackRate;
 
+  const dropDragEventCount = useRef(-1);
+
+  const panThroughVideo = (deltaX: number, deltaY: number) => {
+    if (!touchStart.current.isSkimming) {
+      if (Math.abs(deltaX) > 20 && Math.abs(deltaY) < 30) {
+        touchStart.current.x += deltaX;
+        touchStart.current.y += deltaY;
+        touchStart.current.isSkimming = true;
+        player.pause();
+      }
+      return;
+    }
+    /**
+     * This is necessary for some reason or the progress bar doesn't update properly.
+     */
+    dropDragEventCount.current++;
+    if (dropDragEventCount.current % 2 !== 0) {
+      return;
+    }
+    const videoChange = deltaX / (width / player.duration);
+    player.currentTime = touchStart.current.videoTime + videoChange;
+  };
+
   useEventListener(player, "playingChange", (e) => {
     if (touchStart.current.isSkimming) {
       return;
@@ -79,26 +107,6 @@ export default function Video({
       });
     }
   });
-
-  const dropDragEventCount = useRef(-1);
-  const panThroughVideo = (deltaX: number, deltaY: number) => {
-    if (!touchStart.current.isSkimming) {
-      if (Math.abs(deltaX) > 20 && Math.abs(deltaY) < 30) {
-        touchStart.current.x += deltaX;
-        touchStart.current.y += deltaY;
-        touchStart.current.isSkimming = true;
-        player.pause();
-      }
-      return;
-    }
-    dropDragEventCount.current++;
-    if (dropDragEventCount.current % 2 !== 0) {
-      return;
-    }
-    const videoChange = deltaX / (width / player.duration);
-    // player.seekBy(videoChange);
-    player.currentTime = touchStart.current.videoTime + videoChange;
-  };
 
   useEffect(() => {
     if (focused) {

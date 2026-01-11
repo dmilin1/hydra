@@ -1,11 +1,14 @@
 import { DependencyList, useEffect, useRef, useState } from "react";
 
 import { RedditDataObject } from "../api/RedditApi";
+import { BannedSubredditError, PrivateSubredditError } from "../api/Posts";
 
 export type FilterFunction<T extends RedditDataObject> = (
   newData: T[],
   data: T[],
 ) => Promise<T[]> | T[];
+
+export type AccessFailure = "private" | "banned" | null;
 
 type UseRedditDataStateProps<T extends RedditDataObject> = {
   loadData: (
@@ -42,6 +45,7 @@ export default function useRedditDataState<T extends RedditDataObject>({
   const [data, setData] = useState<T[]>([]);
   const [fullyLoaded, setFullyLoaded] = useState(false);
   const [hitFilterLimit, setHitFilterLimit] = useState(false);
+  const [accessFailure, setAccessFailure] = useState<AccessFailure>(null);
 
   const applyFilters = async (newData: T[], filters: FilterFunction<T>[]) => {
     if (filters.length === 0) return newData;
@@ -50,10 +54,27 @@ export default function useRedditDataState<T extends RedditDataObject>({
     }, Promise.resolve(newData));
   };
 
+  const loadDataWithFailureHandling: typeof loadData = async (...props) => {
+    try {
+      return await loadData(...props);
+    } catch (e) {
+      if (e instanceof BannedSubredditError) {
+        setAccessFailure("banned");
+        return [];
+      } else if (e instanceof PrivateSubredditError) {
+        setAccessFailure("private");
+        return [];
+      } else {
+        throw e;
+      }
+    }
+  };
+
   const loadMoreData = async () => {
+    if (hitFilterLimit) return;
     let newData: T[] = [];
     for (let i = 0; i < filterRetries; i++) {
-      const potentialData = await loadData(
+      const potentialData = await loadDataWithFailureHandling(
         unfilteredAfter.current,
         limitRampUp?.[i],
       );
@@ -69,9 +90,12 @@ export default function useRedditDataState<T extends RedditDataObject>({
       if (newData.length > 0) {
         break;
       }
+    }
+    if (newData.length > 0) {
+      setData([...data, ...newData]);
+    } else {
       setHitFilterLimit(true);
     }
-    setData([...data, ...newData]);
   };
 
   const refreshData = async ({ clearBeforeLoading = false } = {}) => {
@@ -81,7 +105,7 @@ export default function useRedditDataState<T extends RedditDataObject>({
     unfilteredAfter.current = undefined;
     let newData: T[] = [];
     for (let i = 0; i < filterRetries; i++) {
-      const potentialData = await loadData(
+      const potentialData = await loadDataWithFailureHandling(
         unfilteredAfter.current,
         limitRampUp?.[i],
       );
@@ -150,5 +174,6 @@ export default function useRedditDataState<T extends RedditDataObject>({
     deleteData,
     fullyLoaded,
     hitFilterLimit,
+    accessFailure,
   };
 }

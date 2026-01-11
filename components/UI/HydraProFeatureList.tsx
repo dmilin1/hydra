@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -15,6 +15,11 @@ export default function HydraProFeatureList({
       icon: <Ionicons name="notifications" size={24} color={theme.text} />,
       title: "Inbox Alerts",
       description: "Get instant alerts for replies and messages",
+    },
+    {
+      icon: <FontAwesome name="picture-o" size={22} color={theme.text} />,
+      title: "Gallery Mode",
+      description: "Unlimited scrolling in Gallery Mode",
     },
     {
       icon: <Ionicons name="stats-chart" size={24} color={theme.text} />,
@@ -35,7 +40,8 @@ export default function HydraProFeatureList({
     {
       icon: <Ionicons name="color-palette" size={24} color={theme.text} />,
       title: "Additional Themes",
-      description: "Customize your app with premium themes",
+      description:
+        "Customize your app with premium themes, or create a custom theme",
     },
     {
       icon: <Ionicons name="heart" size={24} color={theme.text} />,

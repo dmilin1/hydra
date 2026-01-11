@@ -1,5 +1,5 @@
 import { File, Paths } from "expo-file-system/next";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -21,7 +21,11 @@ export default function useVideoMenu() {
   const { setModal } = useContext(ModalContext);
   const { theme } = useContext(ThemeContext);
 
+  const alreadyAsking = useRef(false);
+
   return async (videoUrl: string) => {
+    if (alreadyAsking.current) return;
+    alreadyAsking.current = true;
     const result = await showContextMenu({
       options: ["Share"],
     });
@@ -72,6 +76,7 @@ export default function useVideoMenu() {
         setModal(null);
       }
     }
+    alreadyAsking.current = false;
   };
 }
 
