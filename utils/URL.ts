@@ -1,4 +1,5 @@
 import { Parser } from "htmlparser2";
+import safeFetch from "./safeFetch";
 
 export type OpenGraphData = {
   title?: string;
@@ -79,7 +80,9 @@ export default class URL {
 
   async getOpenGraphData(): Promise<OpenGraphData | undefined> {
     try {
-      const res = await fetch(this.url);
+      const res = await safeFetch(this.url, {
+        timeout: 1_000, // Don't slow down loads if some site is slow to respond
+      });
       const html = await res.text();
       const results: OpenGraphData = {};
       const parser = new Parser({
