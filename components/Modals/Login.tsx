@@ -15,6 +15,7 @@ import { AccountContext } from "../../contexts/AccountContext";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { WebView } from "react-native-webview";
+import RedditCookies from "../../utils/RedditCookies";
 
 const INJECTED_JAVASCRIPT = `
   const modifyThroughShadowDOM = (selector, styleOrFunction) => {
@@ -58,6 +59,13 @@ const INJECTED_JAVASCRIPT = `
   );
 `;
 
+const ALLOWED_URLS = [
+  "reddit.com/login",
+  "redditinc.com/policies/user-agreement",
+  "redditinc.com/policies/privacy-policy",
+  "reddit.com/policies/privacy-policy",
+];
+
 export default function Login() {
   const { theme } = useContext(ThemeContext);
   const { logIn, doWithTempLogout } = useContext(AccountContext);
@@ -99,6 +107,22 @@ export default function Login() {
     });
   }, []);
 
+  useEffect(() => {
+    /**
+     * Backup method using polling to check if the session cookie has been set.
+     * This is necessary because the onLoadStart event isn't triggering for all
+     * users. I've been unable to reproduce the issue and it may be because Reddit
+     * is running an experiment.
+     */
+    if (!canShow) return;
+    const interval = setInterval(async () => {
+      if (await RedditCookies.hasSessionCookieBeenSet()) {
+        handleLoginFinished();
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, [canShow]);
+
   return (
     <View style={styles.loginContainer}>
       <SafeAreaView style={styles.safeArea}>
@@ -127,15 +151,8 @@ export default function Login() {
               thirdPartyCookiesEnabled={true}
               onLoadStart={(event) => {
                 if (
-                  !event.nativeEvent.url.includes("reddit.com/login") &&
-                  !event.nativeEvent.url.includes(
-                    "redditinc.com/policies/user-agreement",
-                  ) &&
-                  !event.nativeEvent.url.includes(
-                    "redditinc.com/policies/privacy-policy",
-                  ) &&
-                  !event.nativeEvent.url.includes(
-                    "reddit.com/policies/privacy-policy",
+                  !ALLOWED_URLS.some((url) =>
+                    event.nativeEvent.url.includes(url),
                   )
                 ) {
                   handleLoginFinished();

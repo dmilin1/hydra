@@ -18,6 +18,11 @@ export default class RedditCookies {
     return await SecureStore.getItemAsync(`redditSession-${username}`);
   }
 
+  static async hasSessionCookieBeenSet() {
+    const cookies = await CookieManager.get("https://www.reddit.com");
+    return cookies?.reddit_session !== undefined;
+  }
+
   static async saveSessionCookies(username: string) {
     const cookies = await CookieManager.get("https://www.reddit.com");
     if (cookies?.reddit_session) {
@@ -46,8 +51,24 @@ export default class RedditCookies {
   }
 
   static async clearSessionCookies() {
+    // First, invalidate the reddit_session cookie by setting it to expired.
+    // This works around a bug in @react-native-cookies/cookies where clearAll(true)
+    // triggers a sync FROM WebKit TO HTTP, restoring cookies that were just cleared.
+    // See: https://github.com/react-native-cookies/cookies/pull/152
+    const staleRedditSessionCookie = {
+      name: "reddit_session",
+      value: "",
+      domain: ".reddit.com",
+      path: "/",
+      expires: new Date(0).toISOString(),
+    };
+    await CookieManager.set("https://www.reddit.com", staleRedditSessionCookie);
+    await CookieManager.set(
+      "https://www.reddit.com",
+      staleRedditSessionCookie,
+      true,
+    );
     await CookieManager.clearAll();
     await CookieManager.clearAll(true);
-    await CookieManager.removeSessionCookies();
   }
 }
