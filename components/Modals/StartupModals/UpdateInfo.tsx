@@ -17,89 +17,67 @@ import KeyStore from "../../../utils/KeyStore";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v3.1.0-1",
+  updateKey: "v3.2.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Edit Custom Themes",
+      title: "Gallery Mode",
       description:
-        "Long press on a custom theme, then tap edit to continue where you left off.",
+        'A new mode for viewing media heavy subreddits 😉. Open it on any subreddit by tapping the "..." menu button in the top right corner and selecting "Open In Gallery Mode". Power users can get Hydra Pro to scroll more than 100 media items deep.',
     },
     {
-      title: "Navbar & Tabs Changes",
-      description:
-        "Navbar updated to match iOS 26 design changes. Top navbar and bottom tabs have been realigned to make better use of vertical space. The tab bar hide animation was tweaked to look smoother.",
+      title: "Open Comment Flairs",
+      description: "Tap on a truncated comment flair to see the full flair.",
     },
     {
-      title: "Improved Accessibility Support",
+      title: "Collapsed Comment Memory",
       description:
-        "Hydra should be a little easier to use for VoiceOver users. There's still a long way to go on this, but it's important to me and I'm making progress.",
+        "Child comments will remember if they're collapsed after collapsing and expanding their parent.",
     },
     {
-      title: "Edited Indicator",
+      title: "Swipe to Collapse Thread",
       description:
-        "Posts and comments now indicate when they have been edited with a pencil icon. Tap the icon to see the specific time of the edit.",
+        "New swipe gesture can be set in Settings => General => Gestures. This gesture collapses the entire thread instead of just the comment you're currently viewing.",
     },
     {
-      title: "Swipe to Collapse Comments",
+      title: "More Comment Long Press Options",
       description:
-        "New swipe gesture can be set in Settings => General => Gestures.",
-    },
-    {
-      title: "Open In External Browser",
-      description:
-        "Hydra can open links in an external browser of your choice. Configure this under Settings => General => External Links.",
-    },
-    {
-      title: "Swipe To Close Browser",
-      description:
-        "Hydra's internal browser can now be swiped away like other screens.",
+        "Long pressing a comment now has 3 additional options: expand, collapse, and collapse thread.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description: "Swapped out broken links to old /r/HydraApp subreddit.",
+      description:
+        "When logging in, some users login sessions were failing to be captured and were instead redirected to the Reddit home page.",
     },
     {
-      description: "Video player was causing crashes in certain conditions.",
+      description: "Login popup would sometimes say you are already logged in.",
     },
     {
       description:
-        "Scroll to next comment button was not movable when swipe anywhere to navigate is turned on.",
+        "Posts with links to external websites that returned an out of bounds HTTP status code would cause Hydra to crash.",
     },
     {
       description:
-        'Crosspost text was not truncating. Crossposts now follow the "Post text max lines" setting under Settings => Appearance.',
-    },
-    {
-      description: "Regression of text cutoff rendering bug.",
-    },
-    {
-      description: "Refresh indicator was invisible on certain themes.",
+        "Posts with links to external websites that are slow to respond will no longer make your feed load slower.",
     },
     {
       description:
-        "Fixed settings picker being hard to read with certain themes.",
+        "Posts sometimes failed to be marked as read when interacting with them.",
     },
     {
       description:
-        "Image of certain dimensions would have their backgrounds flash when on light color themes.",
-    },
-    {
-      description: "Custom sorts were sometimes not being remembered.",
-    },
-    {
-      description: "Favorites would not showing up in subreddit list.",
+        "When trying to favorite a subreddit while not subscribed to it, an error message is now shown instead of failing silently.",
     },
     {
       description:
-        "Changing the theme would not working in certain conditions.",
+        "Filtering a subreddit from your feed no longer prevents the subreddit from loading when you navigate directly to it.",
     },
     {
       description:
-        "Sidebar was failing to render due to Reddit removing user counts.",
+        "Slide gestures were failing to work when swipe anywhere to navigate was disabled.",
     },
   ] as { description: string }[],
 };
