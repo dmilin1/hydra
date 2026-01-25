@@ -25,10 +25,6 @@
 
 - 🐛 Lists in lists render improperly (https://www.reddit.com/r/MacOSBeta/comments/1lat3xv/guide_how_to_try_macos_26_developer_beta_in_a/)
 
-- 🚀 Add Liquid Glass
-
-- 🚀 Prawn mode
-
 
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
@@ -36,6 +32,8 @@
 - 🐛 Enable landscape mode in the browser
 
 - 🚀 Add sort to search tab
+
+- 🚀 Add chat back
 
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash

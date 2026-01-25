@@ -18,6 +18,7 @@ type ListItem = {
   rightIcon?: ReactNode;
   text: string;
   onPress: () => void;
+  hide?: boolean;
 };
 
 type ListProps = {
@@ -41,42 +42,44 @@ export default function List({ items, title, containerStyle }: ListProps) {
           containerStyle,
         ]}
       >
-        {items.map((item, i) => (
-          <TouchableOpacity
-            key={item.key}
-            onPress={item.onPress}
-            activeOpacity={0.5}
-            style={[
-              styles.itemButtonContainer,
-              {
-                borderBottomColor:
-                  i < items.length - 1 ? theme.divider : "transparent",
-              },
-            ]}
-          >
-            <View style={styles.itemButtonSubContainer}>
-              <View style={styles.iconMargin}>{item.icon}</View>
-              <Text
-                style={[
-                  styles.itemButtonText,
-                  {
-                    color: theme.text,
-                  },
-                ]}
-              >
-                {item.text}
-              </Text>
-              {item.rightIcon ?? (
-                <MaterialIcons
-                  name="keyboard-arrow-right"
-                  size={30}
-                  color={theme.verySubtleText}
-                  style={styles.iconMargin}
-                />
-              )}
-            </View>
-          </TouchableOpacity>
-        ))}
+        {items
+          .filter((item) => !item.hide)
+          .map((item, i) => (
+            <TouchableOpacity
+              key={item.key}
+              onPress={item.onPress}
+              activeOpacity={0.5}
+              style={[
+                styles.itemButtonContainer,
+                {
+                  borderBottomColor:
+                    i < items.length - 1 ? theme.divider : "transparent",
+                },
+              ]}
+            >
+              <View style={styles.itemButtonSubContainer}>
+                <View style={styles.iconMargin}>{item.icon}</View>
+                <Text
+                  style={[
+                    styles.itemButtonText,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  {item.text}
+                </Text>
+                {item.rightIcon ?? (
+                  <MaterialIcons
+                    name="keyboard-arrow-right"
+                    size={30}
+                    color={theme.verySubtleText}
+                    style={styles.iconMargin}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+          ))}
       </View>
     </>
   );

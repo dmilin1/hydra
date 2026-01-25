@@ -75,7 +75,7 @@ export type ContextTypes =
   | "Open in Gallery Mode";
 
 type SortAndContextProps = {
-  route: RouteProp<StackParamsList, URLRoutes>;
+  route: RouteProp<StackParamsList, URLRoutes> | string;
   navigation: FlexibleNavigationProp;
   sortOptions?: SortTypes[];
   contextOptions?: ContextTypes[];
@@ -102,7 +102,7 @@ export default function SortAndContext({
   const sortButtonRef = useRef<View>(null);
   const contextButtonRef = useRef<View>(null);
 
-  const currentPath = route.params.url;
+  const currentPath = typeof route === "string" ? route : route.params.url;
   const pageType = new RedditURL(currentPath).getPageType();
   const [currentSort, _] = currentPath
     ? new RedditURL(currentPath).getSort()

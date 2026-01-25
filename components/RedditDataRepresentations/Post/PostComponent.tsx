@@ -37,12 +37,14 @@ type PostComponentProps = {
   post: Post;
   setPost: (post: Post) => void;
   deletePost?: () => void;
+  onPostOpen?: (url: string) => void;
 };
 
 export default function PostComponent({
   post,
   setPost,
   deletePost,
+  onPostOpen,
 }: PostComponentProps) {
   const { params } = useRoute<URLRoutes>();
   const { pushURL } = useURLNavigation();
@@ -264,7 +266,11 @@ export default function PostComponent({
           ]}
           onPress={() => {
             setSeenValue(true);
-            pushURL(post.link);
+            if (onPostOpen) {
+              onPostOpen(post.link);
+            } else {
+              pushURL(post.link);
+            }
           }}
           onLongPress={async (e) => {
             if (e.nativeEvent.touches.length > 1) return;

@@ -31,9 +31,10 @@ export default function ScrollToNextButtonProvider({
 
   const scrollToNext = useRef<(() => void) | null>(null);
   const scrollToPrevious = useRef<(() => void) | null>(null);
-  const [containerHeight, setContainerHeight] = useState(100);
-  const [containerWidth, setContainerWidth] = useState(100);
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
   const [containerVerticalOffset, setContainerVerticalOffset] = useState(0);
+  const [containerHorizontalOffset, setContainerHorizontalOffset] = useState(0);
 
   const LOCKED_POSITIONS = {
     "bottom-right": {
@@ -107,7 +108,7 @@ export default function ScrollToNextButtonProvider({
 
   const getButtonOffsetPosition = (e: GestureResponderEvent) => {
     return {
-      x: e.nativeEvent.pageX - BUTTON_SIZE / 2,
+      x: e.nativeEvent.pageX - BUTTON_SIZE / 2 - containerHorizontalOffset,
       y: e.nativeEvent.pageY - BUTTON_SIZE / 2 - 30 - containerVerticalOffset,
     };
   };
@@ -162,78 +163,84 @@ export default function ScrollToNextButtonProvider({
 
   return (
     <ScrollToNextButtonContext.Provider value={value}>
-      <Animated.View
-        style={[
-          styles.skipToNextButton,
-          {
-            top: 0,
-            left: 0,
-            transform: [{ translateX: position.x }, { translateY: position.y }],
-            backgroundColor: theme.buttonBg,
-            opacity: buttonOpacity,
-            zIndex: 1000,
-          },
-        ]}
-        onTouchStart={() => {
-          touchStartedTime.current = Date.now();
-          buttonOpacity.setValue(0.7);
-          scrollToPreviousTimeout.current = setTimeout(() => {
-            scrollToPrevious.current?.();
-          }, 300);
-          startDragTimeout.current = setTimeout(() => {
-            startDrag();
-          }, 1000);
-        }}
-        onTouchMove={(event) => {
-          if (!inMoveMode.current) {
-            const distance = Math.sqrt(
-              event.nativeEvent.locationX ** 2 +
-                event.nativeEvent.locationY ** 2,
-            );
-            if (distance > 30) {
+      {containerHeight > 0 && containerWidth > 0 && (
+        <Animated.View
+          style={[
+            styles.skipToNextButton,
+            {
+              top: 0,
+              left: 0,
+              transform: [
+                { translateX: position.x },
+                { translateY: position.y },
+              ],
+              backgroundColor: theme.buttonBg,
+              opacity: buttonOpacity,
+              zIndex: 1000,
+            },
+          ]}
+          onTouchStart={() => {
+            touchStartedTime.current = Date.now();
+            buttonOpacity.setValue(0.7);
+            scrollToPreviousTimeout.current = setTimeout(() => {
+              scrollToPrevious.current?.();
+            }, 300);
+            startDragTimeout.current = setTimeout(() => {
               startDrag();
+            }, 1000);
+          }}
+          onTouchMove={(event) => {
+            if (!inMoveMode.current) {
+              const distance = Math.sqrt(
+                event.nativeEvent.locationX ** 2 +
+                  event.nativeEvent.locationY ** 2,
+              );
+              if (distance > 30) {
+                startDrag();
+              }
             }
-          }
-          if (inMoveMode.current) {
-            const btnPosition = getButtonOffsetPosition(event);
-            const hoveredLockedPosition = getHoveredLockedPosition(btnPosition);
-            if (hoveredLockedPosition) {
-              position.setValue(hoveredLockedPosition.position);
-              return;
+            if (inMoveMode.current) {
+              const btnPosition = getButtonOffsetPosition(event);
+              const hoveredLockedPosition =
+                getHoveredLockedPosition(btnPosition);
+              if (hoveredLockedPosition) {
+                position.setValue(hoveredLockedPosition.position);
+                return;
+              }
+              position.setValue(btnPosition);
             }
-            position.setValue(btnPosition);
-          }
-        }}
-        onTouchEnd={(e) => {
-          buttonOpacity.setValue(1);
-          if (inMoveMode.current) {
-            const hoveredLockedPosition = getHoveredLockedPosition(
-              getButtonOffsetPosition(e),
-            );
-            if (hoveredLockedPosition) {
-              setButtonPosition(hoveredLockedPosition.positionName);
-            } else {
-              Animated.spring(position, {
-                toValue: LOCKED_POSITIONS[buttonPosition],
-                useNativeDriver: true,
-              }).start();
+          }}
+          onTouchEnd={(e) => {
+            buttonOpacity.setValue(1);
+            if (inMoveMode.current) {
+              const hoveredLockedPosition = getHoveredLockedPosition(
+                getButtonOffsetPosition(e),
+              );
+              if (hoveredLockedPosition) {
+                setButtonPosition(hoveredLockedPosition.positionName);
+              } else {
+                Animated.spring(position, {
+                  toValue: LOCKED_POSITIONS[buttonPosition],
+                  useNativeDriver: true,
+                }).start();
+              }
+              inMoveMode.current = false;
+              overlayOpacity.setValue(0);
             }
-            inMoveMode.current = false;
-            overlayOpacity.setValue(0);
-          }
-          if (!touchStartedTime.current) return;
-          const delay = Date.now() - touchStartedTime.current;
-          if (touchStartedTime.current && delay < 300) {
-            clearTimeouts();
-            scrollToNext.current?.();
-          }
-          if (startDragTimeout.current && delay < 1000) {
-            clearTimeouts();
-          }
-        }}
-      >
-        <AntDesign name="down" size={18} color={theme.buttonText} />
-      </Animated.View>
+            if (!touchStartedTime.current) return;
+            const delay = Date.now() - touchStartedTime.current;
+            if (touchStartedTime.current && delay < 300) {
+              clearTimeouts();
+              scrollToNext.current?.();
+            }
+            if (startDragTimeout.current && delay < 1000) {
+              clearTimeouts();
+            }
+          }}
+        >
+          <AntDesign name="down" size={18} color={theme.buttonText} />
+        </Animated.View>
+      )}
       <Animated.View
         style={[
           styles.overlay,
@@ -244,8 +251,9 @@ export default function ScrollToNextButtonProvider({
           },
         ]}
         onLayout={(event) => {
-          event.target.measure((_x, _y, width, height, _pageX, pageY) => {
+          event.target.measure((_x, _y, width, height, pageX, pageY) => {
             setContainerVerticalOffset(pageY);
+            setContainerHorizontalOffset(pageX);
             setContainerHeight(height);
             setContainerWidth(width);
           });

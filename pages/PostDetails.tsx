@@ -45,10 +45,17 @@ export type LoadMoreCommentsFunc = (
   childStartIndex: number,
 ) => Promise<void>;
 
-type PostDetailsProps = StackPageProps<"PostDetailsPage">;
+type PostDetailsProps =
+  | StackPageProps<"PostDetailsPage">
+  | {
+      splitViewURL: string;
+      setSplitViewURL: (url: string | null) => void;
+    };
 
-function PostDetails({ route }: PostDetailsProps) {
-  const url = route.params.url;
+function PostDetails(props: PostDetailsProps) {
+  const url = "route" in props ? props.route.params.url : props.splitViewURL;
+
+  const isSplitView = "splitViewURL" in props && !!props.splitViewURL;
 
   const navigation = useURLNavigation();
 
@@ -98,10 +105,14 @@ function PostDetails({ route }: PostDetailsProps) {
 
   const loadPostDetails = async () => {
     setRefreshing(true);
+    if (isSplitView) {
+      setPostDetail(undefined);
+    }
     const postDetail = await getPostsDetail(url);
     setPostDetail(postDetail);
     setRefreshing(false);
 
+    if (isSplitView) return;
     const contextOptions: ContextTypes[] = [
       ...(currentUser?.userName === postDetail.author && postDetail.text
         ? ["Edit" as ContextTypes]
@@ -122,11 +133,11 @@ function PostDetails({ route }: PostDetailsProps) {
       "Q&A",
     ];
     navigation.setOptions({
-      title: new RedditURL(route.params.url).getPageName(),
+      title: new RedditURL(url).getPageName(),
       headerRight: () => {
         return (
           <SortAndContext
-            route={route}
+            route={url}
             navigation={navigation}
             sortOptions={contextSort}
             contextOptions={contextOptions}
