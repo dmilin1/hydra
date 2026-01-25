@@ -8,13 +8,13 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
   Image,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Clipboard from "expo-clipboard";
@@ -47,6 +47,8 @@ export default function NewPostEditor({
 }: NewPostProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
+
+  const { width, height } = useWindowDimensions();
 
   const openContextMenu = useContextMenu();
 
@@ -183,6 +185,8 @@ export default function NewPostEditor({
         styles.newPostContainer,
         {
           backgroundColor: theme.background,
+          width,
+          height,
         },
       ]}
     >
@@ -441,8 +445,6 @@ const styles = StyleSheet.create({
   newPostContainer: {
     position: "absolute",
     top: 0,
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
     zIndex: 1,
     paddingVertical: 10,
   },

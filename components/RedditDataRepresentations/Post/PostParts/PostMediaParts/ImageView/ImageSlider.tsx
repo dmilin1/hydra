@@ -7,11 +7,11 @@ import React, {
 } from "react";
 import {
   Animated,
-  Dimensions,
   StyleSheet,
   View,
   VirtualizedList,
   Text,
+  useWindowDimensions,
 } from "react-native";
 
 import { ImageSource } from "./@types";
@@ -38,8 +38,6 @@ export type ImageSliderProps = {
 };
 
 const DEFAULT_DELAY_LONG_PRESS = 800;
-const SCREEN = Dimensions.get("screen");
-const SCREEN_WIDTH = SCREEN.width;
 
 export default function ImageSlider({
   images,
@@ -55,12 +53,13 @@ export default function ImageSlider({
   FooterComponent,
 }: ImageSliderProps) {
   const { theme } = useContext(ThemeContext);
+  const windowDimensions = useWindowDimensions();
 
   const imageList = useRef<VirtualizedList<ImageSource>>(null);
   const [_opacity, onRequestCloseEnhanced] = useRequestClose(onRequestClose);
   const [currentImageIndex, onScroll] = useImageIndexChange(
     initialImageIndex,
-    SCREEN,
+    windowDimensions,
   );
   const [headerTransform, footerTransform, toggleBarsVisible] =
     useAnimatedComponents();
@@ -109,8 +108,8 @@ export default function ImageSlider({
         getItem={(_: ImageSource[], index: number) => images[index]}
         getItemCount={() => images.length}
         getItemLayout={(_: ImageSource, index: number) => ({
-          length: SCREEN_WIDTH,
-          offset: SCREEN_WIDTH * index,
+          length: windowDimensions.width,
+          offset: windowDimensions.width * index,
           index,
         })}
         scrollEnabled={images.length > 1}

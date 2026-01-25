@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Animated, Dimensions, StyleSheet } from "react-native";
+import { Animated, StyleSheet, useWindowDimensions } from "react-native";
 
 type ModalContextType = {
   setModal: (modal?: ReactNode) => void;
@@ -18,15 +18,14 @@ const initialModalContext: ModalContextType = {
 
 export const ModalContext = createContext(initialModalContext);
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
-
 export function ModalProvider({ children }: React.PropsWithChildren) {
   const [modal, setModal] = useState<ReactNode>(null);
-  const modalPosition = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  const { height } = useWindowDimensions();
+  const modalPosition = useRef(new Animated.Value(height)).current;
 
   useEffect(() => {
     Animated.spring(modalPosition, {
-      toValue: modal ? 0 : SCREEN_HEIGHT,
+      toValue: modal ? 0 : height,
       bounciness: 2,
       useNativeDriver: true,
     }).start();

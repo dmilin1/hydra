@@ -1,10 +1,10 @@
 import { createContext, useEffect, useRef, useState } from "react";
 import {
-  Dimensions,
   Keyboard,
   ScrollView,
   ScrollViewProps,
   TextInput,
+  useWindowDimensions,
 } from "react-native";
 
 type KeyboardAvoidingScrollerProps = ScrollViewProps;
@@ -14,8 +14,6 @@ type KeyboardAvoidingScrollerContextType = {
   currentInput: TextInput | null;
   setCurrentInput: (input: TextInput) => void;
 };
-
-const SCREEN_HEIGHT = Dimensions.get("screen").height;
 
 const measureAsync = (elem: any) => {
   return new Promise<{
@@ -53,6 +51,8 @@ const SCROLL_OFFSET = 100;
 export default function KeyboardAvoidingScroller(
   props: KeyboardAvoidingScrollerProps,
 ) {
+  const { height } = useWindowDimensions();
+
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentInput, setCurrentInput] = useState<TextInput | null>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -66,7 +66,7 @@ export default function KeyboardAvoidingScroller(
     scrollViewRef.current?.scrollTo({
       y:
         textInputY +
-        (keyboardHeight - SCREEN_HEIGHT) +
+        (keyboardHeight - height) +
         scrollPageY +
         textInputHeight +
         SCROLL_OFFSET,

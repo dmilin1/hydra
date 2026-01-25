@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Dimensions, TextInput } from "react-native";
+import { StyleSheet, View, TextInput, useWindowDimensions } from "react-native";
 
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -12,6 +12,8 @@ export default function SelectText({ text }: SelectTextProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
+  const { width, height } = useWindowDimensions();
+
   return (
     <>
       <View
@@ -20,6 +22,10 @@ export default function SelectText({ text }: SelectTextProps) {
           {
             backgroundColor: theme.tint,
             borderColor: theme.divider,
+            bottom: -height,
+            left: -3,
+            width: width + 6,
+            height: height * 0.65,
           },
         ]}
       >
@@ -36,7 +42,7 @@ export default function SelectText({ text }: SelectTextProps) {
         />
       </View>
       <View
-        style={styles.background}
+        style={[styles.background, { height }]}
         onTouchStart={() => {
           setModal(null);
         }}
@@ -48,10 +54,6 @@ export default function SelectText({ text }: SelectTextProps) {
 const styles = StyleSheet.create({
   selectTextContainer: {
     position: "absolute",
-    bottom: -Dimensions.get("window").height,
-    left: -3,
-    width: Dimensions.get("window").width + 6,
-    height: Dimensions.get("window").height * 0.65,
     zIndex: 1,
     borderRadius: 30,
     paddingVertical: 10,
@@ -68,7 +70,6 @@ const styles = StyleSheet.create({
     width: "100%",
     top: 0,
     left: 0,
-    height: Dimensions.get("window").height,
     backgroundColor: "black",
     opacity: 0.7,
   },

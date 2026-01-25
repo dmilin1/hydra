@@ -6,9 +6,9 @@ import {
   Share,
   View,
   StyleSheet,
-  Dimensions,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 
 import URL from "./URL";
@@ -20,6 +20,8 @@ export default function useVideoMenu() {
   const showContextMenu = useContextMenu();
   const { setModal } = useContext(ModalContext);
   const { theme } = useContext(ThemeContext);
+
+  const { width, height } = useWindowDimensions();
 
   const alreadyAsking = useRef(false);
 
@@ -33,7 +35,7 @@ export default function useVideoMenu() {
       try {
         setModal(
           <TouchableOpacity
-            style={styles.modalContainer}
+            style={[styles.modalContainer, { width, height }]}
             onPress={() => setModal(null)}
             activeOpacity={0.9}
           >
@@ -83,8 +85,6 @@ export default function useVideoMenu() {
 const styles = StyleSheet.create({
   modalContainer: {
     position: "absolute",
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width,
     alignItems: "center",
     justifyContent: "center",
   },

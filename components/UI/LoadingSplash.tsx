@@ -4,8 +4,8 @@ import {
   View,
   StyleSheet,
   Image,
-  Dimensions,
   ActivityIndicator,
+  useWindowDimensions,
 } from "react-native";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -15,10 +15,11 @@ const splashInverted = require("./../../assets/images/splashInverted.png");
 
 export default function LoadingSplash() {
   const { theme } = useContext(ThemeContext);
+  const { width, height } = useWindowDimensions();
 
   return (
     <>
-      <View style={styles.splashContainer}>
+      <View style={[styles.splashContainer, { width, height }]}>
         <Image
           style={[
             styles.image,
@@ -30,7 +31,7 @@ export default function LoadingSplash() {
           onLoadEnd={SplashScreen.hideAsync}
         />
       </View>
-      <View style={styles.loaderContainer}>
+      <View style={[styles.loaderContainer, { width, height }]}>
         <ActivityIndicator />
       </View>
     </>
@@ -44,8 +45,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 1000,
     top: 0,
-    width: Dimensions.get("screen").width,
-    height: Dimensions.get("screen").height,
   },
   image: {
     flex: 1,
@@ -57,8 +56,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 1001,
     top: 100,
-    width: Dimensions.get("screen").width,
-    height: Dimensions.get("screen").height,
     alignItems: "center",
     justifyContent: "center",
   },

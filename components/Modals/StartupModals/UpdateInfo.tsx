@@ -4,10 +4,10 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   ScrollView,
   Image,
   TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -85,6 +85,8 @@ export const updateInfo = {
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
   const { theme } = useContext(ThemeContext);
 
+  const { width, height } = useWindowDimensions();
+
   const exitUpdateInfo = () => {
     KeyStore.set(LAST_SEEN_UPDATE_KEY, updateInfo.updateKey);
     onExit();
@@ -92,7 +94,16 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
 
   return (
     <>
-      <View style={styles.updateInfoContainer}>
+      <View
+        style={[
+          styles.updateInfoContainer,
+          {
+            marginTop: height * 0.175,
+            maxHeight: height * 0.65,
+            maxWidth: width - 40,
+          },
+        ]}
+      >
         <View
           style={[
             styles.updateInfoSubContainer,
@@ -320,7 +331,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
         </View>
       </View>
       <TouchableOpacity
-        style={styles.background}
+        style={[styles.background, { width, height }]}
         onPress={() => exitUpdateInfo()}
       />
     </>
@@ -332,19 +343,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     zIndex: 2,
-    marginTop: Dimensions.get("window").height * 0.175,
     flex: 1,
     justifyContent: "center",
-    maxHeight: Dimensions.get("window").height * 0.65,
-    maxWidth: Dimensions.get("window").width - 40,
     alignSelf: "center",
   },
   background: {
     position: "absolute",
     top: 0,
     left: 0,
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width,
     backgroundColor: "black",
     opacity: 0.75,
     zIndex: 1,

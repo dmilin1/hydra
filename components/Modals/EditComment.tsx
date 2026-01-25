@@ -4,12 +4,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
   ScrollView,
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
   TextInput,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -29,6 +29,8 @@ type EditCommentProps = {
 export default function EditComment({ contentSent, edit }: EditCommentProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
+
+  const { width, height } = useWindowDimensions();
 
   const [text, setText] = useState(edit.text);
   const [viewMode, setViewMode] = useState<"preview" | "old">("preview");
@@ -56,6 +58,8 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
         styles.editCommentContainer,
         {
           backgroundColor: theme.background,
+          width,
+          height,
         },
       ]}
     >
@@ -202,8 +206,6 @@ const styles = StyleSheet.create({
   editCommentContainer: {
     position: "absolute",
     top: 0,
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
     zIndex: 1,
     paddingVertical: 10,
   },

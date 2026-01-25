@@ -2,12 +2,11 @@ import { Image } from "expo-image";
 import React, { useCallback, useContext, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   ScrollView,
-  StyleSheet,
   NativeScrollEvent,
   NativeSyntheticEvent,
   TouchableWithoutFeedback,
+  useWindowDimensions,
 } from "react-native";
 
 import { ImageLoading } from "./ImageLoading";
@@ -19,9 +18,6 @@ import { PostSettingsContext } from "../../../../../../../../contexts/SettingsCo
 
 const SWIPE_CLOSE_OFFSET = 50;
 const SWIPE_CLOSE_VELOCITY = 1.55;
-const SCREEN = Dimensions.get("window");
-const SCREEN_WIDTH = SCREEN.width;
-const SCREEN_HEIGHT = SCREEN.height;
 
 type Props = {
   imageSrc: ImageSource;
@@ -42,14 +38,22 @@ const ImageItem = ({
   swipeToCloseEnabled = true,
   doubleTapToZoomEnabled = true,
 }: Props) => {
+  const windowDimensions = useWindowDimensions();
   const scrollViewRef = useRef<ScrollView | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [scaled, setScaled] = useState(false);
   const imageDimensions = useImageDimensions(imageSrc);
-  const handleDoubleTap = useDoubleTapToZoom(scrollViewRef, scaled, SCREEN);
+  const handleDoubleTap = useDoubleTapToZoom(
+    scrollViewRef,
+    scaled,
+    windowDimensions,
+  );
   const { liveTextInteraction } = useContext(PostSettingsContext);
 
-  const [translate, scale] = getImageTransform(imageDimensions, SCREEN);
+  const [translate, scale] = getImageTransform(
+    imageDimensions,
+    windowDimensions,
+  );
   const scrollValueY = new Animated.Value(0);
   const scaleValue = new Animated.Value(scale || 1);
   const translateValue = new Animated.ValueXY(translate);
@@ -133,7 +137,10 @@ const ImageItem = ({
     >
       <ScrollView
         ref={scrollViewRef}
-        style={styles.listItem}
+        style={{
+          width: windowDimensions.width,
+          height: windowDimensions.height,
+        }}
         contentOffset={{ x: 0, y: 0.5 }}
         pinchGestureEnabled
         showsHorizontalScrollIndicator={false}
@@ -149,8 +156,8 @@ const ImageItem = ({
            * the image would be offset weirdly. For some magical reason, changing the height
            * of the content container seems to trigger a reflow which fixes it.
            */
-          height: SCREEN_HEIGHT + (loaded ? 1 : 10),
-          width: SCREEN_WIDTH,
+          height: windowDimensions.height + (loaded ? 1 : 10),
+          width: windowDimensions.width,
         }}
         scrollEnabled={swipeToCloseEnabled || scaled}
         onScrollEndDrag={onScrollEndDrag}
@@ -178,12 +185,5 @@ const ImageItem = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  listItem: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
-  },
-});
 
 export default React.memo(ImageItem);

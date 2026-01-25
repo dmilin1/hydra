@@ -8,7 +8,7 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 
 import ImageViewer from "./ImageViewer";
@@ -28,9 +28,6 @@ type VideoPlayerProps = {
   aspectRatio?: number;
 };
 
-const DEVICE_HEIGHT = Dimensions.get("window").height;
-const DEVICE_WIDTH = Dimensions.get("window").width;
-
 export default function VideoPlayer({
   source,
   thumbnail,
@@ -44,6 +41,7 @@ export default function VideoPlayer({
   const { autoPlayVideos } = useContext(PostSettingsContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
   const showVideoMenu = useVideoMenu();
+  const { width, height } = useWindowDimensions();
 
   const [dontRenderYet, setDontRenderYet] = useState(
     currentDataMode === "lowData",
@@ -93,8 +91,8 @@ export default function VideoPlayer({
   });
 
   const videoRatio = aspectRatio ?? 1;
-  const heightIfFullSize = DEVICE_WIDTH / videoRatio;
-  const videoHeight = Math.min(DEVICE_HEIGHT * 0.6, heightIfFullSize);
+  const heightIfFullSize = width / videoRatio;
+  const videoHeight = Math.min(height * 0.6, heightIfFullSize);
 
   const video = useRef<VideoView>(null);
   const progress = useRef(new Animated.Value(0)).current;

@@ -4,10 +4,10 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   Image,
   TouchableOpacity,
   Linking,
+  useWindowDimensions,
 } from "react-native";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -18,6 +18,8 @@ export const STORE_REVIEW_REQUESTED_KEY = "storeReviewRequested";
 export default function PromptForReview({ onExit }: { onExit: () => void }) {
   const { theme } = useContext(ThemeContext);
   const [screen, setScreen] = useState<"prompt" | "success">("prompt");
+
+  const { width, height } = useWindowDimensions();
 
   const handleRateNow = async () => {
     await Linking.openURL(
@@ -157,7 +159,7 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
           )}
         </View>
         <TouchableOpacity
-          style={styles.background}
+          style={[styles.background, { width, height }]}
           onPress={() => exitPromptForReview()}
         />
       </View>
@@ -181,8 +183,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width,
     backgroundColor: "black",
     opacity: 0.7,
     zIndex: 1,

@@ -4,8 +4,8 @@ import {
   Text,
   StyleSheet,
   View,
-  Dimensions,
   TouchableHighlight,
+  useWindowDimensions,
 } from "react-native";
 
 import { default as ImageView } from "./ImageView/ImageViewing";
@@ -13,9 +13,6 @@ import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataMo
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../../utils/URL";
 import useImageMenu from "../../../../../utils/useImageMenu";
-
-const DEVICE_HEIGHT = Dimensions.get("window").height;
-const DEVICE_WIDTH = Dimensions.get("window").width;
 
 export default function ImageViewer({
   images,
@@ -28,6 +25,7 @@ export default function ImageViewer({
 }) {
   const { currentDataMode } = useContext(DataModeContext);
   const showImageMenu = useImageMenu();
+  const { width, height } = useWindowDimensions();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
   const [visible, setVisible] = useState(false);
@@ -60,8 +58,8 @@ export default function ImageViewer({
   const imgRefs = [img1, ...(displayImgs.length === 2 ? [img2] : [])];
 
   const imgRatio = aspectRatio ?? (img1 ? img1.width / img1.height : 0);
-  const heightIfFullSize = DEVICE_WIDTH / imgRatio;
-  const imgHeight = Math.min(DEVICE_HEIGHT * 0.6, heightIfFullSize);
+  const heightIfFullSize = width / imgRatio;
+  const imgHeight = Math.min(height * 0.6, heightIfFullSize);
 
   return (
     <View
