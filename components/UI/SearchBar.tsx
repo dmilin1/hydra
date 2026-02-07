@@ -9,6 +9,7 @@ type SearchBarProps = {
   clearOnSearch?: boolean;
   searchOnBlur?: boolean;
   onSearch: (text: string) => void;
+  placeholder?: string;
 };
 
 export default function SearchBar({
@@ -16,6 +17,7 @@ export default function SearchBar({
   clearOnSearch,
   onSearch,
   searchOnBlur = true,
+  placeholder,
 }: SearchBarProps) {
   const { theme } = useContext(ThemeContext);
   const search = useRef<string>("");
@@ -70,6 +72,7 @@ export default function SearchBar({
           if (!searchOnBlur) return;
           doSearch();
         }}
+        placeholder={placeholder}
       />
       {showX && (
         <TouchableOpacity

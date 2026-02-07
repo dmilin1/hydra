@@ -17,6 +17,7 @@ import List from "../../components/UI/List";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../utils/navigation";
 import { StartupModalContext } from "../../contexts/StartupModalContext";
+import SearchBar from "../../components/UI/SearchBar";
 
 export default function Root() {
   const { theme } = useContext(ThemeContext);
@@ -25,9 +26,27 @@ export default function Root() {
 
   return (
     <>
+      <View style={{ marginHorizontal: 5 }}>
+        <SearchBar
+          placeholder="Ask a question..."
+          onSearch={async (text) => {
+            if (!text) return;
+            pushURL(
+              `hydra://settings/guide/?search=${encodeURIComponent(text)}`,
+            );
+          }}
+          clearOnSearch={true}
+        />
+      </View>
       <List
         title="Settings"
         items={[
+          {
+            key: "guide",
+            icon: <Feather name="book" size={24} color={theme.text} />,
+            text: "Guide",
+            onPress: () => pushURL("hydra://settings/guide"),
+          },
           {
             key: "general",
             icon: <Feather name="settings" size={24} color={theme.text} />,

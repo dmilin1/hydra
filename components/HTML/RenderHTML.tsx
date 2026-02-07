@@ -126,6 +126,14 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     Wrapper = View;
     inheritedStyles.fontSize = 32;
     inheritedStyles.lineHeight = lineHeight(32);
+  } else if (element.name === "h2") {
+    Wrapper = View;
+    inheritedStyles.fontSize = 24;
+    inheritedStyles.lineHeight = lineHeight(24);
+  } else if (element.name === "h3") {
+    Wrapper = View;
+    inheritedStyles.fontSize = 20;
+    inheritedStyles.lineHeight = lineHeight(20);
   } else if (element.name === "blockquote") {
     Wrapper = View;
     wrapperStyles.backgroundColor = theme.tint;
@@ -338,6 +346,14 @@ export function TextNodeElem({
       {remainingText}
     </Text>
   );
+
+  if (remainingText === "\n\n" || remainingText === "\n") {
+    /**
+     * This is only used in the guide pages. The new lines get stripped out
+     * ahead of time for all markdown coming from Reddit.
+     */
+    return <View style={{ height: 10 }} />;
+  }
 
   return customThemes.length > 0 ? (
     <>

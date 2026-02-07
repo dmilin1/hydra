@@ -14,11 +14,12 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type ListItem = {
   key: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   rightIcon?: ReactNode;
   text: string;
   onPress: () => void;
   hide?: boolean;
+  renderCustomItem?: (item: ListItem) => ReactNode;
 };
 
 type ListProps = {
@@ -58,17 +59,23 @@ export default function List({ items, title, containerStyle }: ListProps) {
               ]}
             >
               <View style={styles.itemButtonSubContainer}>
-                <View style={styles.iconMargin}>{item.icon}</View>
-                <Text
-                  style={[
-                    styles.itemButtonText,
-                    {
-                      color: theme.text,
-                    },
-                  ]}
-                >
-                  {item.text}
-                </Text>
+                {item.renderCustomItem ? (
+                  item.renderCustomItem(item)
+                ) : (
+                  <>
+                    <View style={styles.iconMargin}>{item.icon}</View>
+                    <Text
+                      style={[
+                        styles.itemButtonText,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
+                    >
+                      {item.text}
+                    </Text>
+                  </>
+                )}
                 {item.rightIcon ?? (
                   <MaterialIcons
                     name="keyboard-arrow-right"

@@ -12,9 +12,10 @@ export default tseslint.config([
             '**/node_modules/**',
             '**/dist/**',
             '/.expo/**',
-            'external/**',
+            '**/external/**',
             'app.config.ts',
-            'babel.config.js'
+            'babel.config.js',
+            '**/constants/documentation.ts',
         ],
     },
     {

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { lazy, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 
 import Advanced from "./Advanced";
@@ -24,6 +24,12 @@ import Gestures from "./General/Gestures";
 import Stats from "./Stats";
 import AppIcon from "./General/AppIcon/AppIcon";
 import AppIconDetails from "./General/AppIcon/AppIconDetails";
+
+/**
+ * Important to load this lazily since the guide loads the large documentation
+ * const.
+ */
+const Guide = lazy(() => import("./Guide"));
 
 export default function SettingsPage({
   route,
@@ -51,6 +57,8 @@ export default function SettingsPage({
         }}
       >
         {relativePath === "settings" && <Root />}
+
+        {relativePath.startsWith("settings/guide") && <Guide />}
 
         {relativePath === "settings/general" && <GeneralRoot />}
         {relativePath === "settings/general/gestures" && <Gestures />}

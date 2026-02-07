@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "lint": "eslint **/*.ts **/*.tsx",
     "lint:fix": "eslint **/*.ts **/*.tsx --fix",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "generate-docs": "bun run generateDocumentation.ts"
   },
   "jest": {
     "preset": "jest-expo"
