@@ -20,9 +20,9 @@ import { DataModeContext } from "../../../../contexts/SettingsContexts/DataModeC
 import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../utils/URL";
-import useImageMenu from "../../../../utils/useImageMenu";
 import RedditURL from "../../../../utils/RedditURL";
 import { useURLNavigation } from "../../../../utils/navigation";
+import useMediaSharing from "../../../../utils/useMediaSharing";
 
 type CompactPostMediaProps = {
   post: Post | PostDetail;
@@ -42,7 +42,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
     (blurNSFW && post.isNSFW) || (blurSpoilers && post.isSpoiler);
   const [blur, setBlur] = useState(isBlurable);
 
-  const showImageMenu = useImageMenu();
+  const shareMedia = useMediaSharing();
 
   const [mediaOpen, setMediaOpen] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
@@ -119,7 +119,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               animationType="none"
               visible
               onRequestClose={() => setMediaOpen(false)}
-              onLongPress={() => showImageMenu(post.images[imageIndex])}
+              onLongPress={() => shareMedia("image", post.images[imageIndex])}
               onImageIndexChange={(index) => setImageIndex(index)}
               delayLongPress={500}
             />

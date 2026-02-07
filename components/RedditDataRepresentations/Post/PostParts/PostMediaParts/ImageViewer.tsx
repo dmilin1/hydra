@@ -12,7 +12,7 @@ import { default as ImageView } from "./ImageView/ImageViewing";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../../utils/URL";
-import useImageMenu from "../../../../../utils/useImageMenu";
+import useMediaSharing from "../../../../../utils/useMediaSharing";
 
 export default function ImageViewer({
   images,
@@ -24,7 +24,7 @@ export default function ImageViewer({
   aspectRatio?: number;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
-  const showImageMenu = useImageMenu();
+  const shareMedia = useMediaSharing();
   const { width, height } = useWindowDimensions();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
@@ -81,7 +81,7 @@ export default function ImageViewer({
           onLongPress={(imgSource) =>
             typeof imgSource === "object" &&
             imgSource.uri &&
-            showImageMenu(imgSource.uri)
+            shareMedia("image", imgSource.uri)
           }
           onImageIndexChange={(index) => (initialImageIndex.current = index)}
           delayLongPress={500}
@@ -102,7 +102,7 @@ export default function ImageViewer({
           }}
           style={styles.touchableZone}
           underlayColor={theme.background}
-          onLongPress={() => showImageMenu(images[index])}
+          onLongPress={() => shareMedia("image", images[index])}
         >
           <Image
             style={[

@@ -1,28 +1,26 @@
 import {
   ActivityIndicator,
-  Alert,
-  Share,
   Text,
   TouchableOpacity,
   View,
   StyleSheet,
 } from "react-native";
-import { File, Paths } from "expo-file-system/next";
 import { Post } from "../../../api/Posts";
 import { useURLNavigation } from "../../../utils/navigation";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getBase64Img } from "../../../utils/useImageMenu";
-import URL from "../../../utils/URL";
 import { useState } from "react";
+import useMediaSharing from "../../../utils/useMediaSharing";
 
 export default function PostOverlay({
   post,
   rowIndex,
   closeViewer,
+  shareMedia,
 }: {
   post: Post;
   rowIndex: number;
   closeViewer: () => void;
+  shareMedia: ReturnType<typeof useMediaSharing>;
 }) {
   const { pushURL } = useURLNavigation();
 
@@ -33,68 +31,36 @@ export default function PostOverlay({
     closeViewer();
   };
 
-  const shareImage = async () => {
-    try {
-      const imageUrl = post.images[rowIndex];
-      setIsDownloading(true);
-      const base64 = await getBase64Img(imageUrl);
-      Share.share({
-        url: base64,
-      });
-    } catch (_e) {
-      Alert.alert("Error", "Failed to download image");
-    }
-    setIsDownloading(false);
-  };
-
-  const shareVideo = async () => {
-    const videoUrl = post.videoDownloadURL;
-    if (!videoUrl) return;
-    setIsDownloading(true);
-    try {
-      const fileName = new URL(videoUrl).getBasePath().split("/").pop();
-      const file = new File(`${Paths.cache.uri}/${fileName}`);
-      if (file.exists) {
-        file.delete();
-      }
-      await File.downloadFileAsync(videoUrl, file);
-      setIsDownloading(false);
-      await Share.share({
-        url: file.uri,
-      });
-      file.delete();
-    } catch (_e) {
-      setIsDownloading(false);
-      Alert.alert("Error", "Failed to download video");
-    }
-  };
-
-  const shareMedia = () => {
-    if (post.images.length > 0) {
-      shareImage();
-    } else if (post.video) {
-      shareVideo();
-    }
-  };
+  const shareable = post.images.length > 0 || post.videoDownloadURL;
 
   return (
     <View onTouchEnd={(e) => e.stopPropagation()}>
-      <TouchableOpacity
-        style={styles.shareButton}
-        onPress={() => shareMedia()}
-        disabled={isDownloading}
-      >
-        {isDownloading ? (
-          <ActivityIndicator size="small" color="white" />
-        ) : (
-          <MaterialIcons
-            name="ios-share"
-            size={22}
-            color="white"
-            style={styles.shareButtonIcon}
-          />
-        )}
-      </TouchableOpacity>
+      {shareable && (
+        <TouchableOpacity
+          style={styles.shareButton}
+          onPress={async () => {
+            setIsDownloading(true);
+            if (post.images.length > 0) {
+              await shareMedia("image", post.images[rowIndex]);
+            } else if (post.videoDownloadURL) {
+              await shareMedia("video", post.videoDownloadURL);
+            }
+            setIsDownloading(false);
+          }}
+          disabled={isDownloading}
+        >
+          {isDownloading ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <MaterialIcons
+              name="ios-share"
+              size={22}
+              color="white"
+              style={styles.shareButtonIcon}
+            />
+          )}
+        </TouchableOpacity>
+      )}
       <TouchableOpacity
         style={styles.postOverlay}
         onPress={() => openLink(post.link)}

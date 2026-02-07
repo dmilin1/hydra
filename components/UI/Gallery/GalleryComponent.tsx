@@ -15,6 +15,7 @@ import PostOverlay from "../MediaViewer.tsx/PostOverlay";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../GetHydraProButton";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
+import useMediaSharing from "../../../utils/useMediaSharing";
 
 type GalleryItem = {
   uri: string;
@@ -45,6 +46,8 @@ export default function GalleryComponent({
 }: GalleryComponentProps) {
   const { theme } = useContext(ThemeContext);
   const { isPro } = useContext(SubscriptionsContext);
+
+  const shareMedia = useMediaSharing();
 
   const [contentDimensions, setContentDimensions] = useState({
     width: 0,
@@ -212,6 +215,7 @@ export default function GalleryComponent({
             post={posts[index]}
             closeViewer={() => mediaViewerRef.current?.close()}
             rowIndex={rowIndex}
+            shareMedia={shareMedia}
           />
         )}
         onFocusedItemChange={(columnIndex, rowIndex) => {

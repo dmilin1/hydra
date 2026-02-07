@@ -1,7 +1,7 @@
 import { createContext, useMemo, useState } from "react";
 
 import ImageView from "../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView";
-import useImageMenu from "../utils/useImageMenu";
+import useMediaSharing from "../utils/useMediaSharing";
 
 const initialMediaViewerContext = {
   displayMedia: (_url: string) => {},
@@ -12,7 +12,7 @@ export const MediaViewerContext = createContext(initialMediaViewerContext);
 export function MediaViewerProvider({ children }: React.PropsWithChildren) {
   const [url, setUrl] = useState<string>();
 
-  const showImageMenu = useImageMenu();
+  const shareMedia = useMediaSharing();
 
   /**
    * Since this provider only provides functions, we need to memoize the value
@@ -35,7 +35,7 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
           animationType="none"
           visible
           onRequestClose={() => setUrl(undefined)}
-          onLongPress={() => showImageMenu(url)}
+          onLongPress={() => shareMedia("image", url)}
           delayLongPress={500}
         />
       )}

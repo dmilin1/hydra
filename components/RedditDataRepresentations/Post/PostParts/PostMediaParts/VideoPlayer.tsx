@@ -15,7 +15,7 @@ import ImageViewer from "./ImageViewer";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
-import useVideoMenu from "../../../../../utils/useVideoMenu";
+import useMediaSharing from "../../../../../utils/useMediaSharing";
 import { FontAwesome } from "@expo/vector-icons";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 
@@ -40,7 +40,7 @@ export default function VideoPlayer({
   const { currentDataMode } = useContext(DataModeContext);
   const { autoPlayVideos } = useContext(PostSettingsContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
-  const showVideoMenu = useVideoMenu();
+  const shareMedia = useMediaSharing();
   const { width, height } = useWindowDimensions();
 
   const [dontRenderYet, setDontRenderYet] = useState(
@@ -154,7 +154,7 @@ export default function VideoPlayer({
               player.play();
             }}
             onLongPress={() =>
-              videoDownloadURL ? showVideoMenu(videoDownloadURL) : null
+              videoDownloadURL ? shareMedia("video", videoDownloadURL) : null
             }
           >
             {failedToLoadErr ? (
