@@ -85,11 +85,17 @@ function RootLayout() {
       doDBMaintenanceAsync();
       modifyStat(Stat.APP_LAUNCHES, 1);
       modifyStat(Stat.APP_FOREGROUNDS, 1);
-      AppState.addEventListener("change", (state) => {
-        if (state === "active") {
-          modifyStat(Stat.APP_FOREGROUNDS, 1);
-        }
-      });
+      const appStateChangeListener = AppState.addEventListener(
+        "change",
+        (state) => {
+          if (state === "active") {
+            modifyStat(Stat.APP_FOREGROUNDS, 1);
+          }
+        },
+      );
+      return () => {
+        appStateChangeListener.remove();
+      };
     }
   }, [migrationsComplete]);
 

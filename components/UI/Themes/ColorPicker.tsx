@@ -65,12 +65,22 @@ export default function ColorPicker({
   };
 
   useEffect(() => {
-    Keyboard.addListener("keyboardWillShow", () => {
-      setKeyboardVisible(true);
-    });
-    Keyboard.addListener("keyboardWillHide", () => {
-      setKeyboardVisible(false);
-    });
+    const keyboardWillShowListener = Keyboard.addListener(
+      "keyboardWillShow",
+      () => {
+        setKeyboardVisible(true);
+      },
+    );
+    const keyboardWillHideListener = Keyboard.addListener(
+      "keyboardWillHide",
+      () => {
+        setKeyboardVisible(false);
+      },
+    );
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
   }, []);
 
   return (
