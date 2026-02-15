@@ -29,7 +29,7 @@ Choose a color scheme for Hydra. You can set separate themes for light and dark 
 
 ### Appearance
 
-Control how posts, comments, and the tab bar are displayed. Options include compact post mode, text line limits, flair visibility, NSFW/spoiler blurring, auto-play videos, Live Text, and more.
+Control how posts, comments, and the tab bar are displayed. Options include compact post mode, text line limits, flair visibility, NSFW/spoiler blurring, auto-play videos, Live Text, tap to collapse behavior, and more.
 
 [View Appearance Settings](hydra://settings/appearance) | [Learn More](hydra://settings/guide/?doc=appearance_settings)
 

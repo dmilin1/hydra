@@ -11,7 +11,7 @@ Your home feed shows posts from subscribed subreddits. Open the Posts tab to see
 
 ## Opening Post Details
 
-Tap any post card to open it in detail view. Scroll down to see comments, then swipe right or tap back to return. Post details include full content, author info, subreddit name, media, vote counts, comments, and post actions.
+Tap any post card to open it in detail view. Scroll down to see comments, then swipe right or tap back to return. Post details include full content, author info, subreddit name, media, vote counts, comments, and post actions. By default, tapping on the post content area collapses it — you can disable this with the "Tap to Collapse" toggle in [Appearance settings](hydra://settings/appearance).
 
 ## Post Interactions
 

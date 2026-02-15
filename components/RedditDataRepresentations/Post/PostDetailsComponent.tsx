@@ -55,7 +55,8 @@ export default function PostDetailsComponent({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
   const { isPro, customerId } = useContext(SubscriptionsContext);
-  const { showPostSummary } = useContext(PostSettingsContext);
+  const { showPostSummary, tapToCollapsePost } =
+    useContext(PostSettingsContext);
   const { showCommentSummary } = useContext(CommentSettingsContext);
 
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
@@ -110,8 +111,10 @@ export default function PostDetailsComponent({
   return (
     <View>
       <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => setMediaCollapsed(!mediaCollapsed)}
+        activeOpacity={tapToCollapsePost ? 0.8 : 1}
+        onPress={() =>
+          tapToCollapsePost ? setMediaCollapsed(!mediaCollapsed) : null
+        }
       >
         <View style={styles.postDetailsContainer}>
           <Text

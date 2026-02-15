@@ -6,6 +6,7 @@ const initialValues = {
   collapseAutoModerator: true,
   commentFlairs: true,
   showCommentSummary: true,
+  tapToCollapseComment: true,
 };
 
 const initialCommentSettingsContext = {
@@ -14,6 +15,7 @@ const initialCommentSettingsContext = {
   toggleCollapseAutoModerator: (_newValue?: boolean) => {},
   toggleCommentFlairs: (_newValue?: boolean) => {},
   toggleShowCommentSummary: (_newValue?: boolean) => {},
+  toggleTapToCollapseComment: (_newValue?: boolean) => {},
 };
 
 export const CommentSettingsContext = createContext(
@@ -43,6 +45,19 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
     );
   };
 
+  const [storedTapToCollapseComment, setTapToCollapseComment] = useMMKVBoolean(
+    "tapToCollapseComment",
+  );
+  const tapToCollapseComment =
+    storedTapToCollapseComment ?? initialValues.tapToCollapseComment;
+
+  const toggleTapToCollapseComment = (newValue = !tapToCollapseComment) => {
+    setTapToCollapseComment(newValue);
+    alert(
+      "Existing pages may need to be refreshed for this change to take effect.",
+    );
+  };
+
   return (
     <CommentSettingsContext.Provider
       value={{
@@ -60,6 +75,10 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
         showCommentSummary,
         toggleShowCommentSummary: (newValue = !showCommentSummary) =>
           setShowCommentSummary(newValue),
+
+        tapToCollapseComment:
+          tapToCollapseComment ?? initialValues.tapToCollapseComment,
+        toggleTapToCollapseComment,
       }}
     >
       {children}

@@ -17,7 +17,7 @@ Each comment displays author username (with badges for moderators, OP, etc.), sc
 
 ## Navigating Comment Threads
 
-Tap a comment to collapse or expand its thread. Collapsed threads show only the top comment. Child comments remember their collapsed state when a parent thread is collapsed and re-expanded.
+Tap a comment to collapse or expand its thread (this behavior can be disabled via the "Tap to Collapse" toggle in [Appearance settings](hydra://settings/appearance)). Collapsed threads show only the top comment. Child comments remember their collapsed state when a parent thread is collapsed and re-expanded.
 
 A floating navigation button lets you jump between top-level comments. Tap to go to the next comment, or long-press to go to the previous one. You can drag the button to reposition it on screen.
 
@@ -51,6 +51,7 @@ Customize how comments look in [Appearance settings](hydra://settings/appearance
 - **Collapse AutoModerator** — auto-collapse AutoModerator comments (on by default)
 - **Show flairs** — display user flairs on comments (on by default)
 - **Show comment summary (Pro)** — display an AI-generated summary at the top of long comment threads
+- **Tap to collapse** — allow tapping a comment to collapse or expand its thread (on by default)
 
 ---
 

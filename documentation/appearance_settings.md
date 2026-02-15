@@ -1,6 +1,6 @@
 ===METADATA===
 title: Appearance Settings
-description: Post appearance (compact mode, split view, subreddit display, text lengths, flairs, blur options, summaries, auto-play, live text), comment appearance (vote indicators, AutoModerator, flairs, summaries), tab appearance (username, hide on scroll)
+description: Post appearance (compact mode, split view, subreddit display, text lengths, flairs, blur options, summaries, auto-play, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, tap to collapse), tab appearance (username, hide on scroll)
 ===END METADATA===
 
 # Appearance Settings
@@ -35,6 +35,8 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 
 **Live Text**: Enables text recognition in images using iOS Live Text, allowing you to select and copy text. Learn more in the [Live Text guide](hydra://settings/guide/?doc=live_text).
 
+**Tap to Collapse**: When enabled, tapping on a post's media or content area in the detail view collapses it. When disabled, tapping the post content does nothing, which can be useful to avoid accidentally collapsing posts while reading. Enabled by default.
+
 ## Comment Appearance
 
 **Right Side Vote Indicators**: Moves vote indicators to the right side of comments. Can be more comfortable for one-handed or left-handed use.
@@ -44,6 +46,8 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 **Show Comment Flairs**: Displays user flairs on comments.
 
 **Show Comment Summary**: Shows AI-generated summaries for long comments. Requires [Hydra Pro](hydra://settings/hydraPro). Learn more in the [AI Summaries guide](hydra://settings/guide/?doc=ai_summaries).
+
+**Tap to Collapse**: When enabled, tapping on a comment collapses or expands its thread. When disabled, tapping a comment does nothing, so you can only collapse comments via long-press or swipe gestures. Enabled by default. Existing pages may need to be refreshed for changes to take effect.
 
 ## Tab Appearance
 

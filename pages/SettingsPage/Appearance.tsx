@@ -5,6 +5,7 @@ import {
   Entypo,
   MaterialIcons,
   Feather,
+  Ionicons,
 } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { Alert, Switch, View } from "react-native";
@@ -53,6 +54,8 @@ export default function Appearance() {
     toggleAutoPlayVideos,
     liveTextInteraction,
     toggleLiveTextInteraction,
+    tapToCollapsePost,
+    toggleTapToCollapsePost,
   } = useContext(PostSettingsContext);
 
   const {
@@ -64,6 +67,8 @@ export default function Appearance() {
     toggleCommentFlairs,
     showCommentSummary,
     toggleShowCommentSummary,
+    tapToCollapseComment,
+    toggleTapToCollapseComment,
   } = useContext(CommentSettingsContext);
 
   const {
@@ -350,6 +355,24 @@ export default function Appearance() {
             text: "Live text",
             onPress: () => toggleLiveTextInteraction(),
           },
+          {
+            key: "tapToCollapsePost",
+            icon: (
+              <Ionicons name="chevron-collapse" size={24} color={theme.text} />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={tapToCollapsePost}
+                onValueChange={() => toggleTapToCollapsePost()}
+              />
+            ),
+            text: "Tap to collapse",
+            onPress: () => toggleTapToCollapsePost(),
+          },
         ]}
       />
       <View style={{ marginTop: 5 }} />
@@ -445,6 +468,24 @@ export default function Appearance() {
                 );
               }
             },
+          },
+          {
+            key: "tapToCollapseComment",
+            icon: (
+              <Ionicons name="chevron-collapse" size={24} color={theme.text} />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={tapToCollapseComment}
+                onValueChange={() => toggleTapToCollapseComment()}
+              />
+            ),
+            text: "Tap to collapse",
+            onPress: () => toggleTapToCollapseComment(),
           },
         ]}
       />

@@ -80,7 +80,9 @@ export function CommentComponent({
   commentPropRef,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
-  const { voteIndicator, commentFlairs } = useContext(CommentSettingsContext);
+  const { voteIndicator, commentFlairs, tapToCollapseComment } = useContext(
+    CommentSettingsContext,
+  );
   const { commentSwipeOptions } = useContext(GesturesContext);
   const { doesCommentPassTextFilter } = useContext(FiltersContext);
   const { pushURL } = useURLNavigation();
@@ -311,7 +313,9 @@ export function CommentComponent({
                   }
                 }}
                 activeOpacity={1}
-                underlayColor={theme.tint}
+                underlayColor={
+                  tapToCollapseComment || displayInList ? theme.tint : undefined
+                }
                 onPress={() => {
                   if (displayInList) {
                     if (comment.type === "comment") {
@@ -321,7 +325,7 @@ export function CommentComponent({
                           .toString(),
                       );
                     }
-                  } else {
+                  } else if (tapToCollapseComment) {
                     commentRef.current?.measureInWindow(
                       (_x, y, _width_, _height) => {
                         if (!comment.collapsed && scrollChange) {
