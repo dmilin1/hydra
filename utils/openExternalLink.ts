@@ -8,6 +8,9 @@ export type BrowserOption = keyof typeof BROWSER_CONFIGS;
 export const EXTERNAL_LINK_BROWSER_KEY = "externalLinkBrowser";
 export const EXTERNAL_LINK_BROWSER_DEFAULT = "internalBrowser";
 
+export const OPEN_IN_READER_MODE_DEFAULT = false;
+export const OPEN_IN_READER_MODE_KEY = "openInReaderMode";
+
 export const BROWSER_CONFIGS = {
   internalBrowser: {
     value: "internalBrowser",
@@ -82,6 +85,9 @@ export async function openExternalLink(
     WebBrowser.openBrowserAsync(url, {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
       dismissButtonStyle: "close",
+      readerMode:
+        KeyStore.getBoolean(OPEN_IN_READER_MODE_KEY) ??
+        OPEN_IN_READER_MODE_DEFAULT,
       ...browserParams,
     });
     return;

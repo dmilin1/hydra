@@ -27,6 +27,10 @@ The available browsers are:
 
 If you select a third-party browser that isn't installed, Hydra will offer to open the link in your default browser instead.
 
+## Reader Mode
+
+When **"Open links with"** is set to **"Hydra"**, an additional **"Open in reader mode"** setting becomes available. Enabling this makes the built-in browser automatically open pages in reader mode, which strips away ads, navigation, and other clutter to show a clean, text-focused view of the page content.
+
 ## Open in Hydra
 
 "Open in Hydra" lets you open Reddit links in Hydra from other apps using the iOS share sheet.

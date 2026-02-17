@@ -27,6 +27,8 @@ Access Privacy Policy and End User License Agreement (EULA) links in [Legal sett
 
 **Open Links With**: Choose which browser opens external links. Options: Hydra (built-in browser), Default Browser (usually Safari), Chrome, Brave, Firefox, Edge, Opera. Third-party browsers must be installed on your device. Configure in [External Links settings](hydra://settings/general/externalLinks).
 
+**Open in Reader Mode**: When "Open links with" is set to "Hydra", this toggle appears and makes the built-in browser automatically open pages in reader mode for a cleaner reading experience. This setting is only visible when using Hydra's built-in browser.
+
 Learn more in the [External Links guide](hydra://settings/guide/?doc=external_links).
 
 ## Other General Settings
