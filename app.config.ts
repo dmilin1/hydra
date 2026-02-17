@@ -63,12 +63,6 @@ module.exports = {
       ],
       'expo-notifications',
       [
-        'expo-video',
-        {
-          "supportsPictureInPicture": true,
-        }
-      ],
-      [
         "expo-alternate-app-icons",
         [
           {

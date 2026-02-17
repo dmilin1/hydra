@@ -47,8 +47,6 @@ export default function VideoPlayer({
     currentDataMode === "lowData",
   );
   const [failedToLoadErr, setFailedToLoadErr] = useState<string | null>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isPictureInPicture, setIsPictureInPicture] = useState(false);
 
   const player = useVideoPlayer(source, (player) => {
     player.audioMixingMode = "mixWithOthers";
@@ -197,15 +195,12 @@ export default function VideoPlayer({
                   ref={(videoRef) => {
                     video.current = videoRef;
                   }}
-                  allowsPictureInPicture={isFullscreen || isPictureInPicture}
                   player={player}
                   style={styles.video}
                   onFullscreenEnter={() => {
-                    setIsFullscreen(true);
                     player.volume = 1;
                   }}
                   onFullscreenExit={() => {
-                    setIsFullscreen(false);
                     player.volume = 0;
                     exitedFullScreenCallback?.();
                     if (autoPlayVideos) {
@@ -216,11 +211,9 @@ export default function VideoPlayer({
                   }}
                   onPictureInPictureStop={() => {
                     player.volume = 0;
-                    setIsPictureInPicture(false);
                     exitedFullScreenCallback?.();
                   }}
                   onPictureInPictureStart={() => {
-                    setIsPictureInPicture(true);
                     setTimeout(() => {
                       player.volume = 1;
                     }, 750);
