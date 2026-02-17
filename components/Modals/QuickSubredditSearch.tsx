@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
+  Text,
   StyleSheet,
   TouchableOpacity,
   TextInput,
@@ -14,7 +15,6 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { getSearchResults } from "../../api/Search";
 import { useDebouncedEffect } from "../../utils/debounce";
 import { Subreddit } from "../../api/Subreddits";
-import List from "../UI/List";
 import SubredditIcon from "../RedditDataRepresentations/Post/PostParts/SubredditIcon";
 import {
   NavigationContainerRef,
@@ -22,6 +22,9 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import { AppNavigationProp } from "../../utils/navigationTypes";
+import { SubredditContext } from "../../contexts/SubredditContext";
+import { FlashList } from "@shopify/flash-list";
+import { MaterialIcons } from "@expo/vector-icons";
 
 type QuickSubredditSearchProps = {
   show: boolean;
@@ -32,15 +35,20 @@ export default function QuickSubredditSearch({
   show,
   onExit,
 }: QuickSubredditSearchProps) {
-  const { theme } = useContext(ThemeContext);
-
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
+
+  const { theme } = useContext(ThemeContext);
+  const { subreddits: userSubs } = useContext(SubredditContext);
 
   const textInputRef = useRef<TextInput>(null);
   const opacity = useAnimatedValue(0);
   const [searchText, setSearchText] = useState("");
   const [subreddits, setSubreddits] = useState<Subreddit[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const subredditsToShow = searchText
+    ? subreddits
+    : [...userSubs.favorites, ...userSubs.subscriber];
 
   const navigateToSubreddit = (subreddit: Subreddit) => {
     onExit();
@@ -54,7 +62,7 @@ export default function QuickSubredditSearch({
   };
 
   const loadSearchResults = async (searchText: string) => {
-    if (searchText.length < 3) return;
+    if (!searchText.length) return;
     setLoading(true);
     const results = await getSearchResults<"subreddits">(
       "subreddits",
@@ -98,51 +106,80 @@ export default function QuickSubredditSearch({
         },
       ]}
     >
-      <View style={styles.subContainer}>
-        <SafeAreaView style={styles.safeArea}>
-          <TextInput
-            ref={textInputRef}
-            style={[
-              styles.input,
-              {
-                color: theme.text,
-                backgroundColor: theme.tint,
-                borderColor: theme.divider,
-                borderWidth: 1,
-                borderRadius: 10,
-              },
-            ]}
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder="Search for a subreddit"
-            placeholderTextColor={theme.subtleText}
-          />
-          {loading && (
-            <ActivityIndicator
-              style={styles.loading}
-              size="small"
-              color={theme.text}
-            />
-          )}
-          <List
-            items={subreddits.map((subreddit) => ({
-              key: subreddit.id,
-              icon: (
+      <SafeAreaView style={styles.safeArea}>
+        <TextInput
+          ref={textInputRef}
+          style={[
+            styles.input,
+            {
+              color: theme.text,
+              backgroundColor: theme.tint,
+              borderColor: theme.divider,
+              borderWidth: 1,
+              borderRadius: 10,
+            },
+          ]}
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholder="Search for a subreddit"
+          placeholderTextColor={theme.subtleText}
+        />
+        <FlashList
+          style={{
+            ...styles.subredditsContainer,
+            borderColor: theme.divider,
+            backgroundColor: theme.tint,
+          }}
+          contentContainerStyle={{ backgroundColor: theme.tint }}
+          keyboardShouldPersistTaps="handled"
+          data={subredditsToShow}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              onPress={() => navigateToSubreddit(item)}
+              activeOpacity={0.5}
+              style={[
+                styles.subredditContainer,
+                {
+                  borderBottomColor:
+                    index < subredditsToShow.length - 1
+                      ? theme.divider
+                      : "transparent",
+                },
+              ]}
+            >
+              <View style={styles.subredditSubContainer}>
                 <SubredditIcon
-                  subredditIcon={subreddit.iconURL}
+                  subredditIcon={item.iconURL}
                   overridePostAppearanceSetting={true}
                 />
-              ),
-              text: subreddit.name,
-              onPress: () => navigateToSubreddit(subreddit),
-            }))}
-            containerStyle={{
-              marginHorizontal: 0,
-              marginTop: 20,
-            }}
+                <Text
+                  style={[
+                    styles.subredditText,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                <MaterialIcons
+                  name="keyboard-arrow-right"
+                  size={30}
+                  color={theme.verySubtleText}
+                  style={styles.arrow}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+        {loading && (
+          <ActivityIndicator
+            style={styles.loading}
+            size="small"
+            color={theme.text}
           />
-        </SafeAreaView>
-      </View>
+        )}
+      </SafeAreaView>
       <TouchableOpacity
         activeOpacity={0.7}
         style={styles.background}
@@ -160,16 +197,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 2,
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     justifyContent: "center",
     alignItems: "center",
-  },
-  subContainer: {
-    flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 10,
   },
   background: {
     position: "absolute",
@@ -184,6 +214,11 @@ const styles = StyleSheet.create({
   safeArea: {
     width: "100%",
     zIndex: 2,
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    pointerEvents: "box-none",
   },
   input: {
     width: "100%",
@@ -196,13 +231,32 @@ const styles = StyleSheet.create({
   },
   subredditsContainer: {
     width: "100%",
-    marginTop: 20,
-    gap: 10,
+    marginTop: 10,
+    pointerEvents: "auto",
+    maxHeight: 275,
+    borderRadius: 10,
+    overflow: "hidden",
+    borderWidth: 1,
+  },
+  subredditSubContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   subredditContainer: {
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  subredditText: {
+    fontSize: 17,
+    flex: 1,
+    marginLeft: 10,
+  },
+  arrow: {
+    marginVertical: -100,
+    width: 24,
+    alignItems: "center",
+    justifyContent: "center",
   },
   loading: {
     marginTop: 20,

@@ -61,8 +61,6 @@ export default function PostComponent({
 
   const { toggleFilterSubreddit } = useContext(FiltersContext);
 
-  console.log(useRoute());
-
   const isOnMultiSubredditPage =
     params && "url" in params && params.url
       ? new RedditURL(params.url).isCombinedSubredditFeed()

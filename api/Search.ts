@@ -37,9 +37,14 @@ export async function getSearchResults<T extends SearchType>(
     users: "user",
   };
   const redditURL = new RedditURL(`https://www.reddit.com/search/`);
+  const search =
+    type === "subreddits"
+      ? // Fixes a bug where you can't search for subreddits with less than 3 characters
+        "/r/" + text.trim().replace(/^(\/r\/|\/)/, "")
+      : text;
   redditURL.setQueryParams({
     type: typeMap[type],
-    q: text,
+    q: search,
     sr_detail: "true",
     ...options,
   });
