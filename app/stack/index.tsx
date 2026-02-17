@@ -30,11 +30,11 @@ import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
 import GalleryScreen from "./GalleryScreen";
 
 export type StackParamsList = {
-  Subreddits: object;
+  Subreddits: undefined;
   Home: {
     url: string;
   };
-  InboxPage: object;
+  InboxPage: undefined;
   MessagesPage: {
     url: string;
   };
@@ -68,7 +68,7 @@ export type StackParamsList = {
   SettingsPage: {
     url: string;
   };
-  SearchPage: object;
+  SearchPage: undefined;
   WebviewPage: {
     url: string;
   };

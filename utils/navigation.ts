@@ -6,7 +6,7 @@ import {
 import { useContext } from "react";
 
 import RedditURL, { PageType } from "./RedditURL";
-import { StackParamsList } from "../app/stack";
+import { StackParamsList, URLRoutes } from "../app/stack";
 import { MediaViewerContext } from "../contexts/MediaViewerContext";
 import { StackFutureContext } from "../contexts/StackFutureContext";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -60,7 +60,7 @@ export function useURLNavigation<
     if (pageType === PageType.IMAGE) {
       displayMedia(url);
     } else {
-      navigation[func](navName, { url });
+      navigation[func](navName as URLRoutes, { url });
     }
     clearFuture();
   };

@@ -46,7 +46,7 @@ export default function PostComponent({
   deletePost,
   onPostOpen,
 }: PostComponentProps) {
-  const { params } = useRoute<URLRoutes>();
+  const { params } = useRoute<URLRoutes | "SearchPage">();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
   const {
@@ -61,9 +61,12 @@ export default function PostComponent({
 
   const { toggleFilterSubreddit } = useContext(FiltersContext);
 
-  const redditURL = params?.url ? new RedditURL(params.url) : null;
+  console.log(useRoute());
 
-  const isOnMultiSubredditPage = redditURL?.isCombinedSubredditFeed() ?? false;
+  const isOnMultiSubredditPage =
+    params && "url" in params && params.url
+      ? new RedditURL(params.url).isCombinedSubredditFeed()
+      : true;
 
   const seen = isPostSeen(post);
 

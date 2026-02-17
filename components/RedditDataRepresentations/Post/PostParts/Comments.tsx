@@ -60,7 +60,7 @@ interface CommentProps {
   displayInList?: boolean; // Changes render style for use in something like a list of user comments,
   changeComment: (comment: Comment) => void;
   deleteComment: (comment: Comment) => void;
-  collapseThread: (comment: Comment) => void;
+  collapseThread?: (comment: Comment) => void;
 
   // This comment prop ref thing is horrific. Don't do it. We're using it so
   // the post details page can reach into the comments inside of it to get to
@@ -191,8 +191,8 @@ export function CommentComponent({
     const options = [
       "Upvote",
       "Downvote",
-      ...(comment.collapsed ? ["Expand"] : ["Collapse"]),
-      "Collapse Thread",
+      ...(displayInList ? [] : comment.collapsed ? ["Expand"] : ["Collapse"]),
+      ...(displayInList ? [] : ["Collapse Thread"]),
       "Select Text",
       "Reply",
       ...(comment.saved ? ["Unsave"] : ["Save"]),
@@ -208,7 +208,7 @@ export function CommentComponent({
     } else if (result === "Collapse" || result === "Expand") {
       toggleCollapse();
     } else if (result === "Collapse Thread" && comment.type === "comment") {
-      collapseThread(comment);
+      collapseThread?.(comment);
     } else if (result === "Reply") {
       replyToComment();
     } else if (result === "Save" || result === "Unsave") {
@@ -292,7 +292,7 @@ export function CommentComponent({
                   color: theme.collapse,
                   action: () => {
                     if (comment.type !== "comment") return;
-                    collapseThread(comment);
+                    collapseThread?.(comment);
                   },
                 },
               ]}
