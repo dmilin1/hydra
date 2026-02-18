@@ -18,34 +18,62 @@ type Icon = {
   name: string | null;
   prettyName: string;
   icon: ImageSourcePropType;
-  authorAvatar: ImageSourcePropType;
-  authorRedditUsername: string;
-  authorWebsite?: string;
-  authorInstagram?: string;
-  authorBio: string;
+  author: Author;
 };
+
+type Author = {
+  avatar: ImageSourcePropType;
+  redditUsername: string;
+  website?: string;
+  instagram?: string;
+  bio: string;
+};
+
+const AUTHORS = {
+  dmilin: {
+    avatar: require("../../../../assets/images/custom_icons/authors/dmilin.jpg"),
+    redditUsername: "u/dmilin",
+    website: "https://github.com/dmilin1/hydra",
+    bio: "Hi, I'm Dimitrie, the developer of Hydra. I'm a software engineer and have been building apps for almost 2 decades. I built Hydra to craft the best possible Reddit experience for myself and others.",
+  },
+  batjake: {
+    avatar: require("../../../../assets/images/custom_icons/authors/batjake.png"),
+    redditUsername: "u/batjake",
+    website: "http://brokendiamonddesign.com/",
+    instagram: "@bdiamonddesigns",
+    bio: "Hi, I'm Jake, a graphic designer with 10+ years of experience creating bold logos, striking album art, and brand visuals that resonate. I specialize in helping businesses and musicians stand out with designs that capture essence, tell stories, and leave lasting impressions.",
+  },
+  boxsitter: {
+    avatar: require("../../../../assets/images/custom_icons/authors/boxsitter.png"),
+    redditUsername: "u/boxsitter",
+    bio: "Hi, I'm Boxsitter, a hobbyist designer who wanted to create something special for this app. Because I run the open-source server myself, I designed this icon as a way to support the project in lieu of a subscription. I hope you enjoy this reminder that if you cut off one head, two more shall take its place. Hail Hydra!",
+  },
+} satisfies Record<string, Author>;
 
 export const APP_ICONS: Icon[] = [
   {
     name: null,
     prettyName: "Hydra",
     icon: require("../../../../assets/images/icon.png"),
-    authorAvatar: require("../../../../assets/images/custom_icons/authors/dmilin.jpg"),
-    authorRedditUsername: "u/dmilin",
-    authorWebsite: "https://github.com/dmilin1/hydra",
-    authorBio:
-      "Hi, I'm Dimitrie, the developer of Hydra. I'm a software engineer and have been building apps for almost 2 decades. I built Hydra to craft the best possible Reddit experience for myself and others.",
+    author: AUTHORS.dmilin,
   },
   {
     name: "cerberus",
     prettyName: "Cerberus",
     icon: require("../../../../assets/images/custom_icons/cerberus.png"),
-    authorAvatar: require("../../../../assets/images/custom_icons/authors/batjake.png"),
-    authorRedditUsername: "u/batjake",
-    authorWebsite: "http://brokendiamonddesign.com/",
-    authorInstagram: "@bdiamonddesigns",
-    authorBio:
-      "Hi, I'm Jake, a graphic designer with 10+ years of experience creating bold logos, striking album art, and brand visuals that resonate. I specialize in helping businesses and musicians stand out with designs that capture essence, tell stories, and leave lasting impressions.",
+    author: AUTHORS.batjake,
+  },
+  {
+    name: "hail_hydra",
+    prettyName: "Hail Hydra!",
+    icon: require("../../../../assets/images/custom_icons/hail_hydra.png"),
+    author: AUTHORS.boxsitter,
+  },
+  {
+    name: "hail_hydra_dark",
+    prettyName: "Hail Hydra! (Dark)",
+    icon: require("../../../../assets/images/custom_icons/hail_hydra_dark.png"),
+    author: AUTHORS.boxsitter,
   },
 ];
 
@@ -84,11 +112,11 @@ export default function AppIcon() {
             </Text>
             <View style={styles.authorSection}>
               <Image
-                source={appIcon.authorAvatar}
+                source={appIcon.author.avatar}
                 style={styles.authorAvatar}
               />
               <Text style={[styles.authorName, { color: theme.subtleText }]}>
-                {appIcon.authorRedditUsername}
+                {appIcon.author.redditUsername}
               </Text>
             </View>
             {currentIcon === appIcon.name && (
@@ -127,7 +155,8 @@ const styles = StyleSheet.create({
   },
   iconCard: {
     width: "45%",
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
     borderRadius: 12,
     alignItems: "center",
     borderWidth: 2,

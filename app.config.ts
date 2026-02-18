@@ -73,6 +73,22 @@ module.exports = {
               "backgroundColor": "#FFFFFF",
             },
           },
+          {
+            "name": "hail_hydra",
+            "ios": "./assets/images/custom_icons/hail_hydra.png",
+            "android": {
+              "foregroundImage": "./assets/images/custom_icons/hail_hydra.png",
+              "backgroundColor": "#FFFFFF",
+            },
+          },
+          {
+            "name": "hail_hydra_dark",
+            "ios": "./assets/images/custom_icons/hail_hydra_dark.png",
+            "android": {
+              "foregroundImage": "./assets/images/custom_icons/hail_hydra_dark.png",
+              "backgroundColor": "#000000",
+            },
+          },
         ]
       ]
     ],

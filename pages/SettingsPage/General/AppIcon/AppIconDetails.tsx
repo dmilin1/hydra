@@ -73,10 +73,10 @@ export default function AppIconDetails() {
         style={[styles.authorProfileSection, { backgroundColor: theme.tint }]}
       >
         <View style={styles.authorHeader}>
-          <Image source={appIcon.authorAvatar} style={styles.authorAvatar} />
+          <Image source={appIcon.author.avatar} style={styles.authorAvatar} />
           <View style={styles.authorInfo}>
             <Text style={[styles.authorName, { color: theme.text }]}>
-              {appIcon.authorRedditUsername}
+              {appIcon.author.redditUsername}
             </Text>
             <Text style={[styles.creatorLabel, { color: theme.subtleText }]}>
               Icon Creator
@@ -85,7 +85,7 @@ export default function AppIconDetails() {
         </View>
 
         <Text style={[styles.authorBio, { color: theme.text }]}>
-          {appIcon.authorBio}
+          {appIcon.author.bio}
         </Text>
       </View>
 
@@ -95,30 +95,30 @@ export default function AppIconDetails() {
         {[
           {
             type: "reddit",
-            showIf: appIcon.authorRedditUsername,
+            showIf: appIcon.author.redditUsername,
             icon: <FontAwesome name="reddit" size={20} color="#FF4500" />,
             onPress: () =>
-              pushURL(`https://reddit.com/${appIcon.authorRedditUsername}`),
-            text: appIcon.authorRedditUsername,
+              pushURL(`https://reddit.com/${appIcon.author.redditUsername}`),
+            text: appIcon.author.redditUsername,
           },
           {
             type: "website",
-            showIf: appIcon.authorWebsite,
+            showIf: appIcon.author.website,
             icon: <Feather name="globe" size={20} color={theme.iconPrimary} />,
             onPress: () =>
-              appIcon.authorWebsite && Linking.openURL(appIcon.authorWebsite),
+              appIcon.author.website && Linking.openURL(appIcon.author.website),
             text: "Website",
           },
           {
             type: "instagram",
-            showIf: appIcon.authorInstagram,
+            showIf: appIcon.author.instagram,
             icon: <FontAwesome name="instagram" size={20} color="#E4405F" />,
             onPress: () =>
-              appIcon.authorInstagram &&
+              appIcon.author.instagram &&
               Linking.openURL(
-                `https://instagram.com/${appIcon.authorInstagram?.replace("@", "") || ""}`,
+                `https://instagram.com/${appIcon.author.instagram?.replace("@", "") || ""}`,
               ),
-            text: appIcon.authorInstagram,
+            text: appIcon.author.instagram,
           },
         ]
           .filter((link) => link.showIf)
