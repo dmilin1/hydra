@@ -51,6 +51,13 @@ export default class RedditURL extends URL {
       this.url = `https://www.reddit.com${url}`;
     } else if (url.startsWith("hydra://")) {
       this.url = url;
+    } else if (url.startsWith("https://old.reddit.com")) {
+      this.url = url.replace(
+        "https://old.reddit.com",
+        "https://www.reddit.com",
+      );
+    } else if (url.startsWith("http://old.reddit.com")) {
+      this.url = url.replace("http://old.reddit.com", "https://www.reddit.com");
     } else if (url.startsWith("https://reddit.com")) {
       this.url = url.replace("https://reddit.com", "https://www.reddit.com");
     } else if (url.startsWith("https://")) {
