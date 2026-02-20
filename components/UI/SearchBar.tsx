@@ -1,5 +1,5 @@
 import { Feather, FontAwesome6 } from "@expo/vector-icons";
-import { useContext, useRef, useState } from "react";
+import { forwardRef, useContext, useRef, useState } from "react";
 import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -12,17 +12,14 @@ type SearchBarProps = {
   placeholder?: string;
 };
 
-export default function SearchBar({
-  initialSearch,
-  clearOnSearch,
-  onSearch,
-  searchOnBlur = true,
-  placeholder,
-}: SearchBarProps) {
+const SearchBar = forwardRef<TextInput, SearchBarProps>(function SearchBar(
+  { initialSearch, clearOnSearch, onSearch, searchOnBlur = true, placeholder },
+  ref,
+) {
   const { theme } = useContext(ThemeContext);
   const search = useRef<string>("");
   const prevSearch = useRef<string>("");
-  const textInputRef = useRef<TextInput>(null);
+  const textInputRef = useRef<TextInput | null>(null);
   const [showX, setShowX] = useState(!!initialSearch);
 
   const doSearch = () => {
@@ -55,7 +52,14 @@ export default function SearchBar({
       />
       <TextInput
         defaultValue={initialSearch}
-        ref={textInputRef}
+        ref={(node) => {
+          textInputRef.current = node;
+          if (typeof ref === "function") {
+            ref(node);
+          } else if (ref) {
+            ref.current = node;
+          }
+        }}
         style={[
           styles.searchBar,
           {
@@ -94,7 +98,9 @@ export default function SearchBar({
       )}
     </View>
   );
-}
+});
+
+export default SearchBar;
 
 const styles = StyleSheet.create({
   searchBarContainer: {

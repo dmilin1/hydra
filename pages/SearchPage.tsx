@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 
 import {
@@ -24,6 +25,7 @@ import SearchBar from "../components/UI/SearchBar";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../utils/navigation";
 import useRedditDataState from "../utils/useRedditDataState";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function SearchPage() {
   const { theme } = useContext(ThemeContext);
@@ -31,6 +33,7 @@ export default function SearchPage() {
 
   const [trending, setTrending] = useState<Subreddit[]>([]);
   const search = useRef<string>("");
+  const searchBarRef = useRef<TextInput | null>(null);
   const [searchType, setSearchType] = useState<SearchType>("posts");
   const [loading, setLoading] = useState(false);
 
@@ -69,6 +72,10 @@ export default function SearchPage() {
       newTrending.filter((sub) => !sub.subscribed && sub.name !== "Home"),
     );
   };
+
+  useFocusEffect(() => {
+    searchBarRef.current?.focus();
+  });
 
   useEffect(() => {
     loadTrending();
@@ -116,6 +123,7 @@ export default function SearchPage() {
         ))}
       </View>
       <SearchBar
+        ref={searchBarRef}
         onSearch={(text) => {
           search.current = text;
           refreshSearchResults();
