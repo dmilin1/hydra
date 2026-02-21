@@ -57,6 +57,11 @@ const INJECTED_JAVASCRIPT = `
     'h1.text-24.text-center.text-neutral-content-strong',
     { 'margin-top': '20px' },
   );
+
+  modifyThroughShadowDOM(
+    'auth-flow-manager',
+    { 'z-index': 1 },
+  );
 `;
 
 const ALLOWED_URLS = [
