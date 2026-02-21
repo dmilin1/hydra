@@ -32,12 +32,16 @@ import Comments from "../components/RedditDataRepresentations/Post/PostParts/Com
 import { AccountContext } from "../contexts/AccountContext";
 import { ScrollerContext, ScrollerProvider } from "../contexts/ScrollerContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import { SubscriptionsContext } from "../contexts/SubscriptionsContext";
 import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 import { TabScrollContext } from "../contexts/TabScrollContext";
 import { modifyStat, Stat } from "../db/functions/Stats";
 import ScrollToNextButtonProvider from "../contexts/ScrollToNextButtonProvider";
 import { ScrollToNextButtonContext } from "../contexts/ScrollToNextButtonContext";
+import { summarizePostDetails, summarizePostComments } from "../api/AI";
+import { translatePost } from "../api/AI";
+import TranslationModal from "../components/Modals/TranslationModal";
 
 export type LoadMoreCommentsFunc = (
   commentIds: string[],
@@ -53,6 +57,7 @@ type PostDetailsProps =
     };
 
 function PostDetails(props: PostDetailsProps) {
+  const { isPro } = useContext(SubscriptionsContext);
   const url = "route" in props ? props.route.params.url : props.splitViewURL;
 
   const isSplitView = "splitViewURL" in props && !!props.splitViewURL;
@@ -73,6 +78,9 @@ function PostDetails(props: PostDetailsProps) {
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
+  const [summary, setSummary] = useState<string>();
 
   const deferredPostDetail = useDeferredValue(postDetail);
 
@@ -123,6 +131,7 @@ function PostDetails(props: PostDetailsProps) {
       "Report",
       "Select Text",
       "Share",
+      ...(isPro ? ["Translate Text" as ContextTypes] : []),
     ];
     const contextSort: SortTypes[] = [
       "Best",
@@ -134,17 +143,19 @@ function PostDetails(props: PostDetailsProps) {
     ];
     navigation.setOptions({
       title: new RedditURL(url).getPageName(),
-      headerRight: () => {
-        return (
-          <SortAndContext
-            route={url}
-            navigation={navigation}
-            sortOptions={contextSort}
-            contextOptions={contextOptions}
-            pageData={postDetail}
-          />
-        );
+      headerRight: () => (
+        <SortAndContext
+          route={props.route}
+          navigation={navigation}
+          sortOptions={contextSort}
+          contextOptions={contextOptions}
+          pageData={postDetail}
+        />
+      ),
+      headerStyle: {
+        backgroundColor: theme.background,
       },
+      headerTintColor: theme.text,
     });
   };
 
