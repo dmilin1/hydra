@@ -18,6 +18,7 @@ import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeCont
 import useMediaSharing from "../../../../../utils/useMediaSharing";
 import { FontAwesome } from "@expo/vector-icons";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
+import DismountWhenBackgrounded from "../../../../Other/DismountWhenBackgrounded";
 
 type VideoPlayerProps = {
   source: string;
@@ -28,7 +29,7 @@ type VideoPlayerProps = {
   aspectRatio?: number;
 };
 
-export default function VideoPlayer({
+function VideoPlayer({
   source,
   thumbnail,
   videoDownloadURL,
@@ -48,7 +49,7 @@ export default function VideoPlayer({
   );
   const [failedToLoadErr, setFailedToLoadErr] = useState<string | null>(null);
 
-  const player = useVideoPlayer(source, (player) => {
+  const player = useVideoPlayer({ uri: source, useCaching: true }, (player) => {
     player.audioMixingMode = "mixWithOthers";
     player.volume = 0;
     player.loop = true;
@@ -243,6 +244,14 @@ export default function VideoPlayer({
         </>
       )}
     </View>
+  );
+}
+
+export default function VideoPlayerWrapper(props: VideoPlayerProps) {
+  return (
+    <DismountWhenBackgrounded>
+      <VideoPlayer {...props} />
+    </DismountWhenBackgrounded>
   );
 }
 

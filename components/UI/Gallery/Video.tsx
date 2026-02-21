@@ -3,12 +3,17 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useContext, useEffect, useRef } from "react";
 import { Animated, AppState, StyleSheet, View } from "react-native";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
+import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
 
-export default function Video({ uri }: { uri: string }) {
+type VideoProps = {
+  uri: string;
+};
+
+function Video({ uri }: VideoProps) {
   const { theme } = useContext(ThemeContext);
   const progress = useRef(new Animated.Value(0)).current;
 
-  const player = useVideoPlayer(uri, (player) => {
+  const player = useVideoPlayer({ uri, useCaching: true }, (player) => {
     player.audioMixingMode = "mixWithOthers";
     player.volume = 0;
     player.loop = true;
@@ -58,6 +63,14 @@ export default function Video({ uri }: { uri: string }) {
         ]}
       />
     </View>
+  );
+}
+
+export default function VideoPlayerWrapper(props: VideoProps) {
+  return (
+    <DismountWhenBackgrounded>
+      <Video {...props} />
+    </DismountWhenBackgrounded>
   );
 }
 

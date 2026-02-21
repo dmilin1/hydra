@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
 
 /**
  * Revisit this to add better video scrubbing using changes introduced to
@@ -23,17 +24,16 @@ export type VideoItem = {
   uri: string;
 };
 
-const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
-
-export default function MediaVideo({
-  uri,
-  focused,
-  overlayOpacity,
-}: {
+type MediaVideoProps = {
   uri: string;
   focused: boolean;
   overlayOpacity: Animated.Value;
-}) {
+};
+
+const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
+
+function MediaVideo(props: MediaVideoProps) {
+  const { uri, focused, overlayOpacity } = props;
   const { width, height } = useWindowDimensions();
   const { top } = useSafeAreaInsets();
 
@@ -61,7 +61,7 @@ export default function MediaVideo({
 
   const playbackRate = useEvent(player, "playbackRateChange")?.playbackRate;
 
-  const dropDragEventCount = useRef(-1);
+  const animationFrameRequest = useRef<number | null>(null);
 
   const panThroughVideo = (deltaX: number, deltaY: number) => {
     if (!touchStart.current.isSkimming) {
@@ -73,15 +73,13 @@ export default function MediaVideo({
       }
       return;
     }
-    /**
-     * This is necessary for some reason or the progress bar doesn't update properly.
-     */
-    dropDragEventCount.current++;
-    if (dropDragEventCount.current % 2 !== 0) {
-      return;
+    if (animationFrameRequest.current) {
+      cancelAnimationFrame(animationFrameRequest.current);
     }
-    const videoChange = deltaX / (width / player.duration);
-    player.currentTime = touchStart.current.videoTime + videoChange;
+    animationFrameRequest.current = requestAnimationFrame(() => {
+      const videoChange = deltaX / (width / player.duration);
+      player.currentTime = touchStart.current.videoTime + videoChange;
+    });
   };
 
   useEventListener(player, "playingChange", (e) => {
@@ -233,6 +231,14 @@ export default function MediaVideo({
         </TouchableOpacity>
       </Animated.View>
     </View>
+  );
+}
+
+export default function MediaVideoWrapper(props: MediaVideoProps) {
+  return (
+    <DismountWhenBackgrounded>
+      <MediaVideo {...props} />
+    </DismountWhenBackgrounded>
   );
 }
 

@@ -23,14 +23,17 @@ import KeyStore from "../../utils/KeyStore";
 import { hydraServerStatus } from "../../api/HydraServerStatus";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import ImageCache from "../../utils/ImageCache";
+import VideoCache from "../../utils/VideoCache";
 
 export default function Advanced() {
   const { customerId } = useContext(SubscriptionsContext);
   const { theme } = useContext(ThemeContext);
 
-  const { cacheSize, clearCache } = ImageCache.useCache();
+  const { cacheSize: imageCacheSize, clearCache: clearImageCache } =
+    ImageCache.useCache();
 
-  const imageCacheMB = (cacheSize / 1024 / 1024).toFixed(0);
+  const imageCacheMB = (imageCacheSize / 1024 / 1024).toFixed(0);
+  const videoCacheMB = (VideoCache.getCacheSize() / 1024 / 1024).toFixed(0);
 
   const [storedUseCustomHydraServer, setUseCustomHydraServer] = useMMKVBoolean(
     USE_CUSTOM_HYDRA_SERVER_KEY,
@@ -65,11 +68,18 @@ export default function Advanced() {
         title="Caching"
         items={[
           {
-            key: "errorReporting",
+            key: "imageCache",
             icon: <Entypo name="image" size={24} color={theme.text} />,
             rightIcon: <></>,
             text: `Clear Image Cache (${imageCacheMB} MB)`,
-            onPress: () => clearCache(),
+            onPress: () => clearImageCache(),
+          },
+          {
+            key: "videoCache",
+            icon: <Entypo name="video" size={24} color={theme.text} />,
+            rightIcon: <></>,
+            text: `Clear Video Cache (${videoCacheMB} MB)`,
+            onPress: () => VideoCache.requestCacheClear(),
           },
         ]}
       />
