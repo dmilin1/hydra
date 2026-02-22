@@ -115,7 +115,7 @@ export async function formatPostData(child: any): Promise<Post> {
   }
 
   let video = child.data.media?.reddit_video?.hls_url;
-  const videoDownloadURL = child.data.media?.reddit_video?.fallback_url;
+  let videoDownloadURL = child.data.media?.reddit_video?.fallback_url;
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
@@ -132,10 +132,13 @@ export async function formatPostData(child: any): Promise<Post> {
     externalLink = child.data.url;
     if (externalLink.includes("imgur.com") && externalLink.endsWith(".gifv")) {
       video = externalLink.replace(".gifv", ".mp4");
+      videoDownloadURL = video;
     } else if (externalLink.includes("gfycat.com")) {
       video = `https://web.archive.org/web/0if_/thumbs.${externalLink.split("https://")[1]}-mobile.mp4`;
+      videoDownloadURL = video;
     } else if (externalLink.includes("redgifs.com")) {
       video = await Redgifs.getMediaURL(externalLink);
+      videoDownloadURL = video;
     } else if (externalLink) {
       try {
         openGraphData = await new URL(externalLink).getOpenGraphData();
