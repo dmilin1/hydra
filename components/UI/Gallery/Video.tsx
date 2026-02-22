@@ -4,6 +4,7 @@ import { useContext, useEffect, useRef } from "react";
 import { Animated, AppState, StyleSheet, View } from "react-native";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
+import VideoCache from "../../../utils/VideoCache";
 
 type VideoProps = {
   uri: string;
@@ -13,13 +14,16 @@ function Video({ uri }: VideoProps) {
   const { theme } = useContext(ThemeContext);
   const progress = useRef(new Animated.Value(0)).current;
 
-  const player = useVideoPlayer({ uri, useCaching: true }, (player) => {
-    player.audioMixingMode = "mixWithOthers";
-    player.volume = 0;
-    player.loop = true;
-    player.timeUpdateEventInterval = 1 / 15;
-    player.play();
-  });
+  const player = useVideoPlayer(
+    VideoCache.makeCachedVideoSource(uri),
+    (player) => {
+      player.audioMixingMode = "mixWithOthers";
+      player.volume = 0;
+      player.loop = true;
+      player.timeUpdateEventInterval = 1 / 15;
+      player.play();
+    },
+  );
 
   useEventListener(player, "timeUpdate", (e) => {
     progress.setValue(e.currentTime / player.duration);

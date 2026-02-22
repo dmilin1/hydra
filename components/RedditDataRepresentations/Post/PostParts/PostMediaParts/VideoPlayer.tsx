@@ -19,6 +19,7 @@ import useMediaSharing from "../../../../../utils/useMediaSharing";
 import { FontAwesome } from "@expo/vector-icons";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 import DismountWhenBackgrounded from "../../../../Other/DismountWhenBackgrounded";
+import VideoCache from "../../../../../utils/VideoCache";
 
 type VideoPlayerProps = {
   source: string;
@@ -49,15 +50,18 @@ function VideoPlayer({
   );
   const [failedToLoadErr, setFailedToLoadErr] = useState<string | null>(null);
 
-  const player = useVideoPlayer({ uri: source, useCaching: true }, (player) => {
-    player.audioMixingMode = "mixWithOthers";
-    player.volume = 0;
-    player.loop = true;
-    player.timeUpdateEventInterval = 1 / 60;
-    if (autoPlayVideos) {
-      player.play();
-    }
-  });
+  const player = useVideoPlayer(
+    VideoCache.makeCachedVideoSource(source),
+    (player) => {
+      player.audioMixingMode = "mixWithOthers";
+      player.volume = 0;
+      player.loop = true;
+      player.timeUpdateEventInterval = 1 / 60;
+      if (autoPlayVideos) {
+        player.play();
+      }
+    },
+  );
 
   const isPlaying = useEvent(player, "playingChange")?.isPlaying;
 

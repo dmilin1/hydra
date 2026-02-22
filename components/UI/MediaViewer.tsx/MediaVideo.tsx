@@ -12,6 +12,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
+import VideoCache from "../../../utils/VideoCache";
 
 /**
  * Revisit this to add better video scrubbing using changes introduced to
@@ -43,11 +44,14 @@ function MediaVideo(props: MediaVideoProps) {
 
   const progress = useRef(new Animated.Value(0)).current;
 
-  const player = useVideoPlayer(uri, (player) => {
-    player.audioMixingMode = "mixWithOthers";
-    player.loop = true;
-    player.timeUpdateEventInterval = 1 / 15;
-  });
+  const player = useVideoPlayer(
+    VideoCache.makeCachedVideoSource(uri),
+    (player) => {
+      player.audioMixingMode = "mixWithOthers";
+      player.loop = true;
+      player.timeUpdateEventInterval = 1 / 15;
+    },
+  );
 
   const touchStart = useRef({
     x: 0,

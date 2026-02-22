@@ -1,6 +1,11 @@
-import { clearVideoCacheAsync, getCurrentVideoCacheSize } from "expo-video";
+import {
+  clearVideoCacheAsync,
+  getCurrentVideoCacheSize,
+  VideoSource,
+} from "expo-video";
 import { Alert } from "react-native";
 import KeyStore from "./KeyStore";
+import URL from "./URL";
 
 const VIDEO_CACHE_CLEAR_REQUESTED_KEY = "videoCacheClearRequested";
 
@@ -25,5 +30,13 @@ export default class VideoCache {
       } catch (_e) {}
       KeyStore.set(VIDEO_CACHE_CLEAR_REQUESTED_KEY, false);
     }
+  }
+
+  static makeCachedVideoSource(uri: string): VideoSource {
+    const isCacheable = !new URL(uri).getBasePath().endsWith(".m3u8");
+    return {
+      uri,
+      useCaching: isCacheable,
+    };
   }
 }
