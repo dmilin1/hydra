@@ -17,67 +17,90 @@ import KeyStore from "../../../utils/KeyStore";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v3.2.0-1",
+  updateKey: "v3.3.0-1",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Gallery Mode",
+      title: "Full iPad Support",
       description:
-        'A new mode for viewing media heavy subreddits 😉. Open it on any subreddit by tapping the "..." menu button in the top right corner and selecting "Open In Gallery Mode". Power users can get Hydra Pro to scroll more than 100 media items deep.',
+        "Opening posts on iPad now opens a split view with comments on the side. You can disable this in Settings => Appearance => Enable split view. Compact post mode is now enabled by default on iPads.",
     },
     {
-      title: "Open Comment Flairs",
-      description: "Tap on a truncated comment flair to see the full flair.",
+      title: "In App Guide",
+      description:
+        "Hydra now has a searchable library of help articles that cover all of Hydra's features and settings. Go to Settings => Guide to access it, or use the new smart search bar at the top of the settings page.",
     },
     {
-      title: "Collapsed Comment Memory",
+      title: "New App Icons",
       description:
-        "Child comments will remember if they're collapsed after collapsing and expanding their parent.",
+        '"Hail Hydra!" and "Hail Hydra! (Dark)" are now available under Settings => App Icon. Thank you u/boxsitter!',
     },
     {
-      title: "Swipe to Collapse Thread",
+      title: "Download More Videos",
       description:
-        "New swipe gesture can be set in Settings => General => Gestures. This gesture collapses the entire thread instead of just the comment you're currently viewing.",
+        'Videos can now be downloaded from redgif, imgur, and gfycat. Long press a video to open the share menu and select "Save Video".',
+    },
+
+    {
+      title: "Disable Tap to Collapse",
+      description:
+        "You can now disable the tap to collapse for both the post body and the comments section in Settings => Appearance => Tap to collapse.",
     },
     {
-      title: "More Comment Long Press Options",
+      title: "Reader Mode for Links",
       description:
-        "Long pressing a comment now has 3 additional options: expand, collapse, and collapse thread.",
+        "You can now open external links in reader mode by default in Settings => General => External Links => Open in reader mode.",
+    },
+    {
+      title: "Improved Quick Search",
+      description:
+        "The subreddit quick search (long press the search tab) shows your subscribed subreddits (favorites first) when you haven't typed anything yet.",
+    },
+    {
+      title: "Auto Open Keyboard",
+      description:
+        "When opening the search tab, making a comment, or making a post, the keyboard will now automatically open for a smoother experience.",
+    },
+    {
+      title: "Video Player Improvements",
+      description:
+        "Videos dismount when Hydra is backgrounded to reduce memory usage and battery drain. Videos are now cached to improve performance. Clear the video cache in Settings => Advanced => Clear Video Cache.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
       description:
-        "When logging in, some users login sessions were failing to be captured and were instead redirected to the Reddit home page.",
+        "Modals and media views no longer break on iPads when using split screen, windowing, or rotating the device.",
     },
     {
-      description: "Login popup would sometimes say you are already logged in.",
-    },
-    {
-      description:
-        "Posts with links to external websites that returned an out of bounds HTTP status code would cause Hydra to crash.",
+      description: "EU users were unable to type their login credentials.",
     },
     {
       description:
-        "Posts with links to external websites that are slow to respond will no longer make your feed load slower.",
+        "Uploading images when making a post would fail for certain types of images.",
     },
     {
       description:
-        "Posts sometimes failed to be marked as read when interacting with them.",
+        "Searching for subreddits that were less than 3 characters would fail.",
+    },
+    {
+      description: "Subreddit name was not showing when searching for posts.",
     },
     {
       description:
-        "When trying to favorite a subreddit while not subscribed to it, an error message is now shown instead of failing silently.",
+        "old.reddit.com links open in Hydra instead of opening in a browser.",
+    },
+    {
+      description: "The image share menu now shows a thumbnail of the image.",
+    },
+    {
+      description: "Fixed some minor memory leaks.",
     },
     {
       description:
-        "Filtering a subreddit from your feed no longer prevents the subreddit from loading when you navigate directly to it.",
-    },
-    {
-      description:
-        "Slide gestures were failing to work when swipe anywhere to navigate was disabled.",
+        "Fixed a database query memory leak and optimized query performance.",
     },
   ] as { description: string }[],
 };
@@ -427,7 +450,7 @@ const styles = StyleSheet.create({
   },
   bugfixDescription: {
     fontSize: 14,
-    lineHeight: 18,
+    lineHeight: 17.9,
   },
   helpContainer: {
     flexDirection: "row",

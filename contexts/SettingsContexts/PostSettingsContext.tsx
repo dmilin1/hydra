@@ -1,8 +1,9 @@
 import { createContext } from "react";
 import { useMMKVBoolean, useMMKVNumber } from "react-native-mmkv";
+import { deviceSupportsSplitView } from "../../utils/useSplitViewSupport";
 
 const initialValues = {
-  postCompactMode: false,
+  postCompactMode: deviceSupportsSplitView,
   subredditAtTop: false,
   showSubredditIcon: true,
   postTitleLength: 2,
