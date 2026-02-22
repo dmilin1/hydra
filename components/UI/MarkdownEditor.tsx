@@ -114,6 +114,7 @@ export default function MarkdownEditor({
             color: theme.text,
           },
         ]}
+        autoFocus={true}
         placeholder={placeholder}
         placeholderTextColor={theme.verySubtleText}
         multiline
