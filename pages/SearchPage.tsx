@@ -74,6 +74,7 @@ export default function SearchPage() {
   };
 
   useFocusEffect(() => {
+    if (search.current) return;
     searchBarRef.current?.focus();
   });
 
