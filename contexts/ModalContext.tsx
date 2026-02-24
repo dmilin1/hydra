@@ -1,12 +1,5 @@
-import {
-  ReactNode,
-  createContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Animated, StyleSheet, useWindowDimensions } from "react-native";
+import { ReactNode, createContext, useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
 type ModalContextType = {
   setModal: (modal?: ReactNode) => void;
@@ -20,16 +13,6 @@ export const ModalContext = createContext(initialModalContext);
 
 export function ModalProvider({ children }: React.PropsWithChildren) {
   const [modal, setModal] = useState<ReactNode>(null);
-  const { height } = useWindowDimensions();
-  const modalPosition = useRef(new Animated.Value(height)).current;
-
-  useEffect(() => {
-    Animated.spring(modalPosition, {
-      toValue: modal ? 0 : height,
-      bounciness: 2,
-      useNativeDriver: true,
-    }).start();
-  }, [modal]);
 
   /**
    * Since this provider only provides functions, we need to memoize the value
@@ -44,28 +27,19 @@ export function ModalProvider({ children }: React.PropsWithChildren) {
 
   return (
     <ModalContext.Provider value={value}>
-      <Animated.View
-        style={[
-          styles.modalContainer,
-          {
-            transform: [
-              {
-                translateY: modalPosition,
-              },
-            ],
-          },
-        ]}
-      >
-        {modal}
-      </Animated.View>
       {children}
+      {modal && <View style={styles.modalContainer}>{modal}</View>}
     </ModalContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
   modalContainer: {
-    position: "relative",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     zIndex: 1000,
   },
 });

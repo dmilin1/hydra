@@ -27,15 +27,16 @@ export function ActionSheetBgProvider({ children }: React.PropsWithChildren) {
 
   return (
     <ActionSheetBgContext.Provider value={value}>
-      <Animated.View
-        style={[
-          styles.actionSheetBg,
-          {
-            opacity: actionSheetBgOpacity,
-            pointerEvents: isActionSheetShowing ? "auto" : "none",
-          },
-        ]}
-      />
+      {isActionSheetShowing && (
+        <Animated.View
+          style={[
+            styles.actionSheetBg,
+            {
+              opacity: actionSheetBgOpacity,
+            },
+          ]}
+        />
+      )}
       {children}
     </ActionSheetBgContext.Provider>
   );

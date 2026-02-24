@@ -16,7 +16,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { Animated, useWindowDimensions } from "react-native";
+import { Animated, Platform, useWindowDimensions } from "react-native";
 
 import { StackParamsList } from "../app/stack";
 
@@ -66,46 +66,50 @@ export function StackFutureProvider({
         clearFuture: () => (futureRoutes.current = []),
       }}
     >
-      <Animated.View
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-        onStartShouldSetResponderCapture={(e) => {
-          gestureStart.current = {
-            x: e.nativeEvent.pageX,
-            y: e.nativeEvent.pageY,
-          };
-          return false;
-        }}
-        onMoveShouldSetResponder={() =>
-          !!gestureStart.current &&
-          width - gestureStart.current.x < 30 &&
-          futureRoutes.current.length > 0
-        }
-        onResponderMove={(e) => {
-          if (!gestureStart.current) return false;
-          const deltaX = gestureStart.current.x - e.nativeEvent.pageX;
-          const deltaY = e.nativeEvent.pageY - gestureStart.current.y;
-          const angleDegrees = Math.abs(
-            Math.atan2(deltaY, deltaX) * (180 / Math.PI),
-          );
-          if (angleDegrees > 15 && deltaY > 30) {
-            gestureStart.current = null;
+      {Platform.OS === "android" ? (
+        children
+      ) : (
+        <Animated.View
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+          onStartShouldSetResponderCapture={(e) => {
+            gestureStart.current = {
+              x: e.nativeEvent.pageX,
+              y: e.nativeEvent.pageY,
+            };
             return false;
+          }}
+          onMoveShouldSetResponder={() =>
+            !!gestureStart.current &&
+            width - gestureStart.current.x < 30 &&
+            futureRoutes.current.length > 0
           }
-          if (deltaX > 15 && angleDegrees < 15) {
-            const popped = futureRoutes.current.pop();
-            if (!popped) return false;
-            navigation.push(popped.name as any, popped.params as any);
-            gestureStart.current = null;
-            return true;
-          }
-          return false;
-        }}
-      >
-        {children}
-      </Animated.View>
+          onResponderMove={(e) => {
+            if (!gestureStart.current) return false;
+            const deltaX = gestureStart.current.x - e.nativeEvent.pageX;
+            const deltaY = e.nativeEvent.pageY - gestureStart.current.y;
+            const angleDegrees = Math.abs(
+              Math.atan2(deltaY, deltaX) * (180 / Math.PI),
+            );
+            if (angleDegrees > 15 && deltaY > 30) {
+              gestureStart.current = null;
+              return false;
+            }
+            if (deltaX > 15 && angleDegrees < 15) {
+              const popped = futureRoutes.current.pop();
+              if (!popped) return false;
+              navigation.push(popped.name as any, popped.params as any);
+              gestureStart.current = null;
+              return true;
+            }
+            return false;
+          }}
+        >
+          {children}
+        </Animated.View>
+      )}
     </StackFutureContext.Provider>
   );
 }
