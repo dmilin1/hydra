@@ -9,9 +9,7 @@ module.exports = {
     slug: "hydra",
     version: packageJson.version,
     newArchEnabled: true,
-    runtimeVersion: {
-      policy: 'appVersion',
-    },
+    runtimeVersion: packageJson.version,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "hydra",
@@ -33,6 +31,7 @@ module.exports = {
       },
     },
     android: {
+      package: "com.dmilin.hydra",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#000000"
