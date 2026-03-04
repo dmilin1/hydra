@@ -1,4 +1,10 @@
-import { AntDesign, Feather, FontAwesome, Octicons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Feather,
+  FontAwesome,
+  Octicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import React, {
   Dispatch,
   SetStateAction,
@@ -19,6 +25,8 @@ import {
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
 import { summarizePostDetails, summarizePostComments } from "../../../api/AI";
+import { translatePost } from "../../../api/AI";
+import TranslationModal from "../../Modals/TranslationModal";
 import { PostDetail, vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
 import { saveItem } from "../../../api/Save";
@@ -26,6 +34,7 @@ import { ModalContext } from "../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../contexts/SettingsContexts/CommentSettingsContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
+import { TranslationSettingsContext } from "../../../contexts/SettingsContexts/TranslationSettingsContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import RedditURL from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
@@ -58,6 +67,7 @@ export default function PostDetailsComponent({
   const { showPostSummary, tapToCollapsePost } =
     useContext(PostSettingsContext);
   const { showCommentSummary } = useContext(CommentSettingsContext);
+  const { sourceLanguage, targetLanguage } = useContext(TranslationSettingsContext);
 
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
   const [commentSummaryCollapsed, setCommentSummaryCollapsed] = useState(false);
@@ -72,6 +82,28 @@ export default function PostDetailsComponent({
       upvotes: postDetail.upvotes - postDetail.userVote + result,
       userVote: result,
     });
+  };
+
+  const handleTranslatePost = async () => {
+    if (!isPro || !customerId) return;
+    
+    try {
+      const translation = await translatePost(
+        customerId,
+        postDetail.title,
+        postDetail.text || "",
+        sourceLanguage,
+        targetLanguage,
+      );
+      setModal(
+        <TranslationModal 
+          originalText={`${postDetail.title}\n\n${postDetail.text || ""}`}
+          translatedText={translation}
+        />
+      );
+    } catch (error) {
+      alert("Failed to translate post. Please try again.");
+    }
   };
 
   const getSummary = async () => {
@@ -359,6 +391,14 @@ export default function PostDetailsComponent({
         >
           <Feather name="share" size={28} color={theme.iconPrimary} />
         </TouchableOpacity>
+        {isPro && (
+          <TouchableOpacity
+            style={styles.buttonsContainer}
+            onPress={handleTranslatePost}
+          >
+            <MaterialCommunityIcons name="translate" size={28} color={theme.iconPrimary} />
+          </TouchableOpacity>
+        )}
       </View>
       {contextDepth > 0 && (
         <TouchableOpacity

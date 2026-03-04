@@ -6,6 +6,7 @@ import { NotificationsProvider } from "./NotificationsContext";
 import { PostSettingsProvider } from "./PostSettingsContext";
 import { TabSettingsProvider } from "./TabSettingsContext";
 import { ThemeProvider } from "./ThemeContext";
+import { TranslationSettingsProvider } from "./TranslationSettingsContext";
 
 export function SettingsProvider({ children }: React.PropsWithChildren) {
   return (
@@ -16,7 +17,9 @@ export function SettingsProvider({ children }: React.PropsWithChildren) {
             <PostSettingsProvider>
               <FiltersProvider>
                 <CommentSettingsProvider>
-                  <TabSettingsProvider>{children}</TabSettingsProvider>
+                  <TranslationSettingsProvider>
+                    <TabSettingsProvider>{children}</TabSettingsProvider>
+                  </TranslationSettingsProvider>
                 </CommentSettingsProvider>
               </FiltersProvider>
             </PostSettingsProvider>

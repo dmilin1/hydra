@@ -15,6 +15,7 @@ import React, {
   ForwardedRef,
   useRef,
   ComponentRef,
+  useCallback,
 } from "react";
 import {
   StyleSheet,
@@ -24,6 +25,7 @@ import {
   TouchableHighlight,
   Alert,
   Share,
+  Dimensions,
 } from "react-native";
 
 import {
@@ -35,19 +37,24 @@ import {
 } from "../../../../api/PostDetail";
 import { VoteOption } from "../../../../api/Posts";
 import { saveItem } from "../../../../api/Save";
+import { translateComment } from "../../../../api/AI";
 import { AccountContext } from "../../../../contexts/AccountContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/CommentSettingsContext";
 import { FiltersContext } from "../../../../contexts/SettingsContexts/FiltersContext";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
+import { TranslationSettingsContext } from "../../../../contexts/SettingsContexts/TranslationSettingsContext";
+import { SubscriptionsContext } from "../../../../contexts/SubscriptionsContext";
 import { LoadMoreCommentsFunc } from "../../../../pages/PostDetails";
 import RedditURL from "../../../../utils/RedditURL";
 import { useURLNavigation } from "../../../../utils/navigation";
+import { HYDRA_SERVER_URL } from "../../../../constants/HydraServer";
 import useContextMenu from "../../../../utils/useContextMenu";
 import RenderHtml from "../../../HTML/RenderHTML";
 import EditComment from "../../../Modals/EditComment";
 import NewComment from "../../../Modals/NewComment";
 import SelectText from "../../../Modals/SelectText";
+import TranslationModal from "../../../Modals/TranslationModal";
 import Slideable from "../../../UI/Slideable";
 import { GesturesContext } from "../../../../contexts/SettingsContexts/GesturesContext";
 import Time from "../../../../utils/Time";
@@ -85,6 +92,8 @@ export function CommentComponent({
   );
   const { commentSwipeOptions } = useContext(GesturesContext);
   const { doesCommentPassTextFilter } = useContext(FiltersContext);
+  const { sourceLanguage, targetLanguage } = useContext(TranslationSettingsContext);
+  const { isPro, customerId } = useContext(SubscriptionsContext);
   const { pushURL } = useURLNavigation();
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
@@ -187,6 +196,27 @@ export function CommentComponent({
     );
   };
 
+  const handleTranslateComment = async () => {
+    if (!isPro || !customerId) return;
+    
+    try {
+      const translation = await translateComment(
+        customerId,
+        comment.text,
+        sourceLanguage,
+        targetLanguage,
+      );
+      setModal(
+        <TranslationModal 
+          originalText={comment.text}
+          translatedText={translation}
+        />
+      );
+    } catch (error) {
+      alert("Failed to translate comment. Please try again.");
+    }
+  };
+
   const showCommentOptions = async () => {
     const options = [
       "Upvote",
@@ -197,6 +227,7 @@ export function CommentComponent({
       "Reply",
       ...(comment.saved ? ["Unsave"] : ["Save"]),
       ...(currentUser?.userName === comment.author ? ["Edit", "Delete"] : []),
+      ...(isPro ? ["Translate Text"] : []),
       "Share",
     ];
     const result = await showContextMenu({ options });
@@ -219,6 +250,8 @@ export function CommentComponent({
       confirmDeleteComment();
     } else if (result === "Select Text") {
       setModal(<SelectText text={comment.text} />);
+    } else if (result === "Translate Text" && isPro && customerId) {
+      handleTranslateComment();
     } else if (result === "Share") {
       Share.share({ url: new RedditURL(comment.link).toString() });
     }

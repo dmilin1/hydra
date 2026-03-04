@@ -30,7 +30,11 @@ import {
 } from "../../constants/SettingsKeys";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import { TranslationSettingsContext } from "../../contexts/SettingsContexts/TranslationSettingsContext";
+import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
+import { translatePost } from "../../api/AI";
+import TranslationModal from "../Modals/TranslationModal";
 import KeyStore from "../../utils/KeyStore";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
@@ -72,7 +76,8 @@ export type ContextTypes =
   | "Hide Seen Posts"
   | "Sidebar"
   | "Wiki"
-  | "Open in Gallery Mode";
+  | "Open in Gallery Mode"
+  | "Translate Text";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes> | string;
@@ -94,6 +99,8 @@ export default function SortAndContext({
   const { subscribe, unsubscribe, toggleFavorite, multis, addSubToMulti } =
     useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
+  const { sourceLanguage, targetLanguage } = useContext(TranslationSettingsContext);
+  const { isPro, customerId } = useContext(SubscriptionsContext);
 
   const { replaceURL, pushURL, setParams, openGallery } = useURLNavigation();
 
@@ -371,6 +378,24 @@ export default function SortAndContext({
               pushURL(`https://www.reddit.com/r/${subreddit}/wiki/index`);
             } else if (result === "Open in Gallery Mode") {
               openGallery(currentPath);
+            } else if (result === "Translate Text" && isPro && customerId && pageData?.type === "postDetail") {
+              try {
+                const translation = await translatePost(
+                  customerId,
+                  pageData.title,
+                  pageData.text || "",
+                  sourceLanguage,
+                  targetLanguage,
+                );
+                setModal(
+                  <TranslationModal 
+                    originalText={`${pageData.title}\n\n${pageData.text || ""}`}
+                    translatedText={translation}
+                  />
+                );
+              } catch {
+                alert("Failed to translate post. Please try again.");
+              }
             }
           }}
         >
