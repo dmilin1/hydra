@@ -22,6 +22,7 @@ import { useURLNavigation } from "../../utils/navigation";
 import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageViewer";
 import ThemeImport from "../UI/Themes/ThemeImport";
 import { extractThemeFromText } from "../../utils/colors";
+import URL from "../../utils/URL";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -196,6 +197,22 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     inheritedStyles.marginVertical = 0;
     inheritedStyles.paddingHorizontal = 0;
     inheritedStyles.fontSize = 11;
+  } else if (
+    element.name === "a" &&
+    element.attribs.href?.includes("giphy.com")
+  ) {
+    const imageId = new URL(element.attribs.href)
+      .getBasePath()
+      .toString()
+      .split("/")[4];
+    Wrapper = () => (
+      <View style={styles.imageContainer}>
+        <ImageViewer
+          images={[`https://i.giphy.com/${imageId}.webp`]}
+          aspectRatio={16 / 9}
+        />
+      </View>
+    );
   } else if (
     element.name === "a" &&
     element.children[0]?.type === ElementType.Text
