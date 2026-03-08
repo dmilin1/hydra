@@ -1,7 +1,5 @@
 import { decode } from "html-entities";
 import { api } from "./RedditApi";
-import * as Snudown from "../external/snudown";
-import RedditURL from "../utils/RedditURL";
 
 export type Rule = {
   name: string;
@@ -11,10 +9,6 @@ export type Rule = {
 export type Sidebar = {
   subscribers: number;
   descriptionHTML: string;
-};
-
-export type Wiki = {
-  contentHTML: string;
 };
 
 function formatSidebarData(data: any): Sidebar {
@@ -41,21 +35,4 @@ export async function getRules(subreddit: string): Promise<Rule[]> {
     `https://www.reddit.com/r/${subreddit}/about/rules.json`,
   );
   return formatRulesData(data);
-}
-
-function formatWikiData(data: any): Wiki {
-  return {
-    // The API returns an HTML version, but getting the markdown and converting it seems to look better
-    contentHTML: Snudown.markdown(decode(data.content_md)).replaceAll(
-      />\s+</g,
-      "><",
-    ),
-  };
-}
-
-export async function getWiki(url: string): Promise<Wiki> {
-  const redditURL = new RedditURL(url);
-  redditURL.jsonify();
-  const data = await api(redditURL.toString());
-  return formatWikiData(data.data);
 }
