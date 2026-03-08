@@ -117,6 +117,16 @@ export async function formatPostData(child: any): Promise<Post> {
   let video = child.data.media?.reddit_video?.hls_url;
   let videoDownloadURL = child.data.media?.reddit_video?.fallback_url;
 
+  if (
+    child.data.is_reddit_media_domain &&
+    child.data?.url?.match(/\.gif$/i) &&
+    child.data.preview?.images?.[0]?.variants?.mp4?.source?.url
+  ) {
+    // Load reddit hosted gif as mp4s. Their gifs are gargantuan
+    images = [];
+    video = decode(child.data.preview.images[0].variants.mp4.source.url);
+  }
+
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
   let crossCommentLink = undefined;
