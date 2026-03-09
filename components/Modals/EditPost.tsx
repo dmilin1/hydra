@@ -112,7 +112,7 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                     },
                   ]}
                 >
-                  Edit
+                  Save
                 </Text>
               </TouchableOpacity>
             )}
