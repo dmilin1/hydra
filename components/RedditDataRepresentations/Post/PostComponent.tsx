@@ -265,8 +265,10 @@ export default function PostComponent({
             action: () => handleAction("Share"),
           },
         ]}
-        leftNames={[postSwipeOptions.right, postSwipeOptions.farRight]}
-        rightNames={[postSwipeOptions.left, postSwipeOptions.farLeft]}
+        shortLeftName={postSwipeOptions.right}
+        longLeftName={postSwipeOptions.farRight}
+        shortRightName={postSwipeOptions.left}
+        longRightName={postSwipeOptions.farLeft}
       >
         <TouchableOpacity
           accessible={true}

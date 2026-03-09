@@ -73,8 +73,9 @@ export default function CommentReplyComponent({
           action: () => toggleSeen(),
         },
       ]}
-      leftNames={["upvote", "downvote"]}
-      rightNames={["markAsRead"]}
+      shortLeftName="upvote"
+      longLeftName="downvote"
+      shortRightName="markAsRead"
     >
       <TouchableOpacity
         activeOpacity={0.8}

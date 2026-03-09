@@ -14,6 +14,9 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
 import { IconProps } from "@expo/vector-icons/build/createIconSet";
 
+const SHORT_SWIPE_THRESHOLD = 75;
+const LONG_SWIPE_THRESHOLD = 130;
+
 type SlideItem<SlideName extends string> = {
   name: SlideName;
   icon: ReactElement<IconProps<string>>;
@@ -24,16 +27,20 @@ type SlideItem<SlideName extends string> = {
 
 type SlideableProps<SlideName extends string> = {
   options: SlideItem<SlideName>[];
-  leftNames?: SlideName[];
-  rightNames?: SlideName[];
+  shortLeftName?: SlideName;
+  longLeftName?: SlideName;
+  shortRightName?: SlideName;
+  longRightName?: SlideName;
   xScrollToEngage?: number;
 };
 
 export default function Slideable<SlideName extends string>({
   children,
   options,
-  leftNames,
-  rightNames,
+  shortLeftName,
+  longLeftName,
+  shortRightName,
+  longRightName,
   xScrollToEngage,
 }: PropsWithChildren<SlideableProps<SlideName>>) {
   const { theme } = useContext(ThemeContext);
@@ -47,33 +54,23 @@ export default function Slideable<SlideName extends string>({
     SlideItem<SlideName> & { side: "left" | "right" }
   >();
 
-  const left = leftNames
-    ?.map((name) => options.find((option) => option.name === name))
-    .filter((option) => option !== undefined);
-  const right = rightNames
-    ?.map((name) => options.find((option) => option.name === name))
-    .filter((option) => option !== undefined);
+  const lookupOption = (name: SlideName | undefined) =>
+    options.find((option) => option.name === name);
 
-  let icon = null;
-  if (slideItem?.icon) {
-    icon = slideItem.icon;
-  } else if (slideItem?.side === "left" && left && left.length > 0) {
-    icon = left[0].icon;
-  } else if (slideItem?.side === "right" && right && right.length > 0) {
-    icon = right[0].icon;
-  }
+  const shortLeftItem = lookupOption(shortLeftName);
+  const longLeftItem = lookupOption(longLeftName);
+  const shortRightItem = lookupOption(shortRightName);
+  const longRightItem = lookupOption(longRightName);
 
-  const calcItem = (list: SlideItem<SlideName>[], delta: number) => {
-    const baseSlideDistance = 20;
-    const distanceBetweenItems = 55;
-    return list[
-      Math.min(
-        Math.floor(
-          (Math.abs(delta) - baseSlideDistance) / distanceBetweenItems,
-        ),
-        list.length,
-      ) - 1
-    ];
+  const resolveActiveItemForDelta = (delta: number) => {
+    const [shortItem, longItem] =
+      delta > 0
+        ? [shortLeftItem, longLeftItem]
+        : [shortRightItem, longRightItem];
+    const absD = Math.abs(delta);
+    if (absD >= LONG_SWIPE_THRESHOLD) return longItem ?? shortItem;
+    if (absD >= SHORT_SWIPE_THRESHOLD) return shortItem;
+    return undefined;
   };
 
   return (
@@ -106,46 +103,29 @@ export default function Slideable<SlideName extends string>({
       onResponderMove={(e) => {
         if (touchStart.current) {
           const delta = Math.min(
-            e.nativeEvent.pageX - touchStart.current?.x,
+            e.nativeEvent.pageX - touchStart.current.x,
             swipeAnywhereToNavigate ? 0 : 1000,
           );
           touchX.setValue(delta);
-
-          let item = null;
-          if (delta > 0 && left) {
-            item = calcItem(left, delta);
-          }
-          if (delta < 0 && right) {
-            item = calcItem(right, delta);
-          }
-          if (item && item.name !== slideItem?.name) {
-            setSlideItem({
-              side: delta > 0 ? "left" : "right",
-              ...item,
-            });
-          }
-          if (!item && slideItem) {
-            setSlideItem(undefined);
-          }
-          if (item && item.name !== slideItem?.name) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          const item = resolveActiveItemForDelta(delta);
+          if (item?.name !== slideItem?.name) {
+            setSlideItem(
+              item
+                ? { side: delta > 0 ? "left" : "right", ...item }
+                : undefined,
+            );
+            if (item) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           }
         }
       }}
       onResponderEnd={(e) => {
         if (touchStart.current) {
-          const delta = e.nativeEvent.pageX - touchStart.current?.x;
+          const delta = e.nativeEvent.pageX - touchStart.current.x;
           if (swipeAnywhereToNavigate && delta > 0) {
             setScrollDisabled(false);
             return;
           }
-          let item = null;
-          if (delta > 0 && left) {
-            item = calcItem(left, delta);
-          }
-          if (delta < 0 && right) {
-            item = calcItem(right, delta);
-          }
+          const item = resolveActiveItemForDelta(delta);
           if (item) {
             item.action();
           }
@@ -192,10 +172,10 @@ export default function Slideable<SlideName extends string>({
             },
           ]}
         >
-          {icon &&
-            cloneElement(icon, {
+          {slideItem?.icon &&
+            cloneElement(slideItem.icon, {
               color: theme.text,
-              size: slideItem?.size ?? 32,
+              size: slideItem.size ?? 32,
             })}
         </View>
       </View>

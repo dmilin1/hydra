@@ -296,14 +296,10 @@ export function CommentComponent({
                   },
                 },
               ]}
-              leftNames={[
-                commentSwipeOptions.right,
-                commentSwipeOptions.farRight,
-              ]}
-              rightNames={[
-                commentSwipeOptions.left,
-                commentSwipeOptions.farLeft,
-              ]}
+              shortLeftName={commentSwipeOptions.right}
+              longLeftName={commentSwipeOptions.farRight}
+              shortRightName={commentSwipeOptions.left}
+              longRightName={commentSwipeOptions.farLeft}
             >
               <TouchableHighlight
                 ref={(ref) => {

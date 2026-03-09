@@ -32,6 +32,11 @@ const initialGesturesContext = {
 
 export const GesturesContext = createContext(initialGesturesContext);
 
+export const DISABLED_SWIPE_OPTION = {
+  label: "Disabled",
+  value: "disabled",
+} as const;
+
 export const POST_SWIPE_OPTIONS = [
   {
     label: "Upvote",
@@ -53,6 +58,7 @@ export const POST_SWIPE_OPTIONS = [
     label: "Share",
     value: "share",
   },
+  DISABLED_SWIPE_OPTION,
 ] as const;
 
 export const COMMENT_SWIPE_OPTIONS = [
@@ -84,6 +90,7 @@ export const COMMENT_SWIPE_OPTIONS = [
     label: "Collapse Thread",
     value: "collapseThread",
   },
+  DISABLED_SWIPE_OPTION,
 ] as const;
 
 export type PostSwipeOption = (typeof POST_SWIPE_OPTIONS)[number]["value"];
@@ -125,6 +132,8 @@ export function GesturesProvider({ children }: React.PropsWithChildren) {
     option: keyof PostSwipeOptions | keyof CommentSwipeOptions,
     value: PostSwipeOption | CommentSwipeOption,
   ) => {
+    if (value === DISABLED_SWIPE_OPTION.value) return null;
+
     let keyToSwitchWith:
       | null
       | keyof PostSwipeOptions
