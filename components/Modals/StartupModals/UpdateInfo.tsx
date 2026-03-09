@@ -17,94 +17,76 @@ import KeyStore from "../../../utils/KeyStore";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v3.3.0-1",
+  updateKey: "v3.4.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Full iPad Support",
+      title: "Disable Swipe Gestures",
       description:
-        "Opening posts on iPad now opens a split view with comments on the side. You can disable this in Settings => Appearance => Enable split view. Compact post mode is now enabled by default on iPads.",
+        "A new \"Disabled\" option is available for post and comment swipe gestures. Configure this in Settings => General => Gestures.",
     },
     {
-      title: "In App Guide",
+      title: "GIF Improvements",
       description:
-        "Hydra now has a searchable library of help articles that cover all of Hydra's features and settings. Go to Settings => Guide to access it, or use the new smart search bar at the top of the settings page.",
+        "Reddit hosted gifs now load as mp4s for much better performance. Giphy links in posts and comments now render as actual gifs instead of just showing the link text.",
     },
     {
-      title: "New App Icons",
+      title: "Improved Wikis",
       description:
-        '"Hail Hydra!" and "Hail Hydra! (Dark)" are now available under Settings => App Icon. Thank you u/boxsitter!',
+        "Wikis have a much better look and feel. Reddit's new style of Wiki loads properly. Short wiki links (/r/subreddit/w/page) are now supported.",
     },
     {
-      title: "Download More Videos",
+      title: "Temporary Subreddit Filters",
       description:
-        'Videos can now be downloaded from redgif, imgur, and gfycat. Long press a video to open the share menu and select "Save Video".',
-    },
-    {
-      title: "Disable Tap to Collapse",
-      description:
-        "You can now disable the tap to collapse for both the post body and the comments section in Settings => Appearance => Tap to collapse.",
-    },
-    {
-      title: "Reader Mode for Links",
-      description:
-        "You can now open external links in reader mode by default in Settings => General => External Links => Open in reader mode.",
-    },
-    {
-      title: "Improved Quick Search",
-      description:
-        "The subreddit quick search (long press the search tab) shows your subscribed subreddits (favorites first) when you haven't typed anything yet.",
-    },
-    {
-      title: "Auto Open Keyboard",
-      description:
-        "When opening the search tab, making a comment, or making a post, the keyboard will now automatically open for a smoother experience.",
-    },
-    {
-      title: "Video Player Improvements",
-      description:
-        "Videos dismount when Hydra is backgrounded to reduce memory usage and battery drain. Videos are now cached to improve performance. Clear the video cache in Settings => Advanced => Clear Video Cache.",
+        "You can now filter a subreddit's posts for a short while. Long press a post on a combined subreddit feed, click \"Filter Subreddit\", then choose to filter for a day, a week, or forever.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description:
-        "Modals and media views no longer break on iPads when using split screen, windowing, or rotating the device.",
+      description: "Fixed image posts momentarily showing the wrong image when scrolling quickly or on a slow internet connection."
     },
     {
-      description: "EU users were unable to type their login credentials.",
-    },
-    {
-      description:
-        "Uploading images when making a post would fail for certain types of images.",
+      description: "Disabled autocorrect when searching.",
     },
     {
       description:
-        "Searching for subreddits that were less than 3 characters would fail.",
-    },
-    {
-      description: "Subreddit name was not showing when searching for posts.",
+        "Voting on a post while viewing a comments page, then collapsing a comment would cause your vote to disappear.",
     },
     {
       description:
-        "old.reddit.com links open in Hydra instead of opening in a browser.",
+        "Gated and quarantined subreddits are now handled properly and are accessible.",
     },
     {
-      description: "The image share menu now shows a thumbnail of the image.",
-    },
-    {
-      description: "Fixed some minor memory leaks.",
+      description: "Wiki shortlinks (/r/subreddit/w/page) now load properly.",
     },
     {
       description:
-        "Fixed a database query memory leak and optimized query performance.",
+        "Banned users and non-existent user profiles now show an error message instead of loading forever.",
+    },
+    {
+      description: "Giphy gifs were loading very slowly.",
     },
     {
       description:
-        "If a post had a link to a website that returned invalid or malformed headers, Hydra would fail to render the posts.",
+        "Marking posts as read would sometimes fail to update visually.",
     },
+    {
+      description:
+        "User subreddit links (/r/u_username) would fail to load.",
+    },
+    {
+      description:
+        "Subreddit icon images now use caching to improve performance.",
+    },
+    {
+      description:
+        "Post and comment edit modals now say \"Save\" instead of \"Edit\" for the submit button.",
+    },
+    {
+      description: "DB optimization improvements."
+    }
   ] as { description: string }[],
 };
 
