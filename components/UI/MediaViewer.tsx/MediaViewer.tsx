@@ -30,6 +30,7 @@ type MediaViewerProps = {
   ref?: Ref<MediaViewerRef>;
   overlayComponent?: (index: number, rowIndex: number) => React.ReactNode;
   onFocusedItemChange?: (columnIndex: number, rowIndex: number) => void;
+  onClose?: () => void;
 };
 
 export default function MediaViewer({
@@ -37,6 +38,7 @@ export default function MediaViewer({
   ref,
   overlayComponent,
   onFocusedItemChange,
+  onClose,
 }: MediaViewerProps) {
   const { width, height } = useWindowDimensions();
   const { top, bottom } = useSafeAreaInsets();
@@ -84,6 +86,10 @@ export default function MediaViewer({
   const [initialItemIndex, setInitialItemIndex] = useState(0);
 
   const currentRowSize = media[currentIndex]?.length ?? 0;
+  const closeViewer = () => {
+    setIsVisible(false);
+    onClose?.();
+  };
 
   useImperativeHandle(
     ref,
@@ -113,7 +119,7 @@ export default function MediaViewer({
           setIsVisible(true);
           setIsScrollLocked(false);
         },
-        close: () => setIsVisible(false),
+        close: closeViewer,
       }) as MediaViewerRef,
   );
 
@@ -124,7 +130,7 @@ export default function MediaViewer({
   return (
     <Modal
       visible={isVisible}
-      onRequestClose={() => setIsVisible(false)}
+      onRequestClose={closeViewer}
       transparent={true}
     >
       <Animated.View
@@ -136,7 +142,7 @@ export default function MediaViewer({
         ]}
       />
       <TouchableOpacity
-        onPress={() => setIsVisible(false)}
+        onPress={closeViewer}
         style={[
           styles.closeButton,
           {
@@ -288,7 +294,7 @@ export default function MediaViewer({
                       event.nativeEvent.layoutMeasurement.width +
                       40
                 ) {
-                  setIsVisible(false);
+                  closeViewer();
                 }
               }}
             />
@@ -315,7 +321,7 @@ export default function MediaViewer({
           }}
           onScrollEndDrag={(event) => {
             if (event.nativeEvent.contentOffset.y < -50) {
-              setIsVisible(false);
+              closeViewer();
             }
           }}
           drawDistance={100}
