@@ -34,21 +34,25 @@ export default function ImageViewer({
   const { theme } = useContext(ThemeContext);
 
   const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
+  const maxPreviewWidth = Math.ceil(width);
+  const maxPreviewHeight = Math.ceil(height * 0.6);
 
   let displayImgs = images.slice(0, 2);
   if ((loadLowData || isGif) && thumbnail) {
     displayImgs = [thumbnail];
   }
+  const secondaryDisplayImg = displayImgs[1] ?? displayImgs[0];
 
-  const img1 = useImage({
-    uri: displayImgs[0],
+  const img1 = useImage(displayImgs[0], {
+    maxWidth: maxPreviewWidth,
+    maxHeight: maxPreviewHeight,
   });
 
   const img2 = useImage(
+    secondaryDisplayImg,
     {
-      uri: displayImgs[1],
-    },
-    {
+      maxWidth: maxPreviewWidth,
+      maxHeight: maxPreviewHeight,
       onError: () => {
         /* This image might not exist */
       },
