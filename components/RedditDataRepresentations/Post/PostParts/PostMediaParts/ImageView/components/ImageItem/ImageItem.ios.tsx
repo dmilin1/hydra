@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import React, { useCallback, useContext, useRef, useState } from "react";
 import {
   Animated,
+  Pressable,
   ScrollView,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -53,6 +54,14 @@ const ImageItem = ({
   const [translate, scale] = getImageTransform(
     imageDimensions,
     windowDimensions,
+  );
+  const fittedImageHeight =
+    imageDimensions && scale
+      ? imageDimensions.height * scale
+      : windowDimensions.height;
+  const verticalInset = Math.max(
+    0,
+    (windowDimensions.height - fittedImageHeight) / 2,
   );
   const scrollValueY = new Animated.Value(0);
   const scaleValue = new Animated.Value(scale || 1);
@@ -135,6 +144,32 @@ const ImageItem = ({
         backgroundColor: "black",
       }}
     >
+      {!scaled && verticalInset > 0 && (
+        <>
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: verticalInset,
+              zIndex: 1,
+            }}
+            onPress={onRequestClose}
+          />
+          <Pressable
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: verticalInset,
+              zIndex: 1,
+            }}
+            onPress={onRequestClose}
+          />
+        </>
+      )}
       <ScrollView
         ref={scrollViewRef}
         style={{
