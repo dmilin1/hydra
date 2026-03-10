@@ -10,7 +10,6 @@ import { Post } from "../../../api/Posts";
 import { Image } from "expo-image";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
 import MediaViewer, { MediaViewerRef } from "../MediaViewer.tsx/MediaViewer";
-import Video from "./Video";
 import PostOverlay from "../MediaViewer.tsx/PostOverlay";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../GetHydraProButton";
@@ -18,6 +17,7 @@ import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import useMediaSharing from "../../../utils/useMediaSharing";
 
 type GalleryItem = {
+  thumbnailUri: string;
   uri: string;
   mediaAspectRatio: number;
 } & (
@@ -61,8 +61,9 @@ export default function GalleryComponent({
 
   const galleryMedia: GalleryItem[] = posts.flatMap((post) => {
     if (post.images.length > 0) {
-      return post.images.map((image) => ({
+      return post.images.map((image, index) => ({
         type: "image",
+        thumbnailUri: post.imageThumbnails[index] ?? post.imageThumbnail ?? image,
         uri: image,
         mediaAspectRatio: post.mediaAspectRatio,
       }));
@@ -70,6 +71,7 @@ export default function GalleryComponent({
       return [
         {
           type: "video",
+          thumbnailUri: post.imageThumbnail,
           uri: post.video,
           mediaAspectRatio: post.mediaAspectRatio,
         },
@@ -131,20 +133,19 @@ export default function GalleryComponent({
             {item.type === "image" ? (
               <Image
                 style={styles.image}
-                source={{ uri: item.uri }}
-                contentFit="contain"
+                source={{ uri: item.thumbnailUri }}
+                contentFit="cover"
                 autoplay={false}
-                recyclingKey={item.uri}
-                /**
-                 * Downscaling images seems to cause a glitchy scrolling because
-                 * of heavy CPU usage. No downscaling increase memory usage. If
-                 * users start getting crashes, we may have to find a smarter way
-                 * to load lower res images.
-                 */
-                allowDownscaling={false}
+                recyclingKey={item.thumbnailUri}
               />
             ) : item.type === "video" ? (
-              <Video uri={item.uri} />
+              <Image
+                style={styles.image}
+                source={{ uri: item.thumbnailUri }}
+                contentFit="cover"
+                autoplay={false}
+                recyclingKey={item.thumbnailUri}
+              />
             ) : null}
           </TouchableOpacity>
         )}

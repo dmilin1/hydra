@@ -283,6 +283,7 @@ export default function PostDetailsComponent({
                   : undefined,
             },
           ]}
+          hitSlop={8}
           onPress={() => voteOnPost(VoteOption.UpVote)}
         >
           <Feather
@@ -305,6 +306,7 @@ export default function PostDetailsComponent({
                   : undefined,
             },
           ]}
+          hitSlop={8}
           onPress={() => voteOnPost(VoteOption.DownVote)}
         >
           <Feather
@@ -324,6 +326,7 @@ export default function PostDetailsComponent({
               backgroundColor: undefined,
             },
           ]}
+          hitSlop={8}
           onPress={async () => {
             await saveItem(postDetail, !postDetail.saved);
             setPostDetail({
@@ -340,6 +343,7 @@ export default function PostDetailsComponent({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttonsContainer}
+          hitSlop={8}
           onPress={() =>
             setModal(
               <NewComment
@@ -353,6 +357,7 @@ export default function PostDetailsComponent({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttonsContainer}
+          hitSlop={8}
           onPress={() => {
             Share.share({ url: new RedditURL(url).toString() });
           }}
@@ -478,7 +483,6 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     padding: 3,
     borderRadius: 5,
-    marginVertical: -100,
   },
   showContextContainer: {
     borderTopWidth: 1,
