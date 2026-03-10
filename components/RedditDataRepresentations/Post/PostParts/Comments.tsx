@@ -40,6 +40,7 @@ import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/Co
 import { FiltersContext } from "../../../../contexts/SettingsContexts/FiltersContext";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import { LoadMoreCommentsFunc } from "../../../../pages/PostDetails";
+import formatCompactCount from "../../../../utils/formatCompactCount";
 import RedditURL from "../../../../utils/RedditURL";
 import shareURL from "../../../../utils/shareURL";
 import { useURLNavigation } from "../../../../utils/navigation";
@@ -432,12 +433,12 @@ export function CommentComponent({
                                   : theme.subtleText,
                           },
                         ]}
-                      >
-                        {comment.scoreHidden && !comment.userVote
-                          ? "-"
-                          : comment.upvotes}
-                      </Text>
-                    </TouchableOpacity>
+                        >
+                          {comment.scoreHidden && !comment.userVote
+                            ? "-"
+                            : formatCompactCount(comment.upvotes)}
+                        </Text>
+                      </TouchableOpacity>
                     {comment.editedAt && (
                       <TouchableOpacity
                         style={styles.editedAtContainer}

@@ -26,6 +26,7 @@ import { CommentSettingsContext } from "../../../contexts/SettingsContexts/Comme
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
+import formatCompactCount from "../../../utils/formatCompactCount";
 import RedditURL from "../../../utils/RedditURL";
 import shareURL from "../../../utils/shareURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
@@ -227,7 +228,7 @@ export default function PostDetailsComponent({
                   },
                 ]}
               >
-                {postDetail.upvotes}
+                {formatCompactCount(postDetail.upvotes)}
               </Text>
               <Text
                 style={[

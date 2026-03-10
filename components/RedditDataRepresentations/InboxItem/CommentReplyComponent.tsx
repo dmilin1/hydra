@@ -7,6 +7,7 @@ import { vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
 import { InboxContext } from "../../../contexts/InboxContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
+import formatCompactCount from "../../../utils/formatCompactCount";
 import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
@@ -214,7 +215,7 @@ export default function CommentReplyComponent({
                   },
                 ]}
               >
-                {commentReply.upvotes}
+                {formatCompactCount(commentReply.upvotes)}
               </Text>
               <Feather name="clock" size={18} color={theme.subtleText} />
               <Text

@@ -25,6 +25,7 @@ import {
   markPostUnseen,
 } from "../../../db/functions/SeenPosts";
 import URL from "../../../utils/URL";
+import formatCompactCount from "../../../utils/formatCompactCount";
 import RedditURL from "../../../utils/RedditURL";
 import shareURL from "../../../utils/shareURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
@@ -462,8 +463,8 @@ export default function PostComponent({
                         color: currentVoteColor,
                       },
                     ]}
-                  >
-                    {post.upvotes}
+                    >
+                    {formatCompactCount(post.upvotes)}
                   </Text>
                   <Feather
                     name="message-square"
@@ -477,8 +478,8 @@ export default function PostComponent({
                         color: theme.subtleText,
                       },
                     ]}
-                  >
-                    {post.commentCount}
+                    >
+                    {formatCompactCount(post.commentCount)}
                   </Text>
                   <Feather name="clock" size={18} color={theme.subtleText} />
                   <Text
