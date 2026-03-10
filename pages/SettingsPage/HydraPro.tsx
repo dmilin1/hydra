@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -20,6 +21,7 @@ export default function HydraPro() {
     buyPro,
     proOffering,
     isLoadingOffering,
+    purchasesSupported,
     purchasesInitialized,
     inGracePeriod,
     gracePeriodEndsAt,
@@ -60,6 +62,18 @@ export default function HydraPro() {
         >
           Unlock the full potential of Hydra
         </Text>
+        {!purchasesSupported && (
+          <Text
+            style={[
+              styles.unavailableText,
+              {
+                color: theme.subtleText,
+              },
+            ]}
+          >
+            Hydra Pro purchases are not available on {Platform.OS} yet.
+          </Text>
+        )}
         {isLoadingOffering ? (
           <ActivityIndicator
             size="small"
@@ -96,21 +110,27 @@ export default function HydraPro() {
         style={[
           styles.upgradeButton,
           {
-            backgroundColor: theme.buttonBg,
+            backgroundColor: purchasesSupported
+              ? theme.buttonBg
+              : theme.verySubtleText,
           },
         ]}
-        disabled={isLoadingOffering || !purchasesInitialized}
+        disabled={
+          !purchasesSupported || isLoadingOffering || !purchasesInitialized
+        }
       >
         <View style={styles.upgradeButtonContent}>
           <Text
             style={[
               styles.upgradeButtonText,
               {
-                color: theme.buttonText,
+                color: purchasesSupported ? theme.buttonText : theme.subtleText,
               },
             ]}
           >
-            {isLoadingOffering || !purchasesInitialized || isPurchasing ? (
+            {!purchasesSupported ? (
+              "Not available on Android"
+            ) : isLoadingOffering || !purchasesInitialized || isPurchasing ? (
               <ActivityIndicator size="small" color={theme.buttonText} />
             ) : inGracePeriod ? (
               "Renew Subscription"
@@ -158,6 +178,12 @@ const styles = StyleSheet.create({
   subheaderText: {
     fontSize: 16,
     opacity: 0.8,
+    marginBottom: 8,
+  },
+  unavailableText: {
+    fontSize: 14,
+    textAlign: "center",
+    marginHorizontal: 24,
     marginBottom: 8,
   },
   priceText: {

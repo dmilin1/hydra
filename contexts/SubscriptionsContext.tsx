@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import Purchases, {
   CustomerInfo,
   CustomerInfoUpdateListener,
@@ -9,15 +9,25 @@ import Purchases, {
 import { registerCustomer } from "../api/Customer";
 import { USING_CUSTOM_HYDRA_SERVER } from "../constants/HydraServer";
 
-Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
-Purchases.configure({
-  apiKey: "appl_okkBpjboHClPttmFHfsSWRaGSFd",
+const REVENUECAT_API_KEY = Platform.select({
+  ios: "appl_okkBpjboHClPttmFHfsSWRaGSFd",
+  android: null,
+  default: null,
 });
+const PURCHASES_SUPPORTED = Boolean(REVENUECAT_API_KEY);
+
+if (PURCHASES_SUPPORTED && REVENUECAT_API_KEY) {
+  Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
+  Purchases.configure({
+    apiKey: REVENUECAT_API_KEY,
+  });
+}
 
 const HYDRA_299_1M_PRODUCT_ID = "hydra_299_1m";
 const HYDRA_PRO_ENTITLEMENT = "Hydra Pro";
 
 interface SubscriptionContextType {
+  purchasesSupported: boolean;
   purchasesInitialized: boolean;
   customerInfo: CustomerInfo | null;
   customerId: string | null;
@@ -31,6 +41,7 @@ interface SubscriptionContextType {
 }
 
 const initialSubscriptionContext: SubscriptionContextType = {
+  purchasesSupported: PURCHASES_SUPPORTED,
   purchasesInitialized: false,
   customerInfo: null,
   customerId: null,
@@ -72,6 +83,12 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
     : null;
 
   const loadOffering = async () => {
+    if (!PURCHASES_SUPPORTED) {
+      setProOffering(null);
+      setIsLoadingOffering(false);
+      return;
+    }
+
     try {
       const offerings = await Purchases.getOfferings();
       const hydraProOffering = offerings.current?.availablePackages.find(
@@ -86,6 +103,11 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
   };
 
   const buyPro = async () => {
+    if (!PURCHASES_SUPPORTED) {
+      Alert.alert("Hydra Pro is not available on Android yet.");
+      return;
+    }
+
     try {
       if (!proOffering) {
         throw new Error("Hydra Pro offering not found");
@@ -113,6 +135,12 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
   };
 
   const getCustomerInfo = async (refresh = false) => {
+    if (!PURCHASES_SUPPORTED) {
+      setCustomerInfo(null);
+      setPurchasesInitialized(true);
+      return;
+    }
+
     setPurchasesInitialized(false);
     if (refresh) {
       Purchases.invalidateCustomerInfoCache();
@@ -125,6 +153,11 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
   useEffect(() => {
     getCustomerInfo();
     loadOffering();
+
+    if (!PURCHASES_SUPPORTED) {
+      return;
+    }
+
     const handleCustomerInfoUpdate: CustomerInfoUpdateListener = async (
       customerInfo,
     ) => {
@@ -147,6 +180,7 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
   return (
     <SubscriptionsContext.Provider
       value={{
+        purchasesSupported: PURCHASES_SUPPORTED,
         purchasesInitialized,
         customerInfo,
         customerId,
