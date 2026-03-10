@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Slideable from "../components/UI/Slideable";
 import { AccountContext } from "../contexts/AccountContext";
@@ -16,6 +17,7 @@ import useContextMenu from "../utils/useContextMenu";
 
 export default function AccountsPage() {
   const { theme } = useContext(ThemeContext);
+  const { bottom } = useSafeAreaInsets();
   const { currentUser, accounts, logIn, logOut, removeUser } =
     useContext(AccountContext);
   const openContextMenu = useContextMenu();
@@ -37,7 +39,12 @@ export default function AccountsPage() {
       ]}
     >
       {accounts.length ? (
-        <ScrollView style={styles.scrollView}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={{
+            paddingBottom: bottom + 12,
+          }}
+        >
           {[...accounts, "Logged Out"].map((username) => (
             <Slideable
               key={username}
@@ -135,7 +142,14 @@ export default function AccountsPage() {
           ))}
         </ScrollView>
       ) : (
-        <View style={styles.noAccountsContainer}>
+        <View
+          style={[
+            styles.noAccountsContainer,
+            {
+              paddingBottom: bottom,
+            },
+          ]}
+        >
           <Text
             style={[
               styles.noAccountsText,

@@ -17,7 +17,8 @@ import { AntDesign } from "@expo/vector-icons";
 import { useMMKVString } from "react-native-mmkv";
 import { ScrollToNextButtonContext } from "./ScrollToNextButtonContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../constants/TabBarPadding";
+import { getEffectiveTabBarRemovedPaddingBottom } from "../constants/TabBarPadding";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const BUTTON_SIZE = 40;
 const EDGE_PADDING = 20;
@@ -26,8 +27,10 @@ export default function ScrollToNextButtonProvider({
   children,
 }: PropsWithChildren) {
   const { theme } = useContext(ThemeContext);
+  const { bottom } = useSafeAreaInsets();
 
   const tabBarHeight = useBottomTabBarHeight();
+  const removedPaddingBottom = getEffectiveTabBarRemovedPaddingBottom(bottom);
 
   const scrollToNext = useRef<(() => void) | null>(null);
   const scrollToPrevious = useRef<(() => void) | null>(null);
@@ -246,7 +249,7 @@ export default function ScrollToNextButtonProvider({
           styles.overlay,
           {
             opacity: overlayOpacity,
-            bottom: tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+            bottom: tabBarHeight - removedPaddingBottom,
             pointerEvents: "none",
           },
         ]}
