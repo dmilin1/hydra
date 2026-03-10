@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Pressable,
@@ -17,6 +17,7 @@ import { getImageStyles, getImageTransform } from "../../utils";
 
 const SWIPE_CLOSE_OFFSET = 75;
 const SWIPE_CLOSE_VELOCITY = 1.75;
+const BACKDROP_CLOSE_DELAY_MS = 250;
 
 type Props = {
   imageSrc: ImageSource;
@@ -47,6 +48,7 @@ const ImageItem = ({
   const scrollValueY = new Animated.Value(0);
   const [isLoaded, setLoadEnd] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [canCloseFromBackdrop, setCanCloseFromBackdrop] = useState(false);
   const fittedImageHeight =
     imageDimensions && scale
       ? imageDimensions.height * scale
@@ -57,6 +59,15 @@ const ImageItem = ({
   );
 
   const onLoaded = useCallback(() => setLoadEnd(true), []);
+  useEffect(() => {
+    const timeout = setTimeout(
+      () => setCanCloseFromBackdrop(true),
+      BACKDROP_CLOSE_DELAY_MS,
+    );
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   const onZoomPerformed = useCallback(
     (isZoomed: boolean) => {
       setIsZoomed(isZoomed);
@@ -99,12 +110,12 @@ const ImageItem = ({
   }: NativeSyntheticEvent<NativeScrollEvent>) => {
     const velocityY = nativeEvent?.velocity?.y ?? 0;
     const offsetY = nativeEvent?.contentOffset?.y ?? 0;
-
-    if (
+    const shouldClose =
       (Math.abs(velocityY) > SWIPE_CLOSE_VELOCITY &&
         offsetY > SWIPE_CLOSE_OFFSET) ||
-      offsetY > windowDimensions.height / 2
-    ) {
+      offsetY > windowDimensions.height / 2;
+
+    if (shouldClose) {
       onRequestClose();
     }
   };
@@ -125,7 +136,7 @@ const ImageItem = ({
         backgroundColor: "black",
       }}
     >
-      {!isZoomed && verticalInset > 0 && (
+      {!isZoomed && verticalInset > 0 && canCloseFromBackdrop && (
         <>
           <Pressable
             style={{

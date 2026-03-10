@@ -109,8 +109,10 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
   } else if (isElementImgLinkInParagraph(element)) {
     const imgURL = (element.children[0] as ElementNode)?.attribs.href;
     Wrapper = () => (
-      <View style={styles.imageContainer}>
-        <ImageViewer images={[imgURL]} aspectRatio={16 / 9} />
+      <View onStartShouldSetResponder={() => true}>
+        <View style={styles.imageContainer}>
+          <ImageViewer images={[imgURL]} aspectRatio={16 / 9} />
+        </View>
       </View>
     );
     wrapperStyles.marginVertical = 10;

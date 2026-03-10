@@ -103,6 +103,10 @@ export function CommentComponent({
   }
 
   const [loadingMore, setLoadingMore] = useState(false);
+  const commentHasInlineMedia =
+    comment.html.includes("preview.redd.it") || comment.html.includes("<img");
+  const disableCommentPress =
+    !displayInList && tapToCollapseComment && commentHasInlineMedia;
 
   const toggleCollapse = () => {
     if (comment.type !== "comment") return;
@@ -307,9 +311,12 @@ export function CommentComponent({
                     commentPropRef.current = ref;
                   }
                 }}
+                disabled={disableCommentPress}
                 activeOpacity={1}
                 underlayColor={
-                  tapToCollapseComment || displayInList ? theme.tint : undefined
+                  tapToCollapseComment || displayInList
+                    ? theme.tint
+                    : undefined
                 }
                 onPress={() => {
                   if (displayInList) {
@@ -320,7 +327,7 @@ export function CommentComponent({
                           .toString(),
                       );
                     }
-                  } else if (tapToCollapseComment) {
+                  } else if (tapToCollapseComment && !disableCommentPress) {
                     commentRef.current?.measureInWindow(
                       (_x, y, _width_, _height) => {
                         if (!comment.collapsed && scrollChange) {

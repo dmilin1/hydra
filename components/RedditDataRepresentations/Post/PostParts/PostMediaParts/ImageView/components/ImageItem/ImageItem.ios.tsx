@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import React, { useCallback, useContext, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Pressable,
@@ -19,6 +19,7 @@ import { PostSettingsContext } from "../../../../../../../../contexts/SettingsCo
 
 const SWIPE_CLOSE_OFFSET = 50;
 const SWIPE_CLOSE_VELOCITY = 1.55;
+const BACKDROP_CLOSE_DELAY_MS = 250;
 
 type Props = {
   imageSrc: ImageSource;
@@ -43,6 +44,7 @@ const ImageItem = ({
   const scrollViewRef = useRef<ScrollView | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [scaled, setScaled] = useState(false);
+  const [canCloseFromBackdrop, setCanCloseFromBackdrop] = useState(false);
   const imageDimensions = useImageDimensions(imageSrc);
   const handleDoubleTap = useDoubleTapToZoom(
     scrollViewRef,
@@ -137,6 +139,15 @@ const ImageItem = ({
     onLongPress(imageSrc);
   }, [imageSrc, onLongPress]);
 
+  useEffect(() => {
+    const timeout = setTimeout(
+      () => setCanCloseFromBackdrop(true),
+      BACKDROP_CLOSE_DELAY_MS,
+    );
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <Animated.View
       style={{
@@ -144,7 +155,7 @@ const ImageItem = ({
         backgroundColor: "black",
       }}
     >
-      {!scaled && verticalInset > 0 && (
+      {!scaled && verticalInset > 0 && canCloseFromBackdrop && (
         <>
           <Pressable
             style={{
