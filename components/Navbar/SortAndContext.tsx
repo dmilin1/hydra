@@ -95,7 +95,7 @@ export default function SortAndContext({
     useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
 
-  const { replaceURL, pushURL, setParams, openGallery } = useURLNavigation();
+  const { replaceURL, pushURL, openGallery } = useURLNavigation();
 
   const showContextMenu = useContextMenu();
 
@@ -112,9 +112,6 @@ export default function SortAndContext({
     const redditUrl = new RedditURL(currentPath).changeSort(sort, time);
     const pageType = redditUrl.getPageType();
     const subreddit = redditUrl.getSubreddit();
-    setParams({
-      url: redditUrl.toString(),
-    });
     if (
       pageType === PageType.SUBREDDIT &&
       KeyStore.getBoolean(REMEMBER_POST_SUBREDDIT_SORT_KEY)
@@ -133,6 +130,7 @@ export default function SortAndContext({
     ) {
       KeyStore.set(makeCommentSubredditSortKey(subreddit), sort.toLowerCase());
     }
+    replaceURL(redditUrl.toString());
   };
 
   const handleTopSort = async () => {
@@ -182,7 +180,7 @@ export default function SortAndContext({
                 PageType.USER,
               ].includes(pageType)
             ) {
-              handleTopSort();
+              await handleTopSort();
             } else if (sort) {
               changeSort(sort);
             }
