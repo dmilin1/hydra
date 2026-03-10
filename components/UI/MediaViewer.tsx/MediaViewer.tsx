@@ -13,6 +13,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MediaVideo, { VideoItem } from "./MediaVideo";
 import { ImageItem, MediaImage } from "./MediaImage";
+import {
+  allowFullscreenRotation,
+  lockPortraitOrientation,
+} from "../../../utils/HydraOrientation";
 
 type MediaItem = ImageItem | VideoItem;
 
@@ -86,7 +90,9 @@ export default function MediaViewer({
   const [initialItemIndex, setInitialItemIndex] = useState(0);
 
   const currentRowSize = media[currentIndex]?.length ?? 0;
+  const currentItem = media[currentIndex]?.[currentRowIndex];
   const closeViewer = () => {
+    lockPortraitOrientation();
     setIsVisible(false);
     onClose?.();
   };
@@ -126,6 +132,18 @@ export default function MediaViewer({
   useEffect(() => {
     onFocusedItemChange?.(currentIndex, currentRowIndex);
   }, [currentIndex, currentRowIndex]);
+
+  useEffect(() => {
+    if (!isVisible) {
+      lockPortraitOrientation();
+      return;
+    }
+    if (currentItem?.type === "video") {
+      allowFullscreenRotation();
+      return;
+    }
+    lockPortraitOrientation();
+  }, [currentItem?.type, isVisible]);
 
   return (
     <Modal

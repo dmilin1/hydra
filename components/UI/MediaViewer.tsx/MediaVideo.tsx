@@ -38,7 +38,7 @@ const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
 function MediaVideo(props: MediaVideoProps) {
   const { uri, focused, overlayOpacity } = props;
   const { width, height } = useWindowDimensions();
-  const { top } = useSafeAreaInsets();
+  const { top, bottom, left, right } = useSafeAreaInsets();
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -46,6 +46,18 @@ function MediaVideo(props: MediaVideoProps) {
     dimensions.width > 0 && dimensions.height > 0
       ? dimensions.width / dimensions.height
       : 1;
+  const availableWidth = Math.max(0, width - left - right);
+  const availableHeight = Math.max(0, height - top - bottom);
+  const windowAspectRatio =
+    availableHeight > 0 ? availableWidth / availableHeight : aspectRatio;
+  const videoWidth =
+    windowAspectRatio > aspectRatio
+      ? availableHeight * aspectRatio
+      : availableWidth;
+  const videoHeight =
+    windowAspectRatio > aspectRatio
+      ? availableHeight
+      : availableWidth / aspectRatio;
 
   const progress = useRef(new Animated.Value(0)).current;
 
@@ -212,7 +224,13 @@ function MediaVideo(props: MediaVideoProps) {
   return (
     <View style={[styles.container, { width, height }]}>
       <View
-        style={[styles.videoContainer, { width, height: width / aspectRatio }]}
+        style={[
+          styles.videoContainer,
+          {
+            width: videoWidth,
+            height: videoHeight,
+          },
+        ]}
       >
         <View
           style={styles.videoGestureSurface}
@@ -259,7 +277,7 @@ function MediaVideo(props: MediaVideoProps) {
         >
           <VideoView
             player={player}
-            style={[styles.video, { width }]}
+            style={[styles.video, { width: videoWidth, height: videoHeight }]}
             contentFit="contain"
             nativeControls={false}
             allowsVideoFrameAnalysis={false}
@@ -301,7 +319,14 @@ function MediaVideo(props: MediaVideoProps) {
           </TouchableOpacity>
         </Animated.View>
         <View
-          style={styles.progressTrack}
+          style={[
+            styles.progressTrack,
+            {
+              left: Math.max(24, left + 16),
+              right: Math.max(24, right + 16),
+              bottom: bottom + 12,
+            },
+          ]}
           onLayout={(event) => {
             progressBarWidth.current = event.nativeEvent.layout.width;
           }}
@@ -339,6 +364,7 @@ function MediaVideo(props: MediaVideoProps) {
           styles.playbackRateContainer,
           {
             top: top + 10,
+            left: left + 10,
             opacity: overlayOpacity,
           },
         ]}
@@ -372,6 +398,7 @@ export default function MediaVideoWrapper(props: MediaVideoProps) {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: "center",
     justifyContent: "center",
   },
   videoContainer: {
@@ -415,16 +442,12 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     position: "absolute",
-    bottom: 0,
-    left: 24,
-    right: 24,
     height: 24,
     zIndex: 2,
     justifyContent: "center",
   },
   playbackRateContainer: {
     position: "absolute",
-    left: 10,
   },
   playbackRateButton: {
     borderRadius: 100,
