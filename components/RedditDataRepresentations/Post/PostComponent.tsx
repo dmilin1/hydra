@@ -492,6 +492,30 @@ export default function PostComponent({
                   >
                     {post.timeSince}
                   </Text>
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityLabel={`Share ${post.title.trim()}`}
+                    activeOpacity={0.8}
+                    style={styles.metadataAction}
+                    onPress={() => shareURL(post.link, post.title.trim())}
+                  >
+                    <Feather
+                      name="share"
+                      size={18}
+                      color={theme.subtleText}
+                    />
+                    <Text
+                      style={[
+                        styles.metadataText,
+                        styles.metadataActionText,
+                        {
+                          color: theme.subtleText,
+                        },
+                      ]}
+                    >
+                      Share
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
               <View style={styles.footerRight} />
@@ -589,6 +613,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginLeft: 3,
     marginRight: 12,
+  },
+  metadataAction: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  metadataActionText: {
+    marginRight: 0,
   },
   bookmarkNotch: {
     position: "absolute",
