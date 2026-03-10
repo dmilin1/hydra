@@ -10,7 +10,6 @@ import {
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
 import {
-  Share,
   StyleSheet,
   View,
   TouchableOpacity,
@@ -33,6 +32,7 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
 import KeyStore from "../../utils/KeyStore";
 import RedditURL, { PageType } from "../../utils/RedditURL";
+import shareURL from "../../utils/shareURL";
 import { useURLNavigation } from "../../utils/navigation";
 import { FlexibleNavigationProp } from "../../utils/navigationTypes";
 import useContextMenu from "../../utils/useContextMenu";
@@ -275,7 +275,7 @@ export default function SortAndContext({
               anchor: findNodeHandle(contextButtonRef.current) ?? undefined,
             });
             if (result === "Share") {
-              Share.share({ url: new RedditURL(currentPath).toString() });
+              shareURL(new RedditURL(currentPath).toString());
             } else if (
               result === "Select Text" &&
               pageData?.type === "postDetail"

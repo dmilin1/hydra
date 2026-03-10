@@ -11,7 +11,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Share,
   TouchableHighlight,
   Alert,
 } from "react-native";
@@ -28,6 +27,7 @@ import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSett
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import RedditURL from "../../../utils/RedditURL";
+import shareURL from "../../../utils/shareURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import NewComment from "../../Modals/NewComment";
 import Time from "../../../utils/Time";
@@ -359,7 +359,7 @@ export default function PostDetailsComponent({
           style={styles.buttonsContainer}
           hitSlop={8}
           onPress={() => {
-            Share.share({ url: new RedditURL(url).toString() });
+            shareURL(new RedditURL(url).toString(), postDetail.title);
           }}
         >
           <Feather name="share" size={28} color={theme.iconPrimary} />

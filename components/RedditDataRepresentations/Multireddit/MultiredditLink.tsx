@@ -6,12 +6,12 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Share,
 } from "react-native";
 
 import { Multi } from "../../../api/Multireddit";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../../contexts/SubredditContext";
+import shareURL from "../../../utils/shareURL";
 import { useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 
@@ -84,7 +84,7 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
                   deleteSubFromMulti(multi, subreddit.name);
                 }
                 if (result === "Share") {
-                  Share.share({ url: subreddit.url });
+                  shareURL(subreddit.url, subreddit.name);
                 }
               }}
               activeOpacity={0.5}

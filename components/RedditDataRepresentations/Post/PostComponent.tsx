@@ -5,7 +5,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Share,
   AccessibilityInfo,
 } from "react-native";
 import { openExternalLink } from "../../../utils/openExternalLink";
@@ -27,6 +26,7 @@ import {
 } from "../../../db/functions/SeenPosts";
 import URL from "../../../utils/URL";
 import RedditURL from "../../../utils/RedditURL";
+import shareURL from "../../../utils/shareURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import Slideable from "../../UI/Slideable";
 import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
@@ -164,7 +164,7 @@ export default function PostComponent({
     {
       label: "Share",
       handle: async () => {
-        await Share.share({ url: post.link });
+        await shareURL(post.link, post.title.trim());
       },
     },
   ]);
