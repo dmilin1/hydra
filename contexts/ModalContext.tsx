@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { Animated, StyleSheet, useWindowDimensions } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 
 type ModalContextType = {
   setModal: (modal?: ReactNode) => void;
@@ -20,16 +20,16 @@ export const ModalContext = createContext(initialModalContext);
 
 export function ModalProvider({ children }: React.PropsWithChildren) {
   const [modal, setModal] = useState<ReactNode>(null);
-  const { height } = useWindowDimensions();
-  const modalPosition = useRef(new Animated.Value(height)).current;
+  const modalPosition = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    const targetValue = modal ? 0 : 1000;
     Animated.spring(modalPosition, {
-      toValue: modal ? 0 : height,
+      toValue: targetValue,
       bounciness: 2,
       useNativeDriver: true,
     }).start();
-  }, [modal]);
+  }, [modal, modalPosition]);
 
   /**
    * Since this provider only provides functions, we need to memoize the value
@@ -44,28 +44,36 @@ export function ModalProvider({ children }: React.PropsWithChildren) {
 
   return (
     <ModalContext.Provider value={value}>
-      <Animated.View
-        style={[
-          styles.modalContainer,
-          {
-            transform: [
+      <View style={styles.container}>
+        {children}
+        {modal && (
+          <Animated.View
+            style={[
+              styles.modalContainer,
               {
-                translateY: modalPosition,
+                transform: [
+                  {
+                    translateY: modalPosition,
+                  },
+                ],
               },
-            ],
-          },
-        ]}
-      >
-        {modal}
-      </Animated.View>
-      {children}
+            ]}
+          >
+            {modal}
+          </Animated.View>
+        )}
+      </View>
     </ModalContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   modalContainer: {
-    position: "relative",
+    ...StyleSheet.absoluteFillObject,
     zIndex: 1000,
+    elevation: 1000,
   },
 });
