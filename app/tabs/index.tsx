@@ -8,10 +8,7 @@ import {
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { SplashScreen, useNavigation } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainerRef, StackActions } from "@react-navigation/native";
 
 import LoadingSplash from "../../components/UI/LoadingSplash";
@@ -20,7 +17,7 @@ import { InboxContext } from "../../contexts/InboxContext";
 import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import Stack from "../stack";
-import { getEffectiveTabBarRemovedPaddingBottom } from "../../constants/TabBarPadding";
+import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
 import useHandleIncomingURLs from "../../utils/useHandleIncomingURLs";
 import { AppNavigationProp } from "../../utils/navigationTypes";
@@ -50,7 +47,6 @@ export default function Tabs() {
   }
 
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
-  const { bottom } = useSafeAreaInsets();
 
   const { theme } = useContext(ThemeContext);
   const { loginInitialized, currentUser } = useContext(AccountContext);
@@ -59,7 +55,6 @@ export default function Tabs() {
   const { tabBarTranslateY } = useContext(TabScrollContext);
 
   const [showSubredditSearch, setShowSubredditSearch] = useState(false);
-  const removedPaddingBottom = getEffectiveTabBarRemovedPaddingBottom(bottom);
 
   useHandleIncomingURLs();
 
@@ -72,7 +67,7 @@ export default function Tabs() {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: theme.background }}
-      edges={["right", "left", "bottom"]}
+      edges={["right", "left"]}
     >
       <QuickSubredditSearch
         show={showSubredditSearch}
@@ -84,7 +79,7 @@ export default function Tabs() {
             tabBarStyle: {
               position: "absolute",
               paddingHorizontal: 10,
-              bottom: -removedPaddingBottom,
+              bottom: -TAB_BAR_REMOVED_PADDING_BOTTOM,
               backgroundColor: theme.background,
               borderTopWidth: 0,
               transform: [
