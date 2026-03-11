@@ -103,6 +103,7 @@ export default function QuickSubredditSearch({
         styles.container,
         {
           opacity: opacity,
+          pointerEvents: show ? "auto" : "none",
         },
       ]}
     >

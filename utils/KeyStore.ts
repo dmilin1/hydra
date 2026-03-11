@@ -1,3 +1,3 @@
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 
-export default new MMKV();
+export default createMMKV();

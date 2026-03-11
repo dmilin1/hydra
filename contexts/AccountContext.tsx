@@ -78,7 +78,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const logOutContext = async () => {
     await RedditCookies.clearSessionCookies();
-    KeyStore.delete("currentUser");
+    KeyStore.remove("currentUser");
     setCurrentUser(null);
     Sentry.setUser(null);
     UserAuth.modhash = undefined;

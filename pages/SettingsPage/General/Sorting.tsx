@@ -173,7 +173,7 @@ export default function General() {
   const clearRememberedPostSubredditSorts = () => {
     keys.forEach((key) => {
       if (key.startsWith("PostSubredditSort-")) {
-        KeyStore.delete(key);
+        KeyStore.remove(key);
       }
     });
     setNumRememberedPostSubreddits(0);
@@ -182,7 +182,7 @@ export default function General() {
   const clearRememberedCommentSubredditSorts = () => {
     keys.forEach((key) => {
       if (key.startsWith("CommentSubredditSort-")) {
-        KeyStore.delete(key);
+        KeyStore.remove(key);
       }
     });
     setNumRememberedCommentSubreddits(0);

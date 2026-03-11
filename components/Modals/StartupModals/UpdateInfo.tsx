@@ -25,7 +25,7 @@ export const updateInfo = {
     {
       title: "Disable Swipe Gestures",
       description:
-        "A new \"Disabled\" option is available for post and comment swipe gestures. Configure this in Settings => General => Gestures.",
+        'A new "Disabled" option is available for post and comment swipe gestures. Configure this in Settings => General => Gestures.',
     },
     {
       title: "GIF Improvements",
@@ -40,12 +40,13 @@ export const updateInfo = {
     {
       title: "Temporary Subreddit Filters",
       description:
-        "You can now filter a subreddit's posts for a short while. Long press a post on a combined subreddit feed, click \"Filter Subreddit\", then choose to filter for a day, a week, or forever.",
+        'You can now filter a subreddit\'s posts for a short while. Long press a post on a combined subreddit feed, click "Filter Subreddit", then choose to filter for a day, a week, or forever.',
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description: "Fixed image posts momentarily showing the wrong image when scrolling quickly or on a slow internet connection."
+      description:
+        "Fixed image posts momentarily showing the wrong image when scrolling quickly or on a slow internet connection.",
     },
     {
       description: "Disabled autocorrect when searching.",
@@ -73,8 +74,7 @@ export const updateInfo = {
         "Marking posts as read would sometimes fail to update visually.",
     },
     {
-      description:
-        "User subreddit links (/r/u_username) would fail to load.",
+      description: "User subreddit links (/r/u_username) would fail to load.",
     },
     {
       description:
@@ -82,11 +82,11 @@ export const updateInfo = {
     },
     {
       description:
-        "Post and comment edit modals now say \"Save\" instead of \"Edit\" for the submit button.",
+        'Post and comment edit modals now say "Save" instead of "Edit" for the submit button.',
     },
     {
-      description: "DB optimization improvements."
-    }
+      description: "DB optimization improvements.",
+    },
   ] as { description: string }[],
 };
 
