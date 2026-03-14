@@ -1,4 +1,4 @@
-import { Image, useImage } from "expo-image";
+import { Image } from "expo-image";
 import React, { useState, useContext, useRef } from "react";
 import {
   Text,
@@ -16,12 +16,12 @@ import useMediaSharing from "../../../../../utils/useMediaSharing";
 
 export default function ImageViewer({
   images,
-  thumbnail,
   aspectRatio,
+  thumbnail,
 }: {
   images: string[];
+  aspectRatio: number;
   thumbnail?: string;
-  aspectRatio?: number;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
   const shareMedia = useMediaSharing();
@@ -35,29 +35,9 @@ export default function ImageViewer({
 
   const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
 
-  let displayImgs = images.slice(0, 2);
-  if ((loadLowData || isGif) && thumbnail) {
-    displayImgs = [thumbnail];
-  }
+  const numImgsToDisplay = (loadLowData || isGif) && thumbnail ? 1 : 2;
 
-  const img1 = useImage({
-    uri: displayImgs[0],
-  });
-
-  const img2 = useImage(
-    {
-      uri: displayImgs[1],
-    },
-    {
-      onError: () => {
-        /* This image might not exist */
-      },
-    },
-  );
-
-  const imgRefs = [img1, ...(displayImgs.length === 2 ? [img2] : [])];
-
-  const imgRatio = aspectRatio ?? (img1 ? img1.width / img1.height : 0);
+  const imgRatio = aspectRatio;
   const heightIfFullSize = width / imgRatio;
   const imgHeight = Math.min(height * 0.6, heightIfFullSize);
 
@@ -66,7 +46,7 @@ export default function ImageViewer({
       style={[
         styles.imageViewerContainer,
         {
-          height: imgRefs.length >= 2 ? imgHeight / 2 : imgHeight,
+          height: numImgsToDisplay === 2 ? imgHeight / 2 : imgHeight,
         },
       ]}
     >
@@ -87,14 +67,14 @@ export default function ImageViewer({
           delayLongPress={500}
         />
       )}
-      {imgRefs.map((img, index, imgs) => (
+      {images.slice(0, numImgsToDisplay).map((img, index) => (
         /**
          * Don't change this to TouchableWithoutFeedback, it will break images in comments
          * by making them offset weirdly. I have no idea why.
          */
         <TouchableHighlight
-          activeOpacity={1}
           key={index}
+          activeOpacity={1}
           onPress={() => {
             setLoadLowData(false);
             initialImageIndex.current = index;
@@ -102,16 +82,16 @@ export default function ImageViewer({
           }}
           style={styles.touchableZone}
           underlayColor={theme.background}
-          onLongPress={() => shareMedia("image", images[index])}
+          onLongPress={() => shareMedia("image", img)}
         >
           <Image
             style={[
               styles.img,
               {
-                height: imgs.length >= 2 ? imgHeight / 2 : imgHeight,
+                height: numImgsToDisplay === 2 ? imgHeight / 2 : imgHeight,
               },
             ]}
-            recyclingKey={displayImgs[index]}
+            recyclingKey={img}
             contentFit="contain"
             source={img}
             transition={250}

@@ -1,4 +1,4 @@
-import { Image, useImage } from "expo-image";
+import { Image } from "expo-image";
 import { openExternalLink } from "../../../../../utils/openExternalLink";
 import React, { useContext } from "react";
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
@@ -21,17 +21,6 @@ export default function Link({ post }: { post: Post | PostDetail }) {
   const { interactedWithPost } = useContext(PostInteractionContext);
 
   const url = post.externalLink ?? post.crossCommentLink;
-
-  const imgRef = useImage(
-    {
-      uri: post.openGraphData?.image,
-    },
-    {
-      onError: () => {
-        /* This image might not exist */
-      },
-    },
-  );
 
   return (
     <TouchableOpacity
@@ -59,7 +48,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
         <>
           {currentDataMode === "normal" && (
             <Image
-              source={imgRef}
+              source={post.openGraphData.image}
               contentFit="cover"
               style={{ height: 200, borderRadius: 10 }}
               transition={250}
