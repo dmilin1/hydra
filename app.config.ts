@@ -9,9 +9,7 @@ module.exports = {
     slug: "hydra",
     version: packageJson.version,
     newArchEnabled: true,
-    runtimeVersion: {
-      policy: 'appVersion',
-    },
+    runtimeVersion: packageJson.version,
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "hydra",

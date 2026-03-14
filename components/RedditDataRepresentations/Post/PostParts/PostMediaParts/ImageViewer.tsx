@@ -4,12 +4,13 @@ import {
   Text,
   StyleSheet,
   View,
-  TouchableHighlight,
+  Pressable,
   useWindowDimensions,
 } from "react-native";
 
 import { default as ImageView } from "./ImageView/ImageViewing";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
+import { ModalContext } from "../../../../../contexts/ModalContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../../../../utils/URL";
 import useMediaSharing from "../../../../../utils/useMediaSharing";
@@ -26,29 +27,33 @@ export default function ImageViewer({
   const { currentDataMode } = useContext(DataModeContext);
   const shareMedia = useMediaSharing();
   const { width, height } = useWindowDimensions();
+  const { setModal } = useContext(ModalContext);
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
-  const [visible, setVisible] = useState(false);
   const initialImageIndex = useRef(0);
 
   const { theme } = useContext(ThemeContext);
 
   const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
+  const maxPreviewWidth = Math.ceil(width);
+  const maxPreviewHeight = Math.ceil(height * 0.6);
 
   let displayImgs = images.slice(0, 2);
   if ((loadLowData || isGif) && thumbnail) {
     displayImgs = [thumbnail];
   }
+  const secondaryDisplayImg = displayImgs[1] ?? displayImgs[0];
 
-  const img1 = useImage({
-    uri: displayImgs[0],
+  const img1 = useImage(displayImgs[0], {
+    maxWidth: maxPreviewWidth,
+    maxHeight: maxPreviewHeight,
   });
 
   const img2 = useImage(
+    secondaryDisplayImg,
     {
-      uri: displayImgs[1],
-    },
-    {
+      maxWidth: maxPreviewWidth,
+      maxHeight: maxPreviewHeight,
       onError: () => {
         /* This image might not exist */
       },
@@ -61,6 +66,30 @@ export default function ImageViewer({
   const heightIfFullSize = width / imgRatio;
   const imgHeight = Math.min(height * 0.6, heightIfFullSize);
 
+  const openImageViewer = (index: number) => {
+    setLoadLowData(false);
+    initialImageIndex.current = index;
+    setModal(
+      <ImageView
+        images={images.map((image) => ({ uri: image }))}
+        initialImageIndex={index}
+        presentationStyle="overFullScreen"
+        animationType="none"
+        visible={true}
+        onRequestClose={() => setModal(undefined)}
+        onLongPress={(imgSource) =>
+          typeof imgSource === "object" &&
+          imgSource.uri &&
+          shareMedia("image", imgSource.uri)
+        }
+        onImageIndexChange={(imageIndex) => {
+          initialImageIndex.current = imageIndex;
+        }}
+        delayLongPress={500}
+      />,
+    );
+  };
+
   return (
     <View
       style={[
@@ -70,39 +99,22 @@ export default function ImageViewer({
         },
       ]}
     >
-      {!loadLowData && (
-        <ImageView
-          images={images.map((image) => ({ uri: image }))}
-          initialImageIndex={initialImageIndex.current}
-          presentationStyle="overFullScreen"
-          animationType="none"
-          visible={visible}
-          onRequestClose={() => setVisible(false)}
-          onLongPress={(imgSource) =>
-            typeof imgSource === "object" &&
-            imgSource.uri &&
-            shareMedia("image", imgSource.uri)
-          }
-          onImageIndexChange={(index) => (initialImageIndex.current = index)}
-          delayLongPress={500}
-        />
-      )}
       {imgRefs.map((img, index, imgs) => (
         /**
          * Don't change this to TouchableWithoutFeedback, it will break images in comments
          * by making them offset weirdly. I have no idea why.
          */
-        <TouchableHighlight
-          activeOpacity={1}
+        <Pressable
           key={index}
-          onPress={() => {
-            setLoadLowData(false);
-            initialImageIndex.current = index;
-            setVisible(true);
+          onPress={(event) => {
+            event.stopPropagation();
+            openImageViewer(index);
           }}
           style={styles.touchableZone}
-          underlayColor={theme.background}
-          onLongPress={() => shareMedia("image", images[index])}
+          onLongPress={(event) => {
+            event.stopPropagation();
+            shareMedia("image", images[index]);
+          }}
         >
           <Image
             style={[
@@ -116,7 +128,7 @@ export default function ImageViewer({
             source={img}
             transition={250}
           />
-        </TouchableHighlight>
+        </Pressable>
       ))}
       {images.length >= 2 && (
         <View

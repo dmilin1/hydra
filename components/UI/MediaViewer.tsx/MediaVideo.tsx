@@ -3,6 +3,8 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  GestureResponderEvent,
+  Platform,
   TouchableOpacity,
   useWindowDimensions,
   View,
@@ -36,11 +38,26 @@ const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
 function MediaVideo(props: MediaVideoProps) {
   const { uri, focused, overlayOpacity } = props;
   const { width, height } = useWindowDimensions();
-  const { top } = useSafeAreaInsets();
+  const { top, bottom, left, right } = useSafeAreaInsets();
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  const aspectRatio = dimensions.width / dimensions.height;
+  const aspectRatio =
+    dimensions.width > 0 && dimensions.height > 0
+      ? dimensions.width / dimensions.height
+      : 1;
+  const availableWidth = Math.max(0, width - left - right);
+  const availableHeight = Math.max(0, height - top - bottom);
+  const windowAspectRatio =
+    availableHeight > 0 ? availableWidth / availableHeight : aspectRatio;
+  const videoWidth =
+    windowAspectRatio > aspectRatio
+      ? availableHeight * aspectRatio
+      : availableWidth;
+  const videoHeight =
+    windowAspectRatio > aspectRatio
+      ? availableHeight
+      : availableWidth / aspectRatio;
 
   const progress = useRef(new Animated.Value(0)).current;
 
@@ -66,6 +83,80 @@ function MediaVideo(props: MediaVideoProps) {
   const playbackRate = useEvent(player, "playbackRateChange")?.playbackRate;
 
   const animationFrameRequest = useRef<number | null>(null);
+  const progressScrubAnimationFrame = useRef<number | null>(null);
+  const pendingProgressScrubTime = useRef<number | null>(null);
+  const progressBarWidth = useRef(0);
+  const progressBarPageX = useRef(0);
+  const progressBarScrubState = useRef({
+    initiallyPlaying: false,
+    isScrubbing: false,
+    seekTime: 0,
+  });
+  const ignoreNextTouchEnd = useRef(false);
+
+  const commitProgressScrubSeek = (seekTime: number) => {
+    pendingProgressScrubTime.current = seekTime;
+    if (progressScrubAnimationFrame.current) {
+      return;
+    }
+    progressScrubAnimationFrame.current = requestAnimationFrame(() => {
+      progressScrubAnimationFrame.current = null;
+      if (pendingProgressScrubTime.current == null) {
+        return;
+      }
+      player.currentTime = pendingProgressScrubTime.current;
+    });
+  };
+
+  const seekToProgress = (touchX: number) => {
+    if (!player.duration || !Number.isFinite(player.duration)) {
+      return;
+    }
+    const width = progressBarWidth.current;
+    if (width <= 0) {
+      return;
+    }
+    const clampedX = Math.max(0, Math.min(width, touchX));
+    const nextProgress = clampedX / width;
+    progress.setValue(nextProgress);
+    const seekTime = nextProgress * player.duration;
+    progressBarScrubState.current.seekTime = seekTime;
+    commitProgressScrubSeek(seekTime);
+  };
+
+  const beginProgressScrub = () => {
+    ignoreNextTouchEnd.current = true;
+    progressBarScrubState.current = {
+      initiallyPlaying: player.playing,
+      isScrubbing: true,
+      seekTime: player.currentTime,
+    };
+  };
+
+  const updateProgressScrub = (event: GestureResponderEvent) => {
+    seekToProgress(event.nativeEvent.pageX - progressBarPageX.current);
+  };
+
+  const endProgressScrub = () => {
+    if (progressScrubAnimationFrame.current) {
+      cancelAnimationFrame(progressScrubAnimationFrame.current);
+      progressScrubAnimationFrame.current = null;
+    }
+    player.currentTime = progressBarScrubState.current.seekTime;
+    if (progressBarScrubState.current.initiallyPlaying) {
+      if (!player.playing) {
+        player.play();
+      }
+    } else if (player.playing) {
+      player.pause();
+    }
+    progressBarScrubState.current = {
+      initiallyPlaying: false,
+      isScrubbing: false,
+      seekTime: 0,
+    };
+    pendingProgressScrubTime.current = null;
+  };
 
   const panThroughVideo = (deltaX: number, deltaY: number) => {
     if (!touchStart.current.isSkimming) {
@@ -97,6 +188,9 @@ function MediaVideo(props: MediaVideoProps) {
   });
 
   useEventListener(player, "timeUpdate", (e) => {
+    if (progressBarScrubState.current.isScrubbing) {
+      return;
+    }
     progress.setValue(e.currentTime / player.duration);
   });
 
@@ -119,49 +213,77 @@ function MediaVideo(props: MediaVideoProps) {
     }
   }, [focused]);
 
+  useEffect(() => {
+    return () => {
+      if (progressScrubAnimationFrame.current) {
+        cancelAnimationFrame(progressScrubAnimationFrame.current);
+      }
+    };
+  }, []);
+
   return (
-    <View
-      style={[styles.container, { width, height }]}
-      onTouchStart={(e) => {
-        touchStart.current = {
-          x: e.nativeEvent.pageX,
-          y: e.nativeEvent.pageY,
-          videoTime: player.currentTime,
-          initiallyPlaying: player.playing,
-          isSkimming: false,
-        };
-      }}
-      onTouchMove={(e) => {
-        const deltaX = e.nativeEvent.pageX - touchStart.current.x;
-        const deltaY = e.nativeEvent.pageY - touchStart.current.y;
-        panThroughVideo(deltaX, deltaY);
-      }}
-      onTouchEnd={() => {
-        if (
-          touchStart.current.initiallyPlaying &&
-          touchStart.current.isSkimming
-        ) {
-          player.play();
-        }
-        touchStart.current = {
-          x: 0,
-          y: 0,
-          videoTime: 0,
-          initiallyPlaying: player.playing,
-          isSkimming: false,
-        };
-      }}
-    >
+    <View style={[styles.container, { width, height }]}>
       <View
-        style={[styles.videoContainer, { width, height: width / aspectRatio }]}
+        style={[
+          styles.videoContainer,
+          {
+            width: videoWidth,
+            height: videoHeight,
+          },
+        ]}
       >
-        <VideoView
-          player={player}
-          style={[styles.video, { width }]}
-          contentFit="contain"
-          nativeControls={false}
-          allowsVideoFrameAnalysis={false}
-        />
+        <View
+          style={styles.videoGestureSurface}
+          onTouchStart={(e) => {
+            touchStart.current = {
+              x: e.nativeEvent.pageX,
+              y: e.nativeEvent.pageY,
+              videoTime: player.currentTime,
+              initiallyPlaying: player.playing,
+              isSkimming: false,
+            };
+          }}
+          onTouchMove={(e) => {
+            const deltaX = e.nativeEvent.pageX - touchStart.current.x;
+            const deltaY = e.nativeEvent.pageY - touchStart.current.y;
+            panThroughVideo(deltaX, deltaY);
+          }}
+          onTouchEnd={() => {
+            if (ignoreNextTouchEnd.current) {
+              ignoreNextTouchEnd.current = false;
+              touchStart.current = {
+                x: 0,
+                y: 0,
+                videoTime: 0,
+                initiallyPlaying: player.playing,
+                isSkimming: false,
+              };
+              return;
+            }
+            if (
+              touchStart.current.initiallyPlaying &&
+              touchStart.current.isSkimming
+            ) {
+              player.play();
+            }
+            touchStart.current = {
+              x: 0,
+              y: 0,
+              videoTime: 0,
+              initiallyPlaying: player.playing,
+              isSkimming: false,
+            };
+          }}
+        >
+          <VideoView
+            player={player}
+            style={[styles.video, { width: videoWidth, height: videoHeight }]}
+            contentFit="contain"
+            nativeControls={false}
+            allowsVideoFrameAnalysis={false}
+            surfaceType={Platform.OS === "android" ? "textureView" : undefined}
+          />
+        </View>
         <Animated.View
           style={[
             styles.playButtonContainer,
@@ -196,25 +318,53 @@ function MediaVideo(props: MediaVideoProps) {
             )}
           </TouchableOpacity>
         </Animated.View>
-        <View style={styles.progressBarBackground} />
-        <Animated.View
+        <View
           style={[
-            styles.progressBar,
+            styles.progressTrack,
             {
-              transform: [
-                {
-                  scaleX: progress,
-                },
-              ],
+              left: Math.max(24, left + 16),
+              right: Math.max(24, right + 16),
+              bottom: bottom + 12,
             },
           ]}
-        />
+          onLayout={(event) => {
+            progressBarWidth.current = event.nativeEvent.layout.width;
+          }}
+          onStartShouldSetResponder={() => true}
+          onMoveShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
+          onResponderGrant={(event) => {
+            progressBarPageX.current =
+              event.nativeEvent.pageX - event.nativeEvent.locationX;
+            beginProgressScrub();
+            updateProgressScrub(event);
+          }}
+          onResponderMove={updateProgressScrub}
+          onResponderRelease={endProgressScrub}
+          onResponderTerminate={endProgressScrub}
+        >
+          <View pointerEvents="none" style={styles.progressBarBackground} />
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.progressBar,
+              {
+                transform: [
+                  {
+                    scaleX: progress,
+                  },
+                ],
+              },
+            ]}
+          />
+        </View>
       </View>
       <Animated.View
         style={[
           styles.playbackRateContainer,
           {
             top: top + 10,
+            left: left + 10,
             opacity: overlayOpacity,
           },
         ]}
@@ -248,12 +398,16 @@ export default function MediaVideoWrapper(props: MediaVideoProps) {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: "center",
     justifyContent: "center",
   },
   videoContainer: {
     position: "relative",
   },
   video: {
+    flex: 1,
+  },
+  videoGestureSurface: {
     flex: 1,
   },
   playButtonContainer: {
@@ -274,23 +428,26 @@ const styles = StyleSheet.create({
     marginRight: -5,
   },
   progressBarBackground: {
-    position: "absolute",
-    bottom: 0,
     width: "100%",
     height: 2,
     backgroundColor: "black",
   },
   progressBar: {
     position: "absolute",
-    bottom: 0,
+    top: 11,
     width: "200%",
     left: "-100%",
     height: 2,
     backgroundColor: "#ccc",
   },
+  progressTrack: {
+    position: "absolute",
+    height: 24,
+    zIndex: 2,
+    justifyContent: "center",
+  },
   playbackRateContainer: {
     position: "absolute",
-    left: 10,
   },
   playbackRateButton: {
     borderRadius: 100,

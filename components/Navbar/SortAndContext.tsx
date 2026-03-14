@@ -10,7 +10,6 @@ import {
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
 import {
-  Share,
   StyleSheet,
   View,
   TouchableOpacity,
@@ -33,6 +32,7 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
 import KeyStore from "../../utils/KeyStore";
 import RedditURL, { PageType } from "../../utils/RedditURL";
+import shareURL from "../../utils/shareURL";
 import { useURLNavigation } from "../../utils/navigation";
 import { FlexibleNavigationProp } from "../../utils/navigationTypes";
 import useContextMenu from "../../utils/useContextMenu";
@@ -95,7 +95,7 @@ export default function SortAndContext({
     useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
 
-  const { replaceURL, pushURL, setParams, openGallery } = useURLNavigation();
+  const { replaceURL, pushURL, openGallery } = useURLNavigation();
 
   const showContextMenu = useContextMenu();
 
@@ -112,9 +112,6 @@ export default function SortAndContext({
     const redditUrl = new RedditURL(currentPath).changeSort(sort, time);
     const pageType = redditUrl.getPageType();
     const subreddit = redditUrl.getSubreddit();
-    setParams({
-      url: redditUrl.toString(),
-    });
     if (
       pageType === PageType.SUBREDDIT &&
       KeyStore.getBoolean(REMEMBER_POST_SUBREDDIT_SORT_KEY)
@@ -133,6 +130,7 @@ export default function SortAndContext({
     ) {
       KeyStore.set(makeCommentSubredditSortKey(subreddit), sort.toLowerCase());
     }
+    replaceURL(redditUrl.toString());
   };
 
   const handleTopSort = async () => {
@@ -182,7 +180,7 @@ export default function SortAndContext({
                 PageType.USER,
               ].includes(pageType)
             ) {
-              handleTopSort();
+              await handleTopSort();
             } else if (sort) {
               changeSort(sort);
             }
@@ -277,7 +275,7 @@ export default function SortAndContext({
               anchor: findNodeHandle(contextButtonRef.current) ?? undefined,
             });
             if (result === "Share") {
-              Share.share({ url: new RedditURL(currentPath).toString() });
+              shareURL(new RedditURL(currentPath).toString());
             } else if (
               result === "Select Text" &&
               pageData?.type === "postDetail"

@@ -43,6 +43,7 @@ export type Post = {
   commentCount: number;
   link: string;
   images: string[];
+  imageThumbnails: string[];
   imageThumbnail: string;
   mediaAspectRatio: number;
   video: string | undefined;
@@ -159,6 +160,7 @@ export async function formatPostData(child: any): Promise<Post> {
   }
 
   let imageThumbnail = decode(child.data.thumbnail);
+  let imageThumbnails = galleryThumbnails;
 
   const videoThumbnail =
     child.data.preview?.images[0]?.resolutions?.slice(-1)?.[0]?.url;
@@ -180,6 +182,13 @@ export async function formatPostData(child: any): Promise<Post> {
     }
     // try to get the first image in the gallery, else the smallest preview image, else the first image
     imageThumbnail = galleryThumbnails[0] ?? imgPreviewThumbnail ?? images[0];
+    if (images.length > 0) {
+      imageThumbnails = images.map(
+        (_, index) => galleryThumbnails[index] ?? imgPreviewThumbnail ?? images[index],
+      );
+    }
+  } else if (images.length > 0 && imageThumbnails.length === 0) {
+    imageThumbnails = images.map((image) => imageThumbnail || image);
   }
 
   let poll = undefined;
@@ -231,6 +240,7 @@ export async function formatPostData(child: any): Promise<Post> {
     commentCount: child.data.num_comments,
     link: `https://www.reddit.com${child.data.permalink}`,
     images,
+    imageThumbnails,
     imageThumbnail,
     mediaAspectRatio,
     video,

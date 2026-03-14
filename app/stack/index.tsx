@@ -5,6 +5,7 @@ import {
 } from "@react-navigation/native-stack";
 import React, { Fragment, useContext, useRef } from "react";
 import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import AccountsScreen from "./AccountsScreen";
 import ErrorScreen from "./ErrorScreen";
@@ -26,7 +27,7 @@ import WikiScreen from "./WikiScreen";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SubredditSearchScreen from "./SubredditSearchScreen";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
+import { getEffectiveTabBarRemovedPaddingBottom } from "../../constants/TabBarPadding";
 import GalleryScreen from "./GalleryScreen";
 
 export type StackParamsList = {
@@ -118,8 +119,10 @@ export default function Stack() {
   const StackNavigator = createNativeStackNavigator<StackParamsList>();
   const { theme } = useContext(ThemeContext);
   const { swipeAnywhereToNavigate } = useContext(GesturesContext);
+  const { bottom } = useSafeAreaInsets();
 
   const tabBarHeight = useBottomTabBarHeight();
+  const removedPaddingBottom = getEffectiveTabBarRemovedPaddingBottom(bottom);
 
   const futureRoutes = useRef<
     NavigationRoute<StackParamsList, keyof StackParamsList>[]
@@ -165,7 +168,7 @@ export default function Stack() {
           contentStyle: {
             paddingBottom: SHOWS_BENEATH_TABS[route.name]
               ? 0
-              : tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+              : tabBarHeight - removedPaddingBottom,
             backgroundColor: theme.background,
           },
         })}

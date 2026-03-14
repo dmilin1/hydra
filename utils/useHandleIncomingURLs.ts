@@ -5,6 +5,7 @@ import { Alert, AppState } from "react-native";
 
 import KeyStore from "./KeyStore";
 import RedditURL, { PageType } from "./RedditURL";
+import extractRedditURL from "./extractRedditURL";
 import { PageTypeToNavName } from "./navigation";
 import {
   READ_CLIPBOARD_DEFAULT,
@@ -21,6 +22,7 @@ import {
 export default function useHandleIncomingURLs() {
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
   const isAsking = useRef(false);
+  const lastPromptedClipboardURL = useRef<string | null>(null);
 
   const handleURL = (url: string) => {
     const pageType = RedditURL.getPageType(url);
@@ -39,7 +41,9 @@ export default function useHandleIncomingURLs() {
   const handleDeepLink = (deepLink: string) => {
     if (!deepLink || !deepLink.toLowerCase().startsWith("hydra://openurl?url="))
       return;
-    const url = deepLink.replace(/hydra:\/\/openurl\?url=/i, "");
+    const url = decodeURIComponent(
+      deepLink.replace(/hydra:\/\/openurl\?url=/i, ""),
+    );
     handleURL(url);
   };
 
@@ -49,35 +53,50 @@ export default function useHandleIncomingURLs() {
     if (!canReadClipboard) return;
     if (isAsking.current) return;
     isAsking.current = true;
-    const clipboardURL = await Clipboard.getUrlAsync();
-    if (!clipboardURL) return;
+    const clipboardText = await Clipboard.getStringAsync();
+    const clipboardURL = extractRedditURL(clipboardText);
+    if (!clipboardURL) {
+      isAsking.current = false;
+      return;
+    }
+    let normalizedURL: string;
     try {
-      new RedditURL(clipboardURL);
+      normalizedURL = new RedditURL(clipboardURL).toString();
     } catch (_e) {
+      isAsking.current = false;
       // Not a Reddit URL Hydra can handle
       return;
     }
+    if (lastPromptedClipboardURL.current === normalizedURL) {
+      isAsking.current = false;
+      return;
+    }
+    lastPromptedClipboardURL.current = normalizedURL;
     Alert.alert(
       "Open Reddit URL?",
-      `A Reddit URL was detected on your clipboard. Would you like to open it?\n\n ${clipboardURL}`,
+      `A Reddit URL was detected on your clipboard. Would you like to open it?\n\n ${normalizedURL}`,
       [
         {
           text: "Cancel",
           style: "cancel",
           onPress: () => {
-            Clipboard.setUrlAsync("");
             isAsking.current = false;
           },
         },
         {
           text: "Open",
           onPress: () => {
-            Clipboard.setUrlAsync("");
-            handleURL(clipboardURL);
+            handleURL(normalizedURL);
             isAsking.current = false;
           },
         },
       ],
+      {
+        cancelable: true,
+        onDismiss: () => {
+          isAsking.current = false;
+        },
+      },
     );
   };
 

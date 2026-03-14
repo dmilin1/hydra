@@ -23,7 +23,6 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   Alert,
-  Share,
 } from "react-native";
 
 import {
@@ -41,7 +40,9 @@ import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/Co
 import { FiltersContext } from "../../../../contexts/SettingsContexts/FiltersContext";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import { LoadMoreCommentsFunc } from "../../../../pages/PostDetails";
+import formatCompactCount from "../../../../utils/formatCompactCount";
 import RedditURL from "../../../../utils/RedditURL";
+import shareURL from "../../../../utils/shareURL";
 import { useURLNavigation } from "../../../../utils/navigation";
 import useContextMenu from "../../../../utils/useContextMenu";
 import RenderHtml from "../../../HTML/RenderHTML";
@@ -102,6 +103,10 @@ export function CommentComponent({
   }
 
   const [loadingMore, setLoadingMore] = useState(false);
+  const commentHasInlineMedia =
+    comment.html.includes("preview.redd.it") || comment.html.includes("<img");
+  const disableCommentPress =
+    !displayInList && tapToCollapseComment && commentHasInlineMedia;
 
   const toggleCollapse = () => {
     if (comment.type !== "comment") return;
@@ -220,7 +225,7 @@ export function CommentComponent({
     } else if (result === "Select Text") {
       setModal(<SelectText text={comment.text} />);
     } else if (result === "Share") {
-      Share.share({ url: new RedditURL(comment.link).toString() });
+      shareURL(new RedditURL(comment.link).toString());
     }
   };
 
@@ -267,9 +272,7 @@ export function CommentComponent({
                   icon: <FontAwesome name="share" />,
                   color: theme.share,
                   action: async () => {
-                    Share.share({
-                      url: new RedditURL(comment.link).toString(),
-                    });
+                    shareURL(new RedditURL(comment.link).toString());
                   },
                 },
                 {
@@ -308,9 +311,12 @@ export function CommentComponent({
                     commentPropRef.current = ref;
                   }
                 }}
+                disabled={disableCommentPress}
                 activeOpacity={1}
                 underlayColor={
-                  tapToCollapseComment || displayInList ? theme.tint : undefined
+                  tapToCollapseComment || displayInList
+                    ? theme.tint
+                    : undefined
                 }
                 onPress={() => {
                   if (displayInList) {
@@ -321,7 +327,7 @@ export function CommentComponent({
                           .toString(),
                       );
                     }
-                  } else if (tapToCollapseComment) {
+                  } else if (tapToCollapseComment && !disableCommentPress) {
                     commentRef.current?.measureInWindow(
                       (_x, y, _width_, _height) => {
                         if (!comment.collapsed && scrollChange) {
@@ -434,12 +440,12 @@ export function CommentComponent({
                                   : theme.subtleText,
                           },
                         ]}
-                      >
-                        {comment.scoreHidden && !comment.userVote
-                          ? "-"
-                          : comment.upvotes}
-                      </Text>
-                    </TouchableOpacity>
+                        >
+                          {comment.scoreHidden && !comment.userVote
+                            ? "-"
+                            : formatCompactCount(comment.upvotes)}
+                        </Text>
+                      </TouchableOpacity>
                     {comment.editedAt && (
                       <TouchableOpacity
                         style={styles.editedAtContainer}

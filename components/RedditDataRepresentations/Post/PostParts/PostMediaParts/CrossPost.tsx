@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { Post } from "../../../../../api/Posts";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
+import formatCompactCount from "../../../../../utils/formatCompactCount";
 import { useURLNavigation } from "../../../../../utils/navigation";
 import PostMedia from "../PostMedia";
 import SubredditIcon from "../SubredditIcon";
@@ -52,13 +53,13 @@ export default function CrossPost({ post }: CrossPostProps) {
           <View style={styles.metadataItem}>
             <Feather name="arrow-up" size={16} color={theme.subtleText} />
             <Text style={[styles.metadataText, { color: theme.subtleText }]}>
-              {post.upvotes}
+              {formatCompactCount(post.upvotes)}
             </Text>
           </View>
           <View style={styles.metadataItem}>
             <Feather name="message-square" size={16} color={theme.subtleText} />
             <Text style={[styles.metadataText, { color: theme.subtleText }]}>
-              {post.commentCount}
+              {formatCompactCount(post.commentCount)}
             </Text>
           </View>
           <View style={styles.metadataItem}>

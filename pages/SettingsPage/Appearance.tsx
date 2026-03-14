@@ -370,7 +370,7 @@ export default function Appearance() {
                 onValueChange={() => toggleTapToCollapsePost()}
               />
             ),
-            text: "Tap to collapse",
+            text: "Tap posts to collapse",
             onPress: () => toggleTapToCollapsePost(),
           },
         ]}
@@ -484,7 +484,7 @@ export default function Appearance() {
                 onValueChange={() => toggleTapToCollapseComment()}
               />
             ),
-            text: "Tap to collapse",
+            text: "Tap comments to collapse",
             onPress: () => toggleTapToCollapseComment(),
           },
         ]}

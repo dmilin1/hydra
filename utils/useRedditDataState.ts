@@ -53,6 +53,7 @@ export default function useRedditDataState<
   refreshDependencies = [],
 }: UseRedditDataStateProps<T>) {
   const unfilteredAfter = useRef<string | undefined>(undefined);
+  const isLoading = useRef(false);
 
   const [data, setData] = useState<T[]>([]);
   const [fullyLoaded, setFullyLoaded] = useState(false);
@@ -86,58 +87,71 @@ export default function useRedditDataState<
   };
 
   const loadMoreData = async () => {
-    if (hitFilterLimit) return;
-    let newData: T[] = [];
-    for (let i = 0; i < filterRetries; i++) {
-      const potentialData = await loadDataWithFailureHandling(
-        unfilteredAfter.current,
-        limitRampUp?.[i],
-      );
-      if (potentialData.length === 0) {
-        setFullyLoaded(true);
-        return;
+    if (isLoading.current) return;
+    isLoading.current = true;
+    setHitFilterLimit(false);
+    try {
+      let newData: T[] = [];
+      for (let i = 0; i < filterRetries; i++) {
+        const potentialData = await loadDataWithFailureHandling(
+          unfilteredAfter.current,
+          limitRampUp?.[i],
+        );
+        if (potentialData.length === 0) {
+          setFullyLoaded(true);
+          return;
+        }
+        unfilteredAfter.current = potentialData.slice(-1)[0]?.after;
+        newData = await applyFilters(potentialData, [
+          filterExisting,
+          ...filterRules,
+        ]);
+        if (newData.length > 0) {
+          break;
+        }
       }
-      unfilteredAfter.current = potentialData.slice(-1)[0]?.after;
-      newData = await applyFilters(potentialData, [
-        filterExisting,
-        ...filterRules,
-      ]);
       if (newData.length > 0) {
-        break;
+        setData((data) => [...data, ...newData]);
+      } else {
+        setHitFilterLimit(true);
       }
-    }
-    if (newData.length > 0) {
-      setData([...data, ...newData]);
-    } else {
-      setHitFilterLimit(true);
+    } finally {
+      isLoading.current = false;
     }
   };
 
   const refreshData = async ({ clearBeforeLoading = false } = {}) => {
-    if (clearBeforeLoading) {
-      setData([]);
-    }
-    unfilteredAfter.current = undefined;
-    let newData: T[] = [];
-    for (let i = 0; i < filterRetries; i++) {
-      const potentialData = await loadDataWithFailureHandling(
-        unfilteredAfter.current,
-        limitRampUp?.[i],
-      );
-      if (potentialData.length === 0) {
+    if (isLoading.current) return;
+    isLoading.current = true;
+    setHitFilterLimit(false);
+    try {
+      if (clearBeforeLoading) {
         setData([]);
-        setFullyLoaded(true);
-        return;
       }
-      unfilteredAfter.current = potentialData.slice(-1)[0]?.after;
-      newData = await applyFilters(potentialData, filterRules);
-      if (newData.length > 0) {
-        break;
+      unfilteredAfter.current = undefined;
+      let newData: T[] = [];
+      for (let i = 0; i < filterRetries; i++) {
+        const potentialData = await loadDataWithFailureHandling(
+          unfilteredAfter.current,
+          limitRampUp?.[i],
+        );
+        if (potentialData.length === 0) {
+          setData([]);
+          setFullyLoaded(true);
+          return;
+        }
+        unfilteredAfter.current = potentialData.slice(-1)[0]?.after;
+        newData = await applyFilters(potentialData, filterRules);
+        if (newData.length > 0) {
+          break;
+        }
       }
-      setHitFilterLimit(true);
+      setHitFilterLimit(newData.length === 0);
+      setFullyLoaded(false);
+      setData(newData);
+    } finally {
+      isLoading.current = false;
     }
-    setFullyLoaded(false);
-    setData(newData);
   };
 
   const modifyData = (modifiedData: T[]) => {

@@ -3,6 +3,7 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import React, { useRef, useState, useContext } from "react";
 import {
   Animated,
+  Platform,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -20,6 +21,9 @@ import { FontAwesome } from "@expo/vector-icons";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 import DismountWhenBackgrounded from "../../../../Other/DismountWhenBackgrounded";
 import VideoCache from "../../../../../utils/VideoCache";
+import MediaViewer, {
+  MediaViewerRef,
+} from "../../../../UI/MediaViewer.tsx/MediaViewer";
 
 type VideoPlayerProps = {
   source: string;
@@ -77,7 +81,7 @@ function VideoPlayer({
     if (e.error) {
       setFailedToLoadErr(e.error.message);
     } else if (e.status === "readyToPlay") {
-      if (straightToFullscreen) {
+      if (straightToFullscreen && Platform.OS !== "android") {
         video.current?.enterFullscreen();
       }
       if (autoPlayVideos) {
@@ -98,12 +102,40 @@ function VideoPlayer({
   const videoHeight = Math.min(height * 0.6, heightIfFullSize);
 
   const video = useRef<VideoView>(null);
+  const mediaViewerRef = useRef<MediaViewerRef>(null);
   const progress = useRef(new Animated.Value(0)).current;
 
   const progressPercent = progress.interpolate({
     inputRange: [0, 1],
     outputRange: ["0%", "100%"],
   });
+
+  const openFullscreenVideo = () => {
+    interactedWithPost();
+    if (Platform.OS === "android") {
+      player.pause();
+      player.volume = 0;
+      mediaViewerRef.current?.open(0);
+      return;
+    }
+    video.current?.enterFullscreen();
+    player.play();
+  };
+
+  const handleViewerClose = () => {
+    exitedFullScreenCallback?.();
+    if (autoPlayVideos) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  };
+
+  React.useEffect(() => {
+    if (Platform.OS === "android" && straightToFullscreen) {
+      mediaViewerRef.current?.open(0);
+    }
+  }, [straightToFullscreen]);
 
   return (
     <View
@@ -150,12 +182,8 @@ function VideoPlayer({
         </TouchableOpacity>
       ) : (
         <>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              interactedWithPost();
-              video.current?.enterFullscreen();
-              player.play();
-            }}
+        <TouchableWithoutFeedback
+            onPress={openFullscreenVideo}
             onLongPress={() =>
               videoDownloadURL ? shareMedia("video", videoDownloadURL) : null
             }
@@ -224,6 +252,13 @@ function VideoPlayer({
                     }, 750);
                   }}
                 />
+                {Platform.OS === "android" && (
+                  <MediaViewer
+                    ref={mediaViewerRef}
+                    media={[[{ type: "video", uri: source }]]}
+                    onClose={handleViewerClose}
+                  />
+                )}
               </View>
             )}
           </TouchableWithoutFeedback>

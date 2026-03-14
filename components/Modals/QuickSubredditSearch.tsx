@@ -99,6 +99,7 @@ export default function QuickSubredditSearch({
 
   return (
     <Animated.View
+      pointerEvents={show ? "auto" : "none"}
       style={[
         styles.container,
         {
