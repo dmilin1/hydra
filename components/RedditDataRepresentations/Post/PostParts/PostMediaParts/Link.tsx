@@ -42,9 +42,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
         }
       }}
     >
-      {post.openGraphData?.image &&
-      post.openGraphData?.title &&
-      post.openGraphData?.description ? (
+      {post.openGraphData?.image && post.openGraphData?.title ? (
         <>
           {currentDataMode === "normal" && (
             <Image
@@ -66,7 +64,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
           >
             {post.openGraphData.title}
           </Text>
-          {linkDescriptionLength !== 0 && (
+          {post.openGraphData.description && linkDescriptionLength !== 0 && (
             <Text
               style={[
                 styles.descriptionText,
