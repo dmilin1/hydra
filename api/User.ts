@@ -24,6 +24,10 @@ export type User = {
 
 export type UserContent = Post | Comment | PostDetail | CommentReply;
 
+type GetUserOptions = {
+  allowSuspended?: boolean;
+};
+
 type GetUserContentOptions = {
   limit?: string;
   after?: string;
@@ -64,8 +68,11 @@ export function formatUserData(child: any): User {
   };
 }
 
-function handleBadUserResponse(response: any) {
-  if (response.error === 403 || response.data?.is_suspended) {
+function handleBadUserResponse(response: any, options: GetUserOptions = {}) {
+  if (
+    !options.allowSuspended &&
+    (response.error === 403 || response.data?.is_suspended)
+  ) {
     throw new BannedUserError();
   }
   if (response.error === 404) {
@@ -73,11 +80,14 @@ function handleBadUserResponse(response: any) {
   }
 }
 
-export async function getUser(url: string): Promise<User> {
+export async function getUser(
+  url: string,
+  options: GetUserOptions = {},
+): Promise<User> {
   const redditURL = new RedditURL(`${url}/about`);
   redditURL.jsonify();
   const response = await api(redditURL.toString());
-  handleBadUserResponse(response);
+  handleBadUserResponse(response, options);
   return formatUserData(response.data);
 }
 
