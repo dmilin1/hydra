@@ -158,7 +158,10 @@ export default function NewPostEditor({
         return;
       }
     }
-    const result = await launchImageLibraryAsync();
+    const result = await launchImageLibraryAsync({
+      // Forces iOS to convert HEIC to JPEG
+      quality: 0.9999,
+    });
     if (result.canceled) {
       return;
     }

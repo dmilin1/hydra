@@ -10,10 +10,18 @@ type SearchBarProps = {
   searchOnBlur?: boolean;
   onSearch: (text: string) => void;
   placeholder?: string;
+  autoCorrect?: boolean;
 };
 
 const SearchBar = forwardRef<TextInput, SearchBarProps>(function SearchBar(
-  { initialSearch, clearOnSearch, onSearch, searchOnBlur = true, placeholder },
+  {
+    initialSearch,
+    clearOnSearch,
+    onSearch,
+    searchOnBlur = true,
+    placeholder,
+    autoCorrect = false,
+  },
   ref,
 ) {
   const { theme } = useContext(ThemeContext);
@@ -77,6 +85,7 @@ const SearchBar = forwardRef<TextInput, SearchBarProps>(function SearchBar(
           doSearch();
         }}
         placeholder={placeholder}
+        autoCorrect={autoCorrect}
       />
       {showX && (
         <TouchableOpacity

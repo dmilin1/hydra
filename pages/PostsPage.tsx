@@ -70,7 +70,7 @@ export default function PostsPage({
     fullyLoaded,
     hitFilterLimit,
     accessFailure,
-  } = useRedditDataState<Post>({
+  } = useRedditDataState<Post, "postLoadingError">({
     loadData: async (after, limit) => await getPosts(url, { after, limit }),
     filterRules: [
       ...(shouldFilterSeen ? [filterSeenItems] : []),
@@ -84,9 +84,9 @@ export default function PostsPage({
 
   useOfferGalleryMode({ url, posts });
 
-  const handleScrolledPastPost = (post: Post) => {
+  const handleScrolledPastPost = async (post: Post) => {
     if (autoMarkAsSeen) {
-      markPostSeen(post);
+      await markPostSeen(post);
       rerender((prev) => prev + 1);
     }
   };
@@ -152,7 +152,7 @@ export default function PostsPage({
     >
       <AccessFailureComponent
         accessFailure={accessFailure}
-        subreddit={subreddit}
+        contentName={subreddit}
       >
         <RedditDataScroller<Post>
           ListHeaderComponent={

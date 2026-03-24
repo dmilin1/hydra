@@ -44,7 +44,7 @@ export default function MessageComponent({
           action: () => toggleSeen(),
         },
       ]}
-      rightNames={["markAsRead"]}
+      shortRightName="markAsRead"
     >
       <TouchableOpacity
         activeOpacity={0.8}

@@ -94,7 +94,7 @@ export default function ThemeList({
                   action: () => handleDelete(customTheme),
                 },
               ]}
-              rightNames={["delete"]}
+              shortRightName="delete"
             >
               <ThemeRow
                 theme={customTheme}

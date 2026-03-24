@@ -17,67 +17,75 @@ import KeyStore from "../../../utils/KeyStore";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v3.2.0-1",
+  updateKey: "v3.4.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Gallery Mode",
+      title: "Disable Swipe Gestures",
       description:
-        'A new mode for viewing media heavy subreddits 😉. Open it on any subreddit by tapping the "..." menu button in the top right corner and selecting "Open In Gallery Mode". Power users can get Hydra Pro to scroll more than 100 media items deep.',
+        'A new "Disabled" option is available for post and comment swipe gestures. Configure this in Settings => General => Gestures.',
     },
     {
-      title: "Open Comment Flairs",
-      description: "Tap on a truncated comment flair to see the full flair.",
+      title: "GIF Improvements",
+      description:
+        "Reddit hosted gifs now load as mp4s for much better performance. Giphy links in posts and comments now render as actual gifs instead of just showing the link text.",
     },
     {
-      title: "Collapsed Comment Memory",
+      title: "Improved Wikis",
       description:
-        "Child comments will remember if they're collapsed after collapsing and expanding their parent.",
+        "Wikis have a much better look and feel. Reddit's new style of Wiki loads properly. Short wiki links (/r/subreddit/w/page) are now supported.",
     },
     {
-      title: "Swipe to Collapse Thread",
+      title: "Temporary Subreddit Filters",
       description:
-        "New swipe gesture can be set in Settings => General => Gestures. This gesture collapses the entire thread instead of just the comment you're currently viewing.",
-    },
-    {
-      title: "More Comment Long Press Options",
-      description:
-        "Long pressing a comment now has 3 additional options: expand, collapse, and collapse thread.",
+        'You can now filter a subreddit\'s posts for a short while. Long press a post on a combined subreddit feed, click "Filter Subreddit", then choose to filter for a day, a week, or forever.',
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
       description:
-        "When logging in, some users login sessions were failing to be captured and were instead redirected to the Reddit home page.",
+        "Fixed image posts momentarily showing the wrong image when scrolling quickly or on a slow internet connection.",
     },
     {
-      description: "Login popup would sometimes say you are already logged in.",
-    },
-    {
-      description:
-        "Posts with links to external websites that returned an out of bounds HTTP status code would cause Hydra to crash.",
+      description: "Disabled autocorrect when searching.",
     },
     {
       description:
-        "Posts with links to external websites that are slow to respond will no longer make your feed load slower.",
+        "Voting on a post while viewing a comments page, then collapsing a comment would cause your vote to disappear.",
     },
     {
       description:
-        "Posts sometimes failed to be marked as read when interacting with them.",
+        "Gated and quarantined subreddits are now handled properly and are accessible.",
+    },
+    {
+      description: "Wiki shortlinks (/r/subreddit/w/page) now load properly.",
     },
     {
       description:
-        "When trying to favorite a subreddit while not subscribed to it, an error message is now shown instead of failing silently.",
+        "Banned users and non-existent user profiles now show an error message instead of loading forever.",
+    },
+    {
+      description: "Giphy gifs were loading very slowly.",
     },
     {
       description:
-        "Filtering a subreddit from your feed no longer prevents the subreddit from loading when you navigate directly to it.",
+        "Marking posts as read would sometimes fail to update visually.",
+    },
+    {
+      description: "User subreddit links (/r/u_username) would fail to load.",
     },
     {
       description:
-        "Slide gestures were failing to work when swipe anywhere to navigate was disabled.",
+        "Subreddit icon images now use caching to improve performance.",
+    },
+    {
+      description:
+        'Post and comment edit modals now say "Save" instead of "Edit" for the submit button.',
+    },
+    {
+      description: "DB optimization improvements.",
     },
   ] as { description: string }[],
 };
@@ -427,7 +435,7 @@ const styles = StyleSheet.create({
   },
   bugfixDescription: {
     fontSize: 14,
-    lineHeight: 18,
+    lineHeight: 17.9,
   },
   helpContainer: {
     flexDirection: "row",

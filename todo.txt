@@ -35,6 +35,8 @@
 
 - 🚀 Add chat back
 
+- 🐛 Figure out why Google sign in is missing in the login screen
+
 ### Easy
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 

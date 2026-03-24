@@ -40,7 +40,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       if (username) {
         await RedditCookies.restoreSessionCookies(username);
       }
-      const user = await getUser("/user/me");
+      const user = await getUser("/user/me", { allowSuspended: true });
       if (username && user.userName !== username) {
         throw new Error("Authenticated session out of sync");
       }
@@ -78,7 +78,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const logOutContext = async () => {
     await RedditCookies.clearSessionCookies();
-    KeyStore.delete("currentUser");
+    KeyStore.remove("currentUser");
     setCurrentUser(null);
     Sentry.setUser(null);
     UserAuth.modhash = undefined;

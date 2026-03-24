@@ -4,6 +4,7 @@ import { UserAuth } from "./Authentication";
 import RedditCookies from "../utils/RedditCookies";
 import RedditURL from "../utils/RedditURL";
 import { USER_AGENT } from "./UserAgent";
+import safeFetch, { SafeFetchOptions } from "../utils/safeFetch";
 
 export type RedditDataObject = { id: string; type: string; after: string };
 
@@ -16,29 +17,28 @@ type ApiOptions = {
 
 export async function api(
   url: string,
-  fetchOptions: RequestInit = {},
+  fetchOptions: SafeFetchOptions = {},
   apiOptions: ApiOptions = {},
 ): Promise<any> {
-  const headers = new Headers(fetchOptions?.headers);
+  const headers = fetchOptions?.headers ?? {};
   if (apiOptions.requireAuth) {
     if (!UserAuth.modhash) {
       Alert.alert("You need to log in first!");
       throw new Error("User is not authenticated");
     }
-    headers.set("X-Modhash", UserAuth.modhash);
+    headers["X-Modhash"] = UserAuth.modhash;
   }
 
   fetchOptions.cache = "no-store";
 
   if (apiOptions.body) {
-    headers.set("Content-Type", "application/x-www-form-urlencoded");
+    headers["Content-Type"] = "application/x-www-form-urlencoded";
     fetchOptions.body = new URLSearchParams(apiOptions.body).toString();
   }
 
-  headers.set("User-Agent", USER_AGENT);
-  fetchOptions.headers = headers;
+  headers["User-Agent"] = USER_AGENT;
 
-  const res = await fetch(url, fetchOptions);
+  const res = await safeFetch(url, { ...fetchOptions, headers });
 
   /**
    * Reddit's session cookie doesn't set an expiration date meaning it expires

@@ -1,6 +1,7 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useContext } from "react";
-import { StyleSheet, View, Image } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
 
 import { DataModeContext } from "../../../../contexts/SettingsContexts/DataModeContext";
 import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
@@ -23,7 +24,11 @@ export default function SubredditIcon({
     overridePostAppearanceSetting ? (
     <View style={styles.container}>
       {subredditIcon ? (
-        <Image src={subredditIcon} style={styles.image} />
+        <Image
+          source={{ uri: subredditIcon }}
+          style={styles.image}
+          recyclingKey={subredditIcon}
+        />
       ) : (
         <FontAwesome name="reddit" size={20} color={theme.text} />
       )}

@@ -112,7 +112,7 @@ export default function EditComment({ contentSent, edit }: EditCommentProps) {
                     },
                   ]}
                 >
-                  Edit
+                  Save
                 </Text>
               </TouchableOpacity>
             )}

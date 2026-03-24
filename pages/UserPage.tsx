@@ -1,7 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { User, UserContent, getUser, getUserContent } from "../api/User";
+import {
+  BannedUserError,
+  User,
+  UserContent,
+  UserDoesNotExistError,
+  getUser,
+  getUserContent,
+} from "../api/User";
 import { StackPageProps } from "../app/stack";
 import SortAndContext, {
   ContextTypes,
@@ -17,6 +24,7 @@ import RedditURL from "../utils/RedditURL";
 import URL from "../utils/URL";
 import { useURLNavigation } from "../utils/navigation";
 import useRedditDataState from "../utils/useRedditDataState";
+import AccessFailureComponent from "../components/UI/AccessFailureComponent";
 
 export default function UserPage({ route }: StackPageProps<"UserPage">) {
   const url = route.params.url;
@@ -39,7 +47,8 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     deleteData: deleteUserContent,
     fullyLoaded,
     hitFilterLimit,
-  } = useRedditDataState<UserContent>({
+    accessFailure,
+  } = useRedditDataState<UserContent, "userLoadingError">({
     loadData: async (after) => await getUserContent(url, { after }),
     refreshDependencies: [sort, sortTime],
   });
@@ -52,8 +61,18 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
       .split("/")
       .slice(0, 3)
       .join("/");
-    const userData = await getUser(`https://www.reddit.com${userUrl}`);
-    setUser(userData);
+    try {
+      const userData = await getUser(`https://www.reddit.com${userUrl}`, {
+        allowSuspended: true,
+      });
+      setUser(userData);
+    } catch (e) {
+      if (e instanceof BannedUserError || e instanceof UserDoesNotExistError) {
+        // The useRedditDataState hook will also get this error and handle it for us
+        return;
+      }
+      throw e;
+    }
   };
 
   useEffect(() => {
@@ -93,38 +112,47 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
         },
       ]}
     >
-      <RedditDataScroller<UserContent>
-        ListHeaderComponent={() =>
-          !isDeepPath && user && <UserDetailsComponent user={user} />
+      <AccessFailureComponent
+        accessFailure={accessFailure}
+        contentName={
+          new RedditURL(url).getRelativePath().split("/")[2] ?? "User"
         }
-        loadMore={loadMoreUserContent}
-        refresh={refreshUserContent}
-        fullyLoaded={fullyLoaded}
-        hitFilterLimit={hitFilterLimit}
-        data={userContent}
-        renderItem={({ item: content }) => {
-          if (content.type === "post") {
-            return (
-              <PostComponent
-                post={content}
-                setPost={(newPost) => modifyUserContent([newPost])}
-              />
-            );
+      >
+        <RedditDataScroller<UserContent>
+          ListHeaderComponent={() =>
+            !isDeepPath && user && <UserDetailsComponent user={user} />
           }
-          if (content.type === "comment") {
-            return (
-              <CommentComponent
-                comment={content}
-                index={0}
-                displayInList
-                changeComment={(newComment) => modifyUserContent([newComment])}
-                deleteComment={(comment) => deleteUserContent([comment])}
-              />
-            );
-          }
-          return null;
-        }}
-      />
+          loadMore={loadMoreUserContent}
+          refresh={refreshUserContent}
+          fullyLoaded={fullyLoaded}
+          hitFilterLimit={hitFilterLimit}
+          data={userContent}
+          renderItem={({ item: content }) => {
+            if (content.type === "post") {
+              return (
+                <PostComponent
+                  post={content}
+                  setPost={(newPost) => modifyUserContent([newPost])}
+                />
+              );
+            }
+            if (content.type === "comment") {
+              return (
+                <CommentComponent
+                  comment={content}
+                  index={0}
+                  displayInList
+                  changeComment={(newComment) =>
+                    modifyUserContent([newComment])
+                  }
+                  deleteComment={(comment) => deleteUserContent([comment])}
+                />
+              );
+            }
+            return null;
+          }}
+        />
+      </AccessFailureComponent>
     </View>
   );
 }
@@ -132,6 +160,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
 const styles = StyleSheet.create({
   userContainer: {
     flex: 1,
+    justifyContent: "center",
   },
   scrollView: {
     flex: 1,

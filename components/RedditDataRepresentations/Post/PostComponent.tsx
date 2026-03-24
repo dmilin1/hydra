@@ -32,6 +32,7 @@ import Slideable from "../../UI/Slideable";
 import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContext";
 import { GesturesContext } from "../../../contexts/SettingsContexts/GesturesContext";
 import useComponentActions from "../../../utils/useComponentActions";
+import useContextMenu from "../../../utils/useContextMenu";
 
 type PostComponentProps = {
   post: Post;
@@ -60,6 +61,8 @@ export default function PostComponent({
   const { postSwipeOptions } = useContext(GesturesContext);
 
   const { toggleFilterSubreddit } = useContext(FiltersContext);
+
+  const openContextMenu = useContextMenu();
 
   const isOnMultiSubredditPage =
     params && "url" in params && params.url
@@ -131,7 +134,23 @@ export default function PostComponent({
       label: "Filter Subreddit",
       isAllowed: !!deletePost,
       handle: async () => {
-        toggleFilterSubreddit(post.subreddit);
+        const result = await openContextMenu({
+          options: [
+            "Filter for a day",
+            "Filter for a week",
+            "Filter forever",
+          ] as const,
+        });
+        if (!result) return;
+        let expiresAt: number | true;
+        if (result === "Filter for a day") {
+          expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+        } else if (result === "Filter for a week") {
+          expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+        } else {
+          expiresAt = true;
+        }
+        toggleFilterSubreddit(post.subreddit, expiresAt);
         deletePost?.();
       },
     },
@@ -157,11 +176,11 @@ export default function PostComponent({
         ? theme.downvote
         : theme.subtleText;
 
-  const setSeenValue = (value: boolean) => {
+  const setSeenValue = async (value: boolean) => {
     if (value) {
-      markPostSeen(post);
+      await markPostSeen(post);
     } else {
-      markPostUnseen(post);
+      await markPostUnseen(post);
     }
     rerender((prev) => prev + 1);
   };
@@ -246,8 +265,10 @@ export default function PostComponent({
             action: () => handleAction("Share"),
           },
         ]}
-        leftNames={[postSwipeOptions.right, postSwipeOptions.farRight]}
-        rightNames={[postSwipeOptions.left, postSwipeOptions.farLeft]}
+        shortLeftName={postSwipeOptions.right}
+        longLeftName={postSwipeOptions.farRight}
+        shortRightName={postSwipeOptions.left}
+        longRightName={postSwipeOptions.farLeft}
       >
         <TouchableOpacity
           accessible={true}

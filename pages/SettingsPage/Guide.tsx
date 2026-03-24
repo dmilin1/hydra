@@ -189,6 +189,7 @@ export default function Guide() {
         initialSearch={search}
         onSearch={handleSearch}
         searchOnBlur={true}
+        autoCorrect={true}
       />
       {answerHTML ? (
         <View style={[styles.answerContainer, { backgroundColor: theme.tint }]}>

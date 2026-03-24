@@ -20,7 +20,7 @@ import RedditURL from "../../utils/RedditURL";
 
 type HideSeenURLs = Record<string, boolean>;
 
-type HideFilteredSubreddits = Record<string, boolean>;
+type HideFilteredSubreddits = Record<string, number | true>;
 
 export const FILTER_SEEN_POSTS_KEY = "filterSeenPosts";
 export const FILTER_SEEN_POSTS_DEFAULT = false;
@@ -44,7 +44,7 @@ const initialValues = {
 const initialPostSettingsContext = {
   ...initialValues,
   toggleFilterSeenPosts: (_newValue?: boolean) => {},
-  toggleFilterSubreddit: (_subreddit: string) => {},
+  toggleFilterSubreddit: (_subreddit: string, _expiresAt?: number | true) => {},
   hideSeenURLs: HIDE_SEEN_URLS_DEFAULT,
   getHideSeenURLStatus: (_url: string) => false as boolean,
   toggleHideSeenURL: (_url: string) => {},
@@ -111,8 +111,15 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
     }
   };
 
-  const filterPostsBySubreddit: FilterFunction<Post> = (posts) =>
-    posts.filter((post) => !hideFilteredSubreddits[post.subreddit]);
+  const filterPostsBySubreddit: FilterFunction<Post> = (posts) => {
+    const now = Date.now();
+    return posts.filter((post) => {
+      const filterValue = hideFilteredSubreddits[post.subreddit];
+      if (!filterValue) return true;
+      if (filterValue === true) return false;
+      return now >= filterValue;
+    });
+  };
 
   return (
     <FiltersContext.Provider
@@ -138,12 +145,15 @@ export function FiltersProvider({ children }: React.PropsWithChildren) {
         },
 
         hideFilteredSubreddits,
-        toggleFilterSubreddit: (subreddit: string) => {
+        toggleFilterSubreddit: (
+          subreddit: string,
+          expiresAt?: number | true,
+        ) => {
           const newFilteredSubreddits = { ...hideFilteredSubreddits };
-          if (newFilteredSubreddits[subreddit]) {
+          if (expiresAt === undefined) {
             delete newFilteredSubreddits[subreddit];
           } else {
-            newFilteredSubreddits[subreddit] = true;
+            newFilteredSubreddits[subreddit] = expiresAt;
           }
           setHideFilteredSubreddits(newFilteredSubreddits);
         },

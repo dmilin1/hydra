@@ -12,6 +12,7 @@ export type SafeFetchOptions = {
   headers?: Record<string, string>;
   body?: string | FormData | null;
   timeout?: number;
+  cache?: RequestCache;
 };
 
 export type SafeFetchResponse = {
@@ -21,8 +22,16 @@ export type SafeFetchResponse = {
   headers: Headers;
   url: string;
   text: () => Promise<string>;
-  json: <T = unknown>() => Promise<T>;
+  json: <T = any>() => Promise<T>;
   blob: () => Promise<Blob>;
+};
+
+const CACHE_MODE_HEADERS: Partial<
+  Record<RequestCache, Record<string, string>>
+> = {
+  "no-store": { Pragma: "no-cache", "Cache-Control": "no-cache" },
+  reload: { Pragma: "no-cache", "Cache-Control": "no-cache" },
+  "no-cache": { "Cache-Control": "max-age=0" },
 };
 
 export default function safeFetch(
@@ -35,42 +44,68 @@ export default function safeFetch(
 
     xhr.open(method, url, true);
 
-    if (options.headers) {
-      Object.entries(options.headers).forEach(([key, value]) => {
-        xhr.setRequestHeader(key, value);
+    const headers = options.headers ?? {};
+    Object.entries(headers).forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value);
+    });
+
+    if (options.cache) {
+      const has = (name: string) =>
+        Object.keys(headers).some(
+          (k) => k.toLowerCase() === name.toLowerCase(),
+        );
+
+      const cacheHeaders = CACHE_MODE_HEADERS[options.cache];
+      if (!cacheHeaders) return;
+
+      Object.entries(cacheHeaders).forEach(([key, value]) => {
+        if (!has(key)) xhr.setRequestHeader(key, value);
       });
     }
 
-    if (options.timeout) {
-      xhr.timeout = options.timeout;
-    }
+    xhr.timeout = options.timeout ?? 10_000;
 
     xhr.onload = () => {
-      const headersString = xhr.getAllResponseHeaders();
-      const headersArray = headersString.trim().split(/[\r\n]+/);
-      const headers = new Headers();
-      headersArray.forEach((line) => {
-        const parts = line.split(": ");
-        const key = parts.shift();
-        const value = parts.join(": ");
-        if (key) {
-          headers.append(key, value);
-        }
-      });
+      try {
+        const headersString = xhr.getAllResponseHeaders();
+        const headersArray = headersString.trim().split(/[\r\n]+/);
+        const headers = new Headers();
+        headersArray.forEach((line) => {
+          const separatorIndex = line.indexOf(":");
+          if (separatorIndex === -1) return;
+          const key = line.substring(0, separatorIndex).trim();
+          const value = line.substring(separatorIndex + 1).trim();
+          if (key) {
+            try {
+              headers.append(key, value);
+            } catch (_) {
+              // Skip headers with names the runtime considers invalid
+            }
+          }
+        });
 
-      const response: SafeFetchResponse = {
-        ok: xhr.status >= 200 && xhr.status < 300,
-        status: xhr.status,
-        statusText: xhr.statusText,
-        headers,
-        url: xhr.responseURL || url,
-        text: () => Promise.resolve(xhr.responseText),
-        json: <T = unknown>() =>
-          Promise.resolve(JSON.parse(xhr.responseText) as T),
-        blob: () => Promise.resolve(new Blob([xhr.response])),
-      };
+        const response: SafeFetchResponse = {
+          ok: xhr.status >= 200 && xhr.status < 300,
+          status: xhr.status,
+          statusText: xhr.statusText,
+          headers,
+          url: xhr.responseURL || url,
+          text: () => Promise.resolve(xhr.responseText),
+          json: <T = unknown>() =>
+            new Promise<T>((res, rej) => {
+              try {
+                res(JSON.parse(xhr.responseText) as T);
+              } catch (e) {
+                rej(e);
+              }
+            }),
+          blob: () => Promise.resolve(new Blob([xhr.response])),
+        };
 
-      resolve(response);
+        resolve(response);
+      } catch (e) {
+        reject(e);
+      }
     };
 
     xhr.onerror = () => {

@@ -1,6 +1,7 @@
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 
 import { Subreddit } from "../../../api/Subreddits";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -33,6 +34,7 @@ export default function SubredditCompactLink({
           <Image
             source={{ uri: subreddit.iconURL }}
             style={styles.subredditIcon}
+            recyclingKey={subreddit.iconURL}
           />
         ) : (
           <FontAwesome name="reddit" size={30} color={theme.text} />

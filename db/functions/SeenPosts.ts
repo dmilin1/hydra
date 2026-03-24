@@ -16,7 +16,10 @@ export async function maintainSeenPosts() {
       .limit(1)
       .get();
     if (oldestSeenPost) {
-      await db.delete(SeenPosts).where(lt(SeenPosts.id, oldestSeenPost.id));
+      await db
+        .delete(SeenPosts)
+        .where(lt(SeenPosts.id, oldestSeenPost.id))
+        .execute();
     }
   }
 }
@@ -27,14 +30,15 @@ export async function markPostSeen(post: Post) {
     .values({
       postId: post.id,
     })
-    .onConflictDoNothing();
+    .onConflictDoNothing()
+    .execute();
 }
 
 export async function markPostUnseen(post: Post) {
-  await db.delete(SeenPosts).where(eq(SeenPosts.postId, post.id));
+  await db.delete(SeenPosts).where(eq(SeenPosts.postId, post.id)).execute();
 }
 
-export function isPostSeen(post: Post): boolean {
+export function isPostSeen(post: Post) {
   const result = db
     .select()
     .from(SeenPosts)
@@ -44,8 +48,8 @@ export function isPostSeen(post: Post): boolean {
   return !!result;
 }
 
-export async function arePostsSeen(posts: Post[]): Promise<boolean[]> {
-  const seenPosts = await db
+export function arePostsSeen(posts: Post[]) {
+  const seenPosts = db
     .select()
     .from(SeenPosts)
     .where(
@@ -53,7 +57,9 @@ export async function arePostsSeen(posts: Post[]): Promise<boolean[]> {
         SeenPosts.postId,
         posts.map((post) => post.id),
       ),
-    );
+    )
+    .all();
+
   return posts.map((post) =>
     seenPosts.some((seenPost) => seenPost.postId === post.id),
   );

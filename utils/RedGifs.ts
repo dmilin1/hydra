@@ -1,4 +1,5 @@
 import KeyStore from "./KeyStore";
+import safeFetch from "./safeFetch";
 
 const REDGIFS_TOKEN_STORAGE_KEY = "redgifsToken";
 
@@ -10,7 +11,7 @@ export default class Redgifs {
       token = await Redgifs.refreshStoredToken();
     }
     try {
-      return await fetch(`https://api.redgifs.com/v2/gifs/${videoId}`, {
+      return await safeFetch(`https://api.redgifs.com/v2/gifs/${videoId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "User-Agent": "Hydra",
@@ -32,7 +33,7 @@ export default class Redgifs {
   }
 
   static async refreshStoredToken(): Promise<string> {
-    const token = await fetch("https://api.redgifs.com/v2/auth/temporary", {
+    const token = await safeFetch("https://api.redgifs.com/v2/auth/temporary", {
       headers: {
         "User-Agent": "Hydra",
       },

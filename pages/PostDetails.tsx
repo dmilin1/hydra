@@ -117,6 +117,7 @@ function PostDetails(props: PostDetailsProps) {
       setPostDetail(undefined);
     }
     const postDetail = await getPostsDetail(url);
+    if (!postDetail) return;
     setPostDetail(postDetail);
     setRefreshing(false);
 
@@ -185,14 +186,15 @@ function PostDetails(props: PostDetailsProps) {
   };
 
   const rerenderComment = (comment: Comment | PostDetail) => {
-    if (postDetail) {
-      let currentComment: Comment | PostDetail = postDetail;
+    setPostDetail((oldPostDetail) => {
+      if (!oldPostDetail) return oldPostDetail;
+      let currentComment: Comment | PostDetail = oldPostDetail;
       for (const num of comment.path) {
         currentComment.renderCount++;
         currentComment = currentComment.comments[num];
       }
-      setPostDetail({ ...postDetail });
-    }
+      return { ...oldPostDetail };
+    });
   };
 
   const loadMoreCommentsFunc: LoadMoreCommentsFunc = async (

@@ -34,6 +34,7 @@ import { TabScrollProvider } from "../contexts/TabScrollContext";
 import { StartupModalProvider } from "../contexts/StartupModalContext";
 import { modifyStat, Stat } from "../db/functions/Stats";
 import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
+import VideoCache from "../utils/VideoCache";
 
 LogBox.ignoreLogs([
   "Require cycle: ",
@@ -77,6 +78,7 @@ function RootLayout() {
 
   const doDBMaintenanceAsync = async () => {
     await doDBMaintenance();
+    await VideoCache.clearCacheIfRequested();
     setDbMaintenanceDone(true);
   };
 

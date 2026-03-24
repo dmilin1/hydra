@@ -103,6 +103,7 @@ export default function QuickSubredditSearch({
         styles.container,
         {
           opacity: opacity,
+          pointerEvents: show ? "auto" : "none",
         },
       ]}
     >
@@ -119,6 +120,7 @@ export default function QuickSubredditSearch({
               borderRadius: 10,
             },
           ]}
+          autoCorrect={false}
           value={searchText}
           onChangeText={setSearchText}
           placeholder="Search for a subreddit"

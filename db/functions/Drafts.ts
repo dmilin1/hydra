@@ -16,7 +16,7 @@ export async function maintainDrafts() {
       .limit(1)
       .get();
     if (oldestDraft) {
-      await db.delete(Drafts).where(lt(Drafts.id, oldestDraft.id));
+      await db.delete(Drafts).where(lt(Drafts.id, oldestDraft.id)).execute();
     }
   }
 }

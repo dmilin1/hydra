@@ -49,7 +49,7 @@ export default function AccountsPage() {
                   action: async () => await handleDelete(username),
                 },
               ]}
-              rightNames={username === "Logged Out" ? undefined : ["delete"]}
+              shortRightName={username === "Logged Out" ? undefined : "delete"}
             >
               <TouchableOpacity
                 style={[

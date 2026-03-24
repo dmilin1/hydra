@@ -2,13 +2,12 @@ import { DependencyList, useEffect, useRef, useState } from "react";
 
 import { RedditDataObject } from "../api/RedditApi";
 import { BannedSubredditError, PrivateSubredditError } from "../api/Posts";
+import { BannedUserError, UserDoesNotExistError } from "../api/User";
 
 export type FilterFunction<T extends RedditDataObject> = (
   newData: T[],
   data: T[],
 ) => Promise<T[]> | T[];
-
-export type AccessFailure = "private" | "banned" | null;
 
 type UseRedditDataStateProps<T extends RedditDataObject> = {
   loadData: (
@@ -33,7 +32,20 @@ const filterExisting = async <T extends RedditDataObject>(
   );
 };
 
-export default function useRedditDataState<T extends RedditDataObject>({
+export type ErrorType = "postLoadingError" | "userLoadingError" | null;
+
+export type ErrorTypeResolver<
+  E extends "postLoadingError" | "userLoadingError" | null,
+> = E extends "postLoadingError"
+  ? BannedSubredditError | PrivateSubredditError
+  : E extends "userLoadingError"
+    ? BannedUserError | UserDoesNotExistError
+    : never;
+
+export default function useRedditDataState<
+  T extends RedditDataObject,
+  E extends ErrorType = null,
+>({
   loadData,
   filterRules = [],
   filterRetries = 5,
@@ -45,7 +57,8 @@ export default function useRedditDataState<T extends RedditDataObject>({
   const [data, setData] = useState<T[]>([]);
   const [fullyLoaded, setFullyLoaded] = useState(false);
   const [hitFilterLimit, setHitFilterLimit] = useState(false);
-  const [accessFailure, setAccessFailure] = useState<AccessFailure>(null);
+  const [accessFailure, setAccessFailure] =
+    useState<ErrorTypeResolver<E> | null>(null);
 
   const applyFilters = async (newData: T[], filters: FilterFunction<T>[]) => {
     if (filters.length === 0) return newData;
@@ -58,11 +71,13 @@ export default function useRedditDataState<T extends RedditDataObject>({
     try {
       return await loadData(...props);
     } catch (e) {
-      if (e instanceof BannedSubredditError) {
-        setAccessFailure("banned");
-        return [];
-      } else if (e instanceof PrivateSubredditError) {
-        setAccessFailure("private");
+      if (
+        e instanceof BannedSubredditError ||
+        e instanceof PrivateSubredditError ||
+        e instanceof BannedUserError ||
+        e instanceof UserDoesNotExistError
+      ) {
+        setAccessFailure(e as ErrorTypeResolver<E>);
         return [];
       } else {
         throw e;

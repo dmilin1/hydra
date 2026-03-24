@@ -115,7 +115,17 @@ export async function formatPostData(child: any): Promise<Post> {
   }
 
   let video = child.data.media?.reddit_video?.hls_url;
-  const videoDownloadURL = child.data.media?.reddit_video?.fallback_url;
+  let videoDownloadURL = child.data.media?.reddit_video?.fallback_url;
+
+  if (
+    child.data.is_reddit_media_domain &&
+    child.data?.url?.match(/\.gif$/i) &&
+    child.data.preview?.images?.[0]?.variants?.mp4?.source?.url
+  ) {
+    // Load reddit hosted gif as mp4s. Their gifs are gargantuan
+    images = [];
+    video = decode(child.data.preview.images[0].variants.mp4.source.url);
+  }
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
@@ -132,11 +142,14 @@ export async function formatPostData(child: any): Promise<Post> {
     externalLink = child.data.url;
     if (externalLink.includes("imgur.com") && externalLink.endsWith(".gifv")) {
       video = externalLink.replace(".gifv", ".mp4");
+      videoDownloadURL = video;
     } else if (externalLink.includes("gfycat.com")) {
       video = `https://web.archive.org/web/0if_/thumbs.${externalLink.split("https://")[1]}-mobile.mp4`;
+      videoDownloadURL = video;
     } else if (externalLink.includes("redgifs.com")) {
       video = await Redgifs.getMediaURL(externalLink);
-    } else if (externalLink) {
+      videoDownloadURL = video;
+    } else if (externalLink && !video && !images.length) {
       try {
         openGraphData = await new URL(externalLink).getOpenGraphData();
       } catch (_) {
@@ -233,6 +246,7 @@ export async function formatPostData(child: any): Promise<Post> {
 }
 
 export class BannedSubredditError extends Error {
+  name: "BannedSubredditError";
   constructor() {
     super("BannedSubredditError");
     this.name = "BannedSubredditError";
@@ -240,6 +254,7 @@ export class BannedSubredditError extends Error {
 }
 
 export class PrivateSubredditError extends Error {
+  name: "PrivateSubredditError";
   constructor() {
     super("PrivateSubredditError");
     this.name = "PrivateSubredditError";
@@ -255,13 +270,11 @@ export async function getPosts(
   redditURL.changeQueryParam("limit", String(options?.limit ?? 10));
   redditURL.changeQueryParam("after", options?.after ?? "");
   redditURL.jsonify();
-  const response = await api(redditURL.toString());
-  if (response.interstitial_warning_message) {
-    return handleGatedSubreddit(
-      response.interstitial_warning_message,
-      url,
-      options,
-    );
+  let response = await api(redditURL.toString());
+  const gatedResult = await handleGatedSubreddit(response, url);
+  if (gatedResult === "cancelled") return [];
+  if (gatedResult === "success") {
+    response = await api(redditURL.toString());
   }
   if (response.reason === "banned") {
     throw new BannedSubredditError();
@@ -277,28 +290,30 @@ export async function getPosts(
   return posts;
 }
 
-function handleGatedSubreddit(
-  warning: string,
+export async function handleGatedSubreddit(
+  response: any,
   url: string,
-  options: GetPostOptions,
-): Promise<Post[]> {
-  return new Promise<Post[]>((resolve) => {
+): Promise<"success" | "cancelled" | null> {
+  const warning =
+    response.quarantine_message ?? response.interstitial_warning_message;
+  if (!warning) return null;
+  const type = response.quarantine_message ? "quarantine" : "gated";
+  return new Promise((resolve) => {
     Alert.alert("Warning", warning, [
       {
         text: "Cancel",
         style: "cancel",
         onPress: () => {
-          resolve([]);
+          resolve("cancelled");
         },
       },
       {
         text: "Proceed",
         onPress: async () => {
           await api(
-            `https://old.reddit.com/gated`,
+            `https://old.reddit.com/${type}`,
             {
               method: "POST",
-              redirect: "manual",
             },
             {
               requireAuth: true,
@@ -309,7 +324,7 @@ function handleGatedSubreddit(
               dontJsonifyResponse: true,
             },
           );
-          resolve(await getPosts(url, options));
+          resolve("success");
         },
       },
     ]);

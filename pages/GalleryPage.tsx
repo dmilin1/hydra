@@ -109,7 +109,7 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
     >
       <AccessFailureComponent
         accessFailure={accessFailure}
-        subreddit={subreddit}
+        contentName={subreddit}
       >
         <GalleryComponent
           posts={posts}

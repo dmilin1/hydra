@@ -33,6 +33,7 @@ module.exports = {
       },
     },
     android: {
+      package: "com.dmilin.hydra",
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#000000"

@@ -18,6 +18,8 @@ import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeCont
 import useMediaSharing from "../../../../../utils/useMediaSharing";
 import { FontAwesome } from "@expo/vector-icons";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
+import DismountWhenBackgrounded from "../../../../Other/DismountWhenBackgrounded";
+import VideoCache from "../../../../../utils/VideoCache";
 
 type VideoPlayerProps = {
   source: string;
@@ -25,10 +27,10 @@ type VideoPlayerProps = {
   videoDownloadURL?: string;
   straightToFullscreen?: boolean;
   exitedFullScreenCallback?: () => void;
-  aspectRatio?: number;
+  aspectRatio: number;
 };
 
-export default function VideoPlayer({
+function VideoPlayer({
   source,
   thumbnail,
   videoDownloadURL,
@@ -48,15 +50,18 @@ export default function VideoPlayer({
   );
   const [failedToLoadErr, setFailedToLoadErr] = useState<string | null>(null);
 
-  const player = useVideoPlayer(source, (player) => {
-    player.audioMixingMode = "mixWithOthers";
-    player.volume = 0;
-    player.loop = true;
-    player.timeUpdateEventInterval = 1 / 60;
-    if (autoPlayVideos) {
-      player.play();
-    }
-  });
+  const player = useVideoPlayer(
+    VideoCache.makeCachedVideoSource(source),
+    (player) => {
+      player.audioMixingMode = "mixWithOthers";
+      player.volume = 0;
+      player.loop = true;
+      player.timeUpdateEventInterval = 1 / 60;
+      if (autoPlayVideos) {
+        player.play();
+      }
+    },
+  );
 
   const isPlaying = useEvent(player, "playingChange")?.isPlaying;
 
@@ -122,7 +127,7 @@ export default function VideoPlayer({
         >
           {/* Have to put an invisible layer on top of the ImageViewer to keep it from stealing clicks */}
           <View style={styles.invisibleLayer} />
-          <ImageViewer images={[thumbnail]} />
+          <ImageViewer images={[thumbnail]} aspectRatio={aspectRatio} />
           <View
             style={[
               styles.isVideoContainer,
@@ -243,6 +248,14 @@ export default function VideoPlayer({
         </>
       )}
     </View>
+  );
+}
+
+export default function VideoPlayerWrapper(props: VideoPlayerProps) {
+  return (
+    <DismountWhenBackgrounded>
+      <VideoPlayer {...props} />
+    </DismountWhenBackgrounded>
   );
 }
 

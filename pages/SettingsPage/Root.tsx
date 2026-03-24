@@ -36,6 +36,7 @@ export default function Root() {
             );
           }}
           clearOnSearch={true}
+          autoCorrect={true}
         />
       </View>
       <List

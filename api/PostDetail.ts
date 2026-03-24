@@ -2,7 +2,12 @@ import "react-native-url-polyfill/auto";
 import { decode } from "html-entities";
 
 import { Flair, formatFlair } from "./Flair";
-import { Post, formatPostData, VoteOption } from "./Posts";
+import {
+  Post,
+  formatPostData,
+  VoteOption,
+  handleGatedSubreddit,
+} from "./Posts";
 import { api } from "./RedditApi";
 import { UserContent } from "./User";
 import RedditURL from "../utils/RedditURL";
@@ -136,12 +141,17 @@ type GetPostDetailOptions = {
 export async function getPostsDetail(
   url: string,
   options: GetPostDetailOptions = {},
-): Promise<PostDetail> {
+): Promise<PostDetail | undefined> {
   const redditURL = new RedditURL(url);
   redditURL.changeQueryParam("sr_detail", "true");
   redditURL.changeQueryParam("limit", String(options?.limit ?? 75));
   redditURL.jsonify();
-  const response = await api(redditURL.toString());
+  let response = await api(redditURL.toString());
+  const gatedResult = await handleGatedSubreddit(response, url);
+  if (gatedResult === "cancelled") return undefined;
+  if (gatedResult === "success") {
+    response = await api(redditURL.toString());
+  }
   const postData = response[0].data.children[0];
   const post = await formatPostData(postData);
   const comments = response[1].data.children;

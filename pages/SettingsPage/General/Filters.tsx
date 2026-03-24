@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { Alert, StyleSheet, Switch, Text, View } from "react-native";
 
@@ -135,6 +135,8 @@ export default function Filters() {
   const { isPro } = useContext(SubscriptionsContext);
   const { pushURL } = useURLNavigation();
 
+  const filteredSubreddits = Object.entries(hideFilteredSubreddits);
+
   const hideSeenURLOverrides = Object.entries(hideSeenURLs)
     .filter(([_, setting]) => setting !== filterSeenPosts)
     .map(([url]) => url);
@@ -158,8 +160,6 @@ export default function Filters() {
       ],
     );
   };
-
-  const filteredSubreddits = Object.keys(hideFilteredSubreddits);
 
   return (
     <>
@@ -365,22 +365,31 @@ export default function Filters() {
       {filteredSubreddits.length > 0 && (
         <List
           title="Subreddits"
-          items={filteredSubreddits.map((subreddit) => ({
+          items={filteredSubreddits.map(([subreddit, expiresAt]) => ({
             key: subreddit,
             text: subreddit,
-            icon: (
-              <MaterialCommunityIcons
-                name="view-compact-outline"
-                size={24}
-                color={theme.text}
-              />
-            ),
-            rightIcon: (
-              <MaterialCommunityIcons
-                name="trash-can-outline"
-                size={24}
-                color={theme.text}
-              />
+            rightIcon: <></>,
+            renderCustomItem: () => (
+              <>
+                <View style={styles.iconMargin}>
+                  <FontAwesome name="reddit" size={24} color={theme.text} />
+                </View>
+                <View style={styles.subredditFilterInfo}>
+                  <Text style={{ color: theme.text, fontSize: 17 }}>
+                    {subreddit}
+                  </Text>
+                  <Text style={{ color: theme.subtleText, fontSize: 13 }}>
+                    {expiresAt === true
+                      ? "Forever"
+                      : `Until ${new Date(expiresAt).toLocaleDateString()}`}
+                  </Text>
+                </View>
+                <MaterialCommunityIcons
+                  name="trash-can-outline"
+                  size={24}
+                  color={theme.text}
+                />
+              </>
             ),
             onPress: () => {
               Alert.alert(`Stop filtering /r/${subreddit}?`, "", [
@@ -428,5 +437,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     minHeight: 100,
+  },
+  iconMargin: {
+    width: 24,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+  },
+  subredditFilterInfo: {
+    flex: 1,
+    marginLeft: 10,
+    gap: 2,
   },
 });
