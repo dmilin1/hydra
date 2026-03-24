@@ -87,6 +87,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               thumbnail={post.imageThumbnail}
               straightToFullscreen
               exitedFullScreenCallback={() => setMediaOpen(false)}
+              aspectRatio={post.mediaAspectRatio}
             />
           )}
         </TouchableOpacity>

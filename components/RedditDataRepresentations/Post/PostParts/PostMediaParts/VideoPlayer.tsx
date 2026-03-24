@@ -31,7 +31,7 @@ type VideoPlayerProps = {
   videoDownloadURL?: string;
   straightToFullscreen?: boolean;
   exitedFullScreenCallback?: () => void;
-  aspectRatio?: number;
+  aspectRatio: number;
 };
 
 function VideoPlayer({
@@ -159,7 +159,7 @@ function VideoPlayer({
         >
           {/* Have to put an invisible layer on top of the ImageViewer to keep it from stealing clicks */}
           <View style={styles.invisibleLayer} />
-          <ImageViewer images={[thumbnail]} />
+          <ImageViewer images={[thumbnail]} aspectRatio={aspectRatio} />
           <View
             style={[
               styles.isVideoContainer,

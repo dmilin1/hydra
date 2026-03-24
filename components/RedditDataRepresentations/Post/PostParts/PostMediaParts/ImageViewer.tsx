@@ -1,4 +1,4 @@
-import { Image, useImage } from "expo-image";
+import { Image } from "expo-image";
 import React, { useState, useContext, useRef } from "react";
 import {
   Text,
@@ -17,12 +17,12 @@ import useMediaSharing from "../../../../../utils/useMediaSharing";
 
 export default function ImageViewer({
   images,
-  thumbnail,
   aspectRatio,
+  thumbnail,
 }: {
   images: string[];
+  aspectRatio: number;
   thumbnail?: string;
-  aspectRatio?: number;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
   const shareMedia = useMediaSharing();
@@ -95,7 +95,7 @@ export default function ImageViewer({
       style={[
         styles.imageViewerContainer,
         {
-          height: imgRefs.length >= 2 ? imgHeight / 2 : imgHeight,
+          height: numImgsToDisplay === 2 ? imgHeight / 2 : imgHeight,
         },
       ]}
     >
@@ -120,10 +120,10 @@ export default function ImageViewer({
             style={[
               styles.img,
               {
-                height: imgs.length >= 2 ? imgHeight / 2 : imgHeight,
+                height: numImgsToDisplay === 2 ? imgHeight / 2 : imgHeight,
               },
             ]}
-            recyclingKey={displayImgs[index]}
+            recyclingKey={img}
             contentFit="contain"
             source={img}
             transition={250}
