@@ -89,39 +89,21 @@ export async function askQuestion(
   return await response.json();
 }
 
-export async function translatePost(
+export async function translate(
   customerId: string,
-  postTitle: string,
-  postText: string,
+  type: "post" | "comment",
   sourceLanguage: string,
   targetLanguage: string,
+  content: { postTitle?: string; postText?: string; comment?: string },
 ): Promise<string> {
-  const response = await fetch(`${HYDRA_SERVER_URL}/api/ai/translatePost`, {
+  const response = await fetch(`${HYDRA_SERVER_URL}/api/ai/translate`, {
     method: "POST",
     body: JSON.stringify({
       customerId,
-      postTitle,
-      postText: postText.slice(0, 15_000),
+      type,
       sourceLanguage,
       targetLanguage,
-    }),
-  });
-  return await response.text();
-}
-
-export async function translateComment(
-  customerId: string,
-  comment: string,
-  sourceLanguage: string,
-  targetLanguage: string,
-): Promise<string> {
-  const response = await fetch(`${HYDRA_SERVER_URL}/api/ai/translateComment`, {
-    method: "POST",
-    body: JSON.stringify({
-      customerId,
-      comment: comment.slice(0, 3_000),
-      sourceLanguage,
-      targetLanguage,
+      ...content,
     }),
   });
   return await response.text();

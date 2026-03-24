@@ -33,7 +33,7 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { TranslationSettingsContext } from "../../contexts/SettingsContexts/TranslationSettingsContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import { SubredditContext } from "../../contexts/SubredditContext";
-import { translatePost } from "../../api/AI";
+import { translate } from "../../api/AI";
 import TranslationModal from "../Modals/TranslationModal";
 import KeyStore from "../../utils/KeyStore";
 import RedditURL, { PageType } from "../../utils/RedditURL";
@@ -380,12 +380,12 @@ export default function SortAndContext({
               openGallery(currentPath);
             } else if (result === "Translate Text" && isPro && customerId && pageData?.type === "postDetail") {
               try {
-                const translation = await translatePost(
+                const translation = await translate(
                   customerId,
-                  pageData.title,
-                  pageData.text || "",
+                  "post",
                   sourceLanguage,
                   targetLanguage,
+                  { postTitle: pageData.title, postText: pageData.text || "" },
                 );
                 setModal(
                   <TranslationModal 

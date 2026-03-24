@@ -25,7 +25,7 @@ import {
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
 import { summarizePostDetails, summarizePostComments } from "../../../api/AI";
-import { translatePost } from "../../../api/AI";
+import { translate } from "../../../api/AI";
 import TranslationModal from "../../Modals/TranslationModal";
 import { PostDetail, vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
@@ -88,12 +88,12 @@ export default function PostDetailsComponent({
     if (!isPro || !customerId) return;
     
     try {
-      const translation = await translatePost(
+      const translation = await translate(
         customerId,
-        postDetail.title,
-        postDetail.text || "",
+        "post",
         sourceLanguage,
         targetLanguage,
+        { postTitle: postDetail.title, postText: postDetail.text || "" },
       );
       setModal(
         <TranslationModal 

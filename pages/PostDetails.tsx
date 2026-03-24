@@ -40,7 +40,6 @@ import { modifyStat, Stat } from "../db/functions/Stats";
 import ScrollToNextButtonProvider from "../contexts/ScrollToNextButtonProvider";
 import { ScrollToNextButtonContext } from "../contexts/ScrollToNextButtonContext";
 import { summarizePostDetails, summarizePostComments } from "../api/AI";
-import { translatePost } from "../api/AI";
 import TranslationModal from "../components/Modals/TranslationModal";
 
 export type LoadMoreCommentsFunc = (

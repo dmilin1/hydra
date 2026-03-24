@@ -37,7 +37,7 @@ import {
 } from "../../../../api/PostDetail";
 import { VoteOption } from "../../../../api/Posts";
 import { saveItem } from "../../../../api/Save";
-import { translateComment } from "../../../../api/AI";
+import { translate } from "../../../../api/AI";
 import { AccountContext } from "../../../../contexts/AccountContext";
 import { ModalContext } from "../../../../contexts/ModalContext";
 import { CommentSettingsContext } from "../../../../contexts/SettingsContexts/CommentSettingsContext";
@@ -200,11 +200,12 @@ export function CommentComponent({
     if (!isPro || !customerId) return;
     
     try {
-      const translation = await translateComment(
+      const translation = await translate(
         customerId,
-        comment.text,
+        "comment",
         sourceLanguage,
         targetLanguage,
+        { comment: comment.text },
       );
       setModal(
         <TranslationModal 
