@@ -1,4 +1,5 @@
 import {
+  DefaultTheme,
   NavigationContainer,
   NavigationContainerRef,
 } from "@react-navigation/native";
@@ -15,6 +16,7 @@ import { StackParamsList } from "../app/stack";
 import KeyStore from "../utils/KeyStore";
 import RedditURL from "../utils/RedditURL";
 import { PageTypeToNavName } from "../utils/navigation";
+import { ThemeContext } from "./SettingsContexts/ThemeContext";
 
 export const INITIAL_TAB_STORAGE_KEY = "initialTab";
 export const STARTUP_URL_STORAGE_KEY = "startupURL";
@@ -113,6 +115,7 @@ const INITIAL_STATE = {
 };
 
 export default function NavigationProvider({ children }: PropsWithChildren) {
+  const { theme } = useContext(ThemeContext);
   const { currentUser, loginInitialized } = useContext(AccountContext);
   const navigation = useRef<NavigationContainerRef<StackParamsList>>(null);
   const [navigationReady, setNavigationReady] = useState(false);
@@ -163,6 +166,10 @@ export default function NavigationProvider({ children }: PropsWithChildren) {
     <NavigationContainer
       ref={navigation}
       initialState={INITIAL_STATE}
+      theme={{
+        ...DefaultTheme,
+        dark: theme.systemModeStyle === "dark",
+      }}
       onReady={() => {
         setNavigationReady(true);
       }}

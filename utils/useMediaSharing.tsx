@@ -1,4 +1,4 @@
-import { File, Paths } from "expo-file-system/next";
+import { File, Paths } from "expo-file-system";
 import { useContext, useRef } from "react";
 import {
   ActivityIndicator,

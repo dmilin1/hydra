@@ -1,5 +1,5 @@
 import { useIsFocused } from "@react-navigation/native";
-import { Directory, File, Paths } from "expo-file-system/next";
+import { Directory, File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";

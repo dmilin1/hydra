@@ -9,7 +9,7 @@ import Themes, {
 } from "../../constants/Themes";
 import { SubscriptionsContext } from "../SubscriptionsContext";
 import { getCustomTheme } from "../../db/functions/CustomThemes";
-import { Appearance, useColorScheme } from "react-native";
+import { ColorSchemeName, useColorScheme } from "react-native";
 
 const initialThemeContext = {
   systemColorScheme: "light" as "light" | "dark",
@@ -31,7 +31,8 @@ export const ThemeContext = createContext(initialThemeContext);
 export function ThemeProvider({ children }: React.PropsWithChildren) {
   const { isPro, purchasesInitialized } = useContext(SubscriptionsContext);
 
-  const systemColorScheme = useColorScheme() ?? "light";
+  const scheme = useColorScheme();
+  const systemColorScheme = scheme === "unspecified" ? "light" : scheme;
 
   const [storedCurrentTheme, setStoredTheme] = useMMKVString("theme");
   const [storedDarkTheme, setStoredDarkTheme] = useMMKVString("darkTheme");
@@ -87,17 +88,17 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
 
   const setCurrentTheme = (
     themeKey: string,
-    colorScheme: "light" | "dark" | undefined = useDifferentDarkTheme
+    colorScheme: ColorSchemeName | undefined = useDifferentDarkTheme
       ? systemColorScheme
-      : undefined,
+      : "unspecified",
   ) => {
     clearTemporaryTheme();
     if (cantUseTheme(themeKey)) {
-      if (!colorScheme || colorScheme === systemColorScheme) {
+      if (colorScheme === "unspecified" || colorScheme === systemColorScheme) {
         grantThemeTemporarily(themeKey);
       }
     } else {
-      if (!colorScheme || colorScheme === "light") {
+      if (colorScheme === "unspecified" || colorScheme === "light") {
         setStoredTheme(themeKey);
       } else {
         setStoredDarkTheme(themeKey);
@@ -125,12 +126,6 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
   useEffect(() => {
     setStatusBarStyle(theme.statusBar);
   }, [theme.statusBar]);
-
-  useEffect(() => {
-    Appearance.setColorScheme(
-      useDifferentDarkTheme ? null : theme.systemModeStyle,
-    );
-  }, [useDifferentDarkTheme, theme.systemModeStyle]);
 
   useEffect(() => {
     if (
