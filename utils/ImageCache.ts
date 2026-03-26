@@ -2,9 +2,19 @@ import { useIsFocused } from "@react-navigation/native";
 import { Directory, File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, AppState } from "react-native";
 
-const MAX_CACHE_SIZE = 1024 * 1024 * 512; // 512MB
+const MAX_DISK_CACHE_SIZE = 1024 * 1024 * 512; // 512MB
+const MAX_MEMORY_CACHE_SIZE = 1024 * 1024 * 256; // 128MB
+
+Image.configureCache({
+  maxDiskSize: MAX_DISK_CACHE_SIZE,
+  maxMemoryCost: MAX_MEMORY_CACHE_SIZE,
+});
+
+AppState.addEventListener("memoryWarning", () => {
+  Image.clearMemoryCache();
+});
 
 export default class ImageCache {
   private static readonly cacheDir = new Directory(
@@ -26,13 +36,6 @@ export default class ImageCache {
     await Image.clearDiskCache();
     if (withAlert) {
       Alert.alert("Cache Cleared", "The image cache has been cleared.");
-    }
-  }
-
-  static async doMaintenance() {
-    const cacheSize = ImageCache.getCacheSize();
-    if (cacheSize > MAX_CACHE_SIZE) {
-      await ImageCache.clearCache(false);
     }
   }
 

@@ -2,12 +2,17 @@ import {
   clearVideoCacheAsync,
   getCurrentVideoCacheSize,
   VideoSource,
+  setVideoCacheSizeAsync,
 } from "expo-video";
 import { Alert } from "react-native";
 import KeyStore from "./KeyStore";
 import URL from "./URL";
 
 const VIDEO_CACHE_CLEAR_REQUESTED_KEY = "videoCacheClearRequested";
+
+const MAX_VIDEO_DISK_CACHE_SIZE = 1024 * 1024 * 1024; // 1GB
+
+setVideoCacheSizeAsync(MAX_VIDEO_DISK_CACHE_SIZE);
 
 export default class VideoCache {
   static getCacheSize(): number {
