@@ -91,6 +91,17 @@ module.exports = {
           },
         ]
       ],
+      [
+        "expo-sharing",
+        {
+          "ios": {
+            "enabled": true,
+            "activationRule": {
+              "supportsWebUrlWithMaxCount": 1,
+            }
+          },
+        }
+      ],
       "expo-font",
       "expo-image",
       "expo-secure-store",

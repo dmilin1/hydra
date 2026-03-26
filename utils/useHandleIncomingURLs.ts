@@ -17,10 +17,15 @@ import {
   TabActions,
   useNavigation,
 } from "@react-navigation/native";
+import {
+  getResolvedSharedPayloadsAsync,
+  clearSharedPayloads,
+} from "expo-sharing";
 
 export default function useHandleIncomingURLs() {
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
   const isAsking = useRef(false);
+  const navigationReady = navigation.isReady();
 
   const handleURL = (url: string) => {
     const pageType = RedditURL.getPageType(url);
@@ -81,18 +86,28 @@ export default function useHandleIncomingURLs() {
     );
   };
 
+  const handleSharedLink = async () => {
+    const payloads = await getResolvedSharedPayloadsAsync();
+    if (payloads.length === 0 || !payloads[0].contentUri) return;
+    handleURL(payloads[0].contentUri);
+    clearSharedPayloads();
+  };
+
   useEffect(() => {
+    if (!navigationReady) return;
     handleClipboardURL();
+    handleSharedLink();
     const subscription = AppState.addEventListener(
       "change",
       async (nextAppState) => {
         if (nextAppState === "active") {
           handleClipboardURL();
+          handleSharedLink();
         }
       },
     );
     return () => subscription.remove();
-  }, []);
+  }, [navigationReady]);
 
   useEffect(() => {
     const startupLinkHandler = () => {
