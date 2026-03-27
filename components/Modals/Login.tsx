@@ -96,8 +96,8 @@ export default function Login() {
     if (loginFinished.current) return;
     loginFinished.current = true;
     setModal(null);
-    const loginSuccess = await logIn();
-    if (!loginSuccess) {
+    const logginSuccess = await logIn();
+    if (!logginSuccess) {
       handleLoginFailed();
     } else {
       resolver.current?.(false);

@@ -31,7 +31,7 @@ type VideoPlayerProps = {
   videoDownloadURL?: string;
   straightToFullscreen?: boolean;
   exitedFullScreenCallback?: () => void;
-  aspectRatio: number;
+  aspectRatio?: number;
 };
 
 function VideoPlayer({
@@ -110,13 +110,9 @@ function VideoPlayer({
     outputRange: ["0%", "100%"],
   });
 
-  const viewerOpenGuard = useRef(false);
-
   const openFullscreenVideo = () => {
-    if (viewerOpenGuard.current) return;
     interactedWithPost();
     if (Platform.OS === "android") {
-      viewerOpenGuard.current = true;
       player.pause();
       player.volume = 0;
       mediaViewerRef.current?.open(0);
@@ -133,8 +129,6 @@ function VideoPlayer({
     } else {
       player.pause();
     }
-    // Delay re-enabling to prevent touch events from immediately reopening
-    setTimeout(() => { viewerOpenGuard.current = false; }, 300);
   };
 
   React.useEffect(() => {
@@ -165,7 +159,7 @@ function VideoPlayer({
         >
           {/* Have to put an invisible layer on top of the ImageViewer to keep it from stealing clicks */}
           <View style={styles.invisibleLayer} />
-          <ImageViewer images={[thumbnail]} aspectRatio={aspectRatio} />
+          <ImageViewer images={[thumbnail]} />
           <View
             style={[
               styles.isVideoContainer,

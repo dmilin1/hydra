@@ -62,9 +62,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
       .slice(0, 3)
       .join("/");
     try {
-      const userData = await getUser(`https://www.reddit.com${userUrl}`, {
-        allowSuspended: true,
-      });
+      const userData = await getUser(`https://www.reddit.com${userUrl}`);
       setUser(userData);
     } catch (e) {
       if (e instanceof BannedUserError || e instanceof UserDoesNotExistError) {

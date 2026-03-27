@@ -265,7 +265,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     Wrapper = (props) => (
       <View onStartShouldSetResponder={() => true}>
         <View style={styles.imageContainer}>
-          <ImageViewer images={[element.attribs.src]} aspectRatio={16 / 9} />
+          <ImageViewer images={[element.attribs.src]} />
         </View>
         <View>{props.children}</View>
       </View>
