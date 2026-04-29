@@ -10,6 +10,7 @@ import { StackParamsList, URLRoutes } from "../app/stack";
 import { MediaViewerContext } from "../contexts/MediaViewerContext";
 import { StackFutureContext } from "../contexts/StackFutureContext";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { PageTypeToNavName } from "./PageTypeToNavName";
 
 export function useRoute<
   Pages extends keyof StackParamsList = keyof StackParamsList,
@@ -18,25 +19,6 @@ export function useRoute<
 }
 
 type NavFunctionsWithURL = "push" | "replace";
-
-export const PageTypeToNavName: Record<PageType, keyof StackParamsList> = {
-  [PageType.HOME]: "Home",
-  [PageType.POST_DETAILS]: "PostDetailsPage",
-  [PageType.SUBREDDIT]: "PostsPage",
-  [PageType.SUBREDDIT_SEARCH]: "SubredditSearchPage",
-  [PageType.MULTIREDDIT]: "MultiredditPage",
-  [PageType.USER]: "UserPage",
-  [PageType.SEARCH]: "SearchPage",
-  [PageType.INBOX]: "InboxPage",
-  [PageType.MESSAGES]: "MessagesPage",
-  [PageType.ACCOUNTS]: "Accounts",
-  [PageType.SIDEBAR]: "SidebarPage",
-  [PageType.WIKI]: "WikiPage",
-  [PageType.SETTINGS]: "SettingsPage",
-  [PageType.WEBVIEW]: "WebviewPage",
-  [PageType.IMAGE]: "ErrorPage",
-  [PageType.UNKNOWN]: "ErrorPage",
-};
 
 export function useURLNavigation<
   Pages extends keyof StackParamsList = keyof StackParamsList,
@@ -58,7 +40,9 @@ export function useURLNavigation<
     const navName = PageTypeToNavName[pageType];
 
     if (pageType === PageType.IMAGE) {
-      displayMedia(url);
+      displayMedia({
+        media: [[{ source: url, type: "image" }]],
+      });
     } else {
       navigation[func](navName as URLRoutes, { url });
     }

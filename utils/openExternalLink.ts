@@ -2,6 +2,7 @@ import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import KeyStore from "./KeyStore";
 import { Alert } from "react-native";
+import * as ExpoOrientation from "expo-screen-orientation";
 
 export type BrowserOption = keyof typeof BROWSER_CONFIGS;
 
@@ -82,7 +83,8 @@ export async function openExternalLink(
   const browserConfig = BROWSER_CONFIGS[browserSetting];
 
   if (browserSetting === "internalBrowser") {
-    WebBrowser.openBrowserAsync(url, {
+    ExpoOrientation.unlockAsync();
+    await WebBrowser.openBrowserAsync(url, {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
       dismissButtonStyle: "close",
       readerMode:
@@ -90,6 +92,7 @@ export async function openExternalLink(
         OPEN_IN_READER_MODE_DEFAULT,
       ...browserParams,
     });
+    ExpoOrientation.lockAsync(ExpoOrientation.OrientationLock.PORTRAIT_UP);
     return;
   }
 

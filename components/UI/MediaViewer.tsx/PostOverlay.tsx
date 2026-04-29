@@ -6,32 +6,43 @@ import {
   StyleSheet,
 } from "react-native";
 import { Post } from "../../../api/Posts";
-import { useURLNavigation } from "../../../utils/navigation";
+import { PageTypeToNavName } from "../../../utils/PageTypeToNavName";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import useMediaSharing from "../../../utils/useMediaSharing";
+import RedditURL from "../../../utils/RedditURL";
+import { StackActions, useNavigation } from "@react-navigation/native";
+import { PostDetail } from "../../../api/PostDetail";
 
 export default function PostOverlay({
   post,
-  rowIndex,
+  columnIndex,
   closeViewer,
-  shareMedia,
 }: {
-  post: Post;
-  rowIndex: number;
+  post: Post | PostDetail;
+  columnIndex: number;
   closeViewer: () => void;
-  shareMedia: ReturnType<typeof useMediaSharing>;
 }) {
-  const { pushURL } = useURLNavigation();
+  const { dispatch } = useNavigation();
+
+  const shareMedia = useMediaSharing();
 
   const [isDownloading, setIsDownloading] = useState(false);
 
   const openLink = (link: string) => {
-    pushURL(link);
+    const pageType = RedditURL.getPageType(link);
+    /**
+     * We have to use dispatch because this can be called from outside the tabs navigator.
+     */
+    dispatch(
+      StackActions.push(PageTypeToNavName[pageType], {
+        url: link,
+      }),
+    );
     closeViewer();
   };
 
-  const shareable = post.images.length > 0 || post.videoDownloadURL;
+  const shareable = post.images.length > 0 || post.videos.length > 0;
 
   return (
     <View onTouchEnd={(e) => e.stopPropagation()}>
@@ -40,10 +51,13 @@ export default function PostOverlay({
           style={styles.shareButton}
           onPress={async () => {
             setIsDownloading(true);
-            if (post.images.length > 0) {
-              await shareMedia("image", post.images[rowIndex]);
-            } else if (post.videoDownloadURL) {
-              await shareMedia("video", post.videoDownloadURL);
+            if (post.videos.length > 0) {
+              await shareMedia(
+                "video",
+                post.videos[columnIndex].videoDownloadURL,
+              );
+            } else if (post.images.length > 0) {
+              await shareMedia("image", post.images[columnIndex]);
             }
             setIsDownloading(false);
           }}

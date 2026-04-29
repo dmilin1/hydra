@@ -2,27 +2,18 @@ import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { openExternalLink } from "../../../../utils/openExternalLink";
 import React, { useContext, useState } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
 
-import { default as ImageView } from "./PostMediaParts/ImageView/ImageViewing";
-import VideoPlayer from "./PostMediaParts/VideoPlayer";
 import { PostDetail } from "../../../../api/PostDetail";
 import { Post } from "../../../../api/Posts";
 import { PostInteractionContext } from "../../../../contexts/PostInteractionContext";
 import { DataModeContext } from "../../../../contexts/SettingsContexts/DataModeContext";
 import { PostSettingsContext } from "../../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
-import URL from "../../../../utils/URL";
 import RedditURL from "../../../../utils/RedditURL";
 import { useURLNavigation } from "../../../../utils/navigation";
-import useMediaSharing from "../../../../utils/useMediaSharing";
+import { MediaViewerContext } from "../../../../contexts/MediaViewerContext";
 
 type CompactPostMediaProps = {
   post: Post | PostDetail;
@@ -35,22 +26,13 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
   const { theme } = useContext(ThemeContext);
   const { currentDataMode } = useContext(DataModeContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
+  const { displayMedia } = useContext(MediaViewerContext);
   const { pushURL } = useURLNavigation();
 
   const { blurNSFW, blurSpoilers } = useContext(PostSettingsContext);
   const isBlurable =
     (blurNSFW && post.isNSFW) || (blurSpoilers && post.isSpoiler);
   const [blur, setBlur] = useState(isBlurable);
-
-  const shareMedia = useMediaSharing();
-
-  const [mediaOpen, setMediaOpen] = useState(false);
-  const [imageIndex, setImageIndex] = useState(0);
-
-  let isGif = false;
-  if (post.images.length > 0) {
-    isGif = new URL(post.images[0]).getRelativePath().endsWith(".gif");
-  }
 
   return (
     <View
@@ -61,68 +43,55 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
         },
       ]}
     >
-      {mediaOpen && <ActivityIndicator style={styles.loader} size="small" />}
-      {post.video ? (
+      {post.videos.length > 0 ? (
         <TouchableOpacity
           style={styles.videoContainer}
-          onPress={() => setMediaOpen(!mediaOpen)}
+          onPress={() => {
+            displayMedia({
+              media: [
+                post.videos.map((video) => ({ type: "video", source: video })),
+              ],
+              getCurrentPost: () => post,
+            });
+          }}
         >
           <View style={styles.iconContainer}>
             <FontAwesome name="play-circle" style={styles.icon} />
           </View>
-          {post.imageThumbnail && (
-            <Image src={post.imageThumbnail} style={styles.image} />
-          )}
-          {!post.imageThumbnail && !mediaOpen && (
+          {post.imageThumbnail ? (
+            <Image source={post.imageThumbnail} style={styles.image} />
+          ) : (
             <FontAwesome5
               name="video"
               style={styles.videoIcon}
               color={theme.subtleText}
             />
           )}
-          {mediaOpen && (
-            <VideoPlayer
-              source={post.video}
-              videoDownloadURL={post.videoDownloadURL}
-              thumbnail={post.imageThumbnail}
-              straightToFullscreen
-              exitedFullScreenCallback={() => setMediaOpen(false)}
-              aspectRatio={post.mediaAspectRatio}
-            />
-          )}
         </TouchableOpacity>
       ) : post.images.length > 0 ? (
         <TouchableOpacity
           style={styles.imgContainer}
-          onPress={() => setMediaOpen(!mediaOpen)}
+          onPress={() => {
+            displayMedia({
+              media: [
+                post.images.map((image) => ({ type: "image", source: image })),
+              ],
+              getCurrentPost: () => post,
+            });
+          }}
         >
           <View style={styles.iconContainer}>
-            {isGif && <FontAwesome name="play-circle" style={styles.icon} />}
             {post.images.length > 1 && (
               <Text style={styles.imageCount}>{post.images.length}</Text>
             )}
           </View>
-          {post.imageThumbnail && (
-            <Image src={post.imageThumbnail} style={styles.image} />
-          )}
-          {!post.imageThumbnail && (
+          {post.imageThumbnail ? (
+            <Image source={post.imageThumbnail} style={styles.image} />
+          ) : (
             <FontAwesome5
               name="image"
               style={styles.videoIcon}
               color={theme.subtleText}
-            />
-          )}
-          {mediaOpen && (
-            <ImageView
-              images={post.images.map((image) => ({ uri: image }))}
-              initialImageIndex={0}
-              presentationStyle="overFullScreen"
-              animationType="none"
-              visible
-              onRequestClose={() => setMediaOpen(false)}
-              onLongPress={() => shareMedia("image", post.images[imageIndex])}
-              onImageIndexChange={(index) => setImageIndex(index)}
-              delayLongPress={500}
             />
           )}
         </TouchableOpacity>
@@ -167,7 +136,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           {post.openGraphData && currentDataMode !== "lowData" && (
             <Image
               source={{ uri: post.openGraphData.image }}
-              resizeMode="cover"
+              contentFit="cover"
               style={styles.image}
             />
           )}

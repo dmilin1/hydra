@@ -82,6 +82,7 @@ export default class URL {
     try {
       const res = await safeFetch(this.url, {
         timeout: 1_750, // Don't slow down loads if some site is slow to respond
+        rejectDataResponse: true,
       });
       const html = await res.text();
       const results: OpenGraphData = {};

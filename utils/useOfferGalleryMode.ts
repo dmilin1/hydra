@@ -31,7 +31,7 @@ export default function useOfferGalleryMode({
     if (isCombinedSubredditFeed) return;
 
     const numberOfMediaItems = posts.filter(
-      (post) => post.images.length > 0 || post.video !== undefined,
+      (post) => post.images.length > 0 || post.videos.length > 0,
     ).length;
     if (
       numberOfMediaItems <

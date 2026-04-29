@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Alert } from "react-native";
-import { ThemeContext } from "../../../../../../../contexts/SettingsContexts/ThemeContext";
-import { useURLNavigation } from "../../../../../../../utils/navigation";
+import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import { useURLNavigation } from "./navigation";
 
 export function useSetTheme() {
   const {

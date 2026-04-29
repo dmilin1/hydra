@@ -11,7 +11,6 @@ module.exports = {
     runtimeVersion: {
       policy: 'appVersion',
     },
-    orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "hydra",
     userInterfaceStyle: "automatic",
@@ -100,6 +99,12 @@ module.exports = {
               "supportsWebUrlWithMaxCount": 1,
             }
           },
+        }
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
         }
       ],
       "expo-font",

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
+import { ImageSource } from "expo-image";
 
 import URL from "./URL";
 import { ModalContext } from "../contexts/ModalContext";
@@ -23,9 +24,15 @@ export default function useMediaSharing() {
 
   const alreadyAsking = useRef(false);
 
-  return async (type: "image" | "video", mediaUrl: string) => {
+  return async (
+    type: "image" | "video",
+    mediaSource: string | ImageSource[],
+  ) => {
     if (alreadyAsking.current) return;
     alreadyAsking.current = true;
+    const mediaUrl =
+      typeof mediaSource === "string" ? mediaSource : mediaSource.at(-1)?.uri;
+    if (!mediaUrl) return;
     try {
       setModal(
         <TouchableOpacity
@@ -68,6 +75,7 @@ export default function useMediaSharing() {
       });
       file.delete();
     } catch (_e) {
+      console.log(_e);
       Alert.alert("Error", `Failed to download ${type}`);
       setModal(null);
     }

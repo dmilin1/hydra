@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, Alert, View } from "react-native";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import Themes, { CustomTheme } from "../../../constants/Themes";
-import { useSetTheme } from "../../RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView/hooks/useSetTheme";
+import { useSetTheme } from "../../../utils/useSetTheme";
 import { saveCustomTheme } from "../../../db/functions/CustomThemes";
 import ThemeColorBand from "./ThemeColorBand";
 

@@ -1,8 +1,16 @@
-import { useEventListener } from "expo";
+import { useEvent, useEventListener } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useContext, useEffect, useRef } from "react";
-import { Animated, AppState, StyleSheet, View } from "react-native";
+import {
+  Animated,
+  AppState,
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
+import { MediaViewerContext } from "../../../contexts/MediaViewerContext";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
 import VideoCache from "../../../utils/VideoCache";
 
@@ -12,18 +20,21 @@ type VideoProps = {
 
 function Video({ uri }: VideoProps) {
   const { theme } = useContext(ThemeContext);
+  const { subscribeToVisibility } = useContext(MediaViewerContext);
   const progress = useRef(new Animated.Value(0)).current;
 
   const player = useVideoPlayer(
     VideoCache.makeCachedVideoSource(uri),
     (player) => {
       player.audioMixingMode = "mixWithOthers";
-      player.volume = 0;
+      player.muted = true;
       player.loop = true;
       player.timeUpdateEventInterval = 1 / 15;
       player.play();
     },
   );
+
+  const status = useEvent(player, "statusChange");
 
   useEventListener(player, "timeUpdate", (e) => {
     progress.setValue(e.currentTime / player.duration);
@@ -38,8 +49,27 @@ function Video({ uri }: VideoProps) {
     return () => subscription.remove();
   }, [player]);
 
+  useEffect(() => {
+    return subscribeToVisibility((isShowing) => {
+      if (isShowing) {
+        player.pause();
+      } else {
+        player.play();
+      }
+    });
+  }, [player, subscribeToVisibility]);
+
   return (
     <View style={styles.videoContainer} pointerEvents="box-none">
+      {status?.error ? (
+        <View style={styles.notReadyContainer}>
+          <Text style={styles.errorText}>{status.error.message}</Text>
+        </View>
+      ) : status === null || status.status === "loading" ? (
+        <View style={styles.notReadyContainer}>
+          <ActivityIndicator color={theme.text} />
+        </View>
+      ) : null}
       <VideoView
         player={player}
         style={styles.video}
@@ -84,6 +114,22 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "relative",
     overflow: "hidden",
+  },
+  notReadyContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "black",
+    zIndex: 1,
+  },
+  errorText: {
+    color: "white",
+    textAlign: "center",
+    margin: 10,
   },
   video: {
     width: "100%",

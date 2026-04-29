@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -7,25 +7,24 @@ import {
   Text,
 } from "react-native";
 import { Post } from "../../../api/Posts";
-import { Image } from "expo-image";
+import { Image, ImageSource } from "expo-image";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
-import MediaViewer, { MediaViewerRef } from "../MediaViewer.tsx/MediaViewer";
 import Video from "./Video";
-import PostOverlay from "../MediaViewer.tsx/PostOverlay";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../GetHydraProButton";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
-import useMediaSharing from "../../../utils/useMediaSharing";
+import { MediaViewerContext } from "../../../contexts/MediaViewerContext";
 
 type GalleryItem = {
-  uri: string;
   mediaAspectRatio: number;
 } & (
   | {
       type: "image";
+      source: string | ImageSource[];
     }
   | {
       type: "video";
+      source: Post["videos"][number];
     }
 );
 
@@ -46,8 +45,7 @@ export default function GalleryComponent({
 }: GalleryComponentProps) {
   const { theme } = useContext(ThemeContext);
   const { isPro } = useContext(SubscriptionsContext);
-
-  const shareMedia = useMediaSharing();
+  const { displayMedia, updateMedia } = useContext(MediaViewerContext);
 
   const [contentDimensions, setContentDimensions] = useState({
     width: 0,
@@ -57,36 +55,46 @@ export default function GalleryComponent({
   const [hitFreeLimit, setHitFreeLimit] = useState(false);
 
   const flashListRef = useRef<FlashListRef<GalleryItem>>(null);
-  const mediaViewerRef = useRef<MediaViewerRef>(null);
+
+  /**
+   * This looks weird, but it's because we need to be able to fetch the post data
+   * from the most recent render of the gallery. If we don't do this, when deeply
+   * scrolling through the media viewer, the post data will be stale.
+   */
+  const getCurrentPostRef = useRef<(rowIndex: number) => Post | null>(
+    () => null,
+  );
+  getCurrentPostRef.current = (rowIndex: number) => posts[rowIndex];
 
   const galleryMedia: GalleryItem[] = posts.flatMap((post) => {
-    if (post.images.length > 0) {
-      return post.images.map((image) => ({
-        type: "image",
-        uri: image,
+    if (post.videos.length > 0) {
+      return post.videos.map((video) => ({
+        type: "video",
+        source: video,
         mediaAspectRatio: post.mediaAspectRatio,
       }));
-    } else if (post.video !== undefined) {
-      return [
-        {
-          type: "video",
-          uri: post.video,
-          mediaAspectRatio: post.mediaAspectRatio,
-        },
-      ];
+    } else if (post.images.length > 0) {
+      return post.images.map((image) => ({
+        type: "image",
+        source: image,
+        mediaAspectRatio: post.mediaAspectRatio,
+      }));
     } else {
       return [] as GalleryItem[];
     }
   });
 
   const viewerMedia = posts.map((post) => {
-    if (post.images.length > 0) {
+    if (post.videos.length > 0) {
+      return post.videos.map((video) => ({
+        type: "video" as const,
+        source: video,
+      }));
+    } else if (post.images.length > 0) {
       return post.images.map((image) => ({
         type: "image" as const,
-        uri: image,
+        source: image,
       }));
-    } else if (post.video !== undefined) {
-      return [{ type: "video" as const, uri: post.video }];
     } else {
       return [];
     }
@@ -103,6 +111,10 @@ export default function GalleryComponent({
     setIsLoadingMore(false);
   };
 
+  useEffect(() => {
+    updateMedia(viewerMedia);
+  }, [viewerMedia.length]);
+
   return (
     <View
       style={styles.container}
@@ -118,7 +130,17 @@ export default function GalleryComponent({
         data={galleryMedia}
         renderItem={({ item, index }) => (
           <TouchableOpacity
-            onPress={() => mediaViewerRef.current?.open(index)}
+            onPress={() =>
+              displayMedia({
+                media: viewerMedia,
+                initialIndex: index,
+                getCurrentPost: getCurrentPostRef,
+                onFocusedItemChange: (index) =>
+                  flashListRef.current?.scrollToIndex({
+                    index,
+                  }),
+              })
+            }
             activeOpacity={0.9}
             style={[
               styles.imageContainer,
@@ -131,10 +153,14 @@ export default function GalleryComponent({
             {item.type === "image" ? (
               <Image
                 style={styles.image}
-                source={{ uri: item.uri }}
+                source={item.source}
                 contentFit="contain"
                 autoplay={false}
-                recyclingKey={item.uri}
+                recyclingKey={
+                  typeof item.source === "string"
+                    ? item.source
+                    : item.source[0].uri
+                }
                 /**
                  * Downscaling images seems to cause a glitchy scrolling because
                  * of heavy CPU usage. No downscaling increase memory usage. If
@@ -144,12 +170,18 @@ export default function GalleryComponent({
                 allowDownscaling={false}
               />
             ) : item.type === "video" ? (
-              <Video uri={item.uri} />
+              <Video uri={item.source.source} />
             ) : null}
           </TouchableOpacity>
         )}
         getItemType={(item) => item.type}
-        keyExtractor={(item) => item.uri}
+        keyExtractor={(item, index) =>
+          item.type === "image"
+            ? ((typeof item.source === "string"
+                ? item.source
+                : item.source[0].uri) ?? index.toString())
+            : item.source.source
+        }
         masonry={true}
         optimizeItemArrangement={true}
         drawDistance={200}
@@ -206,28 +238,6 @@ export default function GalleryComponent({
             )}
           </View>
         }
-      />
-      <MediaViewer
-        ref={mediaViewerRef}
-        media={viewerMedia}
-        overlayComponent={(index, rowIndex) => (
-          <PostOverlay
-            post={posts[index]}
-            closeViewer={() => mediaViewerRef.current?.close()}
-            rowIndex={rowIndex}
-            shareMedia={shareMedia}
-          />
-        )}
-        onFocusedItemChange={(columnIndex, rowIndex) => {
-          let trueIndex = 0;
-          for (let i = 0; i < columnIndex; i++) {
-            trueIndex += viewerMedia[i].length;
-          }
-          trueIndex += rowIndex;
-          flashListRef.current?.scrollToIndex({
-            index: trueIndex,
-          });
-        }}
       />
     </View>
   );

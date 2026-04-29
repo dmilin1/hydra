@@ -13,6 +13,11 @@ export type SafeFetchOptions = {
   body?: string | FormData | null;
   timeout?: number;
   cache?: RequestCache;
+  /**
+   * When true, fail as soon as headers show a typical binary / “data” body
+   * (e.g. PDF, octet-stream, media) so XHR does not try to decode it as text.
+   */
+  rejectDataResponse?: boolean;
 };
 
 export type SafeFetchResponse = {
@@ -64,6 +69,30 @@ export default function safeFetch(
     }
 
     xhr.timeout = options.timeout ?? 10_000;
+
+    if (options.rejectDataResponse) {
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState !== XMLHttpRequest.HEADERS_RECEIVED) {
+          return;
+        }
+        const contentType = xhr
+          .getResponseHeader("Content-Type")
+          ?.split(";")
+          ?.at(0)
+          ?.trim()
+          ?.toLowerCase();
+        if (
+          contentType &&
+          (contentType === "application/pdf" ||
+            contentType === "application/octet-stream" ||
+            /^(image|video|audio)\//.test(contentType) ||
+            contentType === "application/zip" ||
+            contentType === "application/x-zip-compressed")
+        ) {
+          xhr.abort();
+        }
+      };
+    }
 
     xhr.onload = () => {
       try {
@@ -117,7 +146,9 @@ export default function safeFetch(
     };
 
     xhr.onabort = () => {
-      reject(new DOMException("Request aborted", "AbortError"));
+      const err = new Error("Request aborted");
+      err.name = "AbortError";
+      reject(err);
     };
 
     xhr.send(options.body ?? null);

@@ -90,11 +90,10 @@ export default function PostComponent({
         if (post.text.trim().length > 0) {
           text += `Post contents: ${post.text.trim()}. `;
         }
-        if (post.images.length > 0) {
-          text += `${post.images.length} ${post.images.length === 1 ? "image" : "images"}. `;
-        }
-        if (post.video) {
+        if (post.videos.length > 0) {
           text += "A video. ";
+        } else if (post.images.length > 0) {
+          text += `${post.images.length} ${post.images.length === 1 ? "image" : "images"}. `;
         }
         if (post.poll) {
           text += "A poll. ";
@@ -196,13 +195,12 @@ export default function PostComponent({
 
   const accessibilityLabel = useMemo(() => {
     let text = post.title.trim();
-    if (post.images.length > 0) {
+    if (post.videos.length > 0) {
+      text += ` with a video`;
+    } else if (post.images.length > 0) {
       text +=
         ` with ${post.images.length} ` +
         (post.images.length === 1 ? "image" : "images");
-    }
-    if (post.video) {
-      text += ` with a video`;
     }
     if (post.poll) {
       text += ` with a poll`;

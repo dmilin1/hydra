@@ -1,11 +1,11 @@
 import { useRecyclingState } from "@shopify/flash-list";
-import { Image } from "expo-image";
+import { Image, ImageSource } from "expo-image";
 import { useRef, useState, useEffect } from "react";
 import { useWindowDimensions, ScrollView } from "react-native";
 
 export type ImageItem = {
   type: "image";
-  uri: string;
+  source: string | ImageSource[];
 };
 
 export type MediaImageProps = {
@@ -24,15 +24,24 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
   } | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const [isZoomed, setIsZoomed] = useRecyclingState(false, [item.uri], () => {
-    scrollViewRef.current?.scrollResponderZoomTo({
-      x: 0,
-      y: 0,
-      width: width,
-      height: height,
-      animated: false,
-    });
-  });
+  const [isZoomed, setIsZoomed] = useRecyclingState(
+    false,
+    [item.source],
+    () => {
+      scrollViewRef.current?.scrollResponderZoomTo({
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        animated: false,
+      });
+    },
+  );
+
+  const highestResSource =
+    typeof item.source === "string"
+      ? item.source
+      : item.source[item.source.length - 1];
 
   useEffect(() => {
     return () => {
@@ -111,12 +120,17 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
       }}
     >
       <Image
-        source={{ uri: item.uri }}
+        source={highestResSource}
         style={{ width, height }}
         contentFit="contain"
         onLoad={() => setIsLoaded(true)}
         transition={150}
         allowDownscaling={false}
+        recyclingKey={
+          typeof highestResSource === "string"
+            ? highestResSource
+            : highestResSource.uri
+        }
       />
     </ScrollView>
   );

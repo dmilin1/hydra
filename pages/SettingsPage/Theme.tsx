@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useURLNavigation } from "../../utils/navigation";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
-import { useSetTheme } from "../../components/RedditDataRepresentations/Post/PostParts/PostMediaParts/ImageView/hooks/useSetTheme";
+import { useSetTheme } from "../../utils/useSetTheme";
 import ThemeList from "../../components/UI/Themes/ThemeList";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import List from "../../components/UI/List";

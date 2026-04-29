@@ -86,6 +86,14 @@ export default class RedditURL extends URL {
     }
   }
 
+  static getURLIfValid(url: string) {
+    try {
+      return { url: new RedditURL(url).toString(), isValid: true };
+    } catch (_e) {
+      return { url, isValid: false };
+    }
+  }
+
   static getPageType(url: string): PageType {
     try {
       const redditURL = new RedditURL(url);

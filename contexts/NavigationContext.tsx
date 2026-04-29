@@ -15,7 +15,7 @@ import { AccountContext } from "./AccountContext";
 import { StackParamsList } from "../app/stack";
 import KeyStore from "../utils/KeyStore";
 import RedditURL from "../utils/RedditURL";
-import { PageTypeToNavName } from "../utils/navigation";
+import { PageTypeToNavName } from "../utils/PageTypeToNavName";
 import { ThemeContext } from "./SettingsContexts/ThemeContext";
 
 export const INITIAL_TAB_STORAGE_KEY = "initialTab";

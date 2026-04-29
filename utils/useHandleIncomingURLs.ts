@@ -5,7 +5,7 @@ import { Alert, AppState } from "react-native";
 
 import KeyStore from "./KeyStore";
 import RedditURL, { PageType } from "./RedditURL";
-import { PageTypeToNavName } from "./navigation";
+import { PageTypeToNavName } from "./PageTypeToNavName";
 import {
   READ_CLIPBOARD_DEFAULT,
   READ_CLIPBOARD_KEY,

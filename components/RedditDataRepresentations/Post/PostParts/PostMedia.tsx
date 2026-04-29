@@ -58,25 +58,22 @@ export default function PostMedia({
     <CrossPost post={post.crossPost} />
   ) : (
     <>
-      {post.video && (
+      {post.videos.length > 0 && !post.crossCommentLink ? (
         <View style={styles.videoContainer}>
-          <VideoPlayer
-            source={post.video}
-            videoDownloadURL={post.videoDownloadURL}
-            thumbnail={post.imageThumbnail}
-            aspectRatio={post.mediaAspectRatio}
-          />
+          <VideoPlayer post={post} />
         </View>
-      )}
-      {post.images.length > 0 && (
+      ) : post.images.length > 0 &&
+        !post.crossCommentLink &&
+        !post.externalLink ? (
         <View style={styles.imgContainer}>
           <ImageViewer
             images={post.images}
-            thumbnail={post.imageThumbnail}
             aspectRatio={post.mediaAspectRatio}
+            post={post}
           />
         </View>
-      )}
+      ) : null}
+      {(post.externalLink || post.crossCommentLink) && <Link post={post} />}
       {renderHTML
         ? post.html && (
             <View style={styles.bodyHTMLContainer}>
@@ -104,7 +101,6 @@ export default function PostMedia({
           <PollViewer poll={post.poll} />
         </View>
       )}
-      {(post.externalLink || post.crossCommentLink) && <Link post={post} />}
       {customThemes.map((customTheme, i) => (
         <ThemeImport key={customTheme.name + i} customTheme={customTheme} />
       ))}

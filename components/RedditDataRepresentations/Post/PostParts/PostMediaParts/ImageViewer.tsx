@@ -1,5 +1,5 @@
-import { Image } from "expo-image";
-import React, { useState, useContext, useRef } from "react";
+import { Image, ImageSource } from "expo-image";
+import React, { useState, useContext } from "react";
 import {
   Text,
   StyleSheet,
@@ -8,34 +8,32 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import { default as ImageView } from "./ImageView/ImageViewing";
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
-import URL from "../../../../../utils/URL";
 import useMediaSharing from "../../../../../utils/useMediaSharing";
+import { MediaViewerContext } from "../../../../../contexts/MediaViewerContext";
+import { Post } from "../../../../../api/Posts";
+import { PostDetail } from "../../../../../api/PostDetail";
 
 export default function ImageViewer({
   images,
   aspectRatio,
-  thumbnail,
+  post,
 }: {
-  images: string[];
+  images: (string | ImageSource[])[];
   aspectRatio: number;
-  thumbnail?: string;
+  post?: Post | PostDetail;
 }) {
   const { currentDataMode } = useContext(DataModeContext);
+  const { displayMedia } = useContext(MediaViewerContext);
   const shareMedia = useMediaSharing();
   const { width, height } = useWindowDimensions();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
-  const [visible, setVisible] = useState(false);
-  const initialImageIndex = useRef(0);
 
   const { theme } = useContext(ThemeContext);
 
-  const isGif = new URL(images[0]).getRelativePath().endsWith(".gif");
-
-  const numImgsToDisplay = (loadLowData || isGif) && thumbnail ? 1 : 2;
+  const numImgsToDisplay = loadLowData ? 1 : Math.min(2, images.length);
 
   const imgRatio = aspectRatio;
   const heightIfFullSize = width / imgRatio;
@@ -50,54 +48,44 @@ export default function ImageViewer({
         },
       ]}
     >
-      {!loadLowData && (
-        <ImageView
-          images={images.map((image) => ({ uri: image }))}
-          initialImageIndex={initialImageIndex.current}
-          presentationStyle="overFullScreen"
-          animationType="none"
-          visible={visible}
-          onRequestClose={() => setVisible(false)}
-          onLongPress={(imgSource) =>
-            typeof imgSource === "object" &&
-            imgSource.uri &&
-            shareMedia("image", imgSource.uri)
-          }
-          onImageIndexChange={(index) => (initialImageIndex.current = index)}
-          delayLongPress={500}
-        />
-      )}
-      {images.slice(0, numImgsToDisplay).map((img, index) => (
-        /**
-         * Don't change this to TouchableWithoutFeedback, it will break images in comments
-         * by making them offset weirdly. I have no idea why.
-         */
-        <TouchableHighlight
-          key={index}
-          activeOpacity={1}
-          onPress={() => {
-            setLoadLowData(false);
-            initialImageIndex.current = index;
-            setVisible(true);
-          }}
-          style={styles.touchableZone}
-          underlayColor={theme.background}
-          onLongPress={() => shareMedia("image", img)}
-        >
-          <Image
-            style={[
-              styles.img,
-              {
-                height: numImgsToDisplay === 2 ? imgHeight / 2 : imgHeight,
-              },
-            ]}
-            recyclingKey={img}
-            contentFit="contain"
-            source={img}
-            transition={250}
-          />
-        </TouchableHighlight>
-      ))}
+      {images.slice(0, numImgsToDisplay).map((img, index) => {
+        const imgSrc =
+          typeof img === "string" ? img : loadLowData ? [img[0]] : img;
+        return (
+          /**
+           * Don't change this to TouchableWithoutFeedback, it will break images in comments
+           * by making them offset weirdly. I have no idea why.
+           */
+          <TouchableHighlight
+            key={index}
+            activeOpacity={1}
+            onPress={() => {
+              setLoadLowData(false);
+              displayMedia({
+                media: [images.map((img) => ({ type: "image", source: img }))],
+                initialIndex: index,
+                getCurrentPost: () => post ?? null,
+              });
+            }}
+            style={styles.touchableZone}
+            underlayColor={theme.background}
+            onLongPress={() => shareMedia("image", img)}
+          >
+            <Image
+              style={[
+                styles.img,
+                {
+                  height: numImgsToDisplay === 2 ? imgHeight / 2 : imgHeight,
+                },
+              ]}
+              recyclingKey={typeof imgSrc === "string" ? imgSrc : imgSrc[0].uri}
+              contentFit="contain"
+              source={imgSrc}
+              transition={250}
+            />
+          </TouchableHighlight>
+        );
+      })}
       {images.length >= 2 && (
         <View
           style={[
@@ -116,27 +104,6 @@ export default function ImageViewer({
             ]}
           >
             {images.length} IMAGES
-          </Text>
-        </View>
-      )}
-      {isGif && (
-        <View
-          style={[
-            styles.isGifContainer,
-            {
-              backgroundColor: theme.background,
-            },
-          ]}
-        >
-          <Text
-            style={[
-              styles.isGifText,
-              {
-                color: theme.text,
-              },
-            ]}
-          >
-            GIF
           </Text>
         </View>
       )}

@@ -9,6 +9,7 @@ import Time from "../utils/Time";
 import URL, { OpenGraphData } from "../utils/URL";
 import { Alert } from "react-native";
 import { formatPostFlair, PostFlair } from "./PostFlair";
+import { ImageSource } from "expo-image";
 
 export type Poll = {
   voteCount: number;
@@ -42,11 +43,10 @@ export type Post = {
   html: string;
   commentCount: number;
   link: string;
-  images: string[];
-  imageThumbnail: string;
+  images: (string | ImageSource[])[];
+  imageThumbnail: ImageSource | null;
   mediaAspectRatio: number;
-  video: string | undefined;
-  videoDownloadURL: string | undefined;
+  videos: { source: string; videoDownloadURL: string }[];
   poll: Poll | undefined;
   externalLink: string | undefined;
   openGraphData: OpenGraphData | undefined;
@@ -67,119 +67,165 @@ type GetPostOptions = {
   after?: string;
 };
 
+function formatImages(child: any): ImageSource[][] {
+  /**
+   * Images can be stored in .preview or in .media_metadata. I'm not sure what causes
+   * one or the other. We try loading both.
+   */
+  if (child.data.preview?.images?.length) {
+    return child.data.preview.images.map((image: any) => {
+      const sizes = image.resolutions.map(
+        (item: any) =>
+          ({
+            uri: decode(item.url),
+            width: item.width,
+            height: item.height,
+          }) as ImageSource,
+      );
+      if (image.source) {
+        sizes.push({
+          uri: decode(image.source.url),
+          width: image.source.width,
+          height: image.source.height,
+        } as ImageSource);
+      }
+      return sizes;
+    });
+  }
+  if (child.data.gallery_data?.items?.length) {
+    const galleryIndexes =
+      child.data.gallery_data?.items?.reduce?.(
+        (acc: string[], item: any, i: number) => ({
+          ...acc,
+          [item.media_id]: i,
+        }),
+        {},
+      ) ?? {};
+
+    return Object.values(child.data.media_metadata ?? {})
+      .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
+      .map((data: any) => {
+        const sizes = data.p.map(
+          (item: any) =>
+            ({
+              uri: decode(item.u),
+              width: item.x,
+              height: item.y,
+            }) as ImageSource,
+        );
+        if (data.s) {
+          sizes.push({
+            uri: decode(data.s.u),
+            width: data.s.x,
+            height: data.s.y,
+          } as ImageSource);
+        }
+        return sizes;
+      });
+  }
+  return [];
+}
+
+async function formatVideos(
+  child: any,
+): Promise<{ source: string; videoDownloadURL: string }[]> {
+  if (child.data.media?.reddit_video?.hls_url) {
+    return [
+      {
+        source: child.data.media.reddit_video.hls_url,
+        videoDownloadURL: child.data.media.reddit_video.fallback_url,
+      },
+    ];
+  }
+  if (child.data.gallery_data?.items?.length) {
+    const galleryIndexes =
+      child.data.gallery_data?.items?.reduce?.(
+        (acc: string[], item: any, i: number) => ({
+          ...acc,
+          [item.media_id]: i,
+        }),
+        {},
+      ) ?? {};
+
+    return Object.values(child.data.media_metadata ?? {})
+      .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
+      .map((data: any) => {
+        if (!data.s.mp4) return null;
+        return {
+          source: decode(data.s.mp4),
+          videoDownloadURL: decode(data.s.mp4),
+        };
+      })
+      .filter((video) => video !== null);
+  }
+  const { url, isValid } = RedditURL.getURLIfValid(child.data.url);
+  if (!isValid) {
+    if (url.includes("imgur.com") && url.endsWith(".gifv")) {
+      const videoURL = url.replace(".gifv", ".mp4");
+      return [
+        {
+          source: videoURL,
+          videoDownloadURL: videoURL,
+        },
+      ];
+    } else if (url.includes("gfycat.com")) {
+      const videoURL = `https://web.archive.org/web/0if_/thumbs.${url.split("https://")[1]}-mobile.mp4`;
+      return [
+        {
+          source: videoURL,
+          videoDownloadURL: videoURL,
+        },
+      ];
+    } else if (url.includes("redgifs.com")) {
+      const videoURL = await Redgifs.getMediaURL(url);
+      return [
+        {
+          source: videoURL,
+          videoDownloadURL: videoURL,
+        },
+      ];
+    }
+  }
+  return [];
+}
+
 export async function formatPostData(child: any): Promise<Post> {
-  const galleryIndexes =
-    child.data.gallery_data?.items?.reduce?.(
-      (acc: string[], item: any, i: number) => ({
-        ...acc,
-        [item.media_id]: i,
-      }),
-      {},
-    ) ?? {};
-
-  const galleryThumbnails = Object.values(child.data.media_metadata ?? {})
-    .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
-    .map((data: any) => data.p?.[0]?.u)
-    .filter((img) => img !== undefined)
-    .map((img: string) => decode(img));
-
-  let images = Object.values(child.data.media_metadata ?? {})
-    .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
-    .map((data: any) => data.s?.u ?? data.s?.gif)
-    .filter((img) => img !== undefined)
-    .map((img: string) => decode(img));
-
-  if (images.length === 0 && child.data.post_hint === "image") {
-    images = [child.data.url];
-  }
-  if (
-    images.length === 0 &&
-    child.data.is_reddit_media_domain &&
-    child.data?.url?.match(/\.(png|jpe?g|gif)$/i)
-  ) {
-    // I think these are posts that are image + text. They don't appear in the gallery
-    images = [child.data.url];
-  }
+  const images = formatImages(child);
+  const imageThumbnail = images?.at(0)?.at(0) ?? null;
 
   // default in case we can't get the aspect ratio
   let mediaAspectRatio = 0.75;
-  if (child.data.preview?.images[0]?.source) {
-    const { width, height } = child.data.preview.images[0].source;
-    mediaAspectRatio = width / height;
-  } else if (child.data.gallery_data?.items?.[0]?.media_id) {
-    const firstMediaId = child.data.gallery_data.items[0].media_id;
-    const dimensions = child.data.media_metadata[firstMediaId].s;
-    if (dimensions) {
-      mediaAspectRatio = dimensions.x / dimensions.y;
-    }
+  if (images.length && images[0][0].width && images[0][0].height) {
+    mediaAspectRatio = images[0][0].width / images[0][0].height;
   }
 
-  let video = child.data.media?.reddit_video?.hls_url;
-  let videoDownloadURL = child.data.media?.reddit_video?.fallback_url;
-
-  if (
-    child.data.is_reddit_media_domain &&
-    child.data?.url?.match(/\.gif$/i) &&
-    child.data.preview?.images?.[0]?.variants?.mp4?.source?.url
-  ) {
-    // Load reddit hosted gif as mp4s. Their gifs are gargantuan
-    images = [];
-    video = decode(child.data.preview.images[0].variants.mp4.source.url);
-  }
+  const videos = await formatVideos(child);
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
   let crossCommentLink = undefined;
-  try {
-    new RedditURL(child.data.url);
+
+  const { url, isValid } = RedditURL.getURLIfValid(child.data.url);
+  if (isValid) {
     if (
       child.data.url.includes("/comments/") &&
       !child.data.url.includes(child.data.permalink)
     ) {
-      crossCommentLink = child.data.url;
+      crossCommentLink = url;
     }
-  } catch (_) {
+  } else {
     externalLink = child.data.url;
-    if (externalLink.includes("imgur.com") && externalLink.endsWith(".gifv")) {
-      video = externalLink.replace(".gifv", ".mp4");
-      videoDownloadURL = video;
-    } else if (externalLink.includes("gfycat.com")) {
-      video = `https://web.archive.org/web/0if_/thumbs.${externalLink.split("https://")[1]}-mobile.mp4`;
-      videoDownloadURL = video;
-    } else if (externalLink.includes("redgifs.com")) {
-      video = await Redgifs.getMediaURL(externalLink);
-      videoDownloadURL = video;
-    } else if (externalLink && !video && !images.length) {
-      try {
-        openGraphData = await new URL(externalLink).getOpenGraphData();
-      } catch (_) {
-        // Might not have open graph data
-      }
+    if (
+      !videos.length &&
+      !url.includes("imgur.com") &&
+      !url.includes("gfycat.com") &&
+      !url.includes("redgifs.com") &&
+      !url.includes(".gif") &&
+      !url.includes(".gifv") &&
+      !url.includes(".mp4")
+    ) {
+      openGraphData = await new URL(externalLink).getOpenGraphData();
     }
-  }
-
-  let imageThumbnail = decode(child.data.thumbnail);
-
-  const videoThumbnail =
-    child.data.preview?.images[0]?.resolutions?.slice(-1)?.[0]?.url;
-  if (video && videoThumbnail) {
-    imageThumbnail = decode(videoThumbnail);
-  }
-  if (
-    imageThumbnail === "spoiler" ||
-    imageThumbnail === "nsfw" ||
-    (images.length > 0 && !imageThumbnail)
-  ) {
-    // if the thumbnail is a spoiler, reddit doesn't give it to us...
-    // and sometimes they don't give us a thumbnail anyway for reasons I can't figure out
-    let imgPreviewThumbnail: string | null = decode(
-      child.data.preview?.images[0]?.resolutions?.[0]?.url,
-    );
-    if (!imgPreviewThumbnail) {
-      imgPreviewThumbnail = null;
-    }
-    // try to get the first image in the gallery, else the smallest preview image, else the first image
-    imageThumbnail = galleryThumbnails[0] ?? imgPreviewThumbnail ?? images[0];
   }
 
   let poll = undefined;
@@ -233,8 +279,7 @@ export async function formatPostData(child: any): Promise<Post> {
     images,
     imageThumbnail,
     mediaAspectRatio,
-    video,
-    videoDownloadURL,
+    videos,
     poll,
     externalLink,
     openGraphData,
