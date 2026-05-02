@@ -137,7 +137,18 @@ async function formatVideos(
       },
     ];
   }
+  if (child.data.preview?.images?.[0]?.variants?.mp4) {
+    // Example post: https://www.reddit.com/r/gifs/comments/1rzl4fp/seth_hernandez_throws_a_1024_mph_laser_on_the/
+    return child.data.preview.images.map((image: any) => {
+      const item = image.variants.mp4.resolutions.at(-1);
+      return {
+        source: decode(item.url),
+        videoDownloadURL: decode(item.url),
+      };
+    });
+  }
   if (child.data.gallery_data?.items?.length) {
+    // Example post: https://www.reddit.com/r/CelebsWithPetiteTits/comments/1s4xx9l/ana_de_armas_or_alison_brie/
     const galleryIndexes =
       child.data.gallery_data?.items?.reduce?.(
         (acc: string[], item: any, i: number) => ({
@@ -151,9 +162,10 @@ async function formatVideos(
       .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
       .map((data: any) => {
         if (!data.s.mp4) return null;
+        const url = decode(data.s.mp4);
         return {
-          source: decode(data.s.mp4),
-          videoDownloadURL: decode(data.s.mp4),
+          source: url,
+          videoDownloadURL: url,
         };
       })
       .filter((video) => video !== null);
@@ -200,6 +212,7 @@ export async function formatPostData(child: any): Promise<Post> {
   }
 
   const videos = await formatVideos(child);
+  console.log(videos);
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
