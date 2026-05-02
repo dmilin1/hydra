@@ -69,6 +69,8 @@ export default function Appearance() {
     toggleShowCommentSummary,
     tapToCollapseComment,
     toggleTapToCollapseComment,
+    collapseChildrenOnly,
+    toggleCollapseChildrenOnly,
   } = useContext(CommentSettingsContext);
 
   const {
@@ -486,6 +488,28 @@ export default function Appearance() {
             ),
             text: "Tap to collapse",
             onPress: () => toggleTapToCollapseComment(),
+          },
+          {
+            key: "collapseChildrenOnly",
+            icon: (
+              <MaterialCommunityIcons
+                name="collapse-all"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={collapseChildrenOnly}
+                onValueChange={() => toggleCollapseChildrenOnly()}
+              />
+            ),
+            text: "Collapse children only",
+            onPress: () => toggleCollapseChildrenOnly(),
           },
         ]}
       />

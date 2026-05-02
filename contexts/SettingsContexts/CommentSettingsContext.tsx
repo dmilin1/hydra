@@ -7,6 +7,7 @@ const initialValues = {
   commentFlairs: true,
   showCommentSummary: true,
   tapToCollapseComment: true,
+  collapseChildrenOnly: false,
 };
 
 const initialCommentSettingsContext = {
@@ -16,6 +17,7 @@ const initialCommentSettingsContext = {
   toggleCommentFlairs: (_newValue?: boolean) => {},
   toggleShowCommentSummary: (_newValue?: boolean) => {},
   toggleTapToCollapseComment: (_newValue?: boolean) => {},
+  toggleCollapseChildrenOnly: (_newValue?: boolean) => {},
 };
 
 export const CommentSettingsContext = createContext(
@@ -58,6 +60,12 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
     );
   };
 
+  const [storedCollapseChildrenOnly, setCollapseChildrenOnly] = useMMKVBoolean(
+    "collapseChildrenOnly",
+  );
+  const collapseChildrenOnly =
+    storedCollapseChildrenOnly ?? initialValues.collapseChildrenOnly;
+
   return (
     <CommentSettingsContext.Provider
       value={{
@@ -79,6 +87,10 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
         tapToCollapseComment:
           tapToCollapseComment ?? initialValues.tapToCollapseComment,
         toggleTapToCollapseComment,
+
+        collapseChildrenOnly,
+        toggleCollapseChildrenOnly: (newValue = !collapseChildrenOnly) =>
+          setCollapseChildrenOnly(newValue),
       }}
     >
       {children}

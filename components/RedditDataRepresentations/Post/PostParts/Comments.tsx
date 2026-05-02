@@ -80,9 +80,12 @@ export function CommentComponent({
   commentPropRef,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
-  const { voteIndicator, commentFlairs, tapToCollapseComment } = useContext(
-    CommentSettingsContext,
-  );
+  const {
+    voteIndicator,
+    commentFlairs,
+    tapToCollapseComment,
+    collapseChildrenOnly,
+  } = useContext(CommentSettingsContext);
   const { commentSwipeOptions } = useContext(GesturesContext);
   const { doesCommentPassTextFilter } = useContext(FiltersContext);
   const { pushURL } = useURLNavigation();
@@ -370,7 +373,8 @@ export function CommentComponent({
                     style={[
                       styles.topBar,
                       {
-                        marginBottom: comment.collapsed ? 0 : 8,
+                        marginBottom:
+                          comment.collapsed && !collapseChildrenOnly ? 0 : 8,
                       },
                     ]}
                   >
@@ -508,7 +512,7 @@ export function CommentComponent({
                       </Text>
                     </View>
                   </View>
-                  {!comment.collapsed ? (
+                  {collapseChildrenOnly || !comment.collapsed ? (
                     <View style={styles.textContainer}>
                       <RenderHtml html={comment.html} />
                     </View>
@@ -628,6 +632,39 @@ export function CommentComponent({
                 </TouchableOpacity>
               )}
             </>
+          ) : collapseChildrenOnly && comment.comments.length ? (
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => toggleCollapse()}
+              style={{
+                marginLeft: 10 * (comment.depth + 1),
+                borderTopWidth: 1,
+                borderTopColor: theme.divider,
+              }}
+            >
+              <View
+                style={{
+                  borderLeftWidth: comment.depth === -1 ? 0 : 1,
+                  borderLeftColor:
+                    theme.commentDepthColors[
+                      comment.depth % theme.commentDepthColors.length
+                    ],
+                  marginVertical: 10,
+                  paddingLeft: 15,
+                }}
+              >
+                <Text
+                  style={[
+                    styles.upvoteText,
+                    {
+                      color: theme.iconOrTextButton,
+                    },
+                  ]}
+                >
+                  {comment.comments.length} more replies
+                </Text>
+              </View>
+            </TouchableOpacity>
           ) : null}
           {displayInList && (
             <View
