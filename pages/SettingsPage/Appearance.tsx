@@ -32,6 +32,8 @@ export default function Appearance() {
   const {
     postCompactMode,
     togglePostCompactMode,
+    showThumbnailsOnRightSide,
+    toggleShowThumbnailsOnRightSide,
     subredditAtTop,
     toggleSubredditAtTop,
     showSubredditIcon,
@@ -159,6 +161,32 @@ export default function Appearance() {
             text: "Make posts compact",
             onPress: () => togglePostCompactMode(),
           },
+          ...(postCompactMode
+            ? [
+                {
+                  key: "showThumbnailsOnRightSide",
+                  icon: (
+                    <MaterialCommunityIcons
+                      name="image-outline"
+                      size={24}
+                      color={theme.text}
+                    />
+                  ),
+                  rightIcon: (
+                    <Switch
+                      trackColor={{
+                        false: theme.iconSecondary,
+                        true: theme.iconPrimary,
+                      }}
+                      value={showThumbnailsOnRightSide}
+                      onValueChange={() => toggleShowThumbnailsOnRightSide()}
+                    />
+                  ),
+                  text: "Show thumbnails on right",
+                  onPress: () => toggleShowThumbnailsOnRightSide(),
+                },
+              ]
+            : []),
           {
             key: "splitViewEnabled",
             hide: !deviceSupportsSplitView,

@@ -56,6 +56,7 @@ export default function PostComponent({
     postTitleLength,
     postTextLength,
     showPostFlair,
+    showThumbnailsOnRightSide,
   } = useContext(PostSettingsContext);
 
   const { postSwipeOptions } = useContext(GesturesContext);
@@ -280,7 +281,14 @@ export default function PostComponent({
             styles.postContainer,
             {
               backgroundColor: theme.background,
-              flexDirection: postCompactMode ? "row" : "column",
+              flexDirection: postCompactMode
+                ? showThumbnailsOnRightSide
+                  ? "row-reverse"
+                  : "row"
+                : "column",
+              justifyContent: showThumbnailsOnRightSide
+                ? "space-between"
+                : "flex-start",
               opacity: seen ? 0.75 : 1,
             },
           ]}
@@ -298,7 +306,7 @@ export default function PostComponent({
           }}
         >
           {postCompactMode && (
-            <View style={styles.compactMediaContainer}>
+            <View>
               <CompactPostMedia post={post} />
             </View>
           )}
@@ -329,13 +337,10 @@ export default function PostComponent({
             )}
             <Text
               numberOfLines={postTitleLength}
-              style={[
-                styles.postTitle,
-                {
-                  fontSize: postCompactMode ? 16 : 17,
-                  color: theme.text,
-                },
-              ]}
+              style={{
+                fontSize: postCompactMode ? 16 : 17,
+                color: theme.text,
+              }}
             >
               {post.title.trim()}
             </Text>
@@ -367,6 +372,7 @@ export default function PostComponent({
                 styles.postBody,
                 {
                   marginVertical: postCompactMode ? 3 : 5,
+                  marginHorizontal: -10,
                 },
               ]}
             >
@@ -378,7 +384,7 @@ export default function PostComponent({
                 />
               )}
             </View>
-            <View style={styles.postFooter}>
+            <View>
               <View style={styles.footerLeft}>
                 <View style={styles.subAndAuthorContainer}>
                   {post.isStickied && (
@@ -520,19 +526,17 @@ const styles = StyleSheet.create({
   postContainer: {
     flex: 1,
     paddingVertical: 12,
-  },
-  compactMediaContainer: {
-    marginLeft: 10,
+    paddingHorizontal: 10,
+    gap: 10,
   },
   bodyContainer: {
-    flex: 1,
+    flexShrink: 1,
   },
   subredditContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   subredditAtTopContainer: {
-    paddingHorizontal: 10,
     marginBottom: 5,
   },
   subredditAtTopText: {
@@ -542,7 +546,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   postFlairContainer: {
-    marginLeft: 10,
     paddingHorizontal: 5,
     paddingVertical: 2,
     borderRadius: 5,
@@ -551,9 +554,6 @@ const styles = StyleSheet.create({
   postFlair: {},
   postBody: {
     flex: 1,
-  },
-  postFooter: {
-    marginHorizontal: 10,
   },
   footerLeft: {
     flex: 1,

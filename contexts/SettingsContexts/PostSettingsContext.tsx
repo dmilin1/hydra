@@ -4,6 +4,7 @@ import { deviceSupportsSplitView } from "../../utils/useSplitViewSupport";
 
 const initialValues = {
   postCompactMode: deviceSupportsSplitView,
+  showThumbnailsOnRightSide: false,
   subredditAtTop: false,
   showSubredditIcon: true,
   postTitleLength: 2,
@@ -21,6 +22,7 @@ const initialValues = {
 const initialPostSettingsContext = {
   ...initialValues,
   togglePostCompactMode: (_newValue?: boolean) => {},
+  toggleShowThumbnailsOnRightSide: (_newValue?: boolean) => {},
   toggleSubredditAtTop: (_newValue?: boolean) => {},
   toggleSubredditIcon: (_newValue?: boolean) => {},
   changePostTitleLength: (_newValue: number) => {},
@@ -42,6 +44,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     useMMKVBoolean("postCompactMode");
   const postCompactMode =
     storedPostCompactMode ?? initialValues.postCompactMode;
+
+  const [storedShowThumbnailsOnRightSide, setShowThumbnailsOnRightSide] =
+    useMMKVBoolean("showThumbnailsOnRightSide");
+  const showThumbnailsOnRightSide =
+    storedShowThumbnailsOnRightSide ?? initialValues.showThumbnailsOnRightSide;
 
   const [storedSubredditAtTop, setSubredditAtTop] =
     useMMKVBoolean("subredditAtTop");
@@ -103,6 +110,12 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         postCompactMode: postCompactMode ?? initialValues.postCompactMode,
         togglePostCompactMode: (newValue = !postCompactMode) =>
           setPostCompactMode(newValue),
+
+        showThumbnailsOnRightSide:
+          showThumbnailsOnRightSide ?? initialValues.showThumbnailsOnRightSide,
+        toggleShowThumbnailsOnRightSide: (
+          newValue = !showThumbnailsOnRightSide,
+        ) => setShowThumbnailsOnRightSide(newValue),
 
         subredditAtTop: subredditAtTop ?? initialValues.subredditAtTop,
         toggleSubredditAtTop: (newValue = !subredditAtTop) =>
