@@ -369,13 +369,13 @@ export default function Subreddits() {
         getItemType={(item) => item.type}
         keyExtractor={(item) => {
           if (item.type === "topButton") {
-            return item.title;
+            return `${item.type}-${item.title}`;
           } else if (item.type === "sectionDivider") {
-            return item.title;
+            return `${item.type}-${item.title}`;
           } else if (item.type === "subreddit") {
-            return `${item.category}-${item.subreddit.name}`;
+            return `${item.type}-${item.category}-${item.subreddit.name}`;
           } else if (item.type === "multireddit") {
-            return item.multi.name;
+            return `${item.type}-${item.multi.name}`;
           }
           return "";
         }}
