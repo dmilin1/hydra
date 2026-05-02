@@ -229,7 +229,15 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
           pushURL(new RedditURL(url).toString());
         }
       } catch {
-        openExternalLink(element.attribs.href);
+        /**
+         * We shouldn't need to do this. Reddit's conversion of raw text URLs
+         * to HTML is broken. For more info:
+         *
+         * https://www.reddit.com/r/test/comments/1t1yzu9/underscore_link_test/
+         * https://www.reddit.com/r/HydraClient/comments/1svzldz/comment/ojk7jv0/
+         */
+        const repairedURL = url.replaceAll("%5C", "");
+        openExternalLink(repairedURL);
       }
     };
   } else if (
