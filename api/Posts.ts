@@ -212,6 +212,12 @@ export async function formatPostData(child: any): Promise<Post> {
       !child.data.url.includes(child.data.permalink)
     ) {
       crossCommentLink = url;
+    } else if (
+      url.includes("/r/") &&
+      !url.includes(`/r/${child.data.subreddit}`)
+    ) {
+      // Link posts that point to other posts or subreddits but are not cross posts
+      externalLink = url;
     }
   } else {
     externalLink = child.data.url;
