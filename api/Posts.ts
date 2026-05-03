@@ -39,6 +39,7 @@ export type Post = {
   isStickied: boolean;
   isNSFW: boolean;
   isSpoiler: boolean;
+  interactionDisabledStatus: "locked" | "archived" | null;
   text: string;
   html: string;
   commentCount: number;
@@ -212,7 +213,6 @@ export async function formatPostData(child: any): Promise<Post> {
   }
 
   const videos = await formatVideos(child);
-  console.log(videos);
 
   let openGraphData: OpenGraphData | undefined = undefined;
   let externalLink = undefined;
@@ -291,6 +291,11 @@ export async function formatPostData(child: any): Promise<Post> {
     isStickied: child.data.stickied,
     isNSFW: child.data.over_18,
     isSpoiler: child.data.spoiler,
+    interactionDisabledStatus: child.data.archived
+      ? "archived"
+      : child.data.locked
+        ? "locked"
+        : null,
     text: decode(child.data.selftext),
     html: decode(child.data.selftext_html),
     commentCount: child.data.num_comments,

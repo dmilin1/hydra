@@ -261,6 +261,17 @@ export default function PostDetailsComponent({
                   />
                 </TouchableOpacity>
               )}
+              {postDetail.interactionDisabledStatus && (
+                <>
+                  <Text style={{ color: theme.subtleText }}>{"  •  "}</Text>
+                  <View style={styles.interactionDisabledContainer}>
+                    <Feather name="lock" size={14} color={theme.subtleText} />
+                    <Text style={{ color: theme.subtleText }}>
+                      {postDetail.interactionDisabledStatus}
+                    </Text>
+                  </View>
+                </>
+              )}
             </View>
           </View>
         </View>
@@ -340,14 +351,20 @@ export default function PostDetailsComponent({
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttonsContainer}
-          onPress={() =>
+          onPress={() => {
+            if (postDetail.interactionDisabledStatus) {
+              Alert.alert(
+                `This post has been ${postDetail.interactionDisabledStatus}`,
+              );
+              return;
+            }
             setModal(
               <NewComment
                 parent={postDetail}
                 contentSent={() => setTimeout(() => loadPostDetails(), 5_000)}
               />,
-            )
-          }
+            );
+          }}
         >
           <Octicons name="reply" size={28} color={theme.iconPrimary} />
         </TouchableOpacity>
@@ -461,6 +478,11 @@ const styles = StyleSheet.create({
     padding: 8,
     margin: -8,
     marginLeft: -3,
+  },
+  interactionDisabledContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   boldedSmallText: {
     fontSize: 14,

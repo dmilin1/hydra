@@ -336,6 +336,7 @@ function PostDetails(props: PostDetailsProps) {
               changeComment={(comment: Comment) => changeComment(comment)}
               deleteComment={(comment: Comment) => deleteComment(comment)}
               collapseThread={(comment: Comment) => collapseThread(comment)}
+              interactionDisabledStatus={postDetail.interactionDisabledStatus}
             />
           ) : postDetail !== deferredPostDetail ? (
             <View

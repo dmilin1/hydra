@@ -75,7 +75,6 @@ export default function useMediaSharing() {
       });
       file.delete();
     } catch (_e) {
-      console.log(_e);
       Alert.alert("Error", `Failed to download ${type}`);
       setModal(null);
     }

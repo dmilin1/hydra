@@ -61,6 +61,7 @@ interface CommentProps {
   changeComment: (comment: Comment) => void;
   deleteComment: (comment: Comment) => void;
   collapseThread?: (comment: Comment) => void;
+  interactionDisabledStatus?: PostDetail["interactionDisabledStatus"];
 
   // This comment prop ref thing is horrific. Don't do it. We're using it so
   // the post details page can reach into the comments inside of it to get to
@@ -77,6 +78,7 @@ export function CommentComponent({
   changeComment,
   deleteComment,
   collapseThread,
+  interactionDisabledStatus = null,
   commentPropRef,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
@@ -138,6 +140,10 @@ export function CommentComponent({
   };
 
   const replyToComment = () => {
+    if (interactionDisabledStatus) {
+      Alert.alert(`This post has been ${interactionDisabledStatus}`);
+      return;
+    }
     setModal(
       <NewComment
         parent={comment}
@@ -153,6 +159,10 @@ export function CommentComponent({
 
   const editComment = () => {
     if (comment.type !== "comment") return;
+    if (interactionDisabledStatus) {
+      Alert.alert(`This post has been ${interactionDisabledStatus}`);
+      return;
+    }
     setModal(
       <EditComment
         edit={comment}
@@ -580,6 +590,7 @@ export function CommentComponent({
                     deleteComment={deleteComment}
                     collapseThread={collapseThread}
                     commentPropRef={{ current: null }}
+                    interactionDisabledStatus={interactionDisabledStatus}
                   />
                 ))}
               {comment.loadMore && comment.loadMore.childIds.length > 0 && (
@@ -697,6 +708,7 @@ interface CommentsProps {
   changeComment: (comment: Comment) => void;
   deleteComment: (comment: Comment) => void;
   collapseThread: (comment: Comment) => void;
+  interactionDisabledStatus?: PostDetail["interactionDisabledStatus"];
 }
 
 const Comments = forwardRef(
@@ -708,6 +720,7 @@ const Comments = forwardRef(
       changeComment,
       deleteComment,
       collapseThread,
+      interactionDisabledStatus = null,
     }: CommentsProps,
     ref: ForwardedRef<View>,
   ) => {
@@ -732,6 +745,7 @@ const Comments = forwardRef(
           changeComment={changeComment}
           deleteComment={deleteComment}
           collapseThread={collapseThread}
+          interactionDisabledStatus={interactionDisabledStatus}
         />
       </View>
     );
