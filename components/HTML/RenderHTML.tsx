@@ -1,7 +1,7 @@
 import { AnyNode, Text as TextNode, Element as ElementNode } from "domhandler";
 import { openExternalLink } from "../../utils/openExternalLink";
 import { parseDocument, ElementType } from "htmlparser2";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Dimensions,
   Platform,
@@ -23,6 +23,7 @@ import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaPa
 import ThemeImport from "../UI/Themes/ThemeImport";
 import { extractThemeFromText } from "../../utils/colors";
 import URL from "../../utils/URL";
+import { TextWithRepairedHeight } from "../Other/TextWithRepairedHeight";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -309,37 +310,6 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
         )}
     </Wrapper>
   ) : null;
-}
-
-/**
- * Horrible evil hack to fix what I think is an Apple text rendering bug.
- * https://www.reddit.com/r/HydraApp/comments/1n7scvs/comment/ncbmi3e/
- */
-export function TextWithRepairedHeight(props: TextProps) {
-  const [height, setHeight] = useState<number | undefined>(undefined);
-  const heightFixed = useRef(false);
-
-  return (
-    <Text
-      {...props}
-      style={[
-        props.style,
-        {
-          height: height,
-        },
-      ]}
-      onLayout={({ nativeEvent }) => {
-        if (heightFixed.current) return;
-        const height = nativeEvent.layout.height;
-        const roundedHeight = Math.round(height);
-
-        if (height !== roundedHeight) {
-          setHeight(roundedHeight + 1);
-          heightFixed.current = true;
-        }
-      }}
-    />
-  );
 }
 
 type TextNodeProps = {

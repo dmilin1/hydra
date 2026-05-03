@@ -38,6 +38,8 @@
 - 🐛 Figure out why Google sign in is missing in the login screen
 
 ### Easy
+- 🚀 Enable gallery mode for saved posts
+
 - 🐛 Editing a comment on the user page then clicking the link causes a crash
 
 - 🐛 Favorite subreddits you aren't subscribed to
