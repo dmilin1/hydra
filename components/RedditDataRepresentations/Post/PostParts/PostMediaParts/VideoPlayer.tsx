@@ -4,7 +4,7 @@ import {
   View,
   Text,
   useWindowDimensions,
-  TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 
 import ImageViewer from "./ImageViewer";
@@ -37,7 +37,8 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
   const videoHeight = Math.min(height * 0.6, heightIfFullSize);
 
   return (
-    <TouchableHighlight
+    <TouchableOpacity
+      activeOpacity={1}
       style={{
         height: videoHeight,
       }}
@@ -93,7 +94,7 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
           </View>
         )}
       </View>
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 }
 
