@@ -88,3 +88,23 @@ export async function askQuestion(
   });
   return await response.json();
 }
+
+export async function translate(
+  customerId: string,
+  type: "post" | "comment",
+  sourceLanguage: string,
+  targetLanguage: string,
+  content: { postTitle?: string; postText?: string; comment?: string },
+): Promise<string> {
+  const response = await fetch(`${HYDRA_SERVER_URL}/api/ai/translate`, {
+    method: "POST",
+    body: JSON.stringify({
+      customerId,
+      type,
+      sourceLanguage,
+      targetLanguage,
+      ...content,
+    }),
+  });
+  return await response.text();
+}
