@@ -185,7 +185,6 @@ export default function Slideable<SlideName extends string>({
 
 const styles = StyleSheet.create({
   slideableContainer: {
-    flex: 1,
     flexDirection: "row",
     overflow: "hidden",
   },

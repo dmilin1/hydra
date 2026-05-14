@@ -10,6 +10,7 @@ import { SplashScreen, useNavigation } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainerRef, StackActions } from "@react-navigation/native";
+import * as Haptics from "expo-haptics";
 
 import LoadingSplash from "../../components/UI/LoadingSplash";
 import { AccountContext } from "../../contexts/AccountContext";
@@ -23,6 +24,7 @@ import useHandleIncomingURLs from "../../utils/useHandleIncomingURLs";
 import { AppNavigationProp } from "../../utils/navigationTypes";
 import { expoDb } from "../../db";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import QuickAccountSwap from "../../components/Modals/QuickAccountSwap";
 import QuickSubredditSearch from "../../components/Modals/QuickSubredditSearch";
 import { oneTimeAlert } from "../../utils/oneTimeAlert";
 
@@ -49,12 +51,14 @@ export default function Tabs() {
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
 
   const { theme } = useContext(ThemeContext);
-  const { loginInitialized, currentUser } = useContext(AccountContext);
+  const { loginInitialized, currentUser, accounts } =
+    useContext(AccountContext);
   const { inboxCount } = useContext(InboxContext);
   const { showUsername } = useContext(TabSettingsContext);
   const { tabBarTranslateY } = useContext(TabScrollContext);
 
   const [showSubredditSearch, setShowSubredditSearch] = useState(false);
+  const [showAccountSwap, setShowAccountSwap] = useState(false);
 
   useHandleIncomingURLs();
 
@@ -72,6 +76,10 @@ export default function Tabs() {
       <QuickSubredditSearch
         show={showSubredditSearch}
         onExit={() => setShowSubredditSearch(false)}
+      />
+      <QuickAccountSwap
+        show={showAccountSwap}
+        onExit={() => setShowAccountSwap(false)}
       />
       {loginInitialized ? (
         <Tab.Navigator
@@ -120,6 +128,11 @@ export default function Tabs() {
             tabLongPress: (e) => {
               if (e.target?.startsWith("Search")) {
                 setShowSubredditSearch(true);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              if (e.target?.startsWith("Account") && accounts.length > 0) {
+                setShowAccountSwap(true);
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
             },
           })}
