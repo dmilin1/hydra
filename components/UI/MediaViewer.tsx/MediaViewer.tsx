@@ -1,6 +1,6 @@
 import { FontAwesome6 } from "@expo/vector-icons";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
-import { useEffect, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   Animated,
@@ -88,11 +88,16 @@ export default function MediaViewer({
   const tapToScrollColumnIndex = useRef<number>(0);
   const lastTapToScrollTime = useRef<number>(0);
 
+  const orientation = height > width ? "vertical" : "horizontal";
+  const deferredOrientation = useDeferredValue(orientation);
   // These track the initial position when opening - used for initialScrollIndex
   // They don't change during scrolling, only when open() is called or orientation changes
-  const [initialRowIndex, setInitialRowIndex] = useState(startingRowIndex);
-  const [initialColumnIndex, setInitialColumnIndex] =
-    useState(startingColumnIndex);
+  const initialRowIndex = useRef(startingRowIndex);
+  const initialColumnIndex = useRef(startingColumnIndex);
+  if (orientation !== deferredOrientation) {
+    initialRowIndex.current = currentRowIndex;
+    initialColumnIndex.current = currentColumnIndex;
+  }
 
   const currentRowSize = media[currentRowIndex]?.length ?? 0;
 
@@ -129,24 +134,6 @@ export default function MediaViewer({
       ExpoOrientation.lockAsync(ExpoOrientation.OrientationLock.PORTRAIT_UP);
     };
   }, []);
-
-  const [orientation, setOrientation] = useState<ExpoOrientation.Orientation>(
-    ExpoOrientation.Orientation.PORTRAIT_UP,
-  );
-  useEffect(() => {
-    /**
-     * Resetting the FlashLists using a key when orientation changes feels like a hack,
-     * but something is broken inside FlashList that causes the snapping mechanism to
-     * break when width and height changes. This may not be necessary in the future
-     * if they fix it.
-     */
-    const listener = ExpoOrientation.addOrientationChangeListener((e) => {
-      setOrientation(e.orientationInfo.orientation);
-      setInitialRowIndex(currentRowIndex);
-      setInitialColumnIndex(currentColumnIndex);
-    });
-    return () => listener.remove();
-  }, [currentRowIndex, currentColumnIndex]);
 
   return (
     <Modal
@@ -321,7 +308,9 @@ export default function MediaViewer({
               )}
               // Only apply initial scroll to the row we want to open to
               initialScrollIndex={
-                columnIndex === initialRowIndex ? initialColumnIndex : 0
+                columnIndex === initialRowIndex.current
+                  ? initialColumnIndex.current
+                  : 0
               }
               scrollEnabled={row[0]?.type !== "video"}
               pagingEnabled={true}
@@ -387,7 +376,15 @@ export default function MediaViewer({
               }}
             />
           )}
-          initialScrollIndex={initialRowIndex}
+          /**
+           * We have to do this because FlashList has a bug that causes calculations for
+           * the initial scroll index to be wrong when the index is larger than the initial
+           * batch of media items.
+           */
+          initialScrollIndex={0}
+          initialScrollIndexParams={{
+            viewOffset: height * initialRowIndex.current,
+          }}
           pagingEnabled={true}
           onScroll={(event) => {
             const newIndex = Math.min(
