@@ -47,6 +47,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
         <TouchableOpacity
           style={styles.videoContainer}
           onPress={() => {
+            interactedWithPost();
             displayMedia({
               media: [
                 post.videos.map((video) => ({ type: "video", source: video })),
@@ -72,6 +73,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
         <TouchableOpacity
           style={styles.imgContainer}
           onPress={() => {
+            interactedWithPost();
             displayMedia({
               media: [
                 post.images.map((image) => ({ type: "image", source: image })),

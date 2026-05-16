@@ -12,6 +12,7 @@ import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataMo
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import useMediaSharing from "../../../../../utils/useMediaSharing";
 import { MediaViewerContext } from "../../../../../contexts/MediaViewerContext";
+import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { Post } from "../../../../../api/Posts";
 import { PostDetail } from "../../../../../api/PostDetail";
 
@@ -26,6 +27,7 @@ export default function ImageViewer({
 }) {
   const { currentDataMode } = useContext(DataModeContext);
   const { displayMedia } = useContext(MediaViewerContext);
+  const { interactedWithPost } = useContext(PostInteractionContext);
   const shareMedia = useMediaSharing();
   const { width, height } = useWindowDimensions();
 
@@ -61,6 +63,7 @@ export default function ImageViewer({
             activeOpacity={1}
             onPress={() => {
               setLoadLowData(false);
+              interactedWithPost();
               displayMedia({
                 media: [images.map((img) => ({ type: "image", source: img }))],
                 initialIndex: index,
