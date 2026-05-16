@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import { AppState, LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableFreeze } from "react-native-screens";
+import * as ExpoOrientation from "expo-screen-orientation";
 
 import Tabs from "./tabs";
 import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
@@ -60,6 +61,8 @@ SplashScreen.preventAutoHideAsync();
 
 // Tells non visble tabs and screens to not rerender in the background
 enableFreeze(true);
+
+ExpoOrientation.lockAsync(ExpoOrientation.OrientationLock.PORTRAIT_UP);
 
 function RootLayout() {
   const { success: migrationsComplete, error } = useMigrations(db, migrations);
