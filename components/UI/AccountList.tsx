@@ -45,7 +45,7 @@ export default function AccountList({ onAccountAction }: AccountListProps) {
       </Text>
     </View>
   ) : (
-    <ScrollView contentContainerStyle={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {[...accounts, "Logged Out"].map((username) => (
         <Slideable
           key={username}
