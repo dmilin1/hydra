@@ -6,6 +6,7 @@ import { User, getUser } from "../api/User";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
 import { Alert } from "react-native";
+import { fixIncompatibleAccountSettings } from "../api/AccountSettings";
 
 type AccountContextType = {
   loginInitialized: boolean;
@@ -52,6 +53,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       setCurrentUser(user);
       Sentry.setUser({ username: user.userName });
       await RedditCookies.saveSessionCookies(user.userName);
+      await fixIncompatibleAccountSettings();
       await addUser(user.userName);
       return true;
     } catch (_e) {
