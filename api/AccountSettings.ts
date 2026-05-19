@@ -69,6 +69,12 @@ export type AccountSettings = {
   highlight_new_comments: Checkbox;
 };
 
+const REQUIRED_ACCOUNT_SETTINGS: Partial<AccountSettings> = {
+  media: "on",
+  over_18: "on",
+  search_include_over_18: "on",
+};
+
 function parseAccountSettings(html: string): AccountSettings {
   const dom = parseDocument(html);
   const form = getElementById("pref-form", dom);
@@ -150,7 +156,10 @@ export async function fixIncompatibleAccountSettings() {
   }
   KeyStore.set(LAST_FIXED_ACCOUNT_SETTINGS_KEY, Date.now());
   const settings = await getAccountSettings();
-  if (settings.media !== "on") {
-    await setAccountSettings({ ...settings, media: "on" });
+  const isRequiredSettingsMissing = Object.entries(
+    REQUIRED_ACCOUNT_SETTINGS,
+  ).some(([key, value]) => settings[key as keyof AccountSettings] !== value);
+  if (isRequiredSettingsMissing) {
+    await setAccountSettings({ ...settings, ...REQUIRED_ACCOUNT_SETTINGS });
   }
 }
