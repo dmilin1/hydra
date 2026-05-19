@@ -22,9 +22,9 @@ export function useSettingsPicker<ValueType>({
       const result = await openContextMenu({
         options: items.map((item) => item.label),
       });
-      if (!result) return;
+      if (result === null) return;
       const selectedValue = items.find((item) => item.label === result)?.value;
-      if (selectedValue) {
+      if (selectedValue !== undefined) {
         onValueChange(selectedValue);
       }
     },
