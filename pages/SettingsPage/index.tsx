@@ -24,6 +24,7 @@ import Gestures from "./General/Gestures";
 import Stats from "./Stats";
 import AppIcon from "./General/AppIcon/AppIcon";
 import AppIconDetails from "./General/AppIcon/AppIconDetails";
+import Translations from "./General/Translations";
 
 /**
  * Important to load this lazily since the guide loads the large documentation
@@ -68,6 +69,7 @@ export default function SettingsPage({
         {relativePath === "settings/general/startup" && <Startup />}
         {relativePath === "settings/general/legal" && <Legal />}
         {relativePath === "settings/general/externalLinks" && <ExternalLinks />}
+        {relativePath === "settings/general/translations" && <Translations />}
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/themeMaker" && <ThemeMaker />}
