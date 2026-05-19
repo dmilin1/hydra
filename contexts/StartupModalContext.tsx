@@ -3,7 +3,9 @@ import React, {
   Dispatch,
   PropsWithChildren,
   SetStateAction,
+  useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import UpdateInfo, {
@@ -18,6 +20,7 @@ import PromptForReview, {
 import GetHydraPro, {
   HYDRA_PRO_LAST_OFFERED_KEY,
 } from "../components/Modals/StartupModals/GetHydraPro";
+import { SubscriptionsContext } from "./SubscriptionsContext";
 
 export type ModalId = "updateInfo" | "promptForReview" | "getHydraPro";
 
@@ -30,6 +33,8 @@ export const StartupModalContext = createContext(initialState);
 
 export function StartupModalProvider({ children }: PropsWithChildren) {
   const [startupModal, setStartupModal] = useState(initialState.startupModal);
+  const { purchasesInitialized, isPro } = useContext(SubscriptionsContext);
+  const hasShownStartupModal = useRef(false);
 
   const modals: { id: ModalId; wantsToShow: boolean }[] = [
     {
@@ -46,6 +51,7 @@ export function StartupModalProvider({ children }: PropsWithChildren) {
     {
       id: "getHydraPro",
       wantsToShow:
+        !isPro &&
         (getStat(Stat.APP_LAUNCHES) ?? 0) > 50 &&
         (KeyStore.getNumber(HYDRA_PRO_LAST_OFFERED_KEY) ?? 0) <
           Date.now() - 1000 * 60 * 60 * 24 * 90,
@@ -60,8 +66,10 @@ export function StartupModalProvider({ children }: PropsWithChildren) {
   };
 
   useEffect(() => {
+    if (!purchasesInitialized || hasShownStartupModal.current) return;
+    hasShownStartupModal.current = true;
     showTopPriorityModal();
-  }, []);
+  }, [purchasesInitialized]);
 
   return (
     <StartupModalContext.Provider value={{ startupModal, setStartupModal }}>
