@@ -43,7 +43,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
         },
       ]}
     >
-      {post.videos.length > 0 ? (
+      {post.videos.length > 0 && !post.crossCommentLink ? (
         <TouchableOpacity
           style={styles.videoContainer}
           onPress={() => {
@@ -69,7 +69,9 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
             />
           )}
         </TouchableOpacity>
-      ) : post.images.length > 0 ? (
+      ) : post.images.length > 0 &&
+        !post.crossCommentLink &&
+        !post.externalLink ? (
         <TouchableOpacity
           style={styles.imgContainer}
           onPress={() => {
