@@ -63,16 +63,17 @@ export default function MediaViewer({
 
   const scrolledAwayY = useRef(new Animated.Value(0));
   const scrolledAwayX = useRef(new Animated.Value(0));
+  const flickedAway = useRef(new Animated.Value(0));
   const opacity = Animated.add(
-    scrolledAwayY.current,
-    scrolledAwayX.current,
+    flickedAway.current,
+    Animated.add(scrolledAwayY.current, scrolledAwayX.current),
   ).interpolate({
     inputRange: [-150, -50, 0],
     outputRange: [0, 0.85, 1],
   });
   const scale = Animated.add(
-    scrolledAwayY.current,
-    scrolledAwayX.current,
+    flickedAway.current,
+    Animated.add(scrolledAwayY.current, scrolledAwayX.current),
   ).interpolate({
     inputRange: [-150, -50, 0],
     outputRange: [0.9, 0.95, 1],
@@ -102,6 +103,16 @@ export default function MediaViewer({
   const currentRowSize = media[currentRowIndex]?.length ?? 0;
 
   const currentPost = getCurrentPost?.(currentRowIndex);
+
+  const animateClose = () => {
+    Animated.timing(flickedAway.current, {
+      toValue: -150,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      onClose();
+    });
+  };
 
   const handleTapToScrollRow = (direction: "left" | "right") => {
     const now = Date.now();
@@ -138,7 +149,7 @@ export default function MediaViewer({
   return (
     <Modal
       visible={true}
-      onRequestClose={() => onClose()}
+      onRequestClose={() => animateClose()}
       transparent={true}
       supportedOrientations={["portrait", "landscape"]}
     >
@@ -150,18 +161,6 @@ export default function MediaViewer({
           },
         ]}
       />
-      <TouchableOpacity
-        onPress={() => onClose()}
-        style={[
-          styles.closeButton,
-          {
-            top: safeAreaTop + 10,
-            right: safeAreaRight + 10,
-          },
-        ]}
-      >
-        <FontAwesome6 name="xmark" size={20} color="white" />
-      </TouchableOpacity>
       {currentRowSize > 1 && (
         <Animated.View
           style={[
@@ -262,7 +261,7 @@ export default function MediaViewer({
           {currentPost && (
             <PostOverlay
               post={currentPost}
-              closeViewer={() => onClose()}
+              closeViewer={() => animateClose()}
               columnIndex={currentColumnIndex}
             />
           )}
@@ -364,14 +363,29 @@ export default function MediaViewer({
                 }
               }}
               onScrollEndDrag={(event) => {
+                const rightLimit =
+                  event.nativeEvent.contentSize.width -
+                  event.nativeEvent.layoutMeasurement.width;
+                const pulledPastLeft = event.nativeEvent.contentOffset.x < -40;
+                const pulledPastRight =
+                  event.nativeEvent.contentOffset.x >= rightLimit + 40;
+                const momentumPastLeft =
+                  (event.nativeEvent.velocity?.x ?? 0) < -1 &&
+                  event.nativeEvent.contentOffset.x < 0;
+                const momentumPastRight =
+                  (event.nativeEvent.velocity?.x ?? 0) > 1 &&
+                  event.nativeEvent.contentOffset.x >= rightLimit;
                 if (
-                  event.nativeEvent.contentOffset.x < -40 ||
-                  event.nativeEvent.contentOffset.x >=
-                    event.nativeEvent.contentSize.width -
-                      event.nativeEvent.layoutMeasurement.width +
-                      40
+                  pulledPastLeft ||
+                  pulledPastRight ||
+                  momentumPastLeft ||
+                  momentumPastRight
                 ) {
-                  onClose();
+                  Animated.timing(flickedAway.current, {
+                    toValue: -150,
+                    duration: 200,
+                    useNativeDriver: true,
+                  }).start(() => animateClose());
                 }
               }}
             />
@@ -417,12 +431,25 @@ export default function MediaViewer({
           onScrollEndDrag={(event) => {
             const { contentOffset, contentSize, layoutMeasurement } =
               event.nativeEvent;
+            const bottomLimit = contentSize.height - layoutMeasurement.height;
+            const momentumPastTop =
+              (event.nativeEvent.velocity?.y ?? 0) < -1 && contentOffset.y < 0;
+            const momentumPastBottom =
+              (event.nativeEvent.velocity?.y ?? 0) > 1 &&
+              contentOffset.y > bottomLimit;
             const pulledPastTop = contentOffset.y < -50;
-            const pulledPastBottom =
-              contentOffset.y >
-              50 + (contentSize.height - layoutMeasurement.height);
-            if (pulledPastTop || pulledPastBottom) {
-              onClose();
+            const pulledPastBottom = contentOffset.y > 50 + bottomLimit;
+            if (
+              pulledPastTop ||
+              pulledPastBottom ||
+              momentumPastTop ||
+              momentumPastBottom
+            ) {
+              Animated.timing(flickedAway.current, {
+                toValue: -150,
+                duration: 200,
+                useNativeDriver: true,
+              }).start(() => animateClose());
             }
           }}
           drawDistance={100}
@@ -442,18 +469,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: "black",
   },
-  closeButton: {
-    position: "absolute",
-    right: 10,
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    padding: 10,
-    borderRadius: 100,
-    width: 40,
-    aspectRatio: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1,
-  },
   contentContainer: {
     flex: 1,
   },
@@ -461,7 +476,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     zIndex: 1,
     pointerEvents: "box-none",
   },
