@@ -60,7 +60,11 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
             <FontAwesome name="play-circle" style={styles.icon} />
           </View>
           {post.imageThumbnail ? (
-            <Image source={post.imageThumbnail} style={styles.image} />
+            <Image
+              source={post.imageThumbnail}
+              style={styles.image}
+              recyclingKey={post.imageThumbnail.uri}
+            />
           ) : (
             <FontAwesome5
               name="video"
