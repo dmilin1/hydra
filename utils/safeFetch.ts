@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/react-native";
+
 /**
  * A fetch-like wrapper around XMLHttpRequest that avoids the whatwg-fetch
  * polyfill bug where invalid status codes (like 0) cause uncatchable errors.
@@ -125,6 +127,15 @@ export default function safeFetch(
               try {
                 res(JSON.parse(xhr.responseText) as T);
               } catch (e) {
+                Sentry.addBreadcrumb({
+                  message: "Failed to parse JSON response in safeFetch",
+                  data: {
+                    url,
+                    options,
+                    responseStatus: xhr.status,
+                    responseText: xhr.responseText,
+                  },
+                });
                 rej(e);
               }
             }),
