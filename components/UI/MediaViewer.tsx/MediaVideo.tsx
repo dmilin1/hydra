@@ -141,6 +141,15 @@ function MediaVideo(props: MediaVideoProps) {
     }
   }, [focused]);
 
+  useEffect(() => {
+    return () => {
+      if (animationFrameRequest.current) {
+        cancelAnimationFrame(animationFrameRequest.current);
+        animationFrameRequest.current = null;
+      }
+    };
+  }, []);
+
   return (
     <View
       style={[styles.container, { width, height, marginLeft: safeAreaLeft }]}
