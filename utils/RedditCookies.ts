@@ -1,4 +1,4 @@
-import CookieManager from "@react-native-cookies/cookies";
+import CookieManager from "@preeternal/react-native-cookie-manager";
 import * as SecureStore from "expo-secure-store";
 
 export default class RedditCookies {
