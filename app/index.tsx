@@ -21,7 +21,7 @@ import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { MediaViewerProvider } from "../contexts/MediaViewerContext";
-import { ModalProvider } from "../contexts/ModalContext";
+import { ModalProvider } from "../contexts/ModalProvider";
 import NavigationProvider from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";

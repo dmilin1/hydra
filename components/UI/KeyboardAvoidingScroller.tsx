@@ -1,10 +1,11 @@
 import { createContext, useEffect, useRef, useState } from "react";
 import {
+  Dimensions,
   Keyboard,
+  Platform,
   ScrollView,
   ScrollViewProps,
   TextInput,
-  useWindowDimensions,
 } from "react-native";
 
 type KeyboardAvoidingScrollerProps = ScrollViewProps;
@@ -51,8 +52,6 @@ const SCROLL_OFFSET = 100;
 export default function KeyboardAvoidingScroller(
   props: KeyboardAvoidingScrollerProps,
 ) {
-  const { height } = useWindowDimensions();
-
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentInput, setCurrentInput] = useState<TextInput | null>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -66,7 +65,7 @@ export default function KeyboardAvoidingScroller(
     scrollViewRef.current?.scrollTo({
       y:
         textInputY +
-        (keyboardHeight - height) +
+        (keyboardHeight - Dimensions.get("window").height) +
         scrollPageY +
         textInputHeight +
         SCROLL_OFFSET,
@@ -75,13 +74,14 @@ export default function KeyboardAvoidingScroller(
   };
 
   useEffect(() => {
-    const showListener = Keyboard.addListener("keyboardWillShow", async (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
-      setCurrentInput(null);
-    });
-    const hideListener = Keyboard.addListener("keyboardWillHide", () => {
-      setKeyboardHeight(0);
-    });
+    const showListener = Keyboard.addListener(
+      Platform.OS === "android" ? "keyboardDidShow" : "keyboardWillShow",
+      async (e) => setKeyboardHeight(e.endCoordinates.height),
+    );
+    const hideListener = Keyboard.addListener(
+      Platform.OS === "android" ? "keyboardDidHide" : "keyboardWillHide",
+      () => setKeyboardHeight(0),
+    );
     return () => {
       showListener.remove();
       hideListener.remove();
@@ -104,6 +104,10 @@ export default function KeyboardAvoidingScroller(
         ref={scrollViewRef}
         automaticallyAdjustKeyboardInsets
         {...props}
+        contentContainerStyle={[
+          props.contentContainerStyle,
+          keyboardHeight ? { paddingBottom: keyboardHeight } : undefined,
+        ]}
       />
     </KeyboardAvoidingScrollerContext.Provider>
   );

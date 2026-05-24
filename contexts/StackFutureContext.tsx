@@ -16,7 +16,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { Animated, useWindowDimensions } from "react-native";
+import { Animated, Dimensions } from "react-native";
 
 import { StackParamsList } from "../app/stack";
 
@@ -44,8 +44,7 @@ export function StackFutureProvider({
   const navigation =
     useNavigation<NativeStackNavigationProp<StackParamsList>>();
 
-  const { width } = useWindowDimensions();
-
+  const windowWidth = useRef(Dimensions.get("window").width);
   const gestureStart = useRef<{ x: number; y: number } | null>(null);
 
   const handleBeforeRemove: HandleBeforeRemoveType = () => {
@@ -59,6 +58,14 @@ export function StackFutureProvider({
       navigation.removeListener("beforeRemove", handleBeforeRemove);
     };
   }, [navigation]);
+
+  useEffect(() => {
+    const subscription = Dimensions.addEventListener(
+      "change",
+      (event) => (windowWidth.current = event.window.width),
+    );
+    return () => subscription.remove();
+  }, []);
 
   return (
     <StackFutureContext.Provider
@@ -80,7 +87,7 @@ export function StackFutureProvider({
         }}
         onMoveShouldSetResponder={() =>
           !!gestureStart.current &&
-          width - gestureStart.current.x < 30 &&
+          windowWidth.current - gestureStart.current.x < 30 &&
           futureRoutes.current.length > 0
         }
         onResponderMove={(e) => {

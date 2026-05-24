@@ -7,6 +7,7 @@ import {
   ColorValue,
   Keyboard,
   Modal,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -66,16 +67,12 @@ export default function ColorPicker({
 
   useEffect(() => {
     const keyboardWillShowListener = Keyboard.addListener(
-      "keyboardWillShow",
-      () => {
-        setKeyboardVisible(true);
-      },
+      Platform.OS === "android" ? "keyboardDidShow" : "keyboardWillShow",
+      () => setKeyboardVisible(true),
     );
     const keyboardWillHideListener = Keyboard.addListener(
-      "keyboardWillHide",
-      () => {
-        setKeyboardVisible(false);
-      },
+      Platform.OS === "android" ? "keyboardDidHide" : "keyboardWillHide",
+      () => setKeyboardVisible(false),
     );
     return () => {
       keyboardWillShowListener.remove();

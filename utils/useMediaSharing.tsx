@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  useWindowDimensions,
 } from "react-native";
 import { ImageSource } from "expo-image";
 
@@ -19,8 +18,6 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 export default function useMediaSharing() {
   const { setModal } = useContext(ModalContext);
   const { theme } = useContext(ThemeContext);
-
-  const { width, height } = useWindowDimensions();
 
   const alreadyAsking = useRef(false);
 
@@ -36,7 +33,7 @@ export default function useMediaSharing() {
     try {
       setModal(
         <TouchableOpacity
-          style={[styles.modalContainer, { width, height }]}
+          style={styles.modalContainer}
           onPress={() => setModal(null)}
           activeOpacity={0.9}
         >
@@ -85,6 +82,10 @@ export default function useMediaSharing() {
 const styles = StyleSheet.create({
   modalContainer: {
     position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: "center",
     justifyContent: "center",
   },
