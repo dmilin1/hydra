@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import SelectableText from "../UI/SelectableText";
 
 type SelectTextProps = {
   text: string;
@@ -23,16 +24,14 @@ export default function SelectText({ text }: SelectTextProps) {
           },
         ]}
       >
-        <TextInput
+        <SelectableText
+          text={text}
           style={[
             styles.text,
             {
               color: theme.text,
             },
           ]}
-          value={text}
-          editable={false}
-          multiline
         />
       </View>
       <View

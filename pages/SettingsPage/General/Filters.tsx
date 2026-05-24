@@ -259,6 +259,7 @@ export default function Filters() {
             color: theme.text,
           },
         ]}
+        textAlignVertical="top"
         multiline
         value={filterText}
         onChangeText={(text) => setFilterText(text)}
@@ -290,6 +291,7 @@ export default function Filters() {
             color: theme.text,
           },
         ]}
+        textAlignVertical="top"
         multiline
         value={aiFilterText}
         onChangeText={(text) => setAiFilterText(text)}

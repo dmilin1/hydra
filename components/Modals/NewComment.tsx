@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
-  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,6 +19,7 @@ import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
 import RedditURL from "../../utils/RedditURL";
+import SelectableText from "../UI/SelectableText";
 
 type NewCommentProps = {
   contentSent: () => void;
@@ -189,12 +189,9 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               ]}
             >
               {viewMode === "parent" ? (
-                <TextInput
+                <SelectableText
                   style={[styles.parentText, { color: theme.subtleText }]}
-                  editable={false}
-                  value={parent.text}
-                  multiline
-                  selectTextOnFocus
+                  text={parent.text}
                 />
               ) : (
                 <RenderHtml

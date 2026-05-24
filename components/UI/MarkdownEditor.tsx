@@ -117,6 +117,7 @@ export default function MarkdownEditor({
         autoFocus={true}
         placeholder={placeholder}
         placeholderTextColor={theme.verySubtleText}
+        textAlignVertical="top"
         multiline
         value={text}
         onChangeText={setText}

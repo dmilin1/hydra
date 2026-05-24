@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
-  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,6 +18,7 @@ import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
 import RedditURL from "../../utils/RedditURL";
+import SelectableText from "../UI/SelectableText";
 
 type EditPostProps = {
   contentSent: () => void;
@@ -174,12 +174,9 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
               ]}
             >
               {viewMode === "old" ? (
-                <TextInput
+                <SelectableText
                   style={[styles.parentText, { color: theme.subtleText }]}
-                  editable={false}
-                  value={edit.text}
-                  multiline
-                  selectTextOnFocus
+                  text={edit.text}
                 />
               ) : (
                 <RenderHtml
