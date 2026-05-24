@@ -53,10 +53,10 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
       }}
     >
       <View style={{ flex: 1 }}>
+        {/* Have to put an invisible layer on top of the ImageViewer to keep it from stealing clicks */}
+        <View style={styles.invisibleLayer} />
         {dontRender ? (
-          /* Have to put an invisible layer on top of the ImageViewer to keep it from stealing clicks */
           <View style={{ flex: 1 }}>
-            <View style={styles.invisibleLayer} />
             {post.imageThumbnail && (
               <ImageViewer
                 images={[[post.imageThumbnail]]}

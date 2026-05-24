@@ -9,7 +9,6 @@ import {
   Alert,
   ActivityIndicator,
   TextInput,
-  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -29,8 +28,6 @@ type EditPostProps = {
 export default function EditPost({ contentSent, edit }: EditPostProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
-
-  const { width, height } = useWindowDimensions();
 
   const [text, setText] = useState(edit.text);
   const [viewMode, setViewMode] = useState<"preview" | "old">("preview");
@@ -58,8 +55,6 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
         styles.loginSubContainer,
         {
           backgroundColor: theme.background,
-          width,
-          height,
         },
       ]}
     >
@@ -203,6 +198,9 @@ const styles = StyleSheet.create({
   loginSubContainer: {
     position: "absolute",
     top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     zIndex: 1,
     paddingVertical: 10,
   },

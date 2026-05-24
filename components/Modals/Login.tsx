@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -77,8 +76,6 @@ export default function Login() {
   const { setModal } = useContext(ModalContext);
   const [canShow, setCanShow] = useState(false);
 
-  const { width, height } = useWindowDimensions();
-
   const loginFinished = useRef(false);
   const resolver = useRef<((value: boolean) => void) | null>(null);
 
@@ -131,7 +128,7 @@ export default function Login() {
   }, [canShow]);
 
   return (
-    <View style={[styles.loginContainer, { width, height }]}>
+    <View style={styles.loginContainer}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.navbar}>
           <View style={styles.navbarTitleContainer}>
@@ -180,6 +177,9 @@ const styles = StyleSheet.create({
   loginContainer: {
     position: "absolute",
     top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     zIndex: 10,
     backgroundColor: "black",
   },

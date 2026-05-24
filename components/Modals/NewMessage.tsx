@@ -9,7 +9,6 @@ import {
   Alert,
   ActivityIndicator,
   TextInput,
-  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -36,7 +35,6 @@ export default function NewMessage({
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
 
-  const { width, height } = useWindowDimensions();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subject, setSubject, clearSubjectDraft] = useDraftState(
     DRAFT_PREFIX + `Subject-${recipient.userName}`,
@@ -70,8 +68,6 @@ export default function NewMessage({
         styles.newCommentContainer,
         {
           backgroundColor: theme.background,
-          width,
-          height,
         },
       ]}
     >
@@ -208,6 +204,9 @@ const styles = StyleSheet.create({
   newCommentContainer: {
     position: "absolute",
     top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     zIndex: 1,
     paddingVertical: 10,
   },

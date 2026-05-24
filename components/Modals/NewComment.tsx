@@ -9,7 +9,6 @@ import {
   Alert,
   ActivityIndicator,
   TextInput,
-  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -32,8 +31,6 @@ const DRAFT_PREFIX = "newCommentDraft-";
 export default function NewComment({ contentSent, parent }: NewCommentProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
-
-  const { width, height } = useWindowDimensions();
 
   const parentViewAvailable = !!parent.html;
 
@@ -68,8 +65,6 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
         styles.newCommentContainer,
         {
           backgroundColor: theme.background,
-          width,
-          height,
         },
       ]}
     >
@@ -218,6 +213,9 @@ const styles = StyleSheet.create({
   newCommentContainer: {
     position: "absolute",
     top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     zIndex: 1,
     paddingVertical: 10,
   },

@@ -44,7 +44,9 @@ export function ModalProvider({ children }: React.PropsWithChildren) {
 
   return (
     <ModalContext.Provider value={value}>
+      {children}
       <Animated.View
+        pointerEvents={modal ? "auto" : "none"}
         style={[
           styles.modalContainer,
           {
@@ -58,14 +60,16 @@ export function ModalProvider({ children }: React.PropsWithChildren) {
       >
         {modal}
       </Animated.View>
-      {children}
     </ModalContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
   modalContainer: {
-    position: "relative",
-    zIndex: 1000,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

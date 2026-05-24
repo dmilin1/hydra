@@ -6,7 +6,6 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  useWindowDimensions,
 } from "react-native";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -141,256 +140,243 @@ export const updateInfo = {
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
   const { theme } = useContext(ThemeContext);
 
-  const { width, height } = useWindowDimensions();
-
   const exitUpdateInfo = () => {
     KeyStore.set(LAST_SEEN_UPDATE_KEY, updateInfo.updateKey);
     onExit();
   };
 
   return (
-    <>
+    <View style={styles.updateInfoContainer}>
       <View
         style={[
-          styles.updateInfoContainer,
+          styles.updateInfoSubContainer,
           {
-            marginTop: height * 0.175,
-            maxHeight: height * 0.65,
-            maxWidth: width - 40,
+            backgroundColor: theme.tint,
+            borderColor: theme.divider,
           },
         ]}
       >
-        <View
+        <TouchableOpacity
           style={[
-            styles.updateInfoSubContainer,
+            styles.exitButton,
             {
-              backgroundColor: theme.tint,
-              borderColor: theme.divider,
+              backgroundColor: theme.divider,
+            },
+          ]}
+          onPress={() => exitUpdateInfo()}
+        >
+          <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
+        </TouchableOpacity>
+        <View style={styles.versionBadge}>
+          <TextWithRepairedHeight
+            style={[
+              styles.versionBadgeText,
+              { color: theme.iconPrimary, opacity: 1 },
+            ]}
+          >
+            {updateInfo.updateKey}
+          </TextWithRepairedHeight>
+          <View
+            style={[
+              styles.versionBadgeBackground,
+              { backgroundColor: theme.iconPrimary },
+            ]}
+          />
+        </View>
+        <TextWithRepairedHeight
+          style={[
+            styles.title,
+            {
+              color: theme.text,
             },
           ]}
         >
-          <TouchableOpacity
-            style={[
-              styles.exitButton,
-              {
-                backgroundColor: theme.divider,
-              },
-            ]}
-            onPress={() => exitUpdateInfo()}
-          >
-            <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
-          </TouchableOpacity>
-          <View style={styles.versionBadge}>
-            <TextWithRepairedHeight
-              style={[
-                styles.versionBadgeText,
-                { color: theme.iconPrimary, opacity: 1 },
-              ]}
-            >
-              {updateInfo.updateKey}
-            </TextWithRepairedHeight>
-            <View
-              style={[
-                styles.versionBadgeBackground,
-                { backgroundColor: theme.iconPrimary },
-              ]}
-            />
-          </View>
+          {updateInfo.title}
+        </TextWithRepairedHeight>
+        <TextWithRepairedHeight
+          style={[
+            styles.subtitle,
+            {
+              color: theme.subtleText,
+            },
+          ]}
+        >
+          {updateInfo.subtitle}
+        </TextWithRepairedHeight>
+        <ScrollView>
+          <View style={{ marginTop: -20 }} />
+          {updateInfo.proFeatures.length > 0 && (
+            <>
+              <TextWithRepairedHeight
+                style={[
+                  styles.heading,
+                  {
+                    color: theme.text,
+                  },
+                ]}
+              >
+                👑 Pro Features
+              </TextWithRepairedHeight>
+              <View style={styles.listContainer}>
+                {updateInfo.proFeatures.map((feature) => (
+                  <View
+                    key={feature.title}
+                    style={[
+                      styles.featureContainer,
+                      {
+                        backgroundColor: theme.divider,
+                      },
+                    ]}
+                  >
+                    <TextWithRepairedHeight
+                      style={[
+                        styles.featureTitle,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
+                    >
+                      {feature.title}
+                    </TextWithRepairedHeight>
+                    <TextWithRepairedHeight
+                      style={[
+                        styles.featureDescription,
+                        {
+                          color: theme.subtleText,
+                        },
+                      ]}
+                    >
+                      {feature.description}
+                    </TextWithRepairedHeight>
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
           <TextWithRepairedHeight
             style={[
-              styles.title,
+              styles.heading,
               {
                 color: theme.text,
               },
             ]}
           >
-            {updateInfo.title}
+            🚀 Features
           </TextWithRepairedHeight>
-          <TextWithRepairedHeight
-            style={[
-              styles.subtitle,
-              {
-                color: theme.subtleText,
-              },
-            ]}
-          >
-            {updateInfo.subtitle}
-          </TextWithRepairedHeight>
-          <ScrollView>
-            <View style={{ marginTop: -20 }} />
-            {updateInfo.proFeatures.length > 0 && (
-              <>
-                <TextWithRepairedHeight
-                  style={[
-                    styles.heading,
-                    {
-                      color: theme.text,
-                    },
-                  ]}
-                >
-                  👑 Pro Features
-                </TextWithRepairedHeight>
-                <View style={styles.listContainer}>
-                  {updateInfo.proFeatures.map((feature) => (
-                    <View
-                      key={feature.title}
-                      style={[
-                        styles.featureContainer,
-                        {
-                          backgroundColor: theme.divider,
-                        },
-                      ]}
-                    >
-                      <TextWithRepairedHeight
-                        style={[
-                          styles.featureTitle,
-                          {
-                            color: theme.text,
-                          },
-                        ]}
-                      >
-                        {feature.title}
-                      </TextWithRepairedHeight>
-                      <TextWithRepairedHeight
-                        style={[
-                          styles.featureDescription,
-                          {
-                            color: theme.subtleText,
-                          },
-                        ]}
-                      >
-                        {feature.description}
-                      </TextWithRepairedHeight>
-                    </View>
-                  ))}
-                </View>
-              </>
-            )}
-            <TextWithRepairedHeight
-              style={[
-                styles.heading,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              🚀 Features
-            </TextWithRepairedHeight>
-            <View style={styles.listContainer}>
-              {updateInfo.features.map((feature) => (
-                <View
-                  key={feature.title}
-                  style={[
-                    styles.featureContainer,
-                    {
-                      backgroundColor: theme.background,
-                      borderColor: theme.divider,
-                    },
-                  ]}
-                >
-                  <TextWithRepairedHeight
-                    style={[
-                      styles.featureTitle,
-                      {
-                        color: theme.text,
-                      },
-                    ]}
-                  >
-                    {feature.title}
-                  </TextWithRepairedHeight>
-                  <TextWithRepairedHeight
-                    style={[
-                      styles.featureDescription,
-                      {
-                        color: theme.subtleText,
-                      },
-                    ]}
-                  >
-                    {feature.description}
-                  </TextWithRepairedHeight>
-                </View>
-              ))}
-            </View>
-            <TextWithRepairedHeight
-              style={[
-                styles.heading,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              🐛 Bugfixes
-            </TextWithRepairedHeight>
-            <View style={styles.listContainer}>
+          <View style={styles.listContainer}>
+            {updateInfo.features.map((feature) => (
               <View
+                key={feature.title}
                 style={[
                   styles.featureContainer,
                   {
                     backgroundColor: theme.background,
                     borderColor: theme.divider,
-                    gap: 12,
                   },
                 ]}
               >
-                {updateInfo.bugfixes.map((bugfix) => (
-                  <TextWithRepairedHeight
-                    key={bugfix.description}
-                    style={[
-                      styles.bugfixDescription,
-                      {
-                        color: theme.text,
-                      },
-                    ]}
-                  >
-                    - {bugfix.description}
-                  </TextWithRepairedHeight>
-                ))}
+                <TextWithRepairedHeight
+                  style={[
+                    styles.featureTitle,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  {feature.title}
+                </TextWithRepairedHeight>
+                <TextWithRepairedHeight
+                  style={[
+                    styles.featureDescription,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
+                >
+                  {feature.description}
+                </TextWithRepairedHeight>
               </View>
+            ))}
+          </View>
+          <TextWithRepairedHeight
+            style={[
+              styles.heading,
+              {
+                color: theme.text,
+              },
+            ]}
+          >
+            🐛 Bugfixes
+          </TextWithRepairedHeight>
+          <View style={styles.listContainer}>
+            <View
+              style={[
+                styles.featureContainer,
+                {
+                  backgroundColor: theme.background,
+                  borderColor: theme.divider,
+                  gap: 12,
+                },
+              ]}
+            >
+              {updateInfo.bugfixes.map((bugfix) => (
+                <TextWithRepairedHeight
+                  key={bugfix.description}
+                  style={[
+                    styles.bugfixDescription,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  - {bugfix.description}
+                </TextWithRepairedHeight>
+              ))}
             </View>
-            <View style={styles.helpContainer}>
-              <View style={styles.helpIcon}>
-                <Image
-                  source={require("../../../assets/images/subredditIcon.png")}
-                  style={{ width: 30, height: 30 }}
-                />
-              </View>
-              <TextWithRepairedHeight
-                style={[
-                  styles.helpItem,
-                  {
-                    color: theme.text,
-                  },
-                ]}
-              >
-                If you have any feature requests, you can submit them on
-                /r/HydraFeatureRequest which can be found in the settings tab
-              </TextWithRepairedHeight>
+          </View>
+          <View style={styles.helpContainer}>
+            <View style={styles.helpIcon}>
+              <Image
+                source={require("../../../assets/images/subredditIcon.png")}
+                style={{ width: 30, height: 30 }}
+              />
             </View>
-            <View style={styles.helpContainer}>
-              <View style={styles.helpIcon}>
-                <FontAwesome name="github" size={22} color={theme.text} />
-              </View>
-              <TextWithRepairedHeight
-                style={[
-                  styles.helpItem,
-                  {
-                    color: theme.text,
-                  },
-                ]}
-              >
-                If you have any familiarity with React Native and want to help,
-                you can make a pull request at https://github.com/dmilin1/hydra
-              </TextWithRepairedHeight>
+            <TextWithRepairedHeight
+              style={[
+                styles.helpItem,
+                {
+                  color: theme.text,
+                },
+              ]}
+            >
+              If you have any feature requests, you can submit them on
+              /r/HydraFeatureRequest which can be found in the settings tab
+            </TextWithRepairedHeight>
+          </View>
+          <View style={styles.helpContainer}>
+            <View style={styles.helpIcon}>
+              <FontAwesome name="github" size={22} color={theme.text} />
             </View>
-            <GetHydraProButton onPress={() => exitUpdateInfo()} />
-          </ScrollView>
-        </View>
+            <TextWithRepairedHeight
+              style={[
+                styles.helpItem,
+                {
+                  color: theme.text,
+                },
+              ]}
+            >
+              If you have any familiarity with React Native and want to help,
+              you can make a pull request at https://github.com/dmilin1/hydra
+            </TextWithRepairedHeight>
+          </View>
+          <GetHydraProButton onPress={() => exitUpdateInfo()} />
+        </ScrollView>
       </View>
       <TouchableOpacity
-        style={[styles.background, { width, height }]}
+        style={styles.background}
         onPress={() => exitUpdateInfo()}
       />
-    </>
+    </View>
   );
 }
 
@@ -398,22 +384,32 @@ const styles = StyleSheet.create({
   updateInfoContainer: {
     position: "absolute",
     top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
+  updateInfoSubContainer: {
+    position: "absolute",
+    top: "12.5%",
+    maxHeight: "75%",
+    marginHorizontal: 20,
     zIndex: 2,
     flex: 1,
     justifyContent: "center",
     alignSelf: "center",
+    borderRadius: 16,
+    borderWidth: 1,
   },
   background: {
     position: "absolute",
     top: 0,
     left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: "black",
     opacity: 0.75,
     zIndex: 1,
-  },
-  updateInfoSubContainer: {
-    borderRadius: 16,
-    borderWidth: 1,
   },
   exitButton: {
     width: 30,

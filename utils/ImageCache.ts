@@ -2,15 +2,17 @@ import { useIsFocused } from "@react-navigation/native";
 import { Directory, File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
-import { Alert, AppState } from "react-native";
+import { Alert, AppState, Platform } from "react-native";
 
 const MAX_DISK_CACHE_SIZE = 1024 * 1024 * 512; // 512MB
 const MAX_MEMORY_CACHE_SIZE = 1024 * 1024 * 256; // 128MB
 
-Image.configureCache({
-  maxDiskSize: MAX_DISK_CACHE_SIZE,
-  maxMemoryCost: MAX_MEMORY_CACHE_SIZE,
-});
+if (Platform.OS === "ios") {
+  Image.configureCache({
+    maxDiskSize: MAX_DISK_CACHE_SIZE,
+    maxMemoryCost: MAX_MEMORY_CACHE_SIZE,
+  });
+}
 
 AppState.addEventListener("memoryWarning", () => {
   Image.clearMemoryCache();
