@@ -103,26 +103,36 @@ function formatImages(child: any): ImageSource[][] {
         {},
       ) ?? {};
 
-    return Object.values(child.data.media_metadata ?? {})
-      .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
-      .map((data: any) => {
-        const sizes = data.p.map(
-          (item: any) =>
-            ({
-              uri: decode(item.u),
-              width: item.x,
-              height: item.y,
-            }) as ImageSource,
-        );
-        if (data.s) {
-          sizes.push({
-            uri: decode(data.s.u),
-            width: data.s.x,
-            height: data.s.y,
-          } as ImageSource);
-        }
-        return sizes;
-      });
+    return (
+      Object.values(child.data.media_metadata ?? {})
+        /**
+         * Posts can have unprocessed media that we can't display. I don't
+         * know why they remain unprocessed. Maybe a Reddit server media
+         * processing bug?
+         *
+         * https://www.reddit.com/r/pocketcasts/comments/1tgukak/display_first_two_lines_of_episode_titles_in_up/
+         */
+        .filter((data: any) => !!data.p)
+        .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
+        .map((data: any) => {
+          const sizes = data.p.map(
+            (item: any) =>
+              ({
+                uri: decode(item.u),
+                width: item.x,
+                height: item.y,
+              }) as ImageSource,
+          );
+          if (data.s) {
+            sizes.push({
+              uri: decode(data.s.u),
+              width: data.s.x,
+              height: data.s.y,
+            } as ImageSource);
+          }
+          return sizes;
+        })
+    );
   }
   return [];
 }
@@ -159,17 +169,27 @@ async function formatVideos(
         {},
       ) ?? {};
 
-    return Object.values(child.data.media_metadata ?? {})
-      .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
-      .map((data: any) => {
-        if (!data.s.mp4) return null;
-        const url = decode(data.s.mp4);
-        return {
-          source: url,
-          videoDownloadURL: url,
-        };
-      })
-      .filter((video) => video !== null);
+    return (
+      Object.values(child.data.media_metadata ?? {})
+        /**
+         * Posts can have unprocessed media that we can't display. I don't
+         * know why they remain unprocessed. Maybe a Reddit server media
+         * processing bug?
+         *
+         * https://www.reddit.com/r/pocketcasts/comments/1tgukak/display_first_two_lines_of_episode_titles_in_up/
+         */
+        .filter((data: any) => !!data.p)
+        .sort((a: any, b: any) => galleryIndexes[a.id] - galleryIndexes[b.id])
+        .map((data: any) => {
+          if (!data.s.mp4) return null;
+          const url = decode(data.s.mp4);
+          return {
+            source: url,
+            videoDownloadURL: url,
+          };
+        })
+        .filter((video) => video !== null)
+    );
   }
   const { url, isValid } = RedditURL.getURLIfValid(child.data.url);
   if (!isValid) {
