@@ -1,7 +1,8 @@
 import { useRecyclingState } from "@shopify/flash-list";
 import { Image, ImageSource } from "expo-image";
 import { useRef, useState, useEffect } from "react";
-import { useWindowDimensions, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 export type ImageItem = {
   type: "image";
@@ -14,7 +15,7 @@ export type MediaImageProps = {
 };
 
 export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useSafeAreaFrame();
 
   const scrollViewRef = useRef<ScrollView>(null);
   const previousTouchStart = useRef<{

@@ -1,11 +1,5 @@
 import React, { useContext } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  useWindowDimensions,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import ImageViewer from "./ImageViewer";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
@@ -17,6 +11,7 @@ import { MediaViewerContext } from "../../../../../contexts/MediaViewerContext";
 import Video from "../../../../UI/Gallery/Video";
 import { PostDetail } from "../../../../../api/PostDetail";
 import { FontAwesome } from "@expo/vector-icons";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 type VideoPlayerProps = {
   post: Post | PostDetail;
@@ -28,7 +23,7 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
   const { autoPlayVideos } = useContext(PostSettingsContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
   const { displayMedia } = useContext(MediaViewerContext);
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useSafeAreaFrame();
 
   const dontRender = currentDataMode === "lowData" || !autoPlayVideos;
 

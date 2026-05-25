@@ -1,12 +1,6 @@
 import { Image, ImageSource } from "expo-image";
 import React, { useState, useContext } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableHighlight,
-  useWindowDimensions,
-} from "react-native";
+import { Text, StyleSheet, View, TouchableHighlight } from "react-native";
 
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
@@ -15,6 +9,7 @@ import { MediaViewerContext } from "../../../../../contexts/MediaViewerContext";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { Post } from "../../../../../api/Posts";
 import { PostDetail } from "../../../../../api/PostDetail";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 export default function ImageViewer({
   images,
@@ -29,7 +24,7 @@ export default function ImageViewer({
   const { displayMedia } = useContext(MediaViewerContext);
   const { interactedWithPost } = useContext(PostInteractionContext);
   const shareMedia = useMediaSharing();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useSafeAreaFrame();
 
   const [loadLowData, setLoadLowData] = useState(currentDataMode === "lowData");
 

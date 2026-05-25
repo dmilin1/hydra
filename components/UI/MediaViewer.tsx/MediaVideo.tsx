@@ -4,14 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import {
   Animated,
   TouchableOpacity,
-  useWindowDimensions,
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  useSafeAreaFrame,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
 import VideoCache from "../../../utils/VideoCache";
 import { Post } from "../../../api/Posts";
@@ -38,12 +40,8 @@ const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
 
 function MediaVideo(props: MediaVideoProps) {
   const { source, focused, overlayOpacity } = props;
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-  const {
-    top: safeAreaTop,
-    left: safeAreaLeft,
-    right: safeAreaRight,
-  } = useSafeAreaInsets();
+  const { width, height } = useSafeAreaFrame();
+  const { top: safeAreaTop, left: safeAreaLeft } = useSafeAreaInsets();
 
   const player = useVideoPlayer(
     VideoCache.makeCachedVideoSource(source.source),
@@ -61,9 +59,6 @@ function MediaVideo(props: MediaVideoProps) {
     initiallyPlaying: player.playing,
     isSkimming: false,
   });
-
-  const width = windowWidth - safeAreaLeft - safeAreaRight;
-  const height = windowHeight;
 
   const [isPlaying, setIsPlaying] = useState(player.playing);
   const [status, setStatus] = useState(player.status);
@@ -152,7 +147,7 @@ function MediaVideo(props: MediaVideoProps) {
 
   return (
     <View
-      style={[styles.container, { width, height, marginLeft: safeAreaLeft }]}
+      style={[styles.container, { width, height }]}
       onTouchStart={(e) => {
         touchStart.current = {
           x: e.nativeEvent.pageX,
@@ -265,6 +260,7 @@ function MediaVideo(props: MediaVideoProps) {
           styles.playbackRateContainer,
           {
             top: safeAreaTop + 10,
+            left: safeAreaLeft + 10,
             opacity: overlayOpacity,
           },
         ]}

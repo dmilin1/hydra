@@ -8,9 +8,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-  useWindowDimensions,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  useSafeAreaInsets,
+  useSafeAreaFrame,
+} from "react-native-safe-area-context";
 import MediaVideo, { VideoItem } from "./MediaVideo";
 import { ImageItem, MediaImage } from "./MediaImage";
 import * as ExpoOrientation from "expo-screen-orientation";
@@ -41,7 +43,7 @@ export default function MediaViewer({
   getCurrentPost,
   onClose,
 }: MediaViewerProps) {
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useSafeAreaFrame();
   const {
     top: safeAreaTop,
     bottom: safeAreaBottom,
