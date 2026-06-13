@@ -54,7 +54,7 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
           <View style={{ flex: 1 }}>
             {post.imageThumbnail && (
               <ImageViewer
-                images={[[post.imageThumbnail]]}
+                images={post.images}
                 aspectRatio={post.mediaAspectRatio}
               />
             )}
