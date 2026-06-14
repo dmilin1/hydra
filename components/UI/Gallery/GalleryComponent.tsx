@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Text,
+  Platform,
 } from "react-native";
 import { Post } from "../../../api/Posts";
 import { Image, ImageSource } from "expo-image";
@@ -163,11 +164,11 @@ export default function GalleryComponent({
                 }
                 /**
                  * Downscaling images seems to cause a glitchy scrolling because
-                 * of heavy CPU usage. No downscaling increase memory usage. If
-                 * users start getting crashes, we may have to find a smarter way
+                 * of heavy CPU usage on iOS. No downscaling increase memory usage.
+                 * If users start getting crashes, we may have to find a smarter way
                  * to load lower res images.
                  */
-                allowDownscaling={false}
+                allowDownscaling={Platform.OS === "ios" ? false : true}
               />
             ) : item.type === "video" ? (
               <Video uri={item.source.source} />

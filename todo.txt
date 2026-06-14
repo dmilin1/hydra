@@ -35,6 +35,8 @@
 
 - 🚀 Add chat back
 
+- 🚀 Add favorited subreddit reordering
+
 - 🐛 Figure out why Google sign in is missing in the login screen
 
 ### Easy

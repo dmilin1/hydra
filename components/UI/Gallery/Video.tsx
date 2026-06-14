@@ -30,6 +30,9 @@ function Video({ uri }: VideoProps) {
       player.muted = true;
       player.loop = true;
       player.timeUpdateEventInterval = 1 / 15;
+      player.bufferOptions = {
+        maxBufferBytes: 1024 * 1024 * 5, // 5MB - Android only setting (prevents crashes)
+      };
       player.play();
     },
   );
@@ -60,7 +63,7 @@ function Video({ uri }: VideoProps) {
   }, [player, subscribeToVisibility]);
 
   return (
-    <View style={styles.videoContainer} pointerEvents="box-none">
+    <View style={styles.videoContainer} pointerEvents="none">
       {status?.error ? (
         <View style={styles.notReadyContainer}>
           <Text style={styles.errorText}>{status.error.message}</Text>
