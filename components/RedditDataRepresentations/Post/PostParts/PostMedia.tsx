@@ -1,7 +1,13 @@
 import { AntDesign } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React, { useContext, useRef, useState } from "react";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 
 import CrossPost from "./PostMediaParts/CrossPost";
 import ImageViewer from "./PostMediaParts/ImageViewer";
@@ -58,55 +64,64 @@ export default function PostMedia({
     <CrossPost post={post.crossPost} />
   ) : (
     <>
-      {post.videos.length > 0 && !post.crossCommentLink ? (
-        <View style={styles.videoContainer}>
-          <VideoPlayer post={post} />
-        </View>
-      ) : post.images.length > 0 &&
-        !post.crossCommentLink &&
-        !post.externalLink ? (
-        <View style={styles.imgContainer}>
-          <ImageViewer
-            images={post.images}
-            aspectRatio={post.mediaAspectRatio}
-            post={post}
-          />
-        </View>
-      ) : null}
-      {(post.externalLink || post.crossCommentLink) && <Link post={post} />}
-      {renderHTML
-        ? post.html && (
-            <View style={styles.bodyHTMLContainer}>
-              <RenderHtml html={post.html} />
-            </View>
-          )
-        : postText &&
-          maxLines !== 0 && (
-            <View style={styles.bodyTextContainer}>
-              <Text
-                numberOfLines={maxLines}
-                style={[
-                  styles.bodyText,
-                  {
-                    color: theme.subtleText,
-                  },
-                ]}
-              >
-                {postText.trim()}
-              </Text>
-            </View>
-          )}
-      {post.poll && (
-        <View style={styles.pollContainer}>
-          <PollViewer poll={post.poll} />
-        </View>
-      )}
-      {customThemes.map((customTheme, i) => (
-        <ThemeImport key={customTheme.name + i} customTheme={customTheme} />
-      ))}
+      {/* On Android, the blur cover becomes see-thru when the post has been read. Making the contents invisible fixes this problem. */}
+      <View style={{ opacity: Platform.OS === "android" && blur ? 0 : 1 }}>
+        {post.videos.length > 0 && !post.crossCommentLink ? (
+          <View style={styles.videoContainer}>
+            <VideoPlayer post={post} />
+          </View>
+        ) : post.images.length > 0 &&
+          !post.crossCommentLink &&
+          !post.externalLink ? (
+          <View style={styles.imgContainer}>
+            <ImageViewer
+              images={post.images}
+              aspectRatio={post.mediaAspectRatio}
+              post={post}
+            />
+          </View>
+        ) : null}
+        {(post.externalLink || post.crossCommentLink) && <Link post={post} />}
+        {renderHTML
+          ? post.html && (
+              <View style={styles.bodyHTMLContainer}>
+                <RenderHtml html={post.html} />
+              </View>
+            )
+          : postText &&
+            maxLines !== 0 && (
+              <View style={styles.bodyTextContainer}>
+                <Text
+                  numberOfLines={maxLines}
+                  style={[
+                    styles.bodyText,
+                    {
+                      color: theme.subtleText,
+                    },
+                  ]}
+                >
+                  {postText.trim()}
+                </Text>
+              </View>
+            )}
+        {post.poll && (
+          <View style={styles.pollContainer}>
+            <PollViewer poll={post.poll} />
+          </View>
+        )}
+        {customThemes.map((customTheme, i) => (
+          <ThemeImport key={customTheme.name + i} customTheme={customTheme} />
+        ))}
+      </View>
       {isBlurable && blur && (
         <TouchableOpacity
-          style={styles.blurContainer}
+          style={[
+            styles.blurContainer,
+            {
+              backgroundColor:
+                Platform.OS === "android" ? theme.background : undefined,
+            },
+          ]}
           onPress={() => setBlur(false)}
           activeOpacity={1}
         >
