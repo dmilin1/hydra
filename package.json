@@ -46,6 +46,7 @@
     "expo-notifications": "~0.32.12",
     "expo-router": "~6.0.14",
     "expo-secure-store": "~15.0.7",
+    "expo-sharing": "~14.0.7",
     "expo-splash-screen": "~31.0.10",
     "expo-sqlite": "~16.0.9",
     "expo-status-bar": "~3.0.8",
