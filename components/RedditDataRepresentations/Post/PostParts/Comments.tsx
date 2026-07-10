@@ -16,15 +16,7 @@ import React, {
   useRef,
   ComponentRef,
 } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableHighlight,
-  Alert,
-  Share,
-} from "react-native";
+import { StyleSheet, View, Text, Alert, Share } from "react-native";
 
 import {
   Comment,
@@ -51,6 +43,7 @@ import SelectText from "../../../Modals/SelectText";
 import Slideable from "../../../UI/Slideable";
 import { GesturesContext } from "../../../../contexts/SettingsContexts/GesturesContext";
 import Time from "../../../../utils/Time";
+import { Touchable } from "react-native-gesture-handler";
 
 interface CommentProps {
   loadMoreComments?: LoadMoreCommentsFunc;
@@ -66,7 +59,7 @@ interface CommentProps {
   // This comment prop ref thing is horrific. Don't do it. We're using it so
   // the post details page can reach into the comments inside of it to get to
   // the element it needs to scroll to.
-  commentPropRef?: { current: ComponentRef<typeof TouchableHighlight> | null };
+  commentPropRef?: { current: ComponentRef<typeof Touchable> | null };
 }
 
 export function CommentComponent({
@@ -100,7 +93,7 @@ export function CommentComponent({
     !displayInList &&
     !doesCommentPassTextFilter(comment);
 
-  const commentRef = useRef<ComponentRef<typeof TouchableHighlight>>(null);
+  const commentRef = useRef<ComponentRef<typeof Touchable>>(null);
 
   if (commentPropRef) {
     commentPropRef.current = commentRef.current;
@@ -314,7 +307,7 @@ export function CommentComponent({
               shortRightName={commentSwipeOptions.left}
               longRightName={commentSwipeOptions.farLeft}
             >
-              <TouchableHighlight
+              <Touchable
                 ref={(ref) => {
                   commentRef.current = ref;
                   if (commentPropRef) {
@@ -322,9 +315,6 @@ export function CommentComponent({
                   }
                 }}
                 activeOpacity={1}
-                underlayColor={
-                  tapToCollapseComment || displayInList ? theme.tint : undefined
-                }
                 onPress={() => {
                   if (displayInList) {
                     if (comment.type === "comment") {
@@ -399,7 +389,9 @@ export function CommentComponent({
                         ]}
                       />
                     )}
-                    <TouchableOpacity
+                    <Touchable
+                      activeOpacity={0.2}
+                      animationDuration={{ in: 0, out: 150 }}
                       onPress={() => pushURL(`/user/${comment.author}`)}
                     >
                       <Text
@@ -416,9 +408,11 @@ export function CommentComponent({
                       >
                         {comment.author}
                       </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                    </Touchable>
+                    <Touchable
                       style={styles.upvoteContainer}
+                      activeOpacity={0.2}
+                      animationDuration={{ in: 0, out: 150 }}
                       onPress={() => voteOnComment(VoteOption.UpVote)}
                     >
                       <AntDesign
@@ -453,10 +447,12 @@ export function CommentComponent({
                           ? "-"
                           : comment.upvotes}
                       </Text>
-                    </TouchableOpacity>
+                    </Touchable>
                     {comment.editedAt && (
-                      <TouchableOpacity
+                      <Touchable
                         style={styles.editedAtContainer}
+                        activeOpacity={0.2}
+                        animationDuration={{ in: 0, out: 150 }}
                         onPress={() => {
                           if (!comment.editedAt) return;
                           const timeSinceEdited = new Time(
@@ -473,16 +469,18 @@ export function CommentComponent({
                           size={14}
                           color={theme.subtleText}
                         />
-                      </TouchableOpacity>
+                      </Touchable>
                     )}
                     {commentFlairs && comment.flair && (
-                      <TouchableOpacity
+                      <Touchable
                         style={[
                           styles.flairContainer,
                           {
                             backgroundColor: theme.divider,
                           },
                         ]}
+                        activeOpacity={0.2}
+                        animationDuration={{ in: 0, out: 150 }}
                         onPress={() =>
                           alert(comment.flair?.text ?? "No flair text")
                         }
@@ -507,7 +505,7 @@ export function CommentComponent({
                             {comment.flair.text}
                           </Text>
                         )}
-                      </TouchableOpacity>
+                      </Touchable>
                     )}
                     <View style={styles.topBarEnd}>
                       <Text
@@ -528,7 +526,7 @@ export function CommentComponent({
                     </View>
                   ) : null}
                   {displayInList && (
-                    <TouchableOpacity
+                    <Touchable
                       style={[
                         styles.sourceContainer,
                         {
@@ -536,6 +534,7 @@ export function CommentComponent({
                         },
                       ]}
                       activeOpacity={0.8}
+                      animationDuration={{ in: 0, out: 150 }}
                       onPress={() => {
                         pushURL(comment.postLink);
                       }}
@@ -560,7 +559,7 @@ export function CommentComponent({
                       >
                         {comment.subreddit}
                       </Text>
-                    </TouchableOpacity>
+                    </Touchable>
                   )}
                   {comment.saved && (
                     <View
@@ -573,7 +572,7 @@ export function CommentComponent({
                     />
                   )}
                 </View>
-              </TouchableHighlight>
+              </Touchable>
             </Slideable>
           )}
           {!comment.collapsed ? (
@@ -594,8 +593,9 @@ export function CommentComponent({
                   />
                 ))}
               {comment.loadMore && comment.loadMore.childIds.length > 0 && (
-                <TouchableOpacity
+                <Touchable
                   activeOpacity={0.5}
+                  animationDuration={{ in: 0, out: 150 }}
                   onPress={async () => {
                     setLoadingMore(true);
                     if (comment.loadMore && loadMoreComments) {
@@ -640,12 +640,13 @@ export function CommentComponent({
                         : `${comment.loadMore.childIds.length} more replies`}
                     </Text>
                   </View>
-                </TouchableOpacity>
+                </Touchable>
               )}
             </>
           ) : collapseChildrenOnly && comment.comments.length ? (
-            <TouchableOpacity
+            <Touchable
               activeOpacity={0.5}
+              animationDuration={{ in: 0, out: 150 }}
               onPress={() => toggleCollapse()}
               style={{
                 marginLeft: 10 * (comment.depth + 1),
@@ -675,7 +676,7 @@ export function CommentComponent({
                   {comment.comments.length} more replies
                 </Text>
               </View>
-            </TouchableOpacity>
+            </Touchable>
           ) : null}
           {displayInList && (
             <View

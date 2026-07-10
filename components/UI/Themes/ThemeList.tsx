@@ -100,8 +100,7 @@ export default function ThemeList({
                 theme={customTheme}
                 isSelected={currentTheme === customTheme.name}
                 onPress={() => onSelect(customTheme.name, customTheme)}
-                onLongPress={async (e) => {
-                  if (e.nativeEvent.touches.length > 1) return;
+                onLongPress={async () => {
                   const result = await openContextMenu({
                     options: ["Edit", "Delete"],
                   });

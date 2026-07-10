@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { Message, setInboxItemNewStatus } from "../../../api/Messages";
 import { InboxContext } from "../../../contexts/InboxContext";
@@ -9,6 +9,7 @@ import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
 import useContextMenu from "../../../utils/useContextMenu";
+import { Touchable } from "react-native-gesture-handler";
 
 type MessageComponentProps = {
   message: Message;
@@ -46,8 +47,7 @@ export default function MessageComponent({
       ]}
       shortRightName="markAsRead"
     >
-      <TouchableOpacity
-        activeOpacity={0.8}
+      <Touchable
         style={[
           styles.messageContainer,
           {
@@ -62,8 +62,7 @@ export default function MessageComponent({
           });
           pushURL(`https://www.reddit.com/message/messages/${message.id}`);
         }}
-        onLongPress={async (e) => {
-          if (e.nativeEvent.touches.length > 1) return;
+        onLongPress={async () => {
           const result = await openContextMenu({
             options: ["Mark as Read"],
           });
@@ -108,8 +107,9 @@ export default function MessageComponent({
               >
                 from{" "}
               </Text>
-              <TouchableOpacity
+              <Touchable
                 activeOpacity={0.8}
+                animationDuration={{ in: 0, out: 150 }}
                 onPress={() =>
                   pushURL(`https://www.reddit.com/user/${message.author}`)
                 }
@@ -124,7 +124,7 @@ export default function MessageComponent({
                 >
                   {message.author}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             </View>
             <View style={styles.metadataContainer}>
               <Feather name="clock" size={18} color={theme.subtleText} />
@@ -142,7 +142,7 @@ export default function MessageComponent({
           </View>
           <View style={styles.footerRight} />
         </View>
-      </TouchableOpacity>
+      </Touchable>
       <View
         style={[
           styles.spacer,

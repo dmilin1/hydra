@@ -1,10 +1,11 @@
 import { FontAwesome6 } from "@expo/vector-icons";
 import * as ExpoOrientation from "expo-screen-orientation";
 import { useEffect, useRef, useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
 import {
   GestureDetector,
   GestureHandlerRootView,
+  Touchable,
   usePanGesture,
 } from "react-native-gesture-handler";
 import Animated, {
@@ -372,7 +373,9 @@ export default function MediaViewer({
               rowDetailsStyle,
             ]}
           >
-            <TouchableOpacity
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               style={[
                 styles.rowNavigationButton,
                 {
@@ -384,8 +387,10 @@ export default function MediaViewer({
               hitSlop={10}
             >
               <FontAwesome6 name="arrow-left" size={16} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Touchable>
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               style={[
                 styles.rowNavigationButton,
                 {
@@ -397,7 +402,7 @@ export default function MediaViewer({
               hitSlop={10}
             >
               <FontAwesome6 name="arrow-right" size={16} color="white" />
-            </TouchableOpacity>
+            </Touchable>
             <View style={styles.itemIndexContainer}>
               <Text style={styles.itemIndexText}>
                 {columnIndex + 1} / {currentRowSize}

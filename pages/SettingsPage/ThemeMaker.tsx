@@ -3,11 +3,11 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   TextInput,
   ScrollView,
   Alert,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import {
   Theme,
@@ -274,8 +274,10 @@ export default function ThemeMaker() {
           </Text>
           <View style={styles.modeButtons}>
             {(["light", "dark"] as Theme["systemModeStyle"][]).map((mode) => (
-              <TouchableOpacity
+              <Touchable
                 key={mode}
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
                 style={[
                   styles.modeButton,
                   {
@@ -302,7 +304,7 @@ export default function ThemeMaker() {
                 >
                   {mode}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </View>
         </View>
@@ -317,8 +319,10 @@ export default function ThemeMaker() {
           </Text>
           <View style={styles.modeButtons}>
             {(["light", "dark"] as Theme["statusBar"][]).map((bar) => (
-              <TouchableOpacity
+              <Touchable
                 key={bar}
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
                 style={[
                   styles.modeButton,
                   {
@@ -342,7 +346,7 @@ export default function ThemeMaker() {
                 >
                   {bar}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </View>
         </View>
@@ -361,8 +365,10 @@ export default function ThemeMaker() {
             contentContainerStyle={styles.colorGroupsScrollContent}
           >
             {(Object.keys(COLOR_GROUPS) as ColorGroupKey[]).map((group) => (
-              <TouchableOpacity
+              <Touchable
                 key={group}
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
                 style={[
                   styles.colorGroupButton,
                   {
@@ -375,7 +381,7 @@ export default function ThemeMaker() {
                 onPress={() => setSelectedColorGroup(group)}
               >
                 <Text style={{ color: baseTheme.text }}>{group}</Text>
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </ScrollView>
         </View>
@@ -383,8 +389,10 @@ export default function ThemeMaker() {
         <View style={styles.colorFieldsContainer}>
           {(COLOR_GROUPS[selectedColorGroup] as ColorGroupItem).map(
             ({ field, label, description }) => (
-              <TouchableOpacity
+              <Touchable
                 key={field}
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
                 style={[
                   styles.colorFieldButton,
                   { borderColor: baseTheme.divider },
@@ -419,7 +427,7 @@ export default function ThemeMaker() {
                     },
                   ]}
                 />
-              </TouchableOpacity>
+              </Touchable>
             ),
           )}
         </View>
@@ -431,9 +439,10 @@ export default function ThemeMaker() {
           will persist until you leave the Theme Maker.
         </Text>
       </View>
-      <TouchableOpacity
+      <Touchable
         onPress={() => saveTheme()}
         activeOpacity={0.5}
+        animationDuration={{ in: 0, out: 150 }}
         style={[
           styles.buttonContainer,
           {
@@ -453,7 +462,7 @@ export default function ThemeMaker() {
             Save Theme
           </Text>
         </View>
-      </TouchableOpacity>
+      </Touchable>
     </ScrollView>
   );
 }

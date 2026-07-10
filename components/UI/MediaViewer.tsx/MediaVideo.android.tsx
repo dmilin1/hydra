@@ -1,13 +1,7 @@
 import { useEvent, useEventListener } from "expo";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useRef, useState } from "react";
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import Animated, { useSharedValue } from "react-native-reanimated";
 import { FontAwesome } from "@expo/vector-icons";
 import {
@@ -18,7 +12,11 @@ import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
 import VideoCache from "../../../utils/VideoCache";
 import { Post } from "../../../api/Posts";
 import { AnimatedStyleHandle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
+import {
+  GestureDetector,
+  Touchable,
+  usePanGesture,
+} from "react-native-gesture-handler";
 import { runOnJS } from "react-native-worklets";
 
 export type VideoItem = {
@@ -195,7 +193,9 @@ function MediaVideo(props: MediaVideoProps) {
               e.stopPropagation();
             }}
           >
-            <TouchableOpacity
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               style={styles.playButton}
               onPress={() => {
                 if (isPlaying) {
@@ -215,7 +215,7 @@ function MediaVideo(props: MediaVideoProps) {
                   style={styles.playButtonIcon}
                 />
               )}
-            </TouchableOpacity>
+            </Touchable>
           </Animated.View>
           <View style={styles.progressBarBackground} />
           <Animated.View
@@ -245,7 +245,9 @@ function MediaVideo(props: MediaVideoProps) {
             e.stopPropagation();
           }}
         >
-          <TouchableOpacity
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             style={styles.playbackRateButton}
             onPress={() => {
               const currentIndex = PLAYBACK_RATES.indexOf(playbackRate ?? 1);
@@ -254,7 +256,7 @@ function MediaVideo(props: MediaVideoProps) {
             }}
           >
             <Text style={{ color: "white" }}>{playbackRate ?? 1}x</Text>
-          </TouchableOpacity>
+          </Touchable>
         </Animated.View>
       </View>
     </GestureDetector>

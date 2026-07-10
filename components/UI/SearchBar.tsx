@@ -1,6 +1,7 @@
 import { Feather, FontAwesome6 } from "@expo/vector-icons";
 import { forwardRef, useContext, useRef, useState } from "react";
-import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TextInput } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
@@ -88,13 +89,15 @@ const SearchBar = forwardRef<TextInput, SearchBarProps>(function SearchBar(
         autoCorrect={autoCorrect}
       />
       {showX && (
-        <TouchableOpacity
+        <Touchable
           onPress={() => {
             search.current = "";
             textInputRef.current?.clear();
             setShowX(false);
             doSearch();
           }}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
         >
           <FontAwesome6
@@ -103,7 +106,7 @@ const SearchBar = forwardRef<TextInput, SearchBarProps>(function SearchBar(
             color={theme.text}
             style={styles.xIcon}
           />
-        </TouchableOpacity>
+        </Touchable>
       )}
     </View>
   );

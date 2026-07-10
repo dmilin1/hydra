@@ -4,10 +4,10 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   LayoutChangeEvent,
   GestureResponderEvent,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import MultiredditLink from "../components/RedditDataRepresentations/Multireddit/MultiredditLink";
 import SubredditCompactLink from "../components/RedditDataRepresentations/Subreddit/SubredditCompactLink";
@@ -168,9 +168,10 @@ function TopButton({ item }: { item: TopButtonItem }) {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
   return (
-    <TouchableOpacity
+    <Touchable
       onPress={() => pushURL(item.path)}
       activeOpacity={0.5}
+      animationDuration={{ in: 0, out: 150 }}
       style={[
         styles.bigButtonContainer,
         {
@@ -220,7 +221,7 @@ function TopButton({ item }: { item: TopButtonItem }) {
           </Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

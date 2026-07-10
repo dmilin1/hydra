@@ -1,13 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext, useRef, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import { StyleSheet, View, Text, ActivityIndicator, Alert } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AccountContext } from "../../contexts/AccountContext";
@@ -134,13 +128,15 @@ export default function Login() {
           <View style={styles.navbarTitleContainer}>
             <Text style={styles.navbarText}>Login</Text>
           </View>
-          <TouchableOpacity
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             onPress={() => handleLoginCanceled()}
             style={styles.closeButton}
             hitSlop={15}
           >
             <Feather name="x" size={24} color="white" />
-          </TouchableOpacity>
+          </Touchable>
         </View>
         <View style={styles.webViewContainer}>
           {!canShow ? (

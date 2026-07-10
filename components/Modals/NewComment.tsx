@@ -3,12 +3,12 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Comment, PostDetail, submitComment } from "../../api/PostDetail";
@@ -78,7 +78,9 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               },
             ]}
           >
-            <TouchableOpacity
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               onPress={() => {
                 setIsSubmitting(false);
                 setModal(undefined);
@@ -94,7 +96,7 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               >
                 Cancel
               </Text>
-            </TouchableOpacity>
+            </Touchable>
             <Text
               style={[
                 styles.topBarTitle,
@@ -108,7 +110,11 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
             {isSubmitting ? (
               <ActivityIndicator size="small" color={theme.iconOrTextButton} />
             ) : (
-              <TouchableOpacity onPress={() => submit()}>
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
+                onPress={() => submit()}
+              >
                 <Text
                   style={[
                     styles.topBarButton,
@@ -119,7 +125,7 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
                 >
                   Post
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
           </View>
           <ScrollView
@@ -144,7 +150,11 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
               ]}
             >
               {parentViewAvailable && (
-                <TouchableOpacity onPress={() => setViewMode("parent")}>
+                <Touchable
+                  activeOpacity={0.2}
+                  animationDuration={{ in: 0, out: 150 }}
+                  onPress={() => setViewMode("parent")}
+                >
                   <Text
                     style={[
                       styles.previewTypeText,
@@ -160,9 +170,13 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
                   >
                     Parent
                   </Text>
-                </TouchableOpacity>
+                </Touchable>
               )}
-              <TouchableOpacity onPress={() => setViewMode("preview")}>
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
+                onPress={() => setViewMode("preview")}
+              >
                 <Text
                   style={[
                     styles.previewTypeText,
@@ -178,7 +192,7 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
                 >
                   Preview
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             </View>
             <View
               style={[

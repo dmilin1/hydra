@@ -1,11 +1,6 @@
 import React, { useContext, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-  useAnimatedValue,
-} from "react-native";
+import { View, StyleSheet, Animated, useAnimatedValue } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AccountList from "../UI/AccountList";
@@ -55,11 +50,7 @@ export default function QuickAccountSwap({
           <AccountList onAccountAction={onExit} />
         </View>
       </SafeAreaView>
-      <TouchableOpacity
-        activeOpacity={0.7}
-        style={styles.background}
-        onPress={() => onExit()}
-      />
+      <Touchable style={styles.background} onPress={() => onExit()} />
     </Animated.View>
   );
 }

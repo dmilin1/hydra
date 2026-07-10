@@ -5,8 +5,8 @@ import {
   View,
   Text,
   ActivityIndicator,
-  TouchableOpacity,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { getConversationMessages, Message } from "../api/Messages";
 import { StackPageProps } from "../app/stack";
@@ -111,7 +111,7 @@ export default function MessagesPage({
         </ScrollView>
         {otherUser && lastOtherUserMessage && (
           <View style={[styles.replyContainer]}>
-            <TouchableOpacity
+            <Touchable
               style={[
                 styles.replyButton,
                 {
@@ -119,6 +119,7 @@ export default function MessagesPage({
                 },
               ]}
               activeOpacity={0.8}
+              animationDuration={{ in: 0, out: 150 }}
               onPress={() =>
                 setModal(
                   <ReplyToMessage
@@ -138,7 +139,7 @@ export default function MessagesPage({
               >
                 Reply
               </Text>
-            </TouchableOpacity>
+            </Touchable>
           </View>
         )}
       </View>

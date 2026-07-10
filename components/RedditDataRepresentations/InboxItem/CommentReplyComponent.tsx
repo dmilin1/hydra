@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { CommentReply, setInboxItemNewStatus } from "../../../api/Messages";
 import { vote } from "../../../api/PostDetail";
@@ -11,6 +11,7 @@ import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
 import useContextMenu from "../../../utils/useContextMenu";
+import { Touchable } from "react-native-gesture-handler";
 
 type CommentReplyComponentProps = {
   commentReply: CommentReply;
@@ -77,8 +78,7 @@ export default function CommentReplyComponent({
       longLeftName="downvote"
       shortRightName="markAsRead"
     >
-      <TouchableOpacity
-        activeOpacity={0.8}
+      <Touchable
         style={[
           styles.messageContainer,
           {
@@ -93,8 +93,7 @@ export default function CommentReplyComponent({
           });
           pushURL(commentReply.contextLink);
         }}
-        onLongPress={async (e) => {
-          if (e.nativeEvent.touches.length > 1) return;
+        onLongPress={async () => {
           const result = await openContextMenu({
             options: [
               "Upvote",
@@ -150,8 +149,9 @@ export default function CommentReplyComponent({
               >
                 in{" "}
               </Text>
-              <TouchableOpacity
+              <Touchable
                 activeOpacity={0.5}
+                animationDuration={{ in: 0, out: 150 }}
                 onPress={() =>
                   pushURL(`https://www.reddit.com/r/${commentReply.subreddit}`)
                 }
@@ -166,7 +166,7 @@ export default function CommentReplyComponent({
                 >
                   {commentReply.subreddit}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
               <Text
                 style={[
                   styles.smallText,
@@ -178,8 +178,9 @@ export default function CommentReplyComponent({
                 {" "}
                 by{" "}
               </Text>
-              <TouchableOpacity
+              <Touchable
                 activeOpacity={0.8}
+                animationDuration={{ in: 0, out: 150 }}
                 onPress={() =>
                   pushURL(`https://www.reddit.com/user/${commentReply.author}`)
                 }
@@ -194,7 +195,7 @@ export default function CommentReplyComponent({
                 >
                   {commentReply.author}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             </View>
             <View style={styles.metadataContainer}>
               <Feather
@@ -231,7 +232,7 @@ export default function CommentReplyComponent({
           </View>
           <View style={styles.footerRight} />
         </View>
-      </TouchableOpacity>
+      </Touchable>
       <View
         style={[
           styles.spacer,

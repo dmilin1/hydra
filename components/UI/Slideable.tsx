@@ -7,7 +7,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { View, StyleSheet, Animated, ColorValue } from "react-native";
+import { View, StyleSheet, ColorValue } from "react-native";
+import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { runOnJS } from "react-native-worklets";
 
 import { ScrollerContext } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -16,6 +23,13 @@ import { IconProps } from "@expo/vector-icons/build/createIconSet";
 
 const SHORT_SWIPE_THRESHOLD = 75;
 const LONG_SWIPE_THRESHOLD = 130;
+const EDGE_GESTURE_ZONE = 30;
+
+const SPRING_CONFIG = {
+  stiffness: 342.1,
+  damping: 36.93,
+  mass: 1,
+};
 
 type SlideItem<SlideName extends string> = {
   name: SlideName;
@@ -34,6 +48,18 @@ type SlideableProps<SlideName extends string> = {
   xScrollToEngage?: number;
 };
 
+function levelForDelta(delta: number) {
+  "worklet";
+  const absDelta = Math.abs(delta);
+  const magnitude =
+    absDelta >= LONG_SWIPE_THRESHOLD
+      ? 2
+      : absDelta >= SHORT_SWIPE_THRESHOLD
+        ? 1
+        : 0;
+  return delta > 0 ? magnitude : delta < 0 ? -magnitude : 0;
+}
+
 export default function Slideable<SlideName extends string>({
   children,
   options,
@@ -47,9 +73,6 @@ export default function Slideable<SlideName extends string>({
   const { setScrollDisabled } = useContext(ScrollerContext);
   const { swipeAnywhereToNavigate } = useContext(GesturesContext);
 
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const touchX = useRef(new Animated.Value(0)).current;
-
   const [slideItem, setSlideItem] = useState<
     SlideItem<SlideName> & { side: "left" | "right" }
   >();
@@ -62,114 +85,114 @@ export default function Slideable<SlideName extends string>({
   const shortRightItem = lookupOption(shortRightName);
   const longRightItem = lookupOption(longRightName);
 
-  const resolveActiveItemForDelta = (delta: number) => {
-    const [shortItem, longItem] =
-      delta > 0
-        ? [shortLeftItem, longLeftItem]
-        : [shortRightItem, longRightItem];
-    const absD = Math.abs(delta);
-    if (absD >= LONG_SWIPE_THRESHOLD) return longItem ?? shortItem;
-    if (absD >= SHORT_SWIPE_THRESHOLD) return shortItem;
+  const itemForLevel = (level: number) => {
+    if (level === 2) return longLeftItem ?? shortLeftItem;
+    if (level === 1) return shortLeftItem;
+    if (level === -2) return longRightItem ?? shortRightItem;
+    if (level === -1) return shortRightItem;
     return undefined;
   };
 
+  const activeName = useRef<SlideName | undefined>(undefined);
+
+  const translateX = useSharedValue(0);
+  const startX = useSharedValue(0);
+  const prevLevel = useSharedValue(0);
+  const isSliding = useSharedValue(false);
+
+  const handleLevelChange = (level: number) => {
+    const item = itemForLevel(level);
+    if (item?.name === activeName.current) return;
+    activeName.current = item?.name;
+    setSlideItem(
+      item ? { side: level > 0 ? "left" : "right", ...item } : undefined,
+    );
+    if (item) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleRelease = (delta: number) => {
+    if (swipeAnywhereToNavigate && delta > 0) return;
+    itemForLevel(levelForDelta(delta))?.action();
+  };
+
+  const resetSlideItem = () => {
+    activeName.current = undefined;
+    setSlideItem(undefined);
+  };
+
+  const engageThreshold = xScrollToEngage ?? 20;
+
+  const panGesture = usePanGesture({
+    activeOffsetX: swipeAnywhereToNavigate
+      ? -engageThreshold
+      : [-engageThreshold, engageThreshold],
+    failOffsetY: [-10, 10],
+    // Keeps the pan from starting in the screen-edge bands so the native back
+    // swipe and the forward swipe (StackFutureContext) keep working.
+    hitSlop: { left: -EDGE_GESTURE_ZONE, right: -EDGE_GESTURE_ZONE },
+    onActivate: (e) => {
+      "worklet";
+      isSliding.value = true;
+      startX.value = e.translationX;
+      prevLevel.value = 0;
+      runOnJS(setScrollDisabled)(true);
+    },
+    onUpdate: (e) => {
+      "worklet";
+      const delta = Math.min(
+        e.translationX - startX.value,
+        swipeAnywhereToNavigate ? 0 : 1000,
+      );
+      translateX.value = delta;
+      const level = levelForDelta(delta);
+      if (level !== prevLevel.value) {
+        prevLevel.value = level;
+        runOnJS(handleLevelChange)(level);
+      }
+    },
+    onDeactivate: (e) => {
+      "worklet";
+      if (!e.canceled) runOnJS(handleRelease)(e.translationX - startX.value);
+    },
+    onFinalize: () => {
+      "worklet";
+      if (!isSliding.value) return;
+      isSliding.value = false;
+      prevLevel.value = 0;
+      translateX.value = withSpring(0, SPRING_CONFIG, (finished) => {
+        if (finished) runOnJS(resetSlideItem)();
+      });
+      runOnJS(setScrollDisabled)(false);
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
   return (
-    <View
-      style={styles.slideableContainer}
-      onStartShouldSetResponderCapture={(e) => {
-        touchStart.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
-        return false;
-      }}
-      onResponderGrant={() => setScrollDisabled(true)}
-      onResponderReject={() => setScrollDisabled(false)}
-      onMoveShouldSetResponder={(e) => {
-        if (!touchStart.current) return false;
-        const deltaX = e.nativeEvent.pageX - touchStart.current.x;
-        const deltaY = e.nativeEvent.pageY - touchStart.current.y;
-        const isSwipeAllowed = !swipeAnywhereToNavigate || deltaX < 0;
-        if (
-          Math.abs(deltaX) > (xScrollToEngage ?? 20) &&
-          Math.abs(deltaY) < 10 &&
-          isSwipeAllowed
-        ) {
-          touchStart.current = {
-            x: e.nativeEvent.pageX,
-            y: e.nativeEvent.pageY,
-          };
-          return true;
-        }
-        return false;
-      }}
-      onResponderMove={(e) => {
-        if (touchStart.current) {
-          const delta = Math.min(
-            e.nativeEvent.pageX - touchStart.current.x,
-            swipeAnywhereToNavigate ? 0 : 1000,
-          );
-          touchX.setValue(delta);
-          const item = resolveActiveItemForDelta(delta);
-          if (item?.name !== slideItem?.name) {
-            setSlideItem(
-              item
-                ? { side: delta > 0 ? "left" : "right", ...item }
-                : undefined,
-            );
-            if (item) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          }
-        }
-      }}
-      onResponderEnd={(e) => {
-        if (touchStart.current) {
-          const delta = e.nativeEvent.pageX - touchStart.current.x;
-          if (swipeAnywhereToNavigate && delta > 0) {
-            setScrollDisabled(false);
-            return;
-          }
-          const item = resolveActiveItemForDelta(delta);
-          if (item) {
-            item.action();
-          }
-          Animated.spring(touchX, {
-            toValue: 0,
-            bounciness: 0,
-            useNativeDriver: true,
-          }).start(() => {
-            setSlideItem(undefined);
-          });
-        }
-        setScrollDisabled(false);
-      }}
-      onResponderTerminationRequest={() => false}
-    >
-      <Animated.View
-        style={[
-          styles.animatedView,
-          {
-            backgroundColor: theme.background,
-            transform: [
-              {
-                translateX: touchX,
-              },
-            ],
-          },
-        ]}
-      >
-        {children}
-      </Animated.View>
+    <View style={styles.slideableContainer}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View
+          style={[
+            styles.animatedView,
+            { backgroundColor: theme.background },
+            animatedStyle,
+          ]}
+        >
+          {children}
+        </Animated.View>
+      </GestureDetector>
       <View
         style={[
           styles.backgroundContainer,
-          {
-            backgroundColor: slideItem?.color ?? theme.tint,
-          },
+          { backgroundColor: slideItem?.color ?? theme.tint },
         ]}
       >
         <View
           style={[
             styles.iconContainer,
-            {
-              marginLeft: slideItem?.side === "left" ? 0 : "auto",
-            },
+            { marginLeft: slideItem?.side === "left" ? 0 : "auto" },
           ]}
         >
           {slideItem?.icon &&

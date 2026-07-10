@@ -1,10 +1,11 @@
 import { Entypo } from "@expo/vector-icons";
 import { openExternalLink } from "../utils/openExternalLink";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableHighlight } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { StackPageProps } from "../app/stack";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import { Touchable } from "react-native-gesture-handler";
 
 export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
   const { theme } = useContext(ThemeContext);
@@ -33,14 +34,14 @@ export default function ErrorPage({ route }: StackPageProps<"ErrorPage">) {
             You can try opening the link in your browser by clicking the URL
             below: {"\n"}
           </Text>
-          <TouchableHighlight
+          <Touchable
             onPress={() => openExternalLink(url)}
             style={styles.linkContainer}
           >
             <Text style={[styles.linkText, { color: theme.iconOrTextButton }]}>
               {url}
             </Text>
-          </TouchableHighlight>
+          </Touchable>
         </>
       )}
     </View>

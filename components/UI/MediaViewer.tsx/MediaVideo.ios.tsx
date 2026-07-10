@@ -3,12 +3,12 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  TouchableOpacity,
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
 import {
   useSafeAreaFrame,
@@ -208,7 +208,9 @@ function MediaVideo(props: MediaVideoProps) {
             e.stopPropagation();
           }}
         >
-          <TouchableOpacity
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             style={styles.playButton}
             onPress={() => {
               if (isPlaying) {
@@ -228,7 +230,7 @@ function MediaVideo(props: MediaVideoProps) {
                 style={styles.playButtonIcon}
               />
             )}
-          </TouchableOpacity>
+          </Touchable>
         </Animated.View>
         <View style={styles.progressBarBackground} />
         <Animated.View
@@ -258,7 +260,9 @@ function MediaVideo(props: MediaVideoProps) {
           e.stopPropagation();
         }}
       >
-        <TouchableOpacity
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           style={styles.playbackRateButton}
           onPress={() => {
             const currentIndex = PLAYBACK_RATES.indexOf(playbackRate ?? 1);
@@ -267,7 +271,7 @@ function MediaVideo(props: MediaVideoProps) {
           }}
         >
           <Text style={{ color: "white" }}>{playbackRate ?? 1}x</Text>
-        </TouchableOpacity>
+        </Touchable>
       </Animated.View>
     </View>
   );

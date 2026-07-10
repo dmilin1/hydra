@@ -2,7 +2,7 @@ import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { openExternalLink } from "../../../../utils/openExternalLink";
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
 
 import { PostDetail } from "../../../../api/PostDetail";
@@ -14,6 +14,7 @@ import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext
 import RedditURL from "../../../../utils/RedditURL";
 import { useURLNavigation } from "../../../../utils/navigation";
 import { MediaViewerContext } from "../../../../contexts/MediaViewerContext";
+import { Touchable } from "react-native-gesture-handler";
 
 type CompactPostMediaProps = {
   post: Post | PostDetail;
@@ -44,8 +45,10 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
       ]}
     >
       {post.videos.length > 0 && !post.crossCommentLink ? (
-        <TouchableOpacity
+        <Touchable
           style={styles.videoContainer}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             interactedWithPost();
             displayMedia({
@@ -72,12 +75,14 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               color={theme.subtleText}
             />
           )}
-        </TouchableOpacity>
+        </Touchable>
       ) : post.images.length > 0 &&
         !post.crossCommentLink &&
         !post.externalLink ? (
-        <TouchableOpacity
+        <Touchable
           style={styles.imgContainer}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             interactedWithPost();
             displayMedia({
@@ -102,7 +107,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               color={theme.subtleText}
             />
           )}
-        </TouchableOpacity>
+        </Touchable>
       ) : post.poll ? (
         <View style={styles.bigIconContainer}>
           <FontAwesome5
@@ -112,8 +117,10 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           />
         </View>
       ) : post.externalLink || post.crossCommentLink ? (
-        <TouchableOpacity
+        <Touchable
           style={styles.externalLinkContainer}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             const url = post.externalLink ?? post.crossCommentLink;
             if (!url) return;
@@ -148,18 +155,14 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               style={styles.image}
             />
           )}
-        </TouchableOpacity>
+        </Touchable>
       ) : (
         <View style={styles.bigIconContainer}>
           <Entypo name="text" style={styles.bigIcon} color={theme.subtleText} />
         </View>
       )}
       {isBlurable && blur && (
-        <TouchableOpacity
-          style={styles.blurContainer}
-          onPress={() => setBlur(false)}
-          activeOpacity={1}
-        >
+        <Touchable style={styles.blurContainer} onPress={() => setBlur(false)}>
           <BlurView intensity={80} style={styles.blur} />
           <View style={styles.blurIconContainer}>
             <View
@@ -182,7 +185,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </Touchable>
       )}
     </View>
   );

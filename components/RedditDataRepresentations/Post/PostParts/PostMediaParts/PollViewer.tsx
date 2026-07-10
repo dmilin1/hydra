@@ -1,14 +1,9 @@
 import React, { useContext } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableWithoutFeedback } from "react-native";
 
 import { Poll } from "../../../../../api/Posts";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
+import { Touchable } from "react-native-gesture-handler";
 
 export default function PollViewer({ poll }: { poll: Poll }) {
   const { theme } = useContext(ThemeContext);
@@ -55,10 +50,11 @@ export default function PollViewer({ poll }: { poll: Poll }) {
           onStartShouldSetResponder={() => false}
         >
           {poll.options.map((option, i) => (
-            <TouchableOpacity
+            <Touchable
               key={i}
               style={styles.pollItem}
               activeOpacity={0.8}
+              animationDuration={{ in: 0, out: 150 }}
               onPress={() => setSelectedOption(i)}
               hitSlop={10}
             >
@@ -94,7 +90,7 @@ export default function PollViewer({ poll }: { poll: Poll }) {
                   {option.text}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </Touchable>
           ))}
         </View>
         <View
@@ -105,7 +101,7 @@ export default function PollViewer({ poll }: { poll: Poll }) {
             },
           ]}
         >
-          <TouchableOpacity
+          <Touchable
             style={[
               styles.voteButton,
               {
@@ -113,6 +109,7 @@ export default function PollViewer({ poll }: { poll: Poll }) {
               },
             ]}
             activeOpacity={0.8}
+            animationDuration={{ in: 0, out: 150 }}
             onPress={() => alert("voted")}
             hitSlop={10}
           >
@@ -126,7 +123,7 @@ export default function PollViewer({ poll }: { poll: Poll }) {
             >
               Vote
             </Text>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </View>
     </TouchableWithoutFeedback>

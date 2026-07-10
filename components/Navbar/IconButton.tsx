@@ -1,17 +1,13 @@
 import React, { ReactNode, useContext } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  TouchableOpacityProps,
-} from "react-native";
+import { StyleSheet, Text } from "react-native";
+import { Touchable, TouchableProps } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
 type IconButtonProps = {
   icon: ReactNode;
   onPress: () => void;
-  touchableOpacityProps?: TouchableOpacityProps;
+  touchableOpacityProps?: TouchableProps;
 };
 
 export default function IconButton({
@@ -22,14 +18,15 @@ export default function IconButton({
   const { theme } = useContext(ThemeContext);
 
   return (
-    <TouchableOpacity
+    <Touchable
       activeOpacity={0.5}
+      animationDuration={{ in: 0, out: 150 }}
       onPress={() => onPress?.()}
       style={[styles.touchableContainer]}
       {...touchableOpacityProps}
     >
       <Text style={{ color: theme.iconOrTextButton }}>{icon}</Text>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

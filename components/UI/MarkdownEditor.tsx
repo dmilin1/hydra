@@ -10,7 +10,6 @@ import React, {
 import {
   StyleSheet,
   View,
-  TouchableOpacity,
   TextInput,
   TextInputSelectionChangeEvent,
   Alert,
@@ -18,6 +17,7 @@ import {
   ScrollView,
   Text,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -127,7 +127,9 @@ export default function MarkdownEditor({
         scrollEnabled={false}
       />
       <View style={styles.bottomBar}>
-        <TouchableOpacity
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             const selectedText = getSelected(text, selection);
             Alert.prompt("URL", undefined, (url: string) => {
@@ -138,8 +140,10 @@ export default function MarkdownEditor({
           }}
         >
           <AntDesign name="link" size={24} color={theme.iconPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             const selectedText = getSelected(text, selection);
             setText((text) =>
@@ -148,8 +152,10 @@ export default function MarkdownEditor({
           }}
         >
           <FontAwesome name="bold" size={24} color={theme.iconPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             const selectedText = getSelected(text, selection);
             setText((text) =>
@@ -158,8 +164,10 @@ export default function MarkdownEditor({
           }}
         >
           <FontAwesome name="italic" size={24} color={theme.iconPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             if (text === "") {
               // If no text, add a blockquote
@@ -193,8 +201,10 @@ export default function MarkdownEditor({
           }}
         >
           <Entypo name="quote" size={24} color={theme.iconPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             const selectedText = getSelected(text, selection);
             setText((text) =>
@@ -207,8 +217,10 @@ export default function MarkdownEditor({
             size={24}
             color={theme.iconPrimary}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             const selectedText = getSelected(text, selection);
             setText((text) =>
@@ -217,15 +229,19 @@ export default function MarkdownEditor({
           }}
         >
           <FontAwesome name="eye-slash" size={24} color={theme.iconPrimary} />
-        </TouchableOpacity>
+        </Touchable>
         {showCustomThemeOption && (
-          <TouchableOpacity onPress={() => setShowThemeModal(true)}>
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
+            onPress={() => setShowThemeModal(true)}
+          >
             <FontAwesome
               name="paint-brush"
               size={24}
               color={theme.iconPrimary}
             />
-          </TouchableOpacity>
+          </Touchable>
         )}
       </View>
       <Modal
@@ -247,7 +263,11 @@ export default function MarkdownEditor({
               <Text style={[styles.modalTitle, { color: theme.text }]}>
                 Select Custom Theme
               </Text>
-              <TouchableOpacity onPress={() => setShowThemeModal(false)}>
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
+                onPress={() => setShowThemeModal(false)}
+              >
                 <Text
                   style={[
                     styles.modalExitButton,
@@ -256,7 +276,7 @@ export default function MarkdownEditor({
                 >
                   Exit
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             </View>
 
             <ScrollView>

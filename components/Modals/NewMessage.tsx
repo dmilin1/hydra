@@ -3,13 +3,13 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
   TextInput,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { sendMessage } from "../../api/Messages";
@@ -81,7 +81,9 @@ export default function NewMessage({
               },
             ]}
           >
-            <TouchableOpacity
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               onPress={() => {
                 setIsSubmitting(false);
                 setModal(undefined);
@@ -97,7 +99,7 @@ export default function NewMessage({
               >
                 Cancel
               </Text>
-            </TouchableOpacity>
+            </Touchable>
             <Text
               style={[
                 styles.topBarTitle,
@@ -111,7 +113,11 @@ export default function NewMessage({
             {isSubmitting ? (
               <ActivityIndicator size="small" color={theme.iconOrTextButton} />
             ) : (
-              <TouchableOpacity onPress={() => submit()}>
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
+                onPress={() => submit()}
+              >
                 <Text
                   style={[
                     styles.topBarButton,
@@ -122,7 +128,7 @@ export default function NewMessage({
                 >
                   Send
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
           </View>
           <ScrollView

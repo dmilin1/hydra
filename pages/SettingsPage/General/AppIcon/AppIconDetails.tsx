@@ -1,13 +1,6 @@
 import React, { useContext } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Linking,
-} from "react-native";
+import { View, Text, Image, StyleSheet, Alert, Linking } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { MaterialIcons, Feather, FontAwesome } from "@expo/vector-icons";
 import { getAppIconName, setAlternateAppIcon } from "expo-alternate-app-icons";
 
@@ -123,7 +116,7 @@ export default function AppIconDetails() {
         ]
           .filter((link) => link.showIf)
           .map((link, i, list) => (
-            <TouchableOpacity
+            <Touchable
               key={link.type}
               style={[
                 styles.linkRow,
@@ -134,6 +127,8 @@ export default function AppIconDetails() {
                 },
               ]}
               onPress={link.onPress}
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
             >
               {link.icon}
               <Text style={[styles.linkText, { color: theme.text }]}>
@@ -144,11 +139,11 @@ export default function AppIconDetails() {
                 size={16}
                 color={theme.subtleText}
               />
-            </TouchableOpacity>
+            </Touchable>
           ))}
       </View>
 
-      <TouchableOpacity
+      <Touchable
         style={[
           styles.setIconButton,
           {
@@ -157,6 +152,7 @@ export default function AppIconDetails() {
         ]}
         onPress={handleSetAsAppIcon}
         activeOpacity={0.8}
+        animationDuration={{ in: 0, out: 150 }}
         disabled={isCurrentIcon}
       >
         <FontAwesome
@@ -167,7 +163,7 @@ export default function AppIconDetails() {
         <Text style={styles.buttonText}>
           {isCurrentIcon ? "Current App Icon" : `Set as App Icon`}
         </Text>
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 }

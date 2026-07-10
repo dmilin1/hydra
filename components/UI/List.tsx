@@ -1,13 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { ReactNode, useContext } from "react";
-import {
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  Text,
-  StyleProp,
-  ViewStyle,
-} from "react-native";
+import { View, StyleSheet, Text, StyleProp, ViewStyle } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import SectionTitle from "./SectionTitle";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -46,10 +40,11 @@ export default function List({ items, title, containerStyle }: ListProps) {
         {items
           .filter((item) => !item.hide)
           .map((item, i) => (
-            <TouchableOpacity
+            <Touchable
               key={item.key}
               onPress={item.onPress}
               activeOpacity={0.5}
+              animationDuration={{ in: 0, out: 150 }}
               style={[
                 styles.itemButtonContainer,
                 {
@@ -85,7 +80,7 @@ export default function List({ items, title, containerStyle }: ListProps) {
                   />
                 )}
               </View>
-            </TouchableOpacity>
+            </Touchable>
           ))}
       </View>
     </>

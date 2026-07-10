@@ -1,13 +1,7 @@
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Linking,
-} from "react-native";
+import { View, Text, StyleSheet, Image, Linking } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import KeyStore from "../../../utils/KeyStore";
@@ -42,7 +36,9 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
             },
           ]}
         >
-          <TouchableOpacity
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             style={[
               styles.exitButton,
               {
@@ -52,7 +48,7 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
             onPress={() => exitPromptForReview()}
           >
             <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
-          </TouchableOpacity>
+          </Touchable>
 
           <View style={styles.headerArea}>
             <Image
@@ -100,7 +96,9 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
               </Text>
 
               <View style={styles.buttonsRow}>
-                <TouchableOpacity
+                <Touchable
+                  activeOpacity={0.2}
+                  animationDuration={{ in: 0, out: 150 }}
                   onPress={() => exitPromptForReview()}
                   style={[
                     styles.secondaryButton,
@@ -115,8 +113,10 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
                   >
                     Maybe later
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Touchable>
+                <Touchable
+                  activeOpacity={0.2}
+                  animationDuration={{ in: 0, out: 150 }}
                   onPress={handleRateNow}
                   style={[
                     styles.primaryButton,
@@ -131,7 +131,7 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
                   >
                     Rate now
                   </Text>
-                </TouchableOpacity>
+                </Touchable>
               </View>
 
               <View style={styles.footerRow}>
@@ -155,7 +155,7 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
             </>
           )}
         </View>
-        <TouchableOpacity
+        <Touchable
           style={styles.background}
           onPress={() => exitPromptForReview()}
         />

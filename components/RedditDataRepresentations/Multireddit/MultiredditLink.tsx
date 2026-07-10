@@ -1,19 +1,13 @@
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  Share,
-} from "react-native";
+import { StyleSheet, View, Text, Image, Share } from "react-native";
 
 import { Multi } from "../../../api/Multireddit";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../../contexts/SubredditContext";
 import { useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
+import { Touchable } from "react-native-gesture-handler";
 
 export default function MultiredditLink({ multi }: { multi: Multi }) {
   const openContextMenu = useContextMenu();
@@ -25,9 +19,8 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
 
   return (
     <>
-      <TouchableOpacity
+      <Touchable
         onPress={() => pushURL(multi.url)}
-        activeOpacity={0.5}
         style={[
           styles.multiredditContainer,
           {
@@ -53,7 +46,7 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
         >
           {multi.name}
         </Text>
-        <TouchableOpacity
+        <Touchable
           onPress={() => setExpanded(!expanded)}
           style={[
             styles.expandButtonContainer,
@@ -61,6 +54,8 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
               backgroundColor: theme.divider,
             },
           ]}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           hitSlop={10}
         >
           <Entypo
@@ -68,12 +63,12 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
             color={theme.text}
             style={styles.expandButton}
           />
-        </TouchableOpacity>
-      </TouchableOpacity>
+        </Touchable>
+      </Touchable>
       {expanded && (
         <View style={styles.subredditListContainer}>
           {multi.subreddits.map((subreddit) => (
-            <TouchableOpacity
+            <Touchable
               key={subreddit.name}
               onPress={() => pushURL(subreddit.url)}
               onLongPress={async () => {
@@ -87,7 +82,6 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
                   Share.share({ url: subreddit.url });
                 }
               }}
-              activeOpacity={0.5}
               style={[
                 styles.multiredditContainer,
                 {
@@ -113,7 +107,7 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
               >
                 {subreddit.name}
               </Text>
-            </TouchableOpacity>
+            </Touchable>
           ))}
         </View>
       )}

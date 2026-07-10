@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity, Alert, View } from "react-native";
+import { StyleSheet, Text, Alert, View } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
@@ -63,9 +64,10 @@ export default function ThemeImport({ customTheme }: ThemeImportProps) {
 
   return (
     <View style={styles.themeItemContainer}>
-      <TouchableOpacity
+      <Touchable
         onPress={() => saveTheme()}
         activeOpacity={0.5}
+        animationDuration={{ in: 0, out: 150 }}
         style={[
           styles.themeItemSubContainer,
           {
@@ -89,7 +91,7 @@ export default function ThemeImport({ customTheme }: ThemeImportProps) {
         <View style={styles.themeColorBandContainer}>
           <ThemeColorBand theme={themeData} />
         </View>
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 }

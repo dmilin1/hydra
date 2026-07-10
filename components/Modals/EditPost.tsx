@@ -3,12 +3,12 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { editUserContent, PostDetail } from "../../api/PostDetail";
@@ -68,7 +68,9 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
               },
             ]}
           >
-            <TouchableOpacity
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               onPress={() => {
                 setIsSubmitting(false);
                 setModal(undefined);
@@ -84,7 +86,7 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
               >
                 Cancel
               </Text>
-            </TouchableOpacity>
+            </Touchable>
             <Text
               style={[
                 styles.topBarTitle,
@@ -98,7 +100,11 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
             {isSubmitting ? (
               <ActivityIndicator size="small" color={theme.iconOrTextButton} />
             ) : (
-              <TouchableOpacity onPress={() => submit()}>
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
+                onPress={() => submit()}
+              >
                 <Text
                   style={[
                     styles.topBarButton,
@@ -109,7 +115,7 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                 >
                   Save
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
           </View>
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -130,7 +136,11 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                 },
               ]}
             >
-              <TouchableOpacity onPress={() => setViewMode("preview")}>
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
+                onPress={() => setViewMode("preview")}
+              >
                 <Text
                   style={[
                     styles.previewTypeText,
@@ -146,8 +156,12 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                 >
                   Preview
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setViewMode("old")}>
+              </Touchable>
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
+                onPress={() => setViewMode("old")}
+              >
                 <Text
                   style={[
                     styles.previewTypeText,
@@ -163,7 +177,7 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
                 >
                   Parent
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             </View>
             <View
               style={[

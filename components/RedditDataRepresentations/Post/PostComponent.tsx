@@ -1,13 +1,6 @@
 import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useMemo, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Share,
-  AccessibilityInfo,
-} from "react-native";
+import { StyleSheet, View, Text, Share, AccessibilityInfo } from "react-native";
 import { openExternalLink } from "../../../utils/openExternalLink";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
@@ -33,6 +26,7 @@ import { FiltersContext } from "../../../contexts/SettingsContexts/FiltersContex
 import { GesturesContext } from "../../../contexts/SettingsContexts/GesturesContext";
 import useComponentActions from "../../../utils/useComponentActions";
 import useContextMenu from "../../../utils/useContextMenu";
+import { Touchable } from "react-native-gesture-handler";
 
 type PostComponentProps = {
   post: Post;
@@ -269,14 +263,13 @@ export default function PostComponent({
         shortRightName={postSwipeOptions.left}
         longRightName={postSwipeOptions.farLeft}
       >
-        <TouchableOpacity
+        <Touchable
           accessible={true}
           accessibilityLabel={accessibilityLabel}
           accessibilityRole="button"
           accessibilityHint="Open the post"
           accessibilityActions={accessibilityActions}
           onAccessibilityAction={handleAccessibilityAction}
-          activeOpacity={0.8}
           style={[
             styles.postContainer,
             {
@@ -300,8 +293,7 @@ export default function PostComponent({
               pushURL(post.link);
             }
           }}
-          onLongPress={async (e) => {
-            if (e.nativeEvent.touches.length > 1) return;
+          onLongPress={async () => {
             handleLongPress();
           }}
         >
@@ -312,7 +304,7 @@ export default function PostComponent({
           )}
           <View style={styles.bodyContainer}>
             {subredditAtTop && isOnMultiSubredditPage && (
-              <TouchableOpacity
+              <Touchable
                 style={[
                   styles.subredditAtTopContainer,
                   styles.subredditContainer,
@@ -333,7 +325,7 @@ export default function PostComponent({
                 >
                   {post.subreddit}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
             <Text
               numberOfLines={postTitleLength}
@@ -399,7 +391,7 @@ export default function PostComponent({
                     />
                   )}
                   {!subredditAtTop && isOnMultiSubredditPage && (
-                    <TouchableOpacity
+                    <Touchable
                       style={styles.subredditContainer}
                       activeOpacity={0.5}
                       onPress={() =>
@@ -417,7 +409,7 @@ export default function PostComponent({
                       >
                         {post.subreddit}{" "}
                       </Text>
-                    </TouchableOpacity>
+                    </Touchable>
                   )}
                   <Text
                     style={[
@@ -429,8 +421,8 @@ export default function PostComponent({
                   >
                     by{" "}
                   </Text>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
+                  <Touchable
+                    activeOpacity={0.5}
                     onPress={() =>
                       pushURL(`https://www.reddit.com/user/${post.author}`)
                     }
@@ -447,7 +439,7 @@ export default function PostComponent({
                     >
                       {post.author}
                     </Text>
-                  </TouchableOpacity>
+                  </Touchable>
                 </View>
                 <View style={styles.metadataContainer}>
                   <Feather
@@ -510,7 +502,7 @@ export default function PostComponent({
               ]}
             />
           )}
-        </TouchableOpacity>
+        </Touchable>
         <View
           style={{
             backgroundColor: theme.divider,

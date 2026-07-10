@@ -7,7 +7,6 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
@@ -15,6 +14,7 @@ import {
   ActivityIndicator,
   Image,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Clipboard from "expo-clipboard";
 
@@ -198,7 +198,9 @@ export default function NewPostEditor({
               },
             ]}
           >
-            <TouchableOpacity
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               style={[
                 styles.topBarButton,
                 {
@@ -220,7 +222,7 @@ export default function NewPostEditor({
               >
                 Cancel
               </Text>
-            </TouchableOpacity>
+            </Touchable>
             <Text
               style={[
                 styles.topBarTitle,
@@ -238,7 +240,9 @@ export default function NewPostEditor({
                 style={{ position: "absolute", right: 0 }}
               />
             ) : (
-              <TouchableOpacity
+              <Touchable
+                activeOpacity={0.2}
+                animationDuration={{ in: 0, out: 150 }}
                 style={[
                   styles.topBarButton,
                   {
@@ -258,7 +262,7 @@ export default function NewPostEditor({
                 >
                   Post
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
           </View>
           {submitThroughBrowser ? (
@@ -276,8 +280,10 @@ export default function NewPostEditor({
             >
               <View style={styles.postTypeContainer}>
                 {(["self", "link", "image"] as PostType[]).map((btnKind) => (
-                  <TouchableOpacity
+                  <Touchable
                     key={btnKind}
+                    activeOpacity={0.2}
+                    animationDuration={{ in: 0, out: 150 }}
                     style={[
                       styles.postTypeBtn,
                       {
@@ -294,7 +300,7 @@ export default function NewPostEditor({
                           ? "Link Post"
                           : "Image Post"}
                     </Text>
-                  </TouchableOpacity>
+                  </Touchable>
                 ))}
               </View>
               <View
@@ -320,7 +326,9 @@ export default function NewPostEditor({
                   scrollEnabled={false}
                 />
                 {allowedPostFlairs.length > 0 && (
-                  <TouchableOpacity
+                  <Touchable
+                    activeOpacity={0.2}
+                    animationDuration={{ in: 0, out: 150 }}
                     style={[
                       styles.flairBtn,
                       {
@@ -332,7 +340,7 @@ export default function NewPostEditor({
                     <Text style={{ color: theme.buttonText }} numberOfLines={1}>
                       {selectedFlair?.text ?? "Select Flair"}
                     </Text>
-                  </TouchableOpacity>
+                  </Touchable>
                 )}
               </View>
               {kind === "self" ? (
@@ -401,7 +409,7 @@ export default function NewPostEditor({
                 />
               ) : kind === "image" ? (
                 <>
-                  <TouchableOpacity
+                  <Touchable
                     style={[
                       styles.uploadImageButton,
                       {
@@ -409,6 +417,7 @@ export default function NewPostEditor({
                       },
                     ]}
                     activeOpacity={0.5}
+                    animationDuration={{ in: 0, out: 150 }}
                     onPress={() => selectImage()}
                   >
                     {isUploadingImg ? (
@@ -425,7 +434,7 @@ export default function NewPostEditor({
                         Select Image
                       </Text>
                     )}
-                  </TouchableOpacity>
+                  </Touchable>
                   {localImgUrl ? (
                     <Image src={localImgUrl} style={styles.image} />
                   ) : null}

@@ -4,10 +4,10 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import Slideable from "./Slideable";
 import { AccountContext } from "../../contexts/AccountContext";
@@ -59,14 +59,13 @@ export default function AccountList({ onAccountAction }: AccountListProps) {
           ]}
           shortRightName={username === "Logged Out" ? undefined : "delete"}
         >
-          <TouchableOpacity
+          <Touchable
             style={[
               styles.accountItemContainer,
               {
                 borderBottomColor: theme.divider,
               },
             ]}
-            activeOpacity={0.5}
             onPress={async () => {
               setLoading(true);
               if (username === "Logged Out") {
@@ -77,9 +76,8 @@ export default function AccountList({ onAccountAction }: AccountListProps) {
               setLoading(false);
               onAccountAction?.();
             }}
-            onLongPress={async (e) => {
-              if (username === "Logged Out" || e.nativeEvent.touches.length > 1)
-                return;
+            onLongPress={async () => {
+              if (username === "Logged Out") return;
               const result = await openContextMenu({
                 options: ["Delete"],
               });
@@ -134,7 +132,7 @@ export default function AccountList({ onAccountAction }: AccountListProps) {
                 )}
               </>
             )}
-          </TouchableOpacity>
+          </Touchable>
         </Slideable>
       ))}
     </ScrollView>

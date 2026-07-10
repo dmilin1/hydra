@@ -1,13 +1,7 @@
 import { Entypo, Feather } from "@expo/vector-icons";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Alert,
-  Switch,
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { Alert, Switch, View, StyleSheet, Text } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import * as Clipboard from "expo-clipboard";
 
 import List from "../../components/UI/List";
@@ -148,7 +142,7 @@ export default function Advanced() {
         </>
       )}
       {customerId && (
-        <TouchableOpacity
+        <Touchable
           onPress={() => {
             Clipboard.setStringAsync(customerId);
             Alert.alert(
@@ -156,11 +150,13 @@ export default function Advanced() {
               "The customer ID has been copied to your clipboard.",
             );
           }}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
         >
           <Text style={[styles.customerIdText, { color: theme.text }]}>
             Customer ID: {customerId}
           </Text>
-        </TouchableOpacity>
+        </Touchable>
       )}
     </>
   );

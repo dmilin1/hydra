@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
   Text,
   Platform,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { Post } from "../../../api/Posts";
 import { Image, ImageSource } from "expo-image";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
@@ -130,7 +130,7 @@ export default function GalleryComponent({
         ref={flashListRef}
         data={galleryMedia}
         renderItem={({ item, index }) => (
-          <TouchableOpacity
+          <Touchable
             onPress={() =>
               displayMedia({
                 media: viewerMedia,
@@ -143,6 +143,7 @@ export default function GalleryComponent({
               })
             }
             activeOpacity={0.9}
+            animationDuration={{ in: 0, out: 150 }}
             style={[
               styles.imageContainer,
               {
@@ -173,7 +174,7 @@ export default function GalleryComponent({
             ) : item.type === "video" ? (
               <Video uri={item.source.source} />
             ) : null}
-          </TouchableOpacity>
+          </Touchable>
         )}
         getItemType={(item) => item.type}
         keyExtractor={(item, index) =>

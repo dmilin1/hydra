@@ -1,11 +1,12 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { User } from "../../../api/User";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../../../utils/Numbers";
 import { useURLNavigation } from "../../../utils/navigation";
+import { Touchable } from "react-native-gesture-handler";
 
 export default function UserComponent({ user }: { user: User }) {
   const { pushURL } = useURLNavigation();
@@ -13,8 +14,7 @@ export default function UserComponent({ user }: { user: User }) {
 
   return (
     <View>
-      <TouchableOpacity
-        activeOpacity={0.8}
+      <Touchable
         style={[
           styles.userContainer,
           {
@@ -84,7 +84,7 @@ export default function UserComponent({ user }: { user: User }) {
           </View>
           <View style={styles.footerRight} />
         </View>
-      </TouchableOpacity>
+      </Touchable>
       <View
         style={[
           styles.spacer,

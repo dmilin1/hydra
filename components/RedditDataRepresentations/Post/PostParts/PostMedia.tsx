@@ -1,13 +1,7 @@
 import { AntDesign } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React, { useContext, useRef, useState } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { Text, StyleSheet, View, Platform } from "react-native";
 
 import CrossPost from "./PostMediaParts/CrossPost";
 import ImageViewer from "./PostMediaParts/ImageViewer";
@@ -22,6 +16,7 @@ import RenderHtml from "../../../HTML/RenderHTML";
 import { extractThemeFromText } from "../../../../utils/colors";
 import ThemeImport from "../../../UI/Themes/ThemeImport";
 import { CustomTheme } from "../../../../constants/Themes";
+import { Touchable } from "react-native-gesture-handler";
 
 type PostMediaProps = {
   post: Post | PostDetail;
@@ -114,7 +109,7 @@ export default function PostMedia({
         ))}
       </View>
       {isBlurable && blur && (
-        <TouchableOpacity
+        <Touchable
           style={[
             styles.blurContainer,
             {
@@ -123,7 +118,6 @@ export default function PostMedia({
             },
           ]}
           onPress={() => setBlur(false)}
-          activeOpacity={1}
         >
           <BlurView intensity={80} style={styles.blur} />
           <View style={styles.blurIconContainer}>
@@ -141,7 +135,7 @@ export default function PostMedia({
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
+        </Touchable>
       )}
     </>
   );

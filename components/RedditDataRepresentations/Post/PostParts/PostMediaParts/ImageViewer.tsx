@@ -1,6 +1,7 @@
 import { Image, ImageSource } from "expo-image";
 import React, { useState, useContext } from "react";
-import { Text, StyleSheet, View, TouchableHighlight } from "react-native";
+import { Text, StyleSheet, View } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
@@ -49,11 +50,7 @@ export default function ImageViewer({
         const imgSrc =
           typeof img === "string" ? img : loadLowData ? [img[0]] : img;
         return (
-          /**
-           * Don't change this to TouchableWithoutFeedback, it will break images in comments
-           * by making them offset weirdly. I have no idea why.
-           */
-          <TouchableHighlight
+          <Touchable
             key={index}
             activeOpacity={1}
             onPress={() => {
@@ -81,7 +78,7 @@ export default function ImageViewer({
               source={imgSrc}
               transition={250}
             />
-          </TouchableHighlight>
+          </Touchable>
         );
       })}
       {images.length >= 2 && (

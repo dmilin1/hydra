@@ -1,10 +1,5 @@
-import {
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-} from "react-native";
+import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { Post } from "../../../api/Posts";
 import { PageTypeToNavName } from "../../../utils/PageTypeToNavName";
 import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
@@ -46,7 +41,9 @@ export default function PostOverlay({
 
   return (
     <>
-      <TouchableOpacity
+      <Touchable
+        activeOpacity={0.2}
+        animationDuration={{ in: 0, out: 150 }}
         onPress={() => closeViewer()}
         style={[
           styles.closeButton,
@@ -57,10 +54,12 @@ export default function PostOverlay({
         ]}
       >
         <FontAwesome6 name="xmark" size={20} color="white" />
-      </TouchableOpacity>
+      </Touchable>
       <View onTouchEnd={(e) => e.stopPropagation()}>
         {shareable && (
-          <TouchableOpacity
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             style={styles.shareButton}
             onPress={async () => {
               setIsDownloading(true);
@@ -86,12 +85,11 @@ export default function PostOverlay({
                 style={styles.shareButtonIcon}
               />
             )}
-          </TouchableOpacity>
+          </Touchable>
         )}
-        <TouchableOpacity
+        <Touchable
           style={styles.postOverlay}
           onPress={() => openLink(post.link)}
-          activeOpacity={0.7}
         >
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
             {post.title}
@@ -103,15 +101,23 @@ export default function PostOverlay({
           )}
           <View style={styles.metadataContainer}>
             <Text style={styles.metadataText}> in </Text>
-            <TouchableOpacity onPress={() => openLink(`/r/${post.subreddit}`)}>
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
+              onPress={() => openLink(`/r/${post.subreddit}`)}
+            >
               <Text style={styles.metadataText}>/r/{post.subreddit}</Text>
-            </TouchableOpacity>
+            </Touchable>
             <Text style={styles.metadataText}> by </Text>
-            <TouchableOpacity onPress={() => openLink(`/user/${post.author}`)}>
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
+              onPress={() => openLink(`/user/${post.author}`)}
+            >
               <Text style={styles.metadataText}>{post.author}</Text>
-            </TouchableOpacity>
+            </Touchable>
           </View>
-        </TouchableOpacity>
+        </Touchable>
       </View>
     </>
   );

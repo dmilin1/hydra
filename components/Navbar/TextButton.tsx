@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
@@ -17,7 +18,7 @@ export default function TextButton({
   const { theme } = useContext(ThemeContext);
 
   return (
-    <TouchableOpacity
+    <Touchable
       style={[
         styles.sectionContainer,
         {
@@ -25,6 +26,7 @@ export default function TextButton({
         },
       ]}
       activeOpacity={0.5}
+      animationDuration={{ in: 0, out: 150 }}
       onPress={() => onPress?.()}
     >
       <Text
@@ -38,7 +40,7 @@ export default function TextButton({
       >
         {text}
       </Text>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

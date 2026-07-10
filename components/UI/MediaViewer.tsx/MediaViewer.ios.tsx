@@ -1,14 +1,8 @@
 import { FontAwesome6 } from "@expo/vector-icons";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
 import { useDeferredValue, useEffect, useRef, useState } from "react";
-import {
-  StyleSheet,
-  Animated,
-  Modal,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Animated, Modal, Text, View } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import {
   useSafeAreaInsets,
   useSafeAreaFrame,
@@ -177,7 +171,9 @@ export default function MediaViewer({
             },
           ]}
         >
-          <TouchableOpacity
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             style={[
               styles.rowNavigationButton,
               {
@@ -189,8 +185,10 @@ export default function MediaViewer({
             hitSlop={10}
           >
             <FontAwesome6 name="arrow-left" size={16} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Touchable>
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             style={[
               styles.rowNavigationButton,
               {
@@ -202,7 +200,7 @@ export default function MediaViewer({
             hitSlop={10}
           >
             <FontAwesome6 name="arrow-right" size={16} color="white" />
-          </TouchableOpacity>
+          </Touchable>
           <View style={styles.itemIndexContainer}>
             <Text style={styles.itemIndexText}>
               {currentColumnIndex + 1} / {currentRowSize}

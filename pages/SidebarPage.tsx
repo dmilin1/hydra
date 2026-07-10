@@ -5,8 +5,8 @@ import {
   ActivityIndicator,
   ScrollView,
   Text,
-  TouchableOpacity,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { getRules, getSidebar, Rule, Sidebar } from "../api/SubredditDetails";
@@ -102,7 +102,7 @@ export default function SidebarPage() {
               Rules
             </Text>
             {rules.map((rule, i) => (
-              <TouchableOpacity
+              <Touchable
                 key={rule.name}
                 style={[
                   styles.ruleItem,
@@ -112,6 +112,7 @@ export default function SidebarPage() {
                 ]}
                 onPress={() => toggleRule(rule.name)}
                 activeOpacity={0.8}
+                animationDuration={{ in: 0, out: 150 }}
               >
                 <View style={styles.ruleHeader}>
                   <Text
@@ -140,7 +141,7 @@ export default function SidebarPage() {
                     <RenderHtml html={rule.descriptionHTML} />
                   </View>
                 )}
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </View>
           <View style={styles.descriptionContainer}>

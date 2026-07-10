@@ -1,14 +1,8 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { StackActions } from "@react-navigation/native";
 import { useContext } from "react";
-import {
-  View,
-  Image,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import { View, Image, Text, StyleSheet, Alert } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../utils/navigation";
@@ -23,7 +17,7 @@ export default function GetHydraProButton({ onPress }: GetHydraProButtonProps) {
   const { dispatch } = useURLNavigation();
 
   return (
-    <TouchableOpacity
+    <Touchable
       onPress={() => {
         if (USING_CUSTOM_HYDRA_SERVER) {
           Alert.alert(
@@ -39,6 +33,7 @@ export default function GetHydraProButton({ onPress }: GetHydraProButtonProps) {
         onPress?.();
       }}
       activeOpacity={0.5}
+      animationDuration={{ in: 0, out: 150 }}
       style={[
         styles.buyProButton,
         {
@@ -70,7 +65,7 @@ export default function GetHydraProButton({ onPress }: GetHydraProButtonProps) {
           style={styles.buyProButtonIcon}
         />
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

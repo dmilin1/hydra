@@ -3,11 +3,11 @@ import { getAppIconName } from "expo-alternate-app-icons";
 import {
   View,
   Text,
-  TouchableOpacity,
   Image,
   StyleSheet,
   ImageSourcePropType,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
@@ -91,7 +91,7 @@ export default function AppIcon() {
     <View style={styles.container}>
       <View style={styles.iconsGrid}>
         {APP_ICONS.map((appIcon) => (
-          <TouchableOpacity
+          <Touchable
             key={appIcon.name || "default"}
             style={[
               styles.iconCard,
@@ -105,6 +105,7 @@ export default function AppIcon() {
             ]}
             onPress={() => handleIconPress(appIcon)}
             activeOpacity={0.7}
+            animationDuration={{ in: 0, out: 150 }}
           >
             <Image source={appIcon.icon} style={styles.iconImage} />
             <Text style={[styles.iconName, { color: theme.text }]}>
@@ -129,7 +130,7 @@ export default function AppIcon() {
                 <MaterialIcons name="check" size={16} color="white" />
               </View>
             )}
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </View>
     </View>

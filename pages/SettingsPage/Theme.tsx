@@ -3,11 +3,11 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   Alert,
   Switch,
   Appearance,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { useURLNavigation } from "../../utils/navigation";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useSetTheme } from "../../utils/useSetTheme";
@@ -40,7 +40,7 @@ export default function Theme() {
     <>
       <View style={styles.header}>
         <Text style={[styles.headerText, { color: theme.text }]}>Themes</Text>
-        <TouchableOpacity
+        <Touchable
           onPress={() => {
             if (!isPro) {
               Alert.alert(
@@ -64,12 +64,14 @@ export default function Theme() {
             pushURL("hydra://settings/themeMaker");
           }}
           hitSlop={20}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           style={[styles.plusContainer, { backgroundColor: theme.buttonBg }]}
         >
           <Text style={[styles.plusText, { color: theme.buttonText }]}>
             Custom Theme +
           </Text>
-        </TouchableOpacity>
+        </Touchable>
       </View>
 
       <List
@@ -112,9 +114,11 @@ export default function Theme() {
               onPress: () => setColorScheme("dark"),
             },
           ].map((item) => (
-            <TouchableOpacity
+            <Touchable
               key={item.key}
               onPress={item.onPress}
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               style={[
                 styles.timeModeButton,
                 colorScheme === item.key && {
@@ -125,7 +129,7 @@ export default function Theme() {
               <Text style={[styles.timeModeText, { color: theme.subtleText }]}>
                 {item.text}
               </Text>
-            </TouchableOpacity>
+            </Touchable>
           ))}
         </View>
       )}
@@ -143,17 +147,18 @@ export default function Theme() {
         }
       />
 
-      <TouchableOpacity
+      <Touchable
         style={[styles.exploreContainer, { backgroundColor: theme.buttonBg }]}
         onPress={() => {
           pushURL("https://www.reddit.com/r/HydraThemes");
         }}
         activeOpacity={0.8}
+        animationDuration={{ in: 0, out: 150 }}
       >
         <Text style={[styles.exploreText, { color: theme.buttonText }]}>
           Explore Community Themes
         </Text>
-      </TouchableOpacity>
+      </Touchable>
     </>
   );
 }

@@ -9,14 +9,8 @@ import {
 } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
-import {
-  Share,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Alert,
-  findNodeHandle,
-} from "react-native";
+import { Share, StyleSheet, View, Alert, findNodeHandle } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
 import { blockUser, User } from "../../api/User";
@@ -148,10 +142,11 @@ export default function SortAndContext({
   return (
     <View style={styles.sectionContainer}>
       {sortOptions && (
-        <TouchableOpacity
+        <Touchable
           ref={sortButtonRef}
           style={styles.sortButton}
           activeOpacity={0.5}
+          animationDuration={{ in: 0, out: 150 }}
           accessibilityLabel="Sort options"
           accessibilityRole="button"
           accessibilityHint="Sort the posts by the selected option"
@@ -264,13 +259,14 @@ export default function SortAndContext({
                 color={theme.iconOrTextButton}
               />
             )}
-        </TouchableOpacity>
+        </Touchable>
       )}
       {contextOptions && (
-        <TouchableOpacity
+        <Touchable
           ref={contextButtonRef}
           style={styles.contextButton}
           activeOpacity={0.5}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={async () => {
             const result = await showContextMenu({
               options: contextOptions,
@@ -379,7 +375,7 @@ export default function SortAndContext({
             size={24}
             color={theme.iconOrTextButton}
           />
-        </TouchableOpacity>
+        </Touchable>
       )}
     </View>
   );

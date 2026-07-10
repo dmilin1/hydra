@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { openExternalLink } from "../../../../../utils/openExternalLink";
 import React, { useContext } from "react";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, StyleSheet } from "react-native";
 
 import { PostDetail } from "../../../../../api/PostDetail";
 import { Post } from "../../../../../api/Posts";
@@ -11,6 +11,7 @@ import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/Po
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../../../../../utils/navigation";
 import RedditURL from "../../../../../utils/RedditURL";
+import { Touchable } from "react-native-gesture-handler";
 
 export default function Link({ post }: { post: Post | PostDetail }) {
   const { theme } = useContext(ThemeContext);
@@ -23,7 +24,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
   const url = post.externalLink ?? post.crossCommentLink;
 
   return (
-    <TouchableOpacity
+    <Touchable
       style={[
         styles.externalLinkContainer,
         {
@@ -31,6 +32,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
         },
       ]}
       activeOpacity={post.openGraphData?.image ? 0.8 : 0.5}
+      animationDuration={{ in: 0, out: 150 }}
       onPress={() => {
         if (!url) return;
         interactedWithPost();
@@ -102,7 +104,7 @@ export default function Link({ post }: { post: Post | PostDetail }) {
           {url}
         </Text>
       )}
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

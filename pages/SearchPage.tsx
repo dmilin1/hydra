@@ -4,10 +4,10 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity,
   ActivityIndicator,
   TextInput,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import {
   SearchResult,
@@ -97,7 +97,7 @@ export default function SearchPage() {
     >
       <View style={styles.searchOptionsContainer}>
         {SearchTypes.map((type) => (
-          <TouchableOpacity
+          <Touchable
             key={type}
             style={[
               styles.searchOption,
@@ -107,6 +107,7 @@ export default function SearchPage() {
               },
             ]}
             activeOpacity={0.8}
+            animationDuration={{ in: 0, out: 150 }}
             onPress={() => setSearchType(type)}
           >
             <Text
@@ -120,7 +121,7 @@ export default function SearchPage() {
             >
               {type.toUpperCase()}
             </Text>
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </View>
       <SearchBar

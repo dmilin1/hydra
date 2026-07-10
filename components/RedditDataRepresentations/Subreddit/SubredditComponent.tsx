@@ -1,11 +1,12 @@
 import { Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { Subreddit } from "../../../api/Subreddits";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import Numbers from "../../../utils/Numbers";
 import { useURLNavigation } from "../../../utils/navigation";
+import { Touchable } from "react-native-gesture-handler";
 
 export default function SubredditComponent({
   subreddit,
@@ -17,8 +18,7 @@ export default function SubredditComponent({
 
   return (
     <View>
-      <TouchableOpacity
-        activeOpacity={0.8}
+      <Touchable
         style={[
           styles.subredditContainer,
           {
@@ -98,7 +98,7 @@ export default function SubredditComponent({
           </View>
           <View style={styles.footerRight} />
         </View>
-      </TouchableOpacity>
+      </Touchable>
       <View
         style={[
           styles.spacer,

@@ -7,8 +7,8 @@ import {
   View,
   StyleSheet,
   Text,
-  TouchableOpacity,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { ImageSource } from "expo-image";
 
 import URL from "./URL";
@@ -32,11 +32,7 @@ export default function useMediaSharing() {
     if (!mediaUrl) return;
     try {
       setModal(
-        <TouchableOpacity
-          style={styles.modalContainer}
-          onPress={() => setModal(null)}
-          activeOpacity={0.9}
-        >
+        <Touchable style={styles.modalContainer} onPress={() => setModal(null)}>
           <View
             style={[
               styles.modal,
@@ -58,7 +54,7 @@ export default function useMediaSharing() {
             </Text>
             <ActivityIndicator size="small" />
           </View>
-        </TouchableOpacity>,
+        </Touchable>,
       );
       const fileName = new URL(mediaUrl).getBasePath().split("/").pop();
       const file = new File(`${Paths.cache.uri}/${fileName}`);

@@ -1,13 +1,7 @@
 import React, { useContext } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../../UI/GetHydraProButton";
@@ -38,7 +32,9 @@ export default function GetHydraPro({ onExit }: GetHydraProProps) {
               { backgroundColor: theme.tint, borderColor: theme.divider },
             ]}
           >
-            <TouchableOpacity
+            <Touchable
+              activeOpacity={0.2}
+              animationDuration={{ in: 0, out: 150 }}
               style={[
                 styles.exitButton,
                 { backgroundColor: theme.verySubtleText },
@@ -46,7 +42,7 @@ export default function GetHydraPro({ onExit }: GetHydraProProps) {
               onPress={exit}
             >
               <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
-            </TouchableOpacity>
+            </Touchable>
 
             <View style={styles.headerArea}>
               <Image
@@ -79,7 +75,7 @@ export default function GetHydraPro({ onExit }: GetHydraProProps) {
             <GetHydraProButton onPress={exit} />
           </View>
         </View>
-        <TouchableOpacity style={styles.background} onPress={exit} />
+        <Touchable style={styles.background} onPress={exit} />
       </View>
     </>
   );

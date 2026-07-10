@@ -6,15 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  StyleSheet,
-  Share,
-  TouchableHighlight,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, Share, Alert } from "react-native";
 
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
@@ -31,6 +23,7 @@ import RedditURL from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import NewComment from "../../Modals/NewComment";
 import Time from "../../../utils/Time";
+import { Touchable } from "react-native-gesture-handler";
 
 type Summary = {
   post: string | null;
@@ -110,8 +103,7 @@ export default function PostDetailsComponent({
 
   return (
     <View>
-      <TouchableOpacity
-        activeOpacity={tapToCollapsePost ? 0.8 : 1}
+      <Touchable
         onPress={() =>
           tapToCollapsePost ? setMediaCollapsed(!mediaCollapsed) : null
         }
@@ -172,9 +164,10 @@ export default function PostDetailsComponent({
                   ]}
                 />
               )}
-              <TouchableOpacity
+              <Touchable
                 style={styles.subredditContainer}
                 activeOpacity={0.5}
+                animationDuration={{ in: 0, out: 150 }}
                 onPress={() => pushURL(`/r/${postDetail.subreddit}`)}
               >
                 <SubredditIcon subredditIcon={postDetail.subredditIcon} />
@@ -188,7 +181,7 @@ export default function PostDetailsComponent({
                 >
                   {`r/${postDetail.subreddit}`}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
               <Text
                 style={[
                   styles.smallText,
@@ -199,8 +192,9 @@ export default function PostDetailsComponent({
               >
                 {" by "}
               </Text>
-              <TouchableOpacity
+              <Touchable
                 activeOpacity={0.5}
+                animationDuration={{ in: 0, out: 150 }}
                 onPress={() => pushURL(`/user/${postDetail.author}`)}
               >
                 <Text
@@ -215,7 +209,7 @@ export default function PostDetailsComponent({
                 >
                   {`u/${postDetail.author}`}
                 </Text>
-              </TouchableOpacity>
+              </Touchable>
             </View>
             <View style={[styles.metadataRow, { marginTop: 5 }]}>
               <Feather name="arrow-up" size={15} color={theme.subtleText} />
@@ -241,8 +235,10 @@ export default function PostDetailsComponent({
                 {postDetail.timeSince}
               </Text>
               {postDetail.editedAt && (
-                <TouchableOpacity
+                <Touchable
                   style={styles.editedAtContainer}
+                  activeOpacity={0.2}
+                  animationDuration={{ in: 0, out: 150 }}
                   onPress={() => {
                     if (!postDetail.editedAt) return;
                     const timeSinceEdited = new Time(
@@ -259,7 +255,7 @@ export default function PostDetailsComponent({
                     size={14}
                     color={theme.subtleText}
                   />
-                </TouchableOpacity>
+                </Touchable>
               )}
               {postDetail.interactionDisabledStatus && (
                 <>
@@ -275,7 +271,7 @@ export default function PostDetailsComponent({
             </View>
           </View>
         </View>
-      </TouchableOpacity>
+      </Touchable>
       <View
         style={[
           styles.buttonsBarContainer,
@@ -284,7 +280,7 @@ export default function PostDetailsComponent({
           },
         ]}
       >
-        <TouchableOpacity
+        <Touchable
           style={[
             styles.buttonsContainer,
             {
@@ -294,6 +290,8 @@ export default function PostDetailsComponent({
                   : undefined,
             },
           ]}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => voteOnPost(VoteOption.UpVote)}
         >
           <Feather
@@ -305,8 +303,8 @@ export default function PostDetailsComponent({
                 : theme.iconPrimary
             }
           />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
           style={[
             styles.buttonsContainer,
             {
@@ -316,6 +314,8 @@ export default function PostDetailsComponent({
                   : undefined,
             },
           ]}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => voteOnPost(VoteOption.DownVote)}
         >
           <Feather
@@ -327,14 +327,16 @@ export default function PostDetailsComponent({
                 : theme.iconPrimary
             }
           />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
           style={[
             styles.buttonsContainer,
             {
               backgroundColor: undefined,
             },
           ]}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={async () => {
             await saveItem(postDetail, !postDetail.saved);
             setPostDetail({
@@ -348,9 +350,11 @@ export default function PostDetailsComponent({
             size={28}
             color={theme.iconPrimary}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
           style={styles.buttonsContainer}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             if (postDetail.interactionDisabledStatus) {
               Alert.alert(
@@ -367,18 +371,22 @@ export default function PostDetailsComponent({
           }}
         >
           <Octicons name="reply" size={28} color={theme.iconPrimary} />
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Touchable>
+        <Touchable
           style={styles.buttonsContainer}
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             Share.share({ url: new RedditURL(url).toString() });
           }}
         >
           <Feather name="share" size={28} color={theme.iconPrimary} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
       {contextDepth > 0 && (
-        <TouchableOpacity
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
             pushURL(
               new RedditURL(
@@ -396,10 +404,10 @@ export default function PostDetailsComponent({
           <Text style={{ color: theme.iconOrTextButton }}>
             This is a comment thread. Click here to view all comments.
           </Text>
-        </TouchableOpacity>
+        </Touchable>
       )}
       {summary?.comments && (
-        <TouchableHighlight
+        <Touchable
           activeOpacity={1}
           underlayColor={theme.tint}
           onPress={() => setCommentSummaryCollapsed(!commentSummaryCollapsed)}
@@ -434,7 +442,7 @@ export default function PostDetailsComponent({
               </Text>
             )}
           </View>
-        </TouchableHighlight>
+        </Touchable>
       )}
     </View>
   );

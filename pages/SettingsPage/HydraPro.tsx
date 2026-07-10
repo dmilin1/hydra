@@ -1,12 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  Image,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, Text, Image, View, ActivityIndicator } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
@@ -86,13 +80,14 @@ export default function HydraPro() {
         <HydraProFeatureList />
       </View>
 
-      <TouchableOpacity
+      <Touchable
         onPress={async () => {
           setIsPurchasing(true);
           await buyPro();
           setIsPurchasing(false);
         }}
         activeOpacity={0.5}
+        animationDuration={{ in: 0, out: 150 }}
         style={[
           styles.upgradeButton,
           {
@@ -130,7 +125,7 @@ export default function HydraPro() {
             />
           )}
         </View>
-      </TouchableOpacity>
+      </Touchable>
       {gracePeriodEndsAt && (
         <Text style={[styles.gracePeriodText, { color: theme.text }]}>
           Your subscription will end in{" "}

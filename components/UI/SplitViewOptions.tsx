@@ -1,4 +1,5 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -29,28 +30,32 @@ export default function SplitViewOptions({
         },
       ]}
     >
-      <TouchableOpacity
+      <Touchable
         style={[
           styles.button,
           {
             backgroundColor: theme.buttonBg,
           },
         ]}
+        activeOpacity={0.2}
+        animationDuration={{ in: 0, out: 150 }}
         onPress={() => setSplitViewURL(null)}
       >
         <AntDesign name="close" size={18} color={theme.buttonText} />
-      </TouchableOpacity>
-      <TouchableOpacity
+      </Touchable>
+      <Touchable
         style={[
           styles.button,
           {
             backgroundColor: theme.buttonBg,
           },
         ]}
+        activeOpacity={0.2}
+        animationDuration={{ in: 0, out: 150 }}
         onPress={() => navigation.pushURL(splitViewURL)}
       >
         <AntDesign name="fullscreen" size={18} color={theme.buttonText} />
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 }

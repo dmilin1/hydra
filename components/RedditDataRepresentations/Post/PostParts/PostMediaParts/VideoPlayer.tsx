@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import ImageViewer from "./ImageViewer";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
@@ -12,6 +12,7 @@ import Video from "../../../../UI/Gallery/Video";
 import { PostDetail } from "../../../../../api/PostDetail";
 import { FontAwesome } from "@expo/vector-icons";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
+import { Touchable } from "react-native-gesture-handler";
 
 type VideoPlayerProps = {
   post: Post | PostDetail;
@@ -32,8 +33,7 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
   const videoHeight = Math.min(height * 0.6, heightIfFullSize);
 
   return (
-    <TouchableOpacity
-      activeOpacity={1}
+    <Touchable
       style={{
         height: videoHeight,
       }}
@@ -89,7 +89,7 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

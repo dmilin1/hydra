@@ -4,10 +4,10 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ActivityIndicator,
   Platform,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { useMMKVNumber } from "react-native-mmkv";
 
 import { AccountContext } from "../../contexts/AccountContext";
@@ -61,7 +61,7 @@ export default function SubscribeToHydra() {
                 },
               ]}
             >
-              <TouchableOpacity
+              <Touchable
                 style={[
                   styles.exitButton,
                   {
@@ -70,9 +70,10 @@ export default function SubscribeToHydra() {
                 ]}
                 onPress={() => answeredModal()}
                 activeOpacity={0.7}
+                animationDuration={{ in: 0, out: 150 }}
               >
                 <FontAwesome6 name="xmark" size={14} color={theme.subtleText} />
-              </TouchableOpacity>
+              </Touchable>
 
               <View style={styles.iconContainer}>
                 <View
@@ -109,7 +110,7 @@ export default function SubscribeToHydra() {
                 feature announcements, and join discussions about the app.
               </Text>
               <View style={styles.buttonContainer}>
-                <TouchableOpacity
+                <Touchable
                   style={[
                     styles.cancelButton,
                     {
@@ -118,6 +119,7 @@ export default function SubscribeToHydra() {
                   ]}
                   onPress={() => answeredModal()}
                   activeOpacity={0.7}
+                  animationDuration={{ in: 0, out: 150 }}
                 >
                   <Text
                     style={[
@@ -129,8 +131,8 @@ export default function SubscribeToHydra() {
                   >
                     Maybe Later
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Touchable>
+                <Touchable
                   style={[
                     styles.subscribeButton,
                     {
@@ -139,6 +141,7 @@ export default function SubscribeToHydra() {
                   ]}
                   onPress={() => subscribeToHydra()}
                   activeOpacity={0.8}
+                  animationDuration={{ in: 0, out: 150 }}
                 >
                   {isSubcribing ? (
                     <ActivityIndicator size="small" color={theme.text} />
@@ -154,16 +157,12 @@ export default function SubscribeToHydra() {
                       Join
                     </Text>
                   )}
-                </TouchableOpacity>
+                </Touchable>
               </View>
             </View>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.background}
-          onPress={() => answeredModal()}
-          activeOpacity={0.25}
-        />
+        <Touchable style={styles.background} onPress={() => answeredModal()} />
       </>
     )
   );

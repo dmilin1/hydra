@@ -1,12 +1,7 @@
 import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, ScrollView, Image } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../../UI/GetHydraProButton";
@@ -156,7 +151,9 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           },
         ]}
       >
-        <TouchableOpacity
+        <Touchable
+          activeOpacity={0.2}
+          animationDuration={{ in: 0, out: 150 }}
           style={[
             styles.exitButton,
             {
@@ -166,7 +163,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           onPress={() => exitUpdateInfo()}
         >
           <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
-        </TouchableOpacity>
+        </Touchable>
         <View style={styles.versionBadge}>
           <TextWithRepairedHeight
             style={[
@@ -372,10 +369,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           <GetHydraProButton onPress={() => exitUpdateInfo()} />
         </ScrollView>
       </View>
-      <TouchableOpacity
-        style={styles.background}
-        onPress={() => exitUpdateInfo()}
-      />
+      <Touchable style={styles.background} onPress={() => exitUpdateInfo()} />
     </View>
   );
 }

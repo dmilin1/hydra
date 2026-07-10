@@ -1,12 +1,13 @@
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { Image } from "expo-image";
 
 import { Subreddit } from "../../../api/Subreddits";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../../contexts/SubredditContext";
 import { useURLNavigation } from "../../../utils/navigation";
+import { Touchable } from "react-native-gesture-handler";
 
 export default function SubredditCompactLink({
   subreddit,
@@ -19,9 +20,8 @@ export default function SubredditCompactLink({
   const { theme } = useContext(ThemeContext);
 
   return (
-    <TouchableOpacity
+    <Touchable
       onPress={() => pushURL(subreddit.url)}
-      activeOpacity={0.5}
       style={[
         styles.subredditContainer,
         {
@@ -50,8 +50,10 @@ export default function SubredditCompactLink({
           {subreddit.name}
         </Text>
         <View style={styles.favoriteIconContainer}>
-          <TouchableOpacity
+          <Touchable
             onPress={() => toggleFavorite(subreddit.name)}
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
             hitSlop={10}
           >
             <FontAwesome
@@ -71,10 +73,10 @@ export default function SubredditCompactLink({
               }
               style={styles.favoriteIcon}
             />
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

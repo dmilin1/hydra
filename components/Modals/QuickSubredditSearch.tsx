@@ -3,12 +3,12 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
   Animated,
   useAnimatedValue,
   ActivityIndicator,
 } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -136,9 +136,8 @@ export default function QuickSubredditSearch({
           keyboardShouldPersistTaps="handled"
           data={subredditsToShow}
           renderItem={({ item, index }) => (
-            <TouchableOpacity
+            <Touchable
               onPress={() => navigateToSubreddit(item)}
-              activeOpacity={0.5}
               style={[
                 styles.subredditContainer,
                 {
@@ -171,7 +170,7 @@ export default function QuickSubredditSearch({
                   style={styles.arrow}
                 />
               </View>
-            </TouchableOpacity>
+            </Touchable>
           )}
         />
         {loading && (
@@ -182,11 +181,7 @@ export default function QuickSubredditSearch({
           />
         )}
       </SafeAreaView>
-      <TouchableOpacity
-        activeOpacity={0.7}
-        style={styles.background}
-        onPress={() => onExit()}
-      />
+      <Touchable style={styles.background} onPress={() => onExit()} />
     </Animated.View>
   );
 }

@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { Post } from "../../../../../api/Posts";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
@@ -8,6 +8,7 @@ import { useURLNavigation } from "../../../../../utils/navigation";
 import PostMedia from "../PostMedia";
 import SubredditIcon from "../SubredditIcon";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
+import { Touchable } from "react-native-gesture-handler";
 
 type CrossPostProps = {
   post: Post;
@@ -19,8 +20,7 @@ export default function CrossPost({ post }: CrossPostProps) {
   const { postTextLength } = useContext(PostSettingsContext);
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Touchable
       onPress={() => pushURL(post.link)}
       style={[styles.container, { borderColor: theme.divider }]}
     >
@@ -34,9 +34,10 @@ export default function CrossPost({ post }: CrossPostProps) {
 
       <View style={styles.footer}>
         <View style={styles.header}>
-          <TouchableOpacity
+          <Touchable
             style={styles.subredditContainer}
             activeOpacity={0.5}
+            animationDuration={{ in: 0, out: 150 }}
             onPress={() =>
               pushURL(`https://www.reddit.com/r/${post.subreddit}`)
             }
@@ -45,7 +46,7 @@ export default function CrossPost({ post }: CrossPostProps) {
             <Text style={[styles.subredditText, { color: theme.subtleText }]}>
               r/{post.subreddit}
             </Text>
-          </TouchableOpacity>
+          </Touchable>
         </View>
 
         <View style={styles.metadataContainer}>
@@ -69,7 +70,7 @@ export default function CrossPost({ post }: CrossPostProps) {
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 

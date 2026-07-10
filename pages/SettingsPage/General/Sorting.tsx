@@ -1,13 +1,7 @@
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import {
-  StyleSheet,
-  ColorValue,
-  Switch,
-  View,
-  TouchableOpacity,
-  Text,
-} from "react-native";
+import { StyleSheet, ColorValue, Switch, View, Text } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
 
 import List from "../../../components/UI/List";
@@ -262,7 +256,7 @@ export default function General() {
       />
       {rememberPostSubredditSort && numRememberedPostSubreddits > 0 && (
         <View style={styles.clearButtonContainer}>
-          <TouchableOpacity
+          <Touchable
             style={[
               styles.clearButton,
               {
@@ -270,6 +264,7 @@ export default function General() {
               },
             ]}
             activeOpacity={0.8}
+            animationDuration={{ in: 0, out: 150 }}
             onPress={() => {
               clearRememberedPostSubredditSorts();
             }}
@@ -285,7 +280,7 @@ export default function General() {
               Clear custom post sorts ({numRememberedPostSubreddits} sub
               {numRememberedPostSubreddits === 1 ? "" : "s"})
             </Text>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       )}
       <List
@@ -327,7 +322,7 @@ export default function General() {
       />
       {rememberCommentSubredditSort && numRememberedCommentSubreddits > 0 && (
         <View style={styles.clearButtonContainer}>
-          <TouchableOpacity
+          <Touchable
             style={[
               styles.clearButton,
               {
@@ -335,6 +330,7 @@ export default function General() {
               },
             ]}
             activeOpacity={0.8}
+            animationDuration={{ in: 0, out: 150 }}
             onPress={() => {
               clearRememberedCommentSubredditSorts();
             }}
@@ -350,7 +346,7 @@ export default function General() {
               Clear custom comment sorts ({numRememberedCommentSubreddits} sub
               {numRememberedCommentSubreddits === 1 ? "" : "s"})
             </Text>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       )}
     </>
