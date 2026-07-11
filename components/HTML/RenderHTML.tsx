@@ -24,6 +24,11 @@ import ThemeImport from "../UI/Themes/ThemeImport";
 import { extractThemeFromText } from "../../utils/colors";
 import URL from "../../utils/URL";
 import { TextWithRepairedHeight } from "../Other/TextWithRepairedHeight";
+import {
+  InterceptingGestureDetector,
+  useTapGesture,
+  VirtualGestureDetector,
+} from "react-native-gesture-handler";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -72,6 +77,51 @@ function isElementImgLinkInParagraph(element: ElementNode): boolean {
   );
 }
 
+/**
+ * Text's onPress uses the JS responder system, which native RNGH buttons
+ * (like the Touchable comment rows) swallow before it can fire, so pressable
+ * HTML elements use a VirtualGestureDetector tap instead. Native code decides
+ * whether a touch belongs to the detector by comparing the tag of the touched
+ * text fragment against the tag of the Text the detector wraps, and fragments
+ * are tagged with their INNERMOST enclosing Text. Every raw string in this
+ * renderer is wrapped in TextNodeElem's own Text, so the detector must live
+ * there — PressableText just carries the press handler down through context.
+ * VirtualGestureDetector only functions under an InterceptingGestureDetector,
+ * which RenderHtml provides at its root.
+ */
+const PressContext = React.createContext<(() => void) | undefined>(undefined);
+
+function PressableText({
+  onPress,
+  ...props
+}: Omit<TextProps, "onPress"> & { onPress?: () => void }) {
+  return (
+    <PressContext.Provider value={onPress}>
+      <Text {...props} />
+    </PressContext.Provider>
+  );
+}
+
+function TappableText({
+  onPress,
+  ...props
+}: Omit<TextProps, "onPress"> & { onPress: () => void }) {
+  const tapGesture = useTapGesture({
+    // The press handlers do JS work (navigation, state), so keep the callback
+    // on the JS thread. Without this the callback is auto-workletized and runs
+    // on the UI runtime, where calling onPress throws a Worklets remote
+    // function error.
+    disableReanimated: true,
+    onActivate: () => onPress(),
+  });
+
+  return (
+    <VirtualGestureDetector gesture={tapGesture}>
+      <Text {...props} />
+    </VirtualGestureDetector>
+  );
+}
+
 export function Element({ element, index, inheritedStyles }: ElementProps) {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
@@ -85,7 +135,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
   // @ts-expect-error index is not typed
   element.index = index;
   if (element.attribs.class === "md-spoiler-text") {
-    Wrapper = Text;
+    Wrapper = PressableText;
     inheritedStyles.color = showSpoiler ? theme.subtleText : theme.tint;
     wrapperStyles.paddingVertical = 2;
     wrapperStyles.paddingHorizontal = 5;
@@ -218,7 +268,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     element.name === "a" &&
     element.children[0]?.type === ElementType.Text
   ) {
-    Wrapper = Text;
+    Wrapper = PressableText;
     inheritedStyles.color = theme.iconOrTextButton;
     wrapperProps.onPress = () => {
       const url = element.attribs.href;
@@ -324,20 +374,24 @@ export function TextNodeElem({
   inheritedStyles,
 }: TextNodeProps) {
   const { theme } = useContext(ThemeContext);
+  const onPress = useContext(PressContext);
 
   const { customThemes, remainingText } = extractThemeFromText(textNode.data);
 
-  const TextComponment = (
-    <Text
-      key={index}
-      style={[
-        styles.basicText,
-        {
-          color: theme.subtleText,
-          ...inheritedStyles,
-        },
-      ]}
-    >
+  const textStyle = [
+    styles.basicText,
+    {
+      color: theme.subtleText,
+      ...inheritedStyles,
+    },
+  ];
+
+  const TextComponment = onPress ? (
+    <TappableText key={index} onPress={onPress} style={textStyle}>
+      {remainingText}
+    </TappableText>
+  ) : (
+    <Text key={index} style={textStyle}>
       {remainingText}
     </Text>
   );
@@ -396,16 +450,18 @@ export function getNode({ key, node, index, inheritedStyles }: NodeProps) {
 export default function RenderHtml({ html }: { html: string }) {
   const document = parseDocument(html);
   return (
-    <View style={{ width: "100%" }}>
-      {document.children.map((c, i) =>
-        getNode({
-          key: makeChildNodeKey(c, i),
-          node: c,
-          index: i,
-          inheritedStyles: {},
-        }),
-      )}
-    </View>
+    <InterceptingGestureDetector>
+      <View style={{ width: "100%" }}>
+        {document.children.map((c, i) =>
+          getNode({
+            key: makeChildNodeKey(c, i),
+            node: c,
+            index: i,
+            inheritedStyles: {},
+          }),
+        )}
+      </View>
+    </InterceptingGestureDetector>
   );
 }
 
