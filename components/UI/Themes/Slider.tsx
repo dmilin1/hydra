@@ -6,9 +6,9 @@ import {
   LayoutChangeEvent,
   ViewStyle,
   Text,
-  GestureResponderEvent,
   ColorValue,
 } from "react-native";
+import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 
 interface SliderProps {
   value?: number;
@@ -46,7 +46,9 @@ export default function Slider({
   const [sliderWidth, setSliderWidth] = useState(0);
   const [currentValue, setCurrentValue] = useState(value);
   const animatedValue = useRef(new Animated.Value(0)).current;
-  const trackRef = useRef<View>(null);
+  // onFinalize needs the value at release time without depending on render
+  // closures staying fresh.
+  const latestValue = useRef(value);
 
   // Calculate position from value
   const valueToPosition = useCallback(
@@ -73,12 +75,8 @@ export default function Slider({
   // Update animated value when value prop changes
   useEffect(() => {
     if (sliderWidth > 0) {
-      const position = valueToPosition(value);
-      Animated.timing(animatedValue, {
-        toValue: position,
-        duration: 0,
-        useNativeDriver: false,
-      }).start();
+      animatedValue.setValue(valueToPosition(value));
+      latestValue.current = value;
       setCurrentValue(value);
     }
   }, [value, sliderWidth, valueToPosition, animatedValue]);
@@ -88,85 +86,82 @@ export default function Slider({
     setSliderWidth(width - thumbSize);
   };
 
-  const updateValueFromEvent = (event: GestureResponderEvent) => {
-    if (!trackRef.current || disabled) return;
+  // The pan event's x is already relative to the track, so no view
+  // measurement is needed.
+  const updateValueFromX = (x: number) => {
+    if (disabled || sliderWidth <= 0) return;
 
-    trackRef.current.measure((_x, _y, _width, _height, pageX, _pageY) => {
-      const touchX = event.nativeEvent.pageX - pageX;
-      const position = Math.max(
-        0,
-        Math.min(sliderWidth, touchX - thumbSize / 2),
-      );
+    const position = Math.max(0, Math.min(sliderWidth, x - thumbSize / 2));
+    animatedValue.setValue(position);
 
-      Animated.timing(animatedValue, {
-        toValue: position,
-        duration: 0,
-        useNativeDriver: false,
-      }).start();
-
-      const newValue = positionToValue(position);
-      setCurrentValue(newValue);
-      onValueChange?.(newValue);
-    });
+    const newValue = positionToValue(position);
+    latestValue.current = newValue;
+    setCurrentValue(newValue);
+    onValueChange?.(newValue);
   };
 
-  const handleTouchStart = (event: GestureResponderEvent) => {
-    if (disabled) return;
-    onSlidingStart?.();
-    updateValueFromEvent(event);
-  };
-
-  const handleTouchMove = (event: GestureResponderEvent) => {
-    updateValueFromEvent(event);
-  };
-
-  const handleTouchEnd = () => {
-    if (disabled) return;
-    onSlidingComplete?.(currentValue);
-  };
+  const panGesture = usePanGesture({
+    // The callbacks drive React state and JS callbacks, so keep them on the
+    // JS thread instead of letting them be auto-workletized onto the UI
+    // runtime, where they couldn't call onValueChange.
+    disableReanimated: true,
+    enabled: !disabled,
+    // Activate without requiring movement so a drag tracks from the first
+    // point. A plain tap never activates the pan, so the initial jump also
+    // happens in onBegin, which fires on every touch down.
+    minDistance: 0,
+    // The 4pt track is too thin a target on its own. Matches the touch area
+    // the thumb's hitSlop used to provide.
+    hitSlop: { top: 20, bottom: 20, left: 20, right: 20 },
+    onBegin: (e) => {
+      if (disabled) return;
+      onSlidingStart?.();
+      updateValueFromX(e.x);
+    },
+    onUpdate: (e) => updateValueFromX(e.x),
+    onFinalize: () => {
+      if (disabled) return;
+      onSlidingComplete?.(latestValue.current);
+    },
+  });
 
   return (
     <View style={[styles.container, style]} onLayout={handleLayout}>
       <Text style={styles.valueText}>{Math.round(currentValue)}</Text>
 
-      <View
-        ref={trackRef}
-        style={[
-          styles.track,
-          { backgroundColor: maximumTrackTintColor },
-          trackStyle,
-        ]}
-        onStartShouldSetResponder={() => !disabled}
-        onMoveShouldSetResponder={() => !disabled}
-        onResponderGrant={handleTouchStart}
-        onResponderMove={handleTouchMove}
-        onResponderRelease={handleTouchEnd}
-      >
-        <Animated.View
+      <GestureDetector gesture={panGesture}>
+        <View
           style={[
-            styles.minimumTrack,
-            {
-              backgroundColor: minimumTrackTintColor,
-              width: animatedValue,
-            },
+            styles.track,
+            { backgroundColor: maximumTrackTintColor },
+            trackStyle,
           ]}
-        />
+        >
+          <Animated.View
+            style={[
+              styles.minimumTrack,
+              {
+                backgroundColor: minimumTrackTintColor,
+                width: animatedValue,
+              },
+            ]}
+          />
 
-        <Animated.View
-          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-          style={[
-            styles.thumb,
-            {
-              width: thumbSize,
-              height: thumbSize,
-              borderRadius: thumbSize / 2,
-              backgroundColor: thumbTintColor,
-              transform: [{ translateX: animatedValue }],
-            },
-            thumbStyle,
-          ]}
-        />
-      </View>
+          <Animated.View
+            style={[
+              styles.thumb,
+              {
+                width: thumbSize,
+                height: thumbSize,
+                borderRadius: thumbSize / 2,
+                backgroundColor: thumbTintColor,
+                transform: [{ translateX: animatedValue }],
+              },
+              thumbStyle,
+            ]}
+          />
+        </View>
+      </GestureDetector>
     </View>
   );
 }

@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import SelectableText from "../UI/SelectableText";
+import { Touchable } from "react-native-gesture-handler";
 
 type SelectTextProps = {
   text: string;
@@ -34,8 +35,9 @@ export default function SelectText({ text }: SelectTextProps) {
           ]}
         />
       </View>
-      <View
+      <Touchable
         style={styles.background}
+        defaultOpacity={0.7}
         onTouchStart={() => {
           setModal(null);
         }}
@@ -69,6 +71,5 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "black",
-    opacity: 0.7,
   },
 });

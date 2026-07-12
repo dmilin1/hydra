@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
 import {
-  TouchableWithoutFeedback,
   View,
   StyleSheet,
   Text,
@@ -15,6 +14,10 @@ import Slider from "./Slider";
 import TextInput from "../TextInput";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { hexToRgb, rgbToHex, validateHex } from "../../../utils/colors";
+import {
+  GestureHandlerRootView,
+  Touchable,
+} from "react-native-gesture-handler";
 
 type ColorPickerProps = {
   show: boolean;
@@ -82,128 +85,133 @@ export default function ColorPicker({
 
   return (
     <Modal visible={show} animationType="fade" transparent={true}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <TouchableWithoutFeedback onPress={onClose}>
-          <View style={[styles.overlay, { flex: keyboardVisible ? 0 : 1 }]} />
-        </TouchableWithoutFeedback>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Touchable
+            onPress={onClose}
+            style={[styles.overlay, { flex: keyboardVisible ? 0 : 1 }]}
+          />
 
-        <View
-          style={[styles.modalContent, { backgroundColor: baseTheme.tint }]}
-        >
           <View
-            style={[styles.header, { borderBottomColor: baseTheme.divider }]}
+            style={[styles.modalContent, { backgroundColor: baseTheme.tint }]}
           >
-            <Text style={[styles.title, { color: baseTheme.text }]}>
-              Color Picker
-            </Text>
-            <TouchableWithoutFeedback onPress={onClose}>
-              <Text
-                style={[
-                  styles.closeButton,
-                  {
-                    color: baseTheme.iconOrTextButton,
-                  },
-                ]}
-              >
-                Done
-              </Text>
-            </TouchableWithoutFeedback>
-          </View>
-
-          <View style={styles.previewContainer}>
             <View
-              style={[
-                styles.colorPreview,
-                {
-                  backgroundColor: previewColor,
-                  borderColor: baseTheme.text,
-                },
-              ]}
-            />
-            <View style={styles.hexInputContainer}>
-              <Text style={[styles.hexLabel, { color: baseTheme.subtleText }]}>
-                HEX:
+              style={[styles.header, { borderBottomColor: baseTheme.divider }]}
+            >
+              <Text style={[styles.title, { color: baseTheme.text }]}>
+                Color Picker
               </Text>
-              <TextInput
+              <Touchable onPress={onClose}>
+                <Text
+                  style={[
+                    styles.closeButton,
+                    {
+                      color: baseTheme.iconOrTextButton,
+                    },
+                  ]}
+                >
+                  Done
+                </Text>
+              </Touchable>
+            </View>
+
+            <View style={styles.previewContainer}>
+              <View
                 style={[
-                  styles.hexInput,
+                  styles.colorPreview,
                   {
-                    color: baseTheme.text,
-                    borderColor: baseTheme.divider,
-                    backgroundColor: baseTheme.background,
+                    backgroundColor: previewColor,
+                    borderColor: baseTheme.text,
                   },
                 ]}
-                value={hexInput.toString()}
-                onChangeText={handleHexInputChange}
-                placeholder="#000000"
-                placeholderTextColor={baseTheme.verySubtleText}
-                autoCapitalize="characters"
-                autoCorrect={false}
-                maxLength={7}
               />
+              <View style={styles.hexInputContainer}>
+                <Text
+                  style={[styles.hexLabel, { color: baseTheme.subtleText }]}
+                >
+                  HEX:
+                </Text>
+                <TextInput
+                  style={[
+                    styles.hexInput,
+                    {
+                      color: baseTheme.text,
+                      borderColor: baseTheme.divider,
+                      backgroundColor: baseTheme.background,
+                    },
+                  ]}
+                  value={hexInput.toString()}
+                  onChangeText={handleHexInputChange}
+                  placeholder="#000000"
+                  placeholderTextColor={baseTheme.verySubtleText}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  maxLength={7}
+                />
+              </View>
+            </View>
+
+            <View style={styles.slidersContainer}>
+              <View style={styles.sliderRow}>
+                <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
+                  R
+                </Text>
+                <View style={styles.sliderWrapper}>
+                  <Slider
+                    value={rgb.r}
+                    minimumValue={0}
+                    maximumValue={255}
+                    onValueChange={(value) => handleRgbChange("r", value)}
+                    onSlidingComplete={(value) => handleRgbComplete("r", value)}
+                    minimumTrackTintColor="#FF0000"
+                    maximumTrackTintColor={baseTheme.divider}
+                    thumbTintColor={baseTheme.buttonBg}
+                    style={styles.slider}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.sliderRow}>
+                <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
+                  G
+                </Text>
+                <View style={styles.sliderWrapper}>
+                  <Slider
+                    value={rgb.g}
+                    minimumValue={0}
+                    maximumValue={255}
+                    onValueChange={(value) => handleRgbChange("g", value)}
+                    onSlidingComplete={(value) => handleRgbComplete("g", value)}
+                    minimumTrackTintColor="#00FF00"
+                    maximumTrackTintColor={baseTheme.divider}
+                    thumbTintColor={baseTheme.buttonBg}
+                    style={styles.slider}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.sliderRow}>
+                <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
+                  B
+                </Text>
+                <View style={styles.sliderWrapper}>
+                  <Slider
+                    value={rgb.b}
+                    minimumValue={0}
+                    maximumValue={255}
+                    onValueChange={(value) => handleRgbChange("b", value)}
+                    onSlidingComplete={(value) => handleRgbComplete("b", value)}
+                    minimumTrackTintColor="#0000FF"
+                    maximumTrackTintColor={baseTheme.divider}
+                    thumbTintColor={baseTheme.buttonBg}
+                    style={styles.slider}
+                  />
+                </View>
+              </View>
             </View>
           </View>
-
-          <View style={styles.slidersContainer}>
-            <View style={styles.sliderRow}>
-              <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
-                R
-              </Text>
-              <View style={styles.sliderWrapper}>
-                <Slider
-                  value={rgb.r}
-                  minimumValue={0}
-                  maximumValue={255}
-                  onValueChange={(value) => handleRgbChange("r", value)}
-                  onSlidingComplete={(value) => handleRgbComplete("r", value)}
-                  minimumTrackTintColor="#FF0000"
-                  maximumTrackTintColor={baseTheme.divider}
-                  thumbTintColor={baseTheme.buttonBg}
-                  style={styles.slider}
-                />
-              </View>
-            </View>
-
-            <View style={styles.sliderRow}>
-              <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
-                G
-              </Text>
-              <View style={styles.sliderWrapper}>
-                <Slider
-                  value={rgb.g}
-                  minimumValue={0}
-                  maximumValue={255}
-                  onValueChange={(value) => handleRgbChange("g", value)}
-                  onSlidingComplete={(value) => handleRgbComplete("g", value)}
-                  minimumTrackTintColor="#00FF00"
-                  maximumTrackTintColor={baseTheme.divider}
-                  thumbTintColor={baseTheme.buttonBg}
-                  style={styles.slider}
-                />
-              </View>
-            </View>
-
-            <View style={styles.sliderRow}>
-              <Text style={[styles.sliderLabel, { color: baseTheme.text }]}>
-                B
-              </Text>
-              <View style={styles.sliderWrapper}>
-                <Slider
-                  value={rgb.b}
-                  minimumValue={0}
-                  maximumValue={255}
-                  onValueChange={(value) => handleRgbChange("b", value)}
-                  onSlidingComplete={(value) => handleRgbComplete("b", value)}
-                  minimumTrackTintColor="#0000FF"
-                  maximumTrackTintColor={baseTheme.divider}
-                  thumbTintColor={baseTheme.buttonBg}
-                  style={styles.slider}
-                />
-              </View>
-            </View>
-          </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </GestureHandlerRootView>
     </Modal>
   );
 }

@@ -207,7 +207,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
           marginVertical: 5,
         }}
       >
-        <View onStartShouldSetResponder={() => true}>{props.children}</View>
+        <View>{props.children}</View>
       </ScrollView>
     );
   } else if (element.name === "thead") {

@@ -17,7 +17,6 @@ import {
   ScrollView,
   Text,
 } from "react-native";
-import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -27,6 +26,10 @@ import {
 } from "../../constants/Themes";
 
 import ThemeList from "./Themes/ThemeList";
+import {
+  GestureHandlerRootView,
+  Touchable,
+} from "react-native-gesture-handler";
 
 type MarkdownEditorProps = {
   text: string;
@@ -250,44 +253,47 @@ export default function MarkdownEditor({
         transparent={true}
         onRequestClose={() => setShowThemeModal(false)}
       >
-        <SafeAreaView style={{ flex: 1 }}>
-          <View
-            style={[
-              styles.modalContainer,
-              { backgroundColor: theme.background },
-            ]}
-          >
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1 }}>
             <View
-              style={[styles.modalHeader, { borderBottomColor: theme.divider }]}
+              style={[
+                styles.modalContainer,
+                { backgroundColor: theme.background },
+              ]}
             >
-              <Text style={[styles.modalTitle, { color: theme.text }]}>
-                Select Custom Theme
-              </Text>
-              <Touchable
-                activeOpacity={0.2}
-                animationDuration={{ in: 0, out: 150 }}
-                onPress={() => setShowThemeModal(false)}
+              <View
+                style={[
+                  styles.modalHeader,
+                  { borderBottomColor: theme.divider },
+                ]}
               >
-                <Text
-                  style={[
-                    styles.modalExitButton,
-                    { color: theme.iconOrTextButton },
-                  ]}
-                >
-                  Exit
+                <Text style={[styles.modalTitle, { color: theme.text }]}>
+                  Select Custom Theme
                 </Text>
-              </Touchable>
-            </View>
+                <Touchable onPress={() => setShowThemeModal(false)}>
+                  <Text
+                    style={[
+                      styles.modalExitButton,
+                      { color: theme.iconOrTextButton },
+                    ]}
+                  >
+                    Exit
+                  </Text>
+                </Touchable>
+              </View>
 
-            <ScrollView>
-              <ThemeList
-                currentTheme={currentTheme}
-                onSelect={(_key, customTheme) => handleThemeSelect(customTheme)}
-                showCustomOnly={true}
-              />
-            </ScrollView>
-          </View>
-        </SafeAreaView>
+              <ScrollView>
+                <ThemeList
+                  currentTheme={currentTheme}
+                  onSelect={(_key, customTheme) =>
+                    handleThemeSelect(customTheme)
+                  }
+                  showCustomOnly={true}
+                />
+              </ScrollView>
+            </View>
+          </SafeAreaView>
+        </GestureHandlerRootView>
       </Modal>
     </View>
   );

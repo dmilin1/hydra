@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableWithoutFeedback } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 
 import { Poll } from "../../../../../api/Posts";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
@@ -12,121 +12,118 @@ export default function PollViewer({ poll }: { poll: Poll }) {
   >(undefined);
 
   return (
-    <TouchableWithoutFeedback>
+    <View
+      style={[
+        styles.pollContainer,
+        {
+          borderColor: theme.tint,
+        },
+      ]}
+    >
       <View
         style={[
-          styles.pollContainer,
+          styles.voteCountContainer,
           {
             borderColor: theme.tint,
           },
         ]}
       >
-        <View
+        <Text
           style={[
-            styles.voteCountContainer,
+            styles.pollText,
             {
-              borderColor: theme.tint,
+              color: theme.subtleText,
             },
           ]}
         >
-          <Text
-            style={[
-              styles.pollText,
-              {
-                color: theme.subtleText,
-              },
-            ]}
-          >
-            {poll.voteCount.toLocaleString()} votes
-          </Text>
-        </View>
-        <View
-          style={[
-            styles.pollInnerContainer,
-            {
-              borderColor: theme.tint,
-            },
-          ]}
-          onStartShouldSetResponder={() => false}
-        >
-          {poll.options.map((option, i) => (
-            <Touchable
-              key={i}
-              style={styles.pollItem}
-              activeOpacity={0.8}
-              animationDuration={{ in: 0, out: 150 }}
-              onPress={() => setSelectedOption(i)}
-              hitSlop={10}
-            >
-              <View
-                style={[
-                  styles.radioButton,
-                  {
-                    borderColor: theme.subtleText,
-                    backgroundColor: theme.tint,
-                  },
-                ]}
-              >
-                {selectedOption === i && (
-                  <View
-                    style={[
-                      styles.radioButtonInner,
-                      {
-                        backgroundColor: theme.iconPrimary,
-                      },
-                    ]}
-                  />
-                )}
-              </View>
-              <View style={styles.pollTextContainer}>
-                <Text
-                  style={[
-                    styles.pollText,
-                    {
-                      color: theme.text,
-                    },
-                  ]}
-                >
-                  {option.text}
-                </Text>
-              </View>
-            </Touchable>
-          ))}
-        </View>
-        <View
-          style={[
-            styles.voteButtonContainer,
-            {
-              borderColor: theme.tint,
-            },
-          ]}
-        >
+          {poll.voteCount.toLocaleString()} votes
+        </Text>
+      </View>
+      <View
+        style={[
+          styles.pollInnerContainer,
+          {
+            borderColor: theme.tint,
+          },
+        ]}
+      >
+        {poll.options.map((option, i) => (
           <Touchable
-            style={[
-              styles.voteButton,
-              {
-                backgroundColor: theme.tint,
-              },
-            ]}
+            key={i}
+            style={styles.pollItem}
             activeOpacity={0.8}
             animationDuration={{ in: 0, out: 150 }}
-            onPress={() => alert("voted")}
+            onPress={() => setSelectedOption(i)}
             hitSlop={10}
           >
-            <Text
+            <View
               style={[
-                styles.voteButtonText,
+                styles.radioButton,
                 {
-                  color: theme.iconOrTextButton,
+                  borderColor: theme.subtleText,
+                  backgroundColor: theme.tint,
                 },
               ]}
             >
-              Vote
-            </Text>
+              {selectedOption === i && (
+                <View
+                  style={[
+                    styles.radioButtonInner,
+                    {
+                      backgroundColor: theme.iconPrimary,
+                    },
+                  ]}
+                />
+              )}
+            </View>
+            <View style={styles.pollTextContainer}>
+              <Text
+                style={[
+                  styles.pollText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
+              >
+                {option.text}
+              </Text>
+            </View>
           </Touchable>
-        </View>
+        ))}
       </View>
-    </TouchableWithoutFeedback>
+      <View
+        style={[
+          styles.voteButtonContainer,
+          {
+            borderColor: theme.tint,
+          },
+        ]}
+      >
+        <Touchable
+          style={[
+            styles.voteButton,
+            {
+              backgroundColor: theme.tint,
+            },
+          ]}
+          activeOpacity={0.8}
+          animationDuration={{ in: 0, out: 150 }}
+          onPress={() => alert("voted")}
+          hitSlop={10}
+        >
+          <Text
+            style={[
+              styles.voteButtonText,
+              {
+                color: theme.iconOrTextButton,
+              },
+            ]}
+          >
+            Vote
+          </Text>
+        </Touchable>
+      </View>
+    </View>
   );
 }
 
