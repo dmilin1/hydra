@@ -35,6 +35,8 @@ For multi-image posts, swipe left and right to browse between images. An indicat
 
 ## Video Player
 
+Videos show a mute button in the full-screen controls. Enable **Mute Videos by Default** in Appearance settings to begin each app session muted. Hydra remembers your mute choice until the app is restarted. Pressing the device volume-up button also unmutes the current video.
+
 **Tap the playback speed button** (top-left corner in full-screen video) to cycle through 0.5x, 1x, 1.5x, and 2x playback speeds.
 
 **Drag horizontally** on a video to scrub through it. Videos also support **Picture-in-Picture** on iOS — use the system PiP gesture to keep watching while you browse.

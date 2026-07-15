@@ -54,6 +54,8 @@ export default function Appearance() {
     toggleShowPostSummary,
     autoPlayVideos,
     toggleAutoPlayVideos,
+    muteVideosByDefault,
+    toggleMuteVideosByDefault,
     liveTextInteraction,
     toggleLiveTextInteraction,
     tapToCollapsePost,
@@ -362,6 +364,24 @@ export default function Appearance() {
             ),
             text: "Auto play videos",
             onPress: () => toggleAutoPlayVideos(),
+          },
+          {
+            key: "muteVideosByDefault",
+            icon: (
+              <MaterialIcons name="volume-off" size={24} color={theme.text} />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={muteVideosByDefault}
+                onValueChange={() => toggleMuteVideosByDefault()}
+              />
+            ),
+            text: "Mute videos by default",
+            onPress: () => toggleMuteVideosByDefault(),
           },
           {
             key: "liveTextInteraction",

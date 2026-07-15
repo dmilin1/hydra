@@ -69,6 +69,8 @@ export default function MediaViewer({
   startingColumnIndex,
   onFocusedItemChange,
   getCurrentPost,
+  isMuted,
+  setIsMuted,
   onClose,
 }: MediaViewerProps) {
   const { width, height } = useSafeAreaFrame();
@@ -475,6 +477,8 @@ export default function MediaViewer({
                   columns={columns}
                   pagerEnabled={pagerEnabled}
                   overlayStyle={overlayStyle}
+                  isMuted={isMuted}
+                  setIsMuted={setIsMuted}
                 />
               ))}
             </Animated.View>
@@ -497,6 +501,8 @@ type RowStripProps = {
   columns: SharedValue<Record<number, number>>;
   pagerEnabled: SharedValue<boolean>;
   overlayStyle: AnimatedStyleHandle<{ opacity: number }>;
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
 };
 
 function RowStrip({
@@ -511,6 +517,8 @@ function RowStrip({
   columns,
   pagerEnabled,
   overlayStyle,
+  isMuted,
+  setIsMuted,
 }: RowStripProps) {
   const horizontalStyle = useAnimatedStyle(() => ({
     transform: [
@@ -555,6 +563,8 @@ function RowStrip({
                 source={item.source}
                 focused={centerColumn === column && isRowFocused}
                 overlayStyle={overlayStyle}
+                isMuted={isMuted}
+                setIsMuted={setIsMuted}
               />
             )}
           </View>

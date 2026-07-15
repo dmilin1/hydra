@@ -1,6 +1,6 @@
 ===METADATA===
 title: Appearance Settings
-description: Post appearance (compact mode, split view, subreddit display, text lengths, flairs, blur options, summaries, auto-play, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, tap to collapse), tab appearance (username, hide on scroll)
+description: Post appearance (compact mode, split view, subreddit display, text lengths, flairs, blur options, summaries, auto-play, default video mute, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, tap to collapse), tab appearance (username, hide on scroll)
 ===END METADATA===
 
 # Appearance Settings
@@ -32,6 +32,8 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 **Show Post Summary**: Shows AI-generated post summaries. Requires [Hydra Pro](hydra://settings/hydraPro). Learn more in the [AI Summaries guide](hydra://settings/guide/?doc=ai_summaries).
 
 **Auto Play Videos**: Automatically plays videos as you scroll. Uses more data and battery.
+
+**Mute Videos by Default**: Starts full-screen videos muted. Changing mute from the video controls applies to other videos until Hydra is restarted.
 
 **Live Text**: Enables text recognition in images using iOS Live Text, allowing you to select and copy text. Learn more in the [Live Text guide](hydra://settings/guide/?doc=live_text).
 
