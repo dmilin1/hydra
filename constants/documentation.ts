@@ -315,7 +315,7 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 
 **Auto Play Videos**: Automatically plays videos as you scroll. Uses more data and battery.
 
-**Mute Videos by Default**: Starts full-screen videos muted. Changing mute from the video controls applies to other videos until Hydra is restarted.
+**Mute Videos by Default**: Starts full-screen videos muted. Changing mute from the video controls applies to other videos until Hydra leaves the foreground.
 
 **Live Text**: Enables text recognition in images using iOS Live Text, allowing you to select and copy text. Learn more in the [Live Text guide](hydra://settings/guide/?doc=live_text).
 
@@ -2026,7 +2026,7 @@ For multi-image posts, swipe left and right to browse between images. An indicat
 
 ## Video Player
 
-Videos show a mute button in the full-screen controls. Enable **Mute Videos by Default** in Appearance settings to begin each app session muted. Hydra remembers your mute choice until the app is restarted. Pressing the device volume-up button also unmutes the current video.
+Videos show a mute button in the full-screen controls. Enable **Mute Videos by Default** in Appearance settings to begin muted. Hydra remembers your mute choice until you leave the app, then restores the setting when you return. Pressing the device volume-up button also unmutes the current video.
 
 Full-screen videos show playback controls when they open: **skip back/forward 10 seconds**, **play/pause**, and a **scrub bar with time codes** you can drag or tap to seek. The controls fade out after a few seconds while playing — tap the video to bring them back or hide them.
 

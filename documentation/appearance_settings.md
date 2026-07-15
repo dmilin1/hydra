@@ -37,7 +37,7 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 
 **Auto Play Videos**: Automatically plays videos as you scroll. Uses more data and battery.
 
-**Mute Videos by Default**: Starts full-screen videos muted. Changing mute from the video controls applies to other videos until Hydra is restarted.
+**Mute Videos by Default**: Starts full-screen videos muted. Changing mute from the video controls applies to other videos until Hydra leaves the foreground.
 
 **Live Text**: Enables text recognition in images using iOS Live Text, allowing you to select and copy text. Learn more in the [Live Text guide](hydra://settings/guide/?doc=live_text).
 

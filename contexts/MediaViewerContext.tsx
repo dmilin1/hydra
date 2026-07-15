@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { AppState } from "react-native";
 import MediaViewer, {
   MediaItemCollection,
 } from "../components/UI/MediaViewer.tsx/MediaViewer";
@@ -49,6 +50,18 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
 
   useEffect(() => {
     setIsMuted(muteVideosByDefault);
+  }, [muteVideosByDefault]);
+
+  useEffect(() => {
+    let previousAppState = AppState.currentState;
+    const subscription = AppState.addEventListener("change", (appState) => {
+      if (previousAppState !== "active" && appState === "active") {
+        setIsMuted(muteVideosByDefault);
+      }
+      previousAppState = appState;
+    });
+
+    return () => subscription.remove();
   }, [muteVideosByDefault]);
 
   const isShowing = useRef(false);

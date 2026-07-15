@@ -37,7 +37,7 @@ For multi-image posts, swipe left and right to browse between images. An indicat
 
 ## Video Player
 
-Videos show a mute button in the full-screen controls. Enable **Mute Videos by Default** in Appearance settings to begin each app session muted. Hydra remembers your mute choice until the app is restarted. Pressing the device volume-up button also unmutes the current video.
+Videos show a mute button in the full-screen controls. Enable **Mute Videos by Default** in Appearance settings to begin muted. Hydra remembers your mute choice until you leave the app, then restores the setting when you return. Pressing the device volume-up button also unmutes the current video.
 
 Full-screen videos show playback controls when they open: **skip back/forward 10 seconds**, **play/pause**, and a **scrub bar with time codes** you can drag or tap to seek. The controls fade out after a few seconds while playing. Tap the video to bring them back or hide them.
 
