@@ -1,6 +1,7 @@
 import {
   createContext,
   RefObject,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -11,6 +12,7 @@ import MediaViewer, {
 } from "../components/UI/MediaViewer.tsx/MediaViewer";
 import { Post } from "../api/Posts";
 import { PostDetail } from "../api/PostDetail";
+import { PostSettingsContext } from "./SettingsContexts/PostSettingsContext";
 
 type DisplayMediaDataRequest = {
   media: MediaItemCollection;
@@ -40,8 +42,14 @@ const initialMediaViewerContext = {
 export const MediaViewerContext = createContext(initialMediaViewerContext);
 
 export function MediaViewerProvider({ children }: React.PropsWithChildren) {
+  const { muteVideosByDefault } = useContext(PostSettingsContext);
   const [displayMediaData, setDisplayMediaData] =
     useState<DisplayMediaData | null>(null);
+  const [isMuted, setIsMuted] = useState(muteVideosByDefault);
+
+  useEffect(() => {
+    setIsMuted(muteVideosByDefault);
+  }, [muteVideosByDefault]);
 
   const isShowing = useRef(false);
   const visibilityListeners = useRef<Set<VisibilityListener>>(new Set());
@@ -125,6 +133,8 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
           }}
           startingRowIndex={displayMediaData.startingRowIndex ?? 0}
           startingColumnIndex={displayMediaData.startingColumnIndex ?? 0}
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
           onClose={() => setDisplayMediaData(null)}
         />
       )}

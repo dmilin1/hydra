@@ -1,3 +1,4 @@
+import useVideoAudioControls from "./useVideoAudioControls";
 import { useEvent, useEventListener } from "expo";
 import { VideoPlayer, VideoView } from "expo-video";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -17,6 +18,8 @@ import { useSharedVideoPlayer } from "../../../utils/useSharedVideoPlayer";
 type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
   onScrubbingChange: (isScrubbing: boolean) => void;
   onFocusedPlayerChange: (player: VideoPlayer, focused: boolean) => void;
 };
@@ -24,6 +27,8 @@ type MediaVideoProps = {
 function MediaVideo({
   source,
   focused,
+  isMuted,
+  setIsMuted,
   onFocusedPlayerChange,
   onScrubbingChange,
 }: MediaVideoProps) {
@@ -134,7 +139,7 @@ function MediaVideo({
       player.volume = 0;
       return;
     }
-    player.muted = false;
+    player.muted = isMuted;
     player.play();
     player.volume = 1;
     onFocusedPlayerChange(player, true);
@@ -153,6 +158,8 @@ function MediaVideo({
       }
     };
   }, []);
+
+  useVideoAudioControls({ player, focused, isMuted, setIsMuted });
 
   return (
     <View
