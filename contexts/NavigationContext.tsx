@@ -3,6 +3,7 @@ import {
   NavigationContainer,
   NavigationContainerRef,
 } from "@react-navigation/native";
+import * as Sentry from "@sentry/react-native";
 import {
   PropsWithChildren,
   useContext,
@@ -17,6 +18,10 @@ import KeyStore from "../utils/KeyStore";
 import RedditURL from "../utils/RedditURL";
 import { PageTypeToNavName } from "../utils/PageTypeToNavName";
 import { ThemeContext } from "./SettingsContexts/ThemeContext";
+
+export const sentryNavigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: true,
+});
 
 export const INITIAL_TAB_STORAGE_KEY = "initialTab";
 export const STARTUP_URL_STORAGE_KEY = "startupURL";
@@ -172,6 +177,9 @@ export default function NavigationProvider({ children }: PropsWithChildren) {
       }}
       onReady={() => {
         setNavigationReady(true);
+        sentryNavigationIntegration.registerNavigationContainer(
+          navigation.current,
+        );
       }}
     >
       {children}

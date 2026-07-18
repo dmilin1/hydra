@@ -23,7 +23,9 @@ import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { MediaViewerProvider } from "../contexts/MediaViewerContext";
 import { ModalProvider } from "../contexts/ModalProvider";
-import NavigationProvider from "../contexts/NavigationContext";
+import NavigationProvider, {
+  sentryNavigationIntegration,
+} from "../contexts/NavigationContext";
 import { SettingsProvider } from "../contexts/SettingsContexts";
 import { SubredditProvider } from "../contexts/SubredditContext";
 import { SubscriptionsProvider } from "../contexts/SubscriptionsContext";
@@ -52,6 +54,9 @@ Sentry.init({
   dsn: "https://0a53bc725058aa44bf7aa771f5bcda05@o4508377723174912.ingest.us.sentry.io/4508377726582784",
   debug: false,
   enabled: !__DEV__ && reportingAllowed,
+  tracesSampleRate: 0.1,
+  profilesSampleRate: 0.1,
+  integrations: [sentryNavigationIntegration],
 
   // Disable app hang tracking because it's bugged when asking for permissions
   // https://stackoverflow.com/a/79085057
