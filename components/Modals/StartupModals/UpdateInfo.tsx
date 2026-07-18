@@ -11,125 +11,103 @@ import { TextWithRepairedHeight } from "../../Other/TextWithRepairedHeight";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v4.0.0",
+  updateKey: "v4.1.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Media Viewer Rewrite",
+      title: "Fast Account Swap",
       description:
-        "The media viewer has been rebuilt from scratch offering new features and better performance. This represents a significant step towards preparing Hydra for release on Android. Many of the features listed below are a result of the rewrite.",
+        "Long press the accounts tab to quickly switch between accounts.",
     },
     {
-      title: "Hydra in Share Sheet",
+      title: "New Multireddit Sort Options",
       description:
-        "Hydra now appears as an option when you share a URL from another app.",
+        "You can now set a default sort and enable sort remembering for multireddits. Enable this in Settings => General => Post & Comment Sorting => Multireddits.",
     },
     {
-      title: "Right Side Thumbnails in Compact Mode",
+      title: "Smoother Gestures",
       description:
-        "Moves post thumbnail previews from the left to the right side when in compact mode. Enable this in Settings => Appearance => Post Appearance Settings => Show Thumbnails on Right. This setting will only show up if you have compact mode enabled.",
+        "The gesture system has been fully rewritten. You'll notice this most with slide gestures on posts and comments.",
     },
     {
-      title: "Collapse Child Comments Only",
+      title: "Faster Post & Comment Rendering",
       description:
-        "Tapping a comment now collapses its children instead of the comment itself. This setting can be enabled in Settings => Appearance => Comment Appearance Settings => Collapse Children Only.",
-    },
-    {
-      title: "Filter Subreddits Temporarily",
-      description:
-        'When on a mixed feed such as Home or Popular, long press a post and press "Filter Subreddit". You\'ll now have an option to filter for a day, a week, or forever.',
-    },
-    {
-      title: "Support for New Wikis",
-      description:
-        "Hydra previously only supported old.reddit.com wikis. New wikis are now supported and used by default.",
-    },
-    {
-      title: "Swipe to Scrub Videos",
-      description:
-        "When a video is full screen, you can swipe horizontally to scrub through it.",
-    },
-    {
-      title: "Change Video Playback Rate",
-      description:
-        "When a video is full screen, you can tap the playback rate button in the top left corner to change the playback rate.",
-    },
-    {
-      title: "Landscape Mode",
-      description:
-        "Rotate your device when in the media viewer or the in app browser to view content in landscape.",
-    },
-    {
-      title: "Media Collection Navigation Arrows",
-      description:
-        "When viewing a collection of images or videos, arrows appear to allow easier swiping between items.",
-    },
-    {
-      title: "Post Info in Media Viewer",
-      description:
-        "Post info is overlayed when tapping on content in the media viewer. Tap the title, subreddit, or author to quickly navigate to the relevant page.",
-    },
-    {
-      title: "Swipe to Dismiss Media",
-      description:
-        "The media viewer can be dismissed by swiping up or down. Previously, you could only swipe one way.",
-    },
-    {
-      title: "Media Viewer Optimizations",
-      description:
-        "Hydra is much smarter about picking the best image resolution to load, caching behavior has been improved, and background videos pause while a different video is in the foreground, granting faster load times and reduced memory usage.",
+        "Posts should display faster now, particularly for posts with large bodies or large tables.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description:
-        "Music no longer randomly pauses while scrolling. I think I fixed this, but I haven't been able to consistently reproduce the bug, so if you experience this, a bug report would be appreciated.",
+      description: "Hydra would not load any data if you were logged out.",
     },
     {
       description:
-        "Posts with a collection of videos only displayed the first video.",
+        "The video player would restart the video when changing device orientation.",
     },
     {
       description:
-        "Scrubbing while in gallery mode locks vertical scrolling for a smoother experience.",
+        "Scrolling horizontally on wide tables in comments would sometimes slide the comment instead.",
+    },
+    {
+      description: "Videos in comments would link to an unreachable URL.",
     },
     {
       description:
-        "Links that are slow to respond to requests for metadata are skipped, resulting in much faster loads in the worst cases.",
+        "Video thumbnails would load at the lowest quality when video autoplay was disabled.",
     },
     {
       description:
-        "Android builds successfully. An official app is coming soon.",
-    },
-    {
-      description: "Fixed image posts momentarily showing the wrong image.",
+        "Posts with media that Reddit failed to process would not load.",
     },
     {
       description:
-        "Some link sources like Wikipedia would fail to show an image.",
-    },
-    {
-      description: "Fixed shadowbanned users being unable to log in.",
+        "Changing device orientation while seeking through a video could cause Hydra to crash.",
     },
     {
       description:
-        "Text URLs containing backslashes that weren't marked as links in markdown were parsed incorrectly.",
+        "Posts linking to certain RedGifs URLs would cause Hydra to crash.",
     },
     {
       description:
-        "Posts linking to other Reddit pages (e.g. /r/wowthissubexists) weren't rendering as links.",
+        "Posts in compact mode would sometimes show the wrong thumbnail.",
     },
     {
       description:
-        'Having a multireddit named "All" would cause the "All" button to disappear in the subreddit list.',
+        "The post and link description max lines settings in Settings => Appearance could not be set to 0.",
+    },
+    {
+      description: "Tweaked the media viewer animations to feel more fluid.",
     },
     {
       description:
-        "Hydra warns you when attempting to reply in a locked or archived post.",
+        "The Hydra Pro offer modal would show up even if you were already subscribed.",
+    },
+    {
+      description:
+        "Clicking on post media would sometimes fail to mark the post as read.",
+    },
+    {
+      description:
+        "In light themes, videos would flash when a scroll gesture started on them.",
+    },
+    {
+      description:
+        "Changing orientation while scrolled deep in gallery mode would cause visual bugs.",
+    },
+    {
+      description:
+        "Clicking on links in compact mode would sometimes open the thumbnail as an image instead of opening the link.",
+    },
+    {
+      description:
+        'Accounts with "Don\'t show thumbnails next to links" enabled in their old Reddit preferences would cause images to fail to load.',
     },
   ] as { description: string }[],
+  notes: [
+    "Apologies for the long delay between updates. A significant amount of work over the last few months has gone into porting Hydra to Android. Hydra for Android is now in closed beta testing and should be publicly available soon!",
+    "Many of you have requested tweaks to the media viewer. I want to honor those requests, and they will be my next priority after finishing the Android port.",
+  ] as string[],
 };
 
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
@@ -327,6 +305,42 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   - {bugfix.description}
+                </TextWithRepairedHeight>
+              ))}
+            </View>
+          </View>
+          <TextWithRepairedHeight
+            style={[
+              styles.heading,
+              {
+                color: theme.text,
+              },
+            ]}
+          >
+            📝 Notes
+          </TextWithRepairedHeight>
+          <View style={styles.listContainer}>
+            <View
+              style={[
+                styles.featureContainer,
+                {
+                  backgroundColor: theme.background,
+                  borderColor: theme.divider,
+                  gap: 12,
+                },
+              ]}
+            >
+              {updateInfo.notes.map((note) => (
+                <TextWithRepairedHeight
+                  key={note}
+                  style={[
+                    styles.bugfixDescription,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  {note}
                 </TextWithRepairedHeight>
               ))}
             </View>

@@ -29,8 +29,6 @@
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
-- 🐛 Enable landscape mode in the browser
-
 - 🚀 Add sort to search tab
 
 - 🚀 Add chat back
