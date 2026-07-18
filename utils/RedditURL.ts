@@ -2,12 +2,17 @@ import KeyStore from "./KeyStore";
 import URL from "./URL";
 import {
   DEFAULT_COMMENT_SORT_KEY,
+  DEFAULT_MULTIREDDIT_SORT_KEY,
+  DEFAULT_MULTIREDDIT_SORT_TOP_KEY,
   DEFAULT_POST_SORT_KEY,
   DEFAULT_POST_SORT_TOP_KEY,
   makeCommentSubredditSortKey,
+  makePostMultiredditSortKey,
+  makePostMultiredditSortTopKey,
   makePostSubredditSortKey,
   makePostSubredditSortTopKey,
   REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+  REMEMBER_MULTIREDDIT_SORT_KEY,
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
   SORT_HOME_PAGE,
 } from "../constants/SettingsKeys";
@@ -178,6 +183,13 @@ export default class RedditURL extends URL {
     return this.url.split("/r/")[1]?.split(/\/|\?/)[0] ?? "";
   }
 
+  getMultiredditPath(): string {
+    const match = this.getRelativePath().match(
+      /\/(?:user|u)\/([^/]+)\/m\/([^/]+)/,
+    );
+    return match ? `${match[1]}/${match[2]}` : "";
+  }
+
   jsonify(): RedditURL {
     const base = this.getBasePath();
     const urlParams = this.getURLParams();
@@ -334,6 +346,34 @@ export default class RedditURL extends URL {
           time =
             subredditSpecificTime ??
             KeyStore.getString(DEFAULT_POST_SORT_TOP_KEY) ??
+            "all";
+        }
+        this.changeSort(preferredSort, time);
+      }
+    }
+
+    if (pageType === PageType.MULTIREDDIT) {
+      const multiPath = this.getMultiredditPath();
+      const multiSpecificSort = KeyStore.getBoolean(
+        REMEMBER_MULTIREDDIT_SORT_KEY,
+      )
+        ? KeyStore.getString(makePostMultiredditSortKey(multiPath))
+        : null;
+      const preferredSort =
+        multiSpecificSort ??
+        KeyStore.getString(DEFAULT_MULTIREDDIT_SORT_KEY) ??
+        "default";
+      if (preferredSort !== "default") {
+        let time = undefined;
+        if (preferredSort === "top") {
+          const multiSpecificTime = KeyStore.getBoolean(
+            REMEMBER_MULTIREDDIT_SORT_KEY,
+          )
+            ? KeyStore.getString(makePostMultiredditSortTopKey(multiPath))
+            : null;
+          time =
+            multiSpecificTime ??
+            KeyStore.getString(DEFAULT_MULTIREDDIT_SORT_TOP_KEY) ??
             "all";
         }
         this.changeSort(preferredSort, time);

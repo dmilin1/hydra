@@ -17,9 +17,12 @@ import { blockUser, User } from "../../api/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
 import {
   makeCommentSubredditSortKey,
+  makePostMultiredditSortKey,
+  makePostMultiredditSortTopKey,
   makePostSubredditSortKey,
   makePostSubredditSortTopKey,
   REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+  REMEMBER_MULTIREDDIT_SORT_KEY,
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
 } from "../../constants/SettingsKeys";
 import { ModalContext } from "../../contexts/ModalContext";
@@ -117,6 +120,19 @@ export default function SortAndContext({
       if (sort === "top" && time) {
         KeyStore.set(
           makePostSubredditSortTopKey(subreddit),
+          time.toLowerCase(),
+        );
+      }
+    }
+    if (
+      pageType === PageType.MULTIREDDIT &&
+      KeyStore.getBoolean(REMEMBER_MULTIREDDIT_SORT_KEY)
+    ) {
+      const multiPath = redditUrl.getMultiredditPath();
+      KeyStore.set(makePostMultiredditSortKey(multiPath), sort.toLowerCase());
+      if (sort === "top" && time) {
+        KeyStore.set(
+          makePostMultiredditSortTopKey(multiPath),
           time.toLowerCase(),
         );
       }

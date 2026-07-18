@@ -7,9 +7,12 @@ import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
 import List from "../../../components/UI/List";
 import {
   DEFAULT_COMMENT_SORT_KEY,
+  DEFAULT_MULTIREDDIT_SORT_KEY,
+  DEFAULT_MULTIREDDIT_SORT_TOP_KEY,
   DEFAULT_POST_SORT_KEY,
   DEFAULT_POST_SORT_TOP_KEY,
   REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+  REMEMBER_MULTIREDDIT_SORT_KEY,
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
   SORT_HOME_PAGE,
 } from "../../../constants/SettingsKeys";
@@ -71,6 +74,33 @@ const TOP_SORT_OPTIONS = [
   },
 ];
 
+const MULTIREDDIT_SORT_OPTIONS = [
+  {
+    label: "Default",
+    value: "default",
+  },
+  {
+    label: "Hot",
+    value: "hot",
+  },
+  {
+    label: "New",
+    value: "new",
+  },
+  {
+    label: "Top",
+    value: "top",
+  },
+  {
+    label: "Rising",
+    value: "rising",
+  },
+  {
+    label: "Controversial",
+    value: "controversial",
+  },
+];
+
 const COMMENT_SORT_OPTIONS = [
   {
     label: "Default",
@@ -113,6 +143,12 @@ export default function General() {
   );
   const [storedRememberPostSubredditSort, setRememberPostSubredditSort] =
     useMMKVBoolean(REMEMBER_POST_SUBREDDIT_SORT_KEY);
+  const [storedDefaultMultiredditSort, setDefaultMultiredditSort] =
+    useMMKVString(DEFAULT_MULTIREDDIT_SORT_KEY);
+  const [storedDefaultMultiredditSortTop, setDefaultMultiredditSortTop] =
+    useMMKVString(DEFAULT_MULTIREDDIT_SORT_TOP_KEY);
+  const [storedRememberMultiredditSort, setRememberMultiredditSort] =
+    useMMKVBoolean(REMEMBER_MULTIREDDIT_SORT_KEY);
   const [storedDefaultCommentSort, setDefaultCommentSort] = useMMKVString(
     DEFAULT_COMMENT_SORT_KEY,
   );
@@ -123,6 +159,9 @@ export default function General() {
   const defaultPostSort = storedDefaultPostSort ?? "default";
   const defaultPostSortTop = storedDefaultPostSortTop ?? "all";
   const rememberPostSubredditSort = storedRememberPostSubredditSort ?? false;
+  const defaultMultiredditSort = storedDefaultMultiredditSort ?? "default";
+  const defaultMultiredditSortTop = storedDefaultMultiredditSortTop ?? "all";
+  const rememberMultiredditSort = storedRememberMultiredditSort ?? false;
   const defaultCommentSort = storedDefaultCommentSort ?? "default";
   const rememberCommentSubredditSort =
     storedRememberCommentSubredditSort ?? false;
@@ -147,6 +186,24 @@ export default function General() {
   });
 
   const {
+    openPicker: openDefaultMultiredditSortPicker,
+    rightIcon: rightIconDefaultMultiredditSort,
+  } = useSettingsPicker({
+    items: MULTIREDDIT_SORT_OPTIONS,
+    value: defaultMultiredditSort,
+    onChange: setDefaultMultiredditSort,
+  });
+
+  const {
+    openPicker: openDefaultMultiredditSortTopPicker,
+    rightIcon: rightIconDefaultMultiredditSortTop,
+  } = useSettingsPicker({
+    items: TOP_SORT_OPTIONS,
+    value: defaultMultiredditSortTop,
+    onChange: setDefaultMultiredditSortTop,
+  });
+
+  const {
     openPicker: openDefaultCommentSortPicker,
     rightIcon: rightIconDefaultCommentSort,
   } = useSettingsPicker({
@@ -159,6 +216,9 @@ export default function General() {
 
   const [numRememberedPostSubreddits, setNumRememberedPostSubreddits] =
     useState(keys.filter((key) => key.startsWith("PostSubredditSort-")).length);
+  const [numRememberedMultireddits, setNumRememberedMultireddits] = useState(
+    keys.filter((key) => key.startsWith("PostMultiredditSort-")).length,
+  );
   const [numRememberedCommentSubreddits, setNumRememberedCommentSubreddits] =
     useState(
       keys.filter((key) => key.startsWith("CommentSubredditSort-")).length,
@@ -166,11 +226,26 @@ export default function General() {
 
   const clearRememberedPostSubredditSorts = () => {
     keys.forEach((key) => {
-      if (key.startsWith("PostSubredditSort-")) {
+      if (
+        key.startsWith("PostSubredditSort-") ||
+        key.startsWith("PostSubredditSortTop-")
+      ) {
         KeyStore.remove(key);
       }
     });
     setNumRememberedPostSubreddits(0);
+  };
+
+  const clearRememberedMultiredditSorts = () => {
+    keys.forEach((key) => {
+      if (
+        key.startsWith("PostMultiredditSort-") ||
+        key.startsWith("PostMultiredditSortTop-")
+      ) {
+        KeyStore.remove(key);
+      }
+    });
+    setNumRememberedMultireddits(0);
   };
 
   const clearRememberedCommentSubredditSorts = () => {
@@ -185,7 +260,7 @@ export default function General() {
   return (
     <>
       <List
-        title="Posts"
+        title="Subreddits"
         items={[
           {
             key: "defaultPostSort",
@@ -279,6 +354,88 @@ export default function General() {
             >
               Clear custom post sorts ({numRememberedPostSubreddits} sub
               {numRememberedPostSubreddits === 1 ? "" : "s"})
+            </Text>
+          </Touchable>
+        </View>
+      )}
+      <List
+        title="Multireddits"
+        items={[
+          {
+            key: "defaultMultiredditSort",
+            icon: (
+              <FontAwesome
+                name="sort-amount-desc"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            text: "Default sort",
+            rightIcon: rightIconDefaultMultiredditSort,
+            onPress: () => openDefaultMultiredditSortPicker(),
+          },
+          ...(defaultMultiredditSort === "top"
+            ? [
+                {
+                  key: "defaultMultiredditSortTop",
+                  icon: (
+                    <MaterialCommunityIcons
+                      name="podium-gold"
+                      size={24}
+                      color={theme.text}
+                    />
+                  ),
+                  text: "Default top sort",
+                  rightIcon: rightIconDefaultMultiredditSortTop,
+                  onPress: () => openDefaultMultiredditSortTopPicker(),
+                },
+              ]
+            : []),
+          {
+            key: "rememberMultiredditSort",
+            icon: <FontAwesome name="save" size={24} color={theme.text} />,
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary as ColorValue,
+                  true: theme.iconPrimary as ColorValue,
+                }}
+                value={rememberMultiredditSort}
+                onValueChange={() =>
+                  setRememberMultiredditSort(!rememberMultiredditSort)
+                }
+              />
+            ),
+            text: "Remember multireddit sort",
+            onPress: () => setRememberMultiredditSort(!rememberMultiredditSort),
+          },
+        ]}
+      />
+      {rememberMultiredditSort && numRememberedMultireddits > 0 && (
+        <View style={styles.clearButtonContainer}>
+          <Touchable
+            style={[
+              styles.clearButton,
+              {
+                backgroundColor: theme.buttonBg,
+              },
+            ]}
+            activeOpacity={0.8}
+            animationDuration={{ in: 0, out: 150 }}
+            onPress={() => {
+              clearRememberedMultiredditSorts();
+            }}
+          >
+            <Text
+              style={[
+                styles.clearButtonText,
+                {
+                  color: theme.buttonText,
+                },
+              ]}
+            >
+              Clear custom multireddit sorts ({numRememberedMultireddits} multi
+              {numRememberedMultireddits === 1 ? "" : "s"})
             </Text>
           </Touchable>
         </View>
