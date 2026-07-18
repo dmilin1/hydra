@@ -26,9 +26,12 @@ import URL from "../../utils/URL";
 import { TextWithRepairedHeight } from "../Other/TextWithRepairedHeight";
 import {
   InterceptingGestureDetector,
+  Touchable,
   useTapGesture,
   VirtualGestureDetector,
 } from "react-native-gesture-handler";
+import { AntDesign } from "@expo/vector-icons";
+import { MediaViewerContext } from "../../contexts/MediaViewerContext";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -119,6 +122,49 @@ function TappableText({
     <VirtualGestureDetector gesture={tapGesture}>
       <Text {...props} />
     </VirtualGestureDetector>
+  );
+}
+
+/**
+ * Used for inline videos in comments. Example comment:
+ * https://www.reddit.com/r/shittymoviedetails/comments/1udv3qt/comment/otfgauq/
+ */
+function InlineVideo({ videoId }: { videoId: string }) {
+  const { theme } = useContext(ThemeContext);
+  const { displayMedia } = useContext(MediaViewerContext);
+
+  const videoURL = `https://v.redd.it/${videoId}/HLSPlaylist.m3u8`;
+
+  return (
+    <Touchable
+      style={{
+        height: 150,
+        width: 200,
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: theme.tint,
+      }}
+      onPress={() => {
+        displayMedia({
+          media: [
+            [
+              {
+                type: "video",
+                source: {
+                  source: videoURL,
+                  videoDownloadURL: videoURL,
+                },
+              },
+            ],
+          ],
+        });
+      }}
+    >
+      <View>
+        <AntDesign name="play-circle" size={32} color="white" />
+      </View>
+    </Touchable>
   );
 }
 
@@ -264,6 +310,14 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
         />
       </View>
     );
+  } else if (
+    element.name === "a" &&
+    element.attribs.href?.match(/.+\/link\/.+\/video\/.+\/player/)
+  ) {
+    const videoId = element.attribs.href.match(
+      /\/link\/[^/]+\/video\/([^/]+)/,
+    )?.[1];
+    Wrapper = () => <InlineVideo videoId={videoId ?? ""} />;
   } else if (
     element.name === "a" &&
     element.children[0]?.type === ElementType.Text
