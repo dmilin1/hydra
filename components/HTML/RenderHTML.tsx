@@ -1,7 +1,7 @@
 import { AnyNode, Text as TextNode, Element as ElementNode } from "domhandler";
 import { openExternalLink } from "../../utils/openExternalLink";
 import { parseDocument, ElementType } from "htmlparser2";
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
   Dimensions,
   Platform,
@@ -12,7 +12,6 @@ import {
   TextProps,
   TextStyle,
   View,
-  ViewProps,
   ViewStyle,
 } from "react-native";
 
@@ -36,27 +35,35 @@ const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
 
+/**
+ * Large documents can exceed 1,000 nodes, so the tree is built by plain
+ * functions instead of a component per node, with shared values passed as
+ * arguments instead of context reads. Components are only used where hooks
+ * are required (state, navigation, gestures).
+ */
+type RenderContext = {
+  theme: React.ContextType<typeof ThemeContext>["theme"];
+  onPress?: () => void;
+};
+
 function lineHeight(fontSize: number) {
   return Math.floor(fontSize * 1.3);
 }
 
-type ElementProps = {
-  element: ElementNode;
-  index: number;
-  inheritedStyles: InheritedStyles;
-};
-
 function makeChildNodeKey(node: AnyNode, index: number): string {
   if (node instanceof TextNode) {
-    return index + node.data + node.nodeValue;
+    return index + ":" + node.data;
   }
   if (node instanceof ElementNode) {
-    return index + node.type + node.name;
+    return index + ":" + node.type + ":" + node.name;
   }
   return (
     index +
+    ":" +
     node.type +
+    ":" +
     (node.sourceCodeLocation?.startOffset?.toString() ?? "") +
+    ":" +
     (node.sourceCodeLocation?.endOffset?.toString() ?? "")
   );
 }
@@ -87,24 +94,11 @@ function isElementImgLinkInParagraph(element: ElementNode): boolean {
  * whether a touch belongs to the detector by comparing the tag of the touched
  * text fragment against the tag of the Text the detector wraps, and fragments
  * are tagged with their INNERMOST enclosing Text. Every raw string in this
- * renderer is wrapped in TextNodeElem's own Text, so the detector must live
- * there — PressableText just carries the press handler down through context.
- * VirtualGestureDetector only functions under an InterceptingGestureDetector,
- * which RenderHtml provides at its root.
+ * renderer gets its own Text, so the detector must live there — pressable
+ * ancestors (links, spoilers) thread their handler down to their text nodes
+ * via RenderContext.onPress. VirtualGestureDetector only functions under an
+ * InterceptingGestureDetector, which RenderHtml provides at its root.
  */
-const PressContext = React.createContext<(() => void) | undefined>(undefined);
-
-function PressableText({
-  onPress,
-  ...props
-}: Omit<TextProps, "onPress"> & { onPress?: () => void }) {
-  return (
-    <PressContext.Provider value={onPress}>
-      <Text {...props} />
-    </PressContext.Provider>
-  );
-}
-
 function TappableText({
   onPress,
   ...props
@@ -168,25 +162,131 @@ function InlineVideo({ videoId }: { videoId: string }) {
   );
 }
 
-export function Element({ element, index, inheritedStyles }: ElementProps) {
+function PreBlock(props: ScrollViewProps) {
+  return (
+    <ScrollView {...{ ...props, children: null }} horizontal>
+      <View onStartShouldSetResponder={() => true}>{props.children}</View>
+    </ScrollView>
+  );
+}
+
+function TableBlock(props: ScrollViewProps) {
+  return (
+    <ScrollView
+      {...{ ...props, children: null }}
+      horizontal
+      style={{
+        maxWidth: "100%",
+        marginVertical: 5,
+      }}
+    >
+      <View>{props.children}</View>
+    </ScrollView>
+  );
+}
+
+function SpoilerText({
+  element,
+  inheritedStyles,
+}: {
+  element: ElementNode;
+  inheritedStyles: InheritedStyles;
+}) {
+  const { theme } = useContext(ThemeContext);
+  const [showSpoiler, setShowSpoiler] = useState(false);
+
+  inheritedStyles.color = showSpoiler ? theme.subtleText : theme.tint;
+  return (
+    <Text
+      style={{
+        ...inheritedStyles,
+        paddingVertical: 2,
+        paddingHorizontal: 5,
+        backgroundColor: theme.tint,
+      }}
+    >
+      {renderChildNodes(element, inheritedStyles, {
+        theme,
+        onPress: () => setShowSpoiler(!showSpoiler),
+      })}
+    </Text>
+  );
+}
+
+function RedditLink({
+  element,
+  inheritedStyles,
+}: {
+  element: ElementNode;
+  inheritedStyles: InheritedStyles;
+}) {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
 
-  const [showSpoiler, setShowSpoiler] = useState(false);
+  inheritedStyles.color = theme.iconOrTextButton;
+  return (
+    <Text style={{ ...inheritedStyles }}>
+      {renderChildNodes(element, inheritedStyles, {
+        theme,
+        onPress: () => {
+          const url = element.attribs.href;
+          try {
+            const redditURL = new RedditURL(url);
+            if (redditURL.getPageType() === PageType.UNKNOWN) {
+              throw Error("Unknown page type");
+            } else {
+              pushURL(new RedditURL(url).toString());
+            }
+          } catch {
+            /**
+             * We shouldn't need to do this. Reddit's conversion of raw text
+             * URLs to HTML is broken. For more info:
+             *
+             * https://www.reddit.com/r/test/comments/1t1yzu9/underscore_link_test/
+             * https://www.reddit.com/r/HydraClient/comments/1svzldz/comment/ojk7jv0/
+             */
+            const repairedURL = url.replaceAll("%5C", "");
+            openExternalLink(repairedURL);
+          }
+        },
+      })}
+    </Text>
+  );
+}
+
+function renderChildNodes(
+  element: ElementNode,
+  inheritedStyles: InheritedStyles,
+  ctx: RenderContext,
+) {
+  return element.children
+    .filter(
+      (c: any) =>
+        !(typeof c.data === "string" && (c.data === "\n" || c.data === "\n\n")),
+    )
+    .map((c, i) => renderNode(c, i, inheritedStyles, ctx));
+}
+
+function renderElement(
+  element: ElementNode,
+  key: string,
+  index: number,
+  inheritedStyles: InheritedStyles,
+  ctx: RenderContext,
+): React.ReactNode {
+  const { theme } = ctx;
 
   let Wrapper = View as React.ElementType;
-  const wrapperProps: ViewProps & TextProps & ScrollViewProps = {};
   const wrapperStyles: ViewStyle & TextStyle = {};
 
-  // @ts-expect-error index is not typed
-  element.index = index;
   if (element.attribs.class === "md-spoiler-text") {
-    Wrapper = PressableText;
-    inheritedStyles.color = showSpoiler ? theme.subtleText : theme.tint;
-    wrapperStyles.paddingVertical = 2;
-    wrapperStyles.paddingHorizontal = 5;
-    wrapperStyles.backgroundColor = theme.tint;
-    wrapperProps.onPress = () => setShowSpoiler(!showSpoiler);
+    return (
+      <SpoilerText
+        key={key}
+        element={element}
+        inheritedStyles={inheritedStyles}
+      />
+    );
   } else if (element.attribs.header) {
     Wrapper = Text;
     inheritedStyles.fontSize = 24;
@@ -196,22 +296,16 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     Wrapper = View;
     wrapperStyles.marginVertical = 5;
   } else if (element.name === "pre") {
-    Wrapper = (props) => (
-      <ScrollView {...{ ...props, children: null }} horizontal>
-        <View onStartShouldSetResponder={() => true}>{props.children}</View>
-      </ScrollView>
-    );
+    Wrapper = PreBlock;
     wrapperStyles.padding = 10;
     wrapperStyles.backgroundColor = theme.tint;
   } else if (isElementImgLinkInParagraph(element)) {
     const imgURL = (element.children[0] as ElementNode)?.attribs.href;
-    Wrapper = () => (
-      <View style={styles.imageContainer}>
+    return (
+      <View key={key} style={styles.imageContainer}>
         <ImageViewer images={[imgURL]} aspectRatio={16 / 9} />
       </View>
     );
-    wrapperStyles.marginVertical = 10;
-    inheritedStyles.textAlign = "center";
   } else if (element.name === "p") {
     Wrapper = TextWithRepairedHeight;
     wrapperStyles.marginVertical = 5;
@@ -244,18 +338,7 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     Wrapper = Text;
     wrapperStyles.marginVertical = 5;
   } else if (element.name === "table") {
-    Wrapper = (props) => (
-      <ScrollView
-        {...{ ...props, children: null }}
-        horizontal
-        style={{
-          maxWidth: "100%",
-          marginVertical: 5,
-        }}
-      >
-        <View>{props.children}</View>
-      </ScrollView>
-    );
+    Wrapper = TableBlock;
   } else if (element.name === "thead") {
     Wrapper = View;
     wrapperStyles.flexDirection = "column";
@@ -302,8 +385,8 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
       .getBasePath()
       .toString()
       .split("/")[4];
-    Wrapper = () => (
-      <View style={styles.imageContainer}>
+    return (
+      <View key={key} style={styles.imageContainer}>
         <ImageViewer
           images={[`https://i.giphy.com/${imageId}.webp`]}
           aspectRatio={16 / 9}
@@ -317,34 +400,18 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
     const videoId = element.attribs.href.match(
       /\/link\/[^/]+\/video\/([^/]+)/,
     )?.[1];
-    Wrapper = () => <InlineVideo videoId={videoId ?? ""} />;
+    return <InlineVideo key={key} videoId={videoId ?? ""} />;
   } else if (
     element.name === "a" &&
     element.children[0]?.type === ElementType.Text
   ) {
-    Wrapper = PressableText;
-    inheritedStyles.color = theme.iconOrTextButton;
-    wrapperProps.onPress = () => {
-      const url = element.attribs.href;
-      try {
-        const redditURL = new RedditURL(url);
-        if (redditURL.getPageType() === PageType.UNKNOWN) {
-          throw Error("Unknown page type");
-        } else {
-          pushURL(new RedditURL(url).toString());
-        }
-      } catch {
-        /**
-         * We shouldn't need to do this. Reddit's conversion of raw text URLs
-         * to HTML is broken. For more info:
-         *
-         * https://www.reddit.com/r/test/comments/1t1yzu9/underscore_link_test/
-         * https://www.reddit.com/r/HydraClient/comments/1svzldz/comment/ojk7jv0/
-         */
-        const repairedURL = url.replaceAll("%5C", "");
-        openExternalLink(repairedURL);
-      }
-    };
+    return (
+      <RedditLink
+        key={key}
+        element={element}
+        inheritedStyles={inheritedStyles}
+      />
+    );
   } else if (
     element.name === "a" &&
     element.children[0]?.type === ElementType.Tag &&
@@ -358,8 +425,8 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
   } else if (["ol", "ul"].includes(element.name)) {
     Wrapper = View;
   } else if (element.name === "li") {
-    Wrapper = (props) => (
-      <View style={styles.liContainer}>
+    return (
+      <View key={key} style={styles.liContainer}>
         <View style={styles.liIconContainer}>
           <Text
             style={{ fontSize: styles.basicText.fontSize, color: theme.text }}
@@ -370,154 +437,120 @@ export function Element({ element, index, inheritedStyles }: ElementProps) {
           </Text>
         </View>
         <View style={styles.liChildrenContainer}>
-          <Text>{props.children}</Text>
+          <Text>{renderChildNodes(element, inheritedStyles, ctx)}</Text>
         </View>
       </View>
     );
   } else if (element.name === "img") {
-    Wrapper = (props) => (
-      <View onStartShouldSetResponder={() => true}>
+    inheritedStyles.textAlign = "center";
+    return (
+      <View key={key} onStartShouldSetResponder={() => true}>
         <View style={styles.imageContainer}>
           <ImageViewer images={[element.attribs.src]} aspectRatio={16 / 9} />
         </View>
-        <View>{props.children}</View>
+        <View>{renderChildNodes(element, inheritedStyles, ctx)}</View>
       </View>
     );
-    wrapperStyles.marginVertical = 10;
-    inheritedStyles.textAlign = "center";
   }
 
-  return Wrapper !== null ? (
+  return (
     <Wrapper
-      key={index}
+      key={key}
       style={{
         ...inheritedStyles,
         ...wrapperStyles,
       }}
-      {...wrapperProps}
     >
-      {element.children
-        .filter(
-          (c: any) =>
-            !(
-              typeof c.data === "string" &&
-              (c.data === "\n" || c.data === "\n\n")
-            ),
-        )
-        .map((c, i) =>
-          getNode({
-            key: makeChildNodeKey(c, i),
-            node: c,
-            index: i,
-            inheritedStyles: inheritedStyles,
-          }),
-        )}
+      {renderChildNodes(element, inheritedStyles, ctx)}
     </Wrapper>
-  ) : null;
+  );
 }
 
-type TextNodeProps = {
-  textNode: TextNode;
-  index: number;
-  inheritedStyles: InheritedStyles;
-};
-
-export function TextNodeElem({
-  textNode,
-  index,
-  inheritedStyles,
-}: TextNodeProps) {
-  const { theme } = useContext(ThemeContext);
-  const onPress = useContext(PressContext);
-
+function renderTextNode(
+  textNode: TextNode,
+  key: string,
+  inheritedStyles: InheritedStyles,
+  ctx: RenderContext,
+): React.ReactNode {
+  /**
+   * extractThemeFromText() is not a performance issue. Even on large posts with many
+   * nodes, it takes less than a milisecond for the whole thing.
+   */
   const { customThemes, remainingText } = extractThemeFromText(textNode.data);
-
-  const textStyle = [
-    styles.basicText,
-    {
-      color: theme.subtleText,
-      ...inheritedStyles,
-    },
-  ];
-
-  const TextComponment = onPress ? (
-    <TappableText key={index} onPress={onPress} style={textStyle}>
-      {remainingText}
-    </TappableText>
-  ) : (
-    <Text key={index} style={textStyle}>
-      {remainingText}
-    </Text>
-  );
 
   if (remainingText === "\n\n" || remainingText === "\n") {
     /**
      * This is only used in the guide pages. The new lines get stripped out
      * ahead of time for all markdown coming from Reddit.
      */
-    return <View style={{ height: 10 }} />;
+    return <View key={key} style={{ height: 10 }} />;
   }
 
+  const textStyle = [
+    styles.basicText,
+    {
+      color: ctx.theme.subtleText,
+      ...inheritedStyles,
+    },
+  ];
+
+  const textElem = ctx.onPress ? (
+    <TappableText key={key} onPress={ctx.onPress} style={textStyle}>
+      {remainingText}
+    </TappableText>
+  ) : (
+    <Text key={key} style={textStyle}>
+      {remainingText}
+    </Text>
+  );
+
   return customThemes.length > 0 ? (
-    <>
-      {TextComponment}
+    <React.Fragment key={key}>
+      {textElem}
       {customThemes.map((customTheme, idx) => (
         <ThemeImport key={idx} customTheme={customTheme} />
       ))}
-    </>
+    </React.Fragment>
   ) : (
-    TextComponment
+    textElem
   );
 }
 
-type NodeProps = {
-  key: string;
-  node: AnyNode;
-  index: number;
-  inheritedStyles: InheritedStyles;
-};
-
-export function getNode({ key, node, index, inheritedStyles }: NodeProps) {
+function renderNode(
+  node: AnyNode,
+  index: number,
+  inheritedStyles: InheritedStyles,
+  ctx: RenderContext,
+): React.ReactNode {
+  const key = makeChildNodeKey(node, index);
   switch (node.type) {
     case ElementType.Text:
-      return (
-        <TextNodeElem
-          key={key}
-          textNode={node}
-          index={index}
-          inheritedStyles={{ ...inheritedStyles }}
-        />
-      );
+      return renderTextNode(node, key, { ...inheritedStyles }, ctx);
     case ElementType.Tag:
-      return (
-        <Element
-          key={key}
-          element={node}
-          index={index}
-          inheritedStyles={{ ...inheritedStyles }}
-        />
-      );
+      return renderElement(node, key, index, { ...inheritedStyles }, ctx);
   }
   return null;
 }
 
-export default function RenderHtml({ html }: { html: string }) {
-  const document = parseDocument(html);
+function RenderHtml({ html }: { html: string }) {
+  const { theme } = useContext(ThemeContext);
+  const document = useMemo(() => parseDocument(html), [html]);
   return (
     <InterceptingGestureDetector>
       <View style={{ width: "100%" }}>
-        {document.children.map((c, i) =>
-          getNode({
-            key: makeChildNodeKey(c, i),
-            node: c,
-            index: i,
-            inheritedStyles: {},
-          }),
-        )}
+        {document.children.map((c, i) => renderNode(c, i, {}, { theme }))}
       </View>
     </InterceptingGestureDetector>
   );
 }
+
+/**
+ * Re-rendering a large document costs 100ms+ of JS time, so a parent
+ * re-render (e.g. new comments arriving) must not cascade into mounted
+ * instances. html is the only prop, so memo skips the whole tree whenever
+ * the source string is unchanged.
+ */
+export default React.memo(RenderHtml);
 
 const styles = StyleSheet.create({
   basicText: {
