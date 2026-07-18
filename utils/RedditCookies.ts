@@ -1,7 +1,24 @@
 import CookieManager from "@preeternal/react-native-cookie-manager";
 import * as SecureStore from "expo-secure-store";
+import safeFetch from "./safeFetch";
+import { USER_AGENT } from "../api/UserAgent";
 
 export default class RedditCookies {
+  static async getLoggedOutCookies() {
+    try {
+      const res = await safeFetch("https://old.reddit.com/", {
+        method: "HEAD",
+        headers: {
+          "User-Agent": USER_AGENT,
+        },
+      });
+      return res;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
   static async restoreSessionCookies(username: string) {
     const redditSession = await SecureStore.getItemAsync(
       `redditSession-${username}`,

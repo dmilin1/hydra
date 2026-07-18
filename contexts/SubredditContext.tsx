@@ -65,7 +65,7 @@ export class NeedsSubscriptionToFavorite extends Error {
 }
 
 export function SubredditProvider({ children }: React.PropsWithChildren) {
-  const { currentUser } = useContext(AccountContext);
+  const { currentUser, loginInitialized } = useContext(AccountContext);
 
   const [subreddits, setSubreddits] = useState(
     initialAccountContext.subreddits,
@@ -206,8 +206,9 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
   };
 
   useEffect(() => {
+    if (!loginInitialized) return;
     loadData();
-  }, [currentUser]);
+  }, [currentUser, loginInitialized]);
 
   return (
     <SubredditContext.Provider

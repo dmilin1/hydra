@@ -80,6 +80,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const logOutContext = async () => {
     await RedditCookies.clearSessionCookies();
+    await RedditCookies.getLoggedOutCookies();
     KeyStore.remove("currentUser");
     setCurrentUser(null);
     Sentry.setUser(null);
@@ -123,6 +124,8 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       const currentUsername = KeyStore.getString("currentUser");
       if (currentUsername) {
         await logInContext(currentUsername);
+      } else {
+        await RedditCookies.getLoggedOutCookies();
       }
     }
     setLoginInitialized(true);
