@@ -26,6 +26,8 @@ type MediaViewerProps = {
   startingColumnIndex: number;
   onFocusedItemChange?: (index: number) => void;
   getCurrentPost?: (rowIndex: number) => Post | PostDetail | null;
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
   onClose: () => void;
 };
 
@@ -35,6 +37,8 @@ export default function MediaViewer({
   startingColumnIndex,
   onFocusedItemChange,
   getCurrentPost,
+  isMuted,
+  setIsMuted,
   onClose,
 }: MediaViewerProps) {
   const { width, height } = useSafeAreaFrame();
@@ -301,6 +305,8 @@ export default function MediaViewer({
                       }
                       overlayOpacity={overlayOpacity.current}
                       setIsScrollLocked={setIsScrollLocked}
+                      isMuted={isMuted}
+                      setIsMuted={setIsMuted}
                     />
                   ) : null}
                 </View>

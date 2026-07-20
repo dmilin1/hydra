@@ -24,5 +24,7 @@ export type MediaViewerProps = {
   startingColumnIndex: number;
   onFocusedItemChange?: (index: number) => void;
   getCurrentPost?: (rowIndex: number) => Post | PostDetail | null;
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
   onClose: () => void;
 };

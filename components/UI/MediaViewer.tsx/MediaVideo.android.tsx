@@ -18,6 +18,7 @@ import {
   usePanGesture,
 } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-worklets";
+import useVideoAudioControls from "./useVideoAudioControls";
 
 export type VideoItem = {
   type: "video";
@@ -28,12 +29,14 @@ type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
   overlayStyle: AnimatedStyleHandle<{ opacity: number }>;
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
 };
 
 const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
 
 function MediaVideo(props: MediaVideoProps) {
-  const { source, focused, overlayStyle } = props;
+  const { source, focused, overlayStyle, isMuted, setIsMuted } = props;
   const { width, height } = useSafeAreaFrame();
   const { top: safeAreaTop, left: safeAreaLeft } = useSafeAreaInsets();
 
@@ -41,6 +44,7 @@ function MediaVideo(props: MediaVideoProps) {
     VideoCache.makeCachedVideoSource(source.source),
     (player) => {
       player.audioMixingMode = "mixWithOthers";
+      player.muted = isMuted;
       player.loop = true;
       player.timeUpdateEventInterval = 1 / 15;
       player.seekTolerance = {
@@ -49,6 +53,13 @@ function MediaVideo(props: MediaVideoProps) {
       };
     },
   );
+
+  useVideoAudioControls({
+    player,
+    focused,
+    isMuted,
+    setIsMuted,
+  });
 
   const videoTimeAtSeekStart = useSharedValue(0);
   const wasPlayingAtSeekStart = useSharedValue(false);
@@ -142,10 +153,8 @@ function MediaVideo(props: MediaVideoProps) {
   useEffect(() => {
     if (focused) {
       player.play();
-      player.volume = 1;
     } else {
       player.pause();
-      player.volume = 0;
     }
   }, [focused]);
 
@@ -258,6 +267,35 @@ function MediaVideo(props: MediaVideoProps) {
             <Text style={{ color: "white" }}>{playbackRate ?? 1}x</Text>
           </Touchable>
         </Animated.View>
+        <Animated.View
+          style={[
+            styles.audioControlContainer,
+            {
+              top: safeAreaTop + 60,
+              left: safeAreaLeft + 10,
+            },
+            overlayStyle,
+          ]}
+          onTouchStart={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <Touchable
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
+            style={styles.playbackRateButton}
+            accessibilityRole="button"
+            accessibilityLabel={isMuted ? "Unmute video" : "Mute video"}
+            onPress={() => setIsMuted(!isMuted)}
+          >
+            <FontAwesome
+              name={isMuted ? "volume-off" : "volume-up"}
+              size={20}
+              color="white"
+            />
+          </Touchable>
+        </Animated.View>
       </View>
     </GestureDetector>
   );
@@ -337,6 +375,9 @@ const styles = StyleSheet.create({
   playbackRateContainer: {
     position: "absolute",
     left: 10,
+  },
+  audioControlContainer: {
+    position: "absolute",
   },
   playbackRateButton: {
     borderRadius: 100,
