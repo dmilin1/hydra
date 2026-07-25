@@ -1,7 +1,7 @@
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
 import { useEffect, useRef } from "react";
-import { Alert, AppState } from "react-native";
+import { Alert, AppState, Platform } from "react-native";
 
 import KeyStore from "./KeyStore";
 import RedditURL, { PageType } from "./RedditURL";
@@ -54,7 +54,10 @@ export default function useHandleIncomingURLs() {
     if (!canReadClipboard) return;
     if (isAsking.current) return;
     isAsking.current = true;
-    const clipboardURL = await Clipboard.getUrlAsync();
+    const clipboardURL =
+      Platform.OS === "ios" || Platform.OS === "macos"
+        ? await Clipboard.getUrlAsync()
+        : await Clipboard.getStringAsync();
     if (!clipboardURL) return;
     try {
       new RedditURL(clipboardURL);
