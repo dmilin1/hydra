@@ -7,15 +7,21 @@ import {
   View,
   StyleSheet,
   Text,
+  Platform,
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { ImageSource } from "expo-image";
+import { shareAsync } from "expo-sharing";
 
 import URL from "./URL";
 import { ModalContext } from "../contexts/ModalContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 
-export default function useMediaSharing() {
+export function shareURL(url: string) {
+  return Share.share(Platform.OS === "ios" ? { url } : { message: url });
+}
+
+export function useMediaSharing() {
   const { setModal } = useContext(ModalContext);
   const { theme } = useContext(ThemeContext);
 
@@ -63,9 +69,15 @@ export default function useMediaSharing() {
       }
       await File.downloadFileAsync(mediaUrl, file);
       setModal(null);
-      await Share.share({
-        url: file.uri,
-      });
+      if (Platform.OS === "ios") {
+        await Share.share({
+          url: file.uri,
+        });
+      } else {
+        await shareAsync(file.uri, {
+          mimeType: type === "image" ? "image/jpeg" : "video/mp4",
+        });
+      }
       file.delete();
     } catch (_e) {
       Alert.alert("Error", `Failed to download ${type}`);

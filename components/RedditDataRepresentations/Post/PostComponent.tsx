@@ -1,6 +1,6 @@
 import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useMemo, useState } from "react";
-import { StyleSheet, View, Text, Share, AccessibilityInfo } from "react-native";
+import { StyleSheet, View, Text, AccessibilityInfo } from "react-native";
 import { openExternalLink } from "../../../utils/openExternalLink";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
@@ -27,6 +27,7 @@ import { GesturesContext } from "../../../contexts/SettingsContexts/GesturesCont
 import useComponentActions from "../../../utils/useComponentActions";
 import useContextMenu from "../../../utils/useContextMenu";
 import { Touchable } from "react-native-gesture-handler";
+import { shareURL } from "../../../utils/sharing";
 
 type PostComponentProps = {
   post: Post;
@@ -158,7 +159,7 @@ export default function PostComponent({
     {
       label: "Share",
       handle: async () => {
-        await Share.share({ url: post.link });
+        await shareURL(post.link);
       },
     },
   ]);

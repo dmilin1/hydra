@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { View, Text, StyleSheet, Share, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
@@ -24,6 +24,7 @@ import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import NewComment from "../../Modals/NewComment";
 import Time from "../../../utils/Time";
 import { Touchable } from "react-native-gesture-handler";
+import { shareURL } from "../../../utils/sharing";
 
 type Summary = {
   post: string | null;
@@ -377,7 +378,7 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
-            Share.share({ url: new RedditURL(url).toString() });
+            shareURL(new RedditURL(url).toString());
           }}
         >
           <Feather name="share" size={28} color={theme.iconPrimary} />

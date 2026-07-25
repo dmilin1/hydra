@@ -1,6 +1,6 @@
 import { Entypo, FontAwesome } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import { StyleSheet, View, Text, Image, Share } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 
 import { Multi } from "../../../api/Multireddit";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -8,6 +8,7 @@ import { SubredditContext } from "../../../contexts/SubredditContext";
 import { useURLNavigation } from "../../../utils/navigation";
 import useContextMenu from "../../../utils/useContextMenu";
 import { Touchable } from "react-native-gesture-handler";
+import { shareURL } from "../../../utils/sharing";
 
 export default function MultiredditLink({ multi }: { multi: Multi }) {
   const openContextMenu = useContextMenu();
@@ -79,7 +80,7 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
                   deleteSubFromMulti(multi, subreddit.name);
                 }
                 if (result === "Share") {
-                  Share.share({ url: subreddit.url });
+                  shareURL(subreddit.url);
                 }
               }}
               style={[

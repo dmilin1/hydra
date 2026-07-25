@@ -9,7 +9,7 @@ import {
 } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
-import { Share, StyleSheet, View, Alert, findNodeHandle } from "react-native";
+import { StyleSheet, View, Alert, findNodeHandle } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
@@ -38,6 +38,7 @@ import NewMessage from "../Modals/NewMessage";
 import NewPost from "../Modals/NewPost";
 import SelectText from "../Modals/SelectText";
 import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
+import { shareURL } from "../../utils/sharing";
 
 export type SortTypes =
   | "Best"
@@ -289,7 +290,7 @@ export default function SortAndContext({
               anchor: findNodeHandle(contextButtonRef.current) ?? undefined,
             });
             if (result === "Share") {
-              Share.share({ url: new RedditURL(currentPath).toString() });
+              shareURL(new RedditURL(currentPath).toString());
             } else if (
               result === "Select Text" &&
               pageData?.type === "postDetail"

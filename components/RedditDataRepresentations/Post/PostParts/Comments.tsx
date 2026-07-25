@@ -16,7 +16,7 @@ import React, {
   useRef,
   ComponentRef,
 } from "react";
-import { StyleSheet, View, Text, Alert, Share } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 
 import {
   Comment,
@@ -44,6 +44,7 @@ import Slideable from "../../../UI/Slideable";
 import { GesturesContext } from "../../../../contexts/SettingsContexts/GesturesContext";
 import Time from "../../../../utils/Time";
 import { Touchable } from "react-native-gesture-handler";
+import { shareURL } from "../../../../utils/sharing";
 
 interface CommentProps {
   loadMoreComments?: LoadMoreCommentsFunc;
@@ -226,7 +227,7 @@ export function CommentComponent({
     } else if (result === "Select Text") {
       setModal(<SelectText text={comment.text} />);
     } else if (result === "Share") {
-      Share.share({ url: new RedditURL(comment.link).toString() });
+      shareURL(new RedditURL(comment.link).toString());
     }
   };
 
@@ -273,9 +274,7 @@ export function CommentComponent({
                   icon: <FontAwesome name="share" />,
                   color: theme.share,
                   action: async () => {
-                    Share.share({
-                      url: new RedditURL(comment.link).toString(),
-                    });
+                    shareURL(new RedditURL(comment.link).toString());
                   },
                 },
                 {

@@ -4,7 +4,7 @@ import { Post } from "../../../api/Posts";
 import { PageTypeToNavName } from "../../../utils/PageTypeToNavName";
 import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
-import useMediaSharing from "../../../utils/useMediaSharing";
+import { useMediaSharing } from "../../../utils/sharing";
 import RedditURL from "../../../utils/RedditURL";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { PostDetail } from "../../../api/PostDetail";
