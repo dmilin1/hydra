@@ -10,7 +10,7 @@ import * as Application from "expo-application";
 import * as Updates from "expo-updates";
 import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { supportsAlternateIcons } from "expo-alternate-app-icons";
+import { supportsAlternateIcons } from "../../utils/appIcons";
 
 import GetHydraProButton from "../../components/UI/GetHydraProButton";
 import List from "../../components/UI/List";

@@ -1,5 +1,5 @@
+import { MaterialIcons } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import { getAppIconName } from "expo-alternate-app-icons";
 import {
   View,
   Text,
@@ -8,83 +8,87 @@ import {
   ImageSourcePropType,
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
-import { MaterialIcons } from "@expo/vector-icons";
 
+import {
+  APP_ICON_AUTHORS,
+  APP_ICON_SOURCES,
+} from "../../../../constants/appIcons";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
-
+import { getCurrentAppIcon } from "../../../../utils/appIcons";
 import { useURLNavigation } from "../../../../utils/navigation";
 
-type Icon = {
-  name: string | null;
+type AuthorId = keyof typeof APP_ICON_AUTHORS;
+
+export type Author = (typeof APP_ICON_AUTHORS)[AuthorId] & {
+  avatar: ImageSourcePropType;
+};
+
+export type Icon = {
+  /** null is the stock Hydra icon. */
+  key: string | null;
   prettyName: string;
-  icon: ImageSourcePropType;
+  preview: ImageSourcePropType;
   author: Author;
 };
 
-type Author = {
-  avatar: ImageSourcePropType;
-  redditUsername: string;
-  website?: string;
-  instagram?: string;
-  bio: string;
+const AUTHOR_AVATARS: Record<AuthorId, ImageSourcePropType> = {
+  dmilin: require("../../../../assets/images/custom_icons/authors/dmilin.jpg"),
+  batjake: require("../../../../assets/images/custom_icons/authors/batjake.png"),
+  boxsitter: require("../../../../assets/images/custom_icons/authors/boxsitter.png"),
 };
 
-const AUTHORS = {
-  dmilin: {
-    avatar: require("../../../../assets/images/custom_icons/authors/dmilin.jpg"),
-    redditUsername: "u/dmilin",
-    website: "https://github.com/dmilin1/hydra",
-    bio: "Hi, I'm Dimitrie, the developer of Hydra. I'm a software engineer and have been building apps for almost 2 decades. I built Hydra to craft the best possible Reddit experience for myself and others.",
-  },
-  batjake: {
-    avatar: require("../../../../assets/images/custom_icons/authors/batjake.png"),
-    redditUsername: "u/batjake",
-    website: "http://brokendiamonddesign.com/",
-    instagram: "@bdiamonddesigns",
-    bio: "Hi, I'm Jake, a graphic designer with 10+ years of experience creating bold logos, striking album art, and brand visuals that resonate. I specialize in helping businesses and musicians stand out with designs that capture essence, tell stories, and leave lasting impressions.",
-  },
-  boxsitter: {
-    avatar: require("../../../../assets/images/custom_icons/authors/boxsitter.png"),
-    redditUsername: "u/boxsitter",
-    bio: "Hi, I'm Boxsitter, a hobbyist designer who wanted to create something special for this app. Because I run the open-source server myself, I designed this icon as a way to support the project in lieu of a subscription. I hope you enjoy this reminder that if you cut off one head, two more shall take its place. Hail Hydra!",
-  },
-} satisfies Record<string, Author>;
+/**
+ * Previews shown in this list. Metro only understands literal require() paths,
+ * so this is the one thing that can't be derived from constants/appIcons.js —
+ * add an entry here whenever you add an icon there.
+ */
+const ICON_PREVIEWS: Record<string, ImageSourcePropType> = {
+  cerberus: require("../../../../assets/images/custom_icons/cerberus.png"),
+  hail_hydra: require("../../../../assets/images/custom_icons/hail_hydra.png"),
+  hail_hydra_dark: require("../../../../assets/images/custom_icons/hail_hydra_dark.png"),
+};
+
+const DEFAULT_ICON_PREVIEW = require("../../../../assets/images/icon.png");
+
+if (__DEV__) {
+  const missing = APP_ICON_SOURCES.filter((icon) => !ICON_PREVIEWS[icon.key]);
+
+  if (missing.length) {
+    throw new Error(
+      `Missing ICON_PREVIEWS entries in AppIcon.tsx for: ${missing
+        .map((icon) => icon.key)
+        .join(", ")} — see the checklist in constants/appIcons.js`,
+    );
+  }
+}
+
+function authorFor(id: AuthorId): Author {
+  return { ...APP_ICON_AUTHORS[id], avatar: AUTHOR_AVATARS[id] };
+}
 
 export const APP_ICONS: Icon[] = [
   {
-    name: null,
+    key: null,
     prettyName: "Hydra",
-    icon: require("../../../../assets/images/icon.png"),
-    author: AUTHORS.dmilin,
+    preview: DEFAULT_ICON_PREVIEW,
+    author: authorFor("dmilin"),
   },
-  {
-    name: "cerberus",
-    prettyName: "Cerberus",
-    icon: require("../../../../assets/images/custom_icons/cerberus.png"),
-    author: AUTHORS.batjake,
-  },
-  {
-    name: "hail_hydra",
-    prettyName: "Hail Hydra!",
-    icon: require("../../../../assets/images/custom_icons/hail_hydra.png"),
-    author: AUTHORS.boxsitter,
-  },
-  {
-    name: "hail_hydra_dark",
-    prettyName: "Hail Hydra! (Dark)",
-    icon: require("../../../../assets/images/custom_icons/hail_hydra_dark.png"),
-    author: AUTHORS.boxsitter,
-  },
+  ...APP_ICON_SOURCES.map((icon) => ({
+    key: icon.key,
+    prettyName: icon.prettyName,
+    preview: ICON_PREVIEWS[icon.key],
+    author: authorFor(icon.author),
+  })),
 ];
 
 export default function AppIcon() {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
 
-  const currentIcon = getAppIconName();
+  const currentIcon = getCurrentAppIcon();
 
   const handleIconPress = (appIcon: Icon) => {
-    pushURL(`hydra://settings/appIconDetails/${appIcon.name || "default"}`);
+    pushURL(`hydra://settings/appIconDetails/${appIcon.key || "default"}`);
   };
 
   return (
@@ -92,13 +96,13 @@ export default function AppIcon() {
       <View style={styles.iconsGrid}>
         {APP_ICONS.map((appIcon) => (
           <Touchable
-            key={appIcon.name || "default"}
+            key={appIcon.key || "default"}
             style={[
               styles.iconCard,
               {
                 backgroundColor: theme.tint,
                 borderColor:
-                  currentIcon === appIcon.name
+                  currentIcon === appIcon.key
                     ? theme.iconPrimary
                     : "transparent",
               },
@@ -107,7 +111,7 @@ export default function AppIcon() {
             activeOpacity={0.7}
             animationDuration={{ in: 0, out: 150 }}
           >
-            <Image source={appIcon.icon} style={styles.iconImage} />
+            <Image source={appIcon.preview} style={styles.iconImage} />
             <Text style={[styles.iconName, { color: theme.text }]}>
               {appIcon.prettyName}
             </Text>
@@ -120,7 +124,7 @@ export default function AppIcon() {
                 {appIcon.author.redditUsername}
               </Text>
             </View>
-            {currentIcon === appIcon.name && (
+            {currentIcon === appIcon.key && (
               <View
                 style={[
                   styles.currentBadge,

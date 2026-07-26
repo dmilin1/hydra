@@ -2,10 +2,9 @@ import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, Alert, Linking } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { MaterialIcons, Feather, FontAwesome } from "@expo/vector-icons";
-import { getAppIconName, setAlternateAppIcon } from "expo-alternate-app-icons";
-
-import { useRoute, useURLNavigation } from "../../../../utils/navigation";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
+import { getCurrentAppIcon, setAppIcon } from "../../../../utils/appIcons";
+import { useRoute, useURLNavigation } from "../../../../utils/navigation";
 import { APP_ICONS } from "./AppIcon";
 
 export default function AppIconDetails() {
@@ -17,8 +16,8 @@ export default function AppIconDetails() {
   const iconName = params.url.split("/").pop();
   const normalizedIconName = iconName === "default" ? null : iconName;
 
-  const appIcon = APP_ICONS.find((icon) => icon.name === normalizedIconName);
-  const currentIcon = getAppIconName();
+  const appIcon = APP_ICONS.find((icon) => icon.key === normalizedIconName);
+  const currentIcon = getCurrentAppIcon();
   const isCurrentIcon = currentIcon === normalizedIconName;
 
   if (!appIcon) {
@@ -33,7 +32,7 @@ export default function AppIconDetails() {
 
   const handleSetAsAppIcon = async () => {
     try {
-      await setAlternateAppIcon(appIcon.name);
+      await setAppIcon(appIcon.key);
     } catch (_error) {
       Alert.alert("Error setting app icon");
     }
@@ -42,7 +41,7 @@ export default function AppIconDetails() {
   return (
     <View style={styles.container}>
       <View style={styles.iconPreview}>
-        <Image source={appIcon.icon} style={styles.previewImage} />
+        <Image source={appIcon.preview} style={styles.previewImage} />
         {isCurrentIcon && (
           <View
             style={[

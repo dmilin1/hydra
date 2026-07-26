@@ -16,6 +16,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/image-utils": "0.8.12",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/vector-icons": "^15.0.3",
     "@preeternal/react-native-cookie-manager": "^6.3.2",
@@ -28,7 +29,6 @@
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-orm": "^0.44.4",
     "expo": "^55.0.8",
-    "expo-alternate-app-icons": "^2.2.0",
     "expo-application": "~55.0.10",
     "expo-blur": "~55.0.10",
     "expo-clipboard": "~55.0.9",
