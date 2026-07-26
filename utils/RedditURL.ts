@@ -71,13 +71,14 @@ export default class RedditURL extends URL {
       this.url = `https://${url}`;
     } else if (url.startsWith("reddit.com")) {
       this.url = `https://www.${url}`;
-    } else if (url.startsWith("https://www.reddit.com/r/u_")) {
+    } else {
+      throw new Error(`Weird URL being passed ${url}`);
+    }
+    if (url.startsWith("https://www.reddit.com/r/u_")) {
       this.url = url.replace(
         "https://www.reddit.com/r/u_",
         "https://www.reddit.com/user/",
       );
-    } else {
-      throw new Error(`Weird URL being passed ${url}`);
     }
     if (
       !this.url.startsWith("hydra://") &&

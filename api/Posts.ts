@@ -151,7 +151,12 @@ async function formatVideos(
   if (child.data.preview?.images?.[0]?.variants?.mp4) {
     // Example post: https://www.reddit.com/r/gifs/comments/1rzl4fp/seth_hernandez_throws_a_1024_mph_laser_on_the/
     return child.data.preview.images.map((image: any) => {
-      const item = image.variants.mp4.resolutions.at(-1);
+      /**
+       * Some posts have no resolutions so we have to use source instead:
+       * https://www.reddit.com/r/StardewValley/comments/1v617mf/celebrate_saturday_july_25_2026/
+       */
+      const item =
+        image.variants.mp4.resolutions.at(-1) ?? image.variants.mp4.source;
       return {
         source: decode(item.url),
         videoDownloadURL: decode(item.url),
