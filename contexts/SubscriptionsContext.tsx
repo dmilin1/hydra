@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import Purchases, {
   CustomerInfo,
   CustomerInfoUpdateListener,
@@ -11,10 +11,18 @@ import { USING_CUSTOM_HYDRA_SERVER } from "../constants/HydraServer";
 
 Purchases.setLogLevel(Purchases.LOG_LEVEL.ERROR);
 Purchases.configure({
-  apiKey: "appl_okkBpjboHClPttmFHfsSWRaGSFd",
+  apiKey:
+    Platform.OS === "android"
+      ? "goog_owTGUhWdmCepBrlSXGNXwHJfyPC"
+      : "appl_okkBpjboHClPttmFHfsSWRaGSFd",
 });
 
-const HYDRA_299_1M_PRODUCT_ID = "hydra_299_1m";
+const HYDRA_299_1M_PRODUCT_ID_IOS = "hydra_299_1m";
+const HYDRA_299_1M_PRODUCT_ID_ANDROID = "hydra_pro:hydra-299-1m";
+const HYDRA_299_1M_PRODUCT_ID =
+  Platform.OS === "android"
+    ? HYDRA_299_1M_PRODUCT_ID_ANDROID
+    : HYDRA_299_1M_PRODUCT_ID_IOS;
 const HYDRA_PRO_ENTITLEMENT = "Hydra Pro";
 
 interface SubscriptionContextType {
