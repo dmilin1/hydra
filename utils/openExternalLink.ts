@@ -38,9 +38,8 @@ export const BROWSER_CONFIGS = {
     value: "brave",
     label: "Brave",
     getURLScheme: (url: string) => {
-      const isHTTPS = url.startsWith("https://");
-      const cleanURL = url.replace(/^https?:\/\//, "");
-      return isHTTPS ? `braves://${cleanURL}` : `brave://${cleanURL}`;
+      const encodedURL = encodeURIComponent(url);
+      return `brave://open-url?url=${encodedURL}`;
     },
   },
   firefox: {
