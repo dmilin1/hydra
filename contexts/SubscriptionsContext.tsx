@@ -32,6 +32,7 @@ interface SubscriptionContextType {
   isPro: boolean;
   buyPro: () => Promise<void>;
   getCustomerInfo: (refresh?: boolean) => Promise<void>;
+  restorePurchases: () => Promise<void>;
   proOffering: PurchasesPackage | null;
   isLoadingOffering: boolean;
   inGracePeriod: boolean;
@@ -44,8 +45,9 @@ const initialSubscriptionContext: SubscriptionContextType = {
   customerId: null,
   isPro: false,
   buyPro: async () => {},
-  proOffering: null,
   getCustomerInfo: async () => {},
+  restorePurchases: async () => {},
+  proOffering: null,
   isLoadingOffering: true,
   inGracePeriod: false,
   gracePeriodEndsAt: null,
@@ -120,6 +122,13 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  const restorePurchases = async () => {
+    setPurchasesInitialized(false);
+    const customerInfo = await Purchases.restorePurchases();
+    setCustomerInfo(customerInfo);
+    setPurchasesInitialized(true);
+  };
+
   const getCustomerInfo = async (refresh = false) => {
     setPurchasesInitialized(false);
     if (refresh) {
@@ -165,6 +174,7 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
         isLoadingOffering,
         inGracePeriod,
         gracePeriodEndsAt,
+        restorePurchases,
       }}
     >
       {children}

@@ -18,6 +18,7 @@ export default function HydraPro() {
     inGracePeriod,
     gracePeriodEndsAt,
     getCustomerInfo,
+    restorePurchases,
   } = useContext(SubscriptionsContext);
 
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -132,6 +133,22 @@ export default function HydraPro() {
           {new Time(gracePeriodEndsAt).prettyTimeSince()}
         </Text>
       )}
+      <Touchable
+        onPress={async () => {
+          await restorePurchases();
+        }}
+        activeOpacity={0.5}
+        animationDuration={{ in: 0, out: 150 }}
+      >
+        <Text
+          style={[
+            styles.restorePurchasesText,
+            { color: theme.iconOrTextButton },
+          ]}
+        >
+          Restore Purchases
+        </Text>
+      </Touchable>
     </>
   );
 }
@@ -186,6 +203,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   gracePeriodText: {
+    fontSize: 14,
+    marginTop: 4,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  restorePurchasesText: {
     fontSize: 14,
     marginTop: 4,
     marginHorizontal: 20,
