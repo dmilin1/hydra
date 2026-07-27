@@ -103,6 +103,12 @@ export default function Root() {
             onPress: () => pushURL("hydra://settings/privacy"),
           },
           {
+            key: "legal",
+            icon: <Feather name="file-text" size={24} color={theme.text} />,
+            text: "Legal",
+            onPress: () => pushURL("hydra://settings/general/legal"),
+          },
+          {
             key: "advanced",
             icon: <FontAwesome name="wrench" size={24} color={theme.text} />,
             text: "Advanced",
