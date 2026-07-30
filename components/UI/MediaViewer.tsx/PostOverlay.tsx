@@ -1,10 +1,11 @@
-import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { Post } from "../../../api/Posts";
 import { PageTypeToNavName } from "../../../utils/PageTypeToNavName";
 import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useMediaSharing } from "../../../utils/sharing";
+import ProgressRing from "../ProgressRing";
 import RedditURL from "../../../utils/RedditURL";
 import { StackActions, useNavigation } from "@react-navigation/native";
 import { PostDetail } from "../../../api/PostDetail";
@@ -23,6 +24,9 @@ export default function PostOverlay({
   const shareMedia = useMediaSharing();
 
   const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+
+  const shareable = post.images.length > 0 || post.videos.length > 0;
 
   const openLink = (link: string) => {
     const pageType = RedditURL.getPageType(link);
@@ -36,8 +40,6 @@ export default function PostOverlay({
     );
     closeViewer();
   };
-
-  const shareable = post.images.length > 0 || post.videos.length > 0;
 
   return (
     <>
@@ -67,14 +69,23 @@ export default function PostOverlay({
                 await shareMedia(
                   "video",
                   post.videos[columnIndex].videoDownloadURL,
+                  (progress) => setDownloadProgress(progress),
                 );
               } else if (post.images.length > 0) {
-                await shareMedia("image", post.images[columnIndex]);
+                await shareMedia(
+                  "image",
+                  post.images[columnIndex],
+                  (progress) => setDownloadProgress(progress),
+                );
               }
               setIsDownloading(false);
+              setDownloadProgress(0);
             }}
             disabled={isDownloading}
           >
+            {isDownloading && (
+              <ProgressRing progress={downloadProgress} size={40} />
+            )}
             {isDownloading ? (
               <ActivityIndicator size="small" color="white" />
             ) : (
