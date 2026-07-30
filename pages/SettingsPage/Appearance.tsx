@@ -1,12 +1,10 @@
-import {
-  MaterialCommunityIcons,
-  AntDesign,
-  FontAwesome,
-  Entypo,
-  MaterialIcons,
-  Feather,
-  Ionicons,
-} from "@expo/vector-icons";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import Entypo from "@react-native-vector-icons/entypo";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import Feather from "@react-native-vector-icons/feather";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import React, { useContext } from "react";
 import { Alert, Switch, View } from "react-native";
 

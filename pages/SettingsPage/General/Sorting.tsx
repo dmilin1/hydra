@@ -1,4 +1,5 @@
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext, useState } from "react";
 import { StyleSheet, ColorValue, Switch, View, Text } from "react-native";
 import { Touchable } from "react-native-gesture-handler";

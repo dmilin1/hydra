@@ -10,7 +10,7 @@ import { Post } from "../../../../../api/Posts";
 import { MediaViewerContext } from "../../../../../contexts/MediaViewerContext";
 import Video from "../../../../UI/Gallery/Video";
 import { PostDetail } from "../../../../../api/PostDetail";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { Touchable } from "react-native-gesture-handler";
 

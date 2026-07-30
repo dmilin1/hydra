@@ -1,11 +1,9 @@
-import {
-  AntDesign,
-  Feather,
-  FontAwesome,
-  Ionicons,
-  MaterialCommunityIcons,
-  Octicons,
-} from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import Ionicons from "@react-native-vector-icons/ionicons";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import Octicons from "@react-native-vector-icons/octicons";
 import { Image } from "expo-image";
 import React, {
   useContext,

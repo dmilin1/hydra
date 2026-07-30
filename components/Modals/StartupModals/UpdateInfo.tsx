@@ -1,4 +1,5 @@
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import React, { useContext } from "react";
 import { View, StyleSheet, ScrollView, Image } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
@@ -140,7 +141,12 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           ]}
           onPress={() => exitUpdateInfo()}
         >
-          <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
+          <FontAwesome6
+            iconStyle="solid"
+            name="xmark"
+            size={16}
+            color={theme.subtleText}
+          />
         </Touchable>
         <View style={styles.versionBadge}>
           <TextWithRepairedHeight

@@ -29,7 +29,7 @@ import {
   useTapGesture,
   VirtualGestureDetector,
 } from "react-native-gesture-handler";
-import { AntDesign } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
 import { MediaViewerContext } from "../../contexts/MediaViewerContext";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 

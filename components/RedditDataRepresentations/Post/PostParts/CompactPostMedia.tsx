@@ -1,4 +1,6 @@
-import { Entypo, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import Entypo from "@react-native-vector-icons/entypo";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import { BlurView } from "expo-blur";
 import { openExternalLink } from "../../../../utils/openExternalLink";
 import React, { useContext, useState } from "react";
@@ -70,6 +72,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
             />
           ) : (
             <FontAwesome5
+              iconStyle="solid"
               name="video"
               style={styles.videoIcon}
               color={theme.subtleText}
@@ -111,6 +114,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
       ) : post.poll ? (
         <View style={styles.bigIconContainer}>
           <FontAwesome5
+            iconStyle="solid"
             name="poll"
             style={styles.bigIcon}
             color={theme.subtleText}

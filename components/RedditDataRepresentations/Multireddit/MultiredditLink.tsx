@@ -1,4 +1,5 @@
-import { Entypo, FontAwesome } from "@expo/vector-icons";
+import Entypo from "@react-native-vector-icons/entypo";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import React, { useContext, useState } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 

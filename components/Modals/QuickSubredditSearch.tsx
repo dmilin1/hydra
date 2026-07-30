@@ -24,7 +24,7 @@ import {
 import { AppNavigationProp } from "../../utils/navigationTypes";
 import { SubredditContext } from "../../contexts/SubredditContext";
 import { FlashList } from "@shopify/flash-list";
-import { MaterialIcons } from "@expo/vector-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 
 type QuickSubredditSearchProps = {
   show: boolean;

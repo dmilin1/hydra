@@ -1,4 +1,4 @@
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Image } from "expo-image";

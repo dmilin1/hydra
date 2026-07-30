@@ -1,4 +1,4 @@
-import { Entypo } from "@expo/vector-icons";
+import Entypo from "@react-native-vector-icons/entypo";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useContext } from "react";
 

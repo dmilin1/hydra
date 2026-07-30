@@ -1,4 +1,6 @@
-import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import React, { useContext, useMemo, useState } from "react";
 import { StyleSheet, View, Text, AccessibilityInfo } from "react-native";
 import { openExternalLink } from "../../../utils/openExternalLink";

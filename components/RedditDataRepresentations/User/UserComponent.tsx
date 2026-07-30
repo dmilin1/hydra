@@ -1,4 +1,6 @@
-import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
+import Ionicons from "@react-native-vector-icons/ionicons";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 

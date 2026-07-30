@@ -3,7 +3,7 @@ import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import Animated, { useSharedValue } from "react-native-reanimated";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import {
   useSafeAreaFrame,
   useSafeAreaInsets,

@@ -1,4 +1,6 @@
-import { AntDesign, Entypo, FontAwesome } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import Entypo from "@react-native-vector-icons/entypo";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import React, {
   Dispatch,
   RefObject,

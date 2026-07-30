@@ -1,4 +1,4 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { StackActions } from "@react-navigation/native";
 import { useContext } from "react";
 import { View, Image, Text, StyleSheet, Alert } from "react-native";

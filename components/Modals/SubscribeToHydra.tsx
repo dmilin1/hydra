@@ -1,4 +1,4 @@
-import { FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { useContext, useState } from "react";
 import {
   View,
@@ -74,7 +74,12 @@ export default function SubscribeToHydra() {
                 activeOpacity={0.7}
                 animationDuration={{ in: 0, out: 150 }}
               >
-                <FontAwesome6 name="xmark" size={14} color={theme.subtleText} />
+                <FontAwesome6
+                  iconStyle="solid"
+                  name="xmark"
+                  size={14}
+                  color={theme.subtleText}
+                />
               </Touchable>
 
               <View style={styles.iconContainer}>

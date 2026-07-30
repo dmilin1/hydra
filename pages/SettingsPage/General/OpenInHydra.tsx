@@ -1,4 +1,5 @@
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import * as Linking from "expo-linking";
 import React, { useContext } from "react";
 import { Switch, Text, StyleSheet, Platform } from "react-native";

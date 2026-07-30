@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   StyleSheet,

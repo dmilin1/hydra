@@ -19,7 +19,7 @@ import { runOnJS } from "react-native-worklets";
 import { ScrollerContext } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
-import { IconProps } from "@expo/vector-icons/build/createIconSet";
+import type { IconProps } from "@react-native-vector-icons/common";
 
 const SHORT_SWIPE_THRESHOLD = 75;
 const LONG_SWIPE_THRESHOLD = 130;

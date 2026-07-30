@@ -2,7 +2,8 @@ import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { Post } from "../../../api/Posts";
 import { PageTypeToNavName } from "../../../utils/PageTypeToNavName";
-import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import { useState } from "react";
 import { useMediaSharing } from "../../../utils/sharing";
 import ProgressRing from "../ProgressRing";
@@ -55,7 +56,7 @@ export default function PostOverlay({
           },
         ]}
       >
-        <FontAwesome6 name="xmark" size={20} color="white" />
+        <FontAwesome6 iconStyle="solid" name="xmark" size={20} color="white" />
       </Touchable>
       <View onTouchEnd={(e) => e.stopPropagation()}>
         {shareable && (

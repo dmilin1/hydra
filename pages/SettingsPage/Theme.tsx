@@ -14,7 +14,7 @@ import { useSetTheme } from "../../utils/useSetTheme";
 import ThemeList from "../../components/UI/Themes/ThemeList";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import List from "../../components/UI/List";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 
 export default function Theme() {
   const {

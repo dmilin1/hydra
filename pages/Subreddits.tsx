@@ -1,4 +1,5 @@
-import { FontAwesome5, Feather } from "@expo/vector-icons";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
+import Feather from "@react-native-vector-icons/feather";
 import React, { useContext, useRef, useState } from "react";
 import {
   StyleSheet,
@@ -236,7 +237,14 @@ export default function Subreddits() {
       title: "Home",
       path: "https://www.reddit.com/",
       description: "Posts from subscriptions",
-      icon: <FontAwesome5 name="home" size={24} color={theme.text} />,
+      icon: (
+        <FontAwesome5
+          iconStyle="solid"
+          name="home"
+          size={24}
+          color={theme.text}
+        />
+      ),
       color: "#fa045e",
     },
     {
@@ -253,7 +261,12 @@ export default function Subreddits() {
       path: "https://www.reddit.com/r/all",
       description: "Posts across all subreddits",
       icon: (
-        <FontAwesome5 name="sort-amount-up-alt" size={24} color={theme.text} />
+        <FontAwesome5
+          iconStyle="solid"
+          name="sort-amount-up-alt"
+          size={24}
+          color={theme.text}
+        />
       ),
       color: "#02d82b",
     },

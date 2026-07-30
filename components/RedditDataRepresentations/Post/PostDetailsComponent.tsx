@@ -1,4 +1,7 @@
-import { AntDesign, Feather, FontAwesome, Octicons } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import Octicons from "@react-native-vector-icons/octicons";
 import React, {
   Dispatch,
   SetStateAction,

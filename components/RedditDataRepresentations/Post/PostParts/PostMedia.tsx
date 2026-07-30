@@ -1,4 +1,4 @@
-import { AntDesign } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
 import { BlurView } from "expo-blur";
 import React, { useContext, useRef, useState } from "react";
 import { Text, StyleSheet, View, Platform } from "react-native";

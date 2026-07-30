@@ -1,11 +1,9 @@
-import {
-  Feather,
-  MaterialIcons,
-  FontAwesome5,
-  MaterialCommunityIcons,
-  FontAwesome6,
-  FontAwesome,
-} from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View, ScrollView, Alert } from "react-native";
 import * as Application from "expo-application";
@@ -184,7 +182,14 @@ export default function Stats() {
     {
       title: "App Launches",
       value: prettyNum(stats[Stat.APP_LAUNCHES] ?? 0, 0),
-      icon: <FontAwesome5 name="rocket" size={20} color={theme.iconPrimary} />,
+      icon: (
+        <FontAwesome5
+          iconStyle="solid"
+          name="rocket"
+          size={20}
+          color={theme.iconPrimary}
+        />
+      ),
       show: true,
     },
     {
@@ -196,7 +201,12 @@ export default function Stats() {
         2,
       ),
       icon: (
-        <FontAwesome6 name="calendar-day" size={20} color={theme.iconPrimary} />
+        <FontAwesome6
+          iconStyle="solid"
+          name="calendar-day"
+          size={20}
+          color={theme.iconPrimary}
+        />
       ),
       show: true,
     },

@@ -13,7 +13,7 @@ import React, {
   useState,
 } from "react";
 import { ThemeContext } from "./SettingsContexts/ThemeContext";
-import { AntDesign } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
 import { useMMKVString } from "react-native-mmkv";
 import { ScrollToNextButtonContext } from "./ScrollToNextButtonContext";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";

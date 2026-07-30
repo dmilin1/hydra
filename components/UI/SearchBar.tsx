@@ -1,4 +1,5 @@
-import { Feather, FontAwesome6 } from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { forwardRef, useContext, useRef, useState } from "react";
 import { View, StyleSheet, TextInput } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
@@ -101,7 +102,7 @@ const SearchBar = forwardRef<TextInput, SearchBarProps>(function SearchBar(
           hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
         >
           <FontAwesome6
-            name="xmark-circle"
+            name="circle-xmark"
             size={18}
             color={theme.text}
             style={styles.xIcon}

@@ -1,12 +1,10 @@
-import {
-  AntDesign,
-  MaterialCommunityIcons,
-  MaterialIcons,
-  SimpleLineIcons,
-  Entypo,
-  FontAwesome,
-  Ionicons,
-} from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import SimpleLineIcons from "@react-native-vector-icons/simple-line-icons";
+import Entypo from "@react-native-vector-icons/entypo";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
 import { StyleSheet, View, Alert, findNodeHandle } from "react-native";

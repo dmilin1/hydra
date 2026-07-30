@@ -1,4 +1,5 @@
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";

@@ -1,7 +1,9 @@
 import React, { useContext } from "react";
 import { View, Text, Image, StyleSheet, Alert, Linking } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
-import { MaterialIcons, Feather, FontAwesome } from "@expo/vector-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { ThemeContext } from "../../../../contexts/SettingsContexts/ThemeContext";
 import { getCurrentAppIcon, setAppIcon } from "../../../../utils/appIcons";
 import { useRoute, useURLNavigation } from "../../../../utils/navigation";

@@ -1,4 +1,5 @@
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext } from "react";
 import { Alert, StyleSheet, Switch, Text, View } from "react-native";
 
