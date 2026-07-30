@@ -21,13 +21,19 @@ export function TextWithRepairedHeight(props: TextProps) {
       ]}
       onLayout={({ nativeEvent }) => {
         if (heightFixed.current) return;
-        const height = nativeEvent.layout.height;
-        const roundedHeight = Math.round(height);
+        /**
+         * We need to use requestAnimationFrame due to some React Native bug that's causing crashes when
+         * setting state in the same frame as the layout event.
+         */
+        requestAnimationFrame(() => {
+          const height = nativeEvent.layout.height;
+          const roundedHeight = Math.round(height);
 
-        if (height !== roundedHeight) {
-          setHeight(roundedHeight + 1);
-          heightFixed.current = true;
-        }
+          if (height !== roundedHeight) {
+            setHeight(roundedHeight + 1);
+            heightFixed.current = true;
+          }
+        });
       }}
     />
   );

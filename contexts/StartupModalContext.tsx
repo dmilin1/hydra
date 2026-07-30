@@ -36,6 +36,8 @@ export function StartupModalProvider({ children }: PropsWithChildren) {
   const { purchasesInitialized, isPro } = useContext(SubscriptionsContext);
   const hasShownStartupModal = useRef(false);
 
+  const [now] = useState(() => Date.now());
+
   const modals: { id: ModalId; wantsToShow: boolean }[] = [
     {
       id: "updateInfo",
@@ -54,7 +56,7 @@ export function StartupModalProvider({ children }: PropsWithChildren) {
         !isPro &&
         (getStat(Stat.APP_LAUNCHES) ?? 0) > 50 &&
         (KeyStore.getNumber(HYDRA_PRO_LAST_OFFERED_KEY) ?? 0) <
-          Date.now() - 1000 * 60 * 60 * 24 * 90,
+          now - 1000 * 60 * 60 * 24 * 90,
     },
   ];
 

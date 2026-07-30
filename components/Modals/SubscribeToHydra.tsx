@@ -1,5 +1,5 @@
 import { FontAwesome6 } from "@expo/vector-icons";
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -25,9 +25,11 @@ export default function SubscribeToHydra() {
   );
   const [isSubcribing, setIsSubscribing] = useState(false);
 
+  const [now] = useState(() => Date.now());
+
   const shouldAsk = !!(
     currentUser &&
-    (lastAskedAt ?? 0) + 1000 * 60 * 60 * 24 * 365 < Date.now() &&
+    (lastAskedAt ?? 0) + 1000 * 60 * 60 * 24 * 365 < now &&
     !isLoadingSubreddits &&
     subreddits.subscriber.length &&
     !subreddits.subscriber.find(

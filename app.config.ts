@@ -15,11 +15,6 @@ module.exports = {
     icon: "./assets/images/icon.png",
     scheme: "hydra",
     userInterfaceStyle: "automatic",
-    splash: {
-      image: "./assets/images/splash.png",
-      resizeMode: "contain",
-      backgroundColor: "#000000",
-    },
     assetBundlePatterns: ["**/*"],
     ios: {
       appStoreUrl:
@@ -48,7 +43,6 @@ module.exports = {
     },
     owner: "dmilin",
     plugins: [
-      "expo-router",
       [
         "expo-media-library",
         {
@@ -92,12 +86,22 @@ module.exports = {
           initialOrientation: "DEFAULT",
         },
       ],
+      [
+        "expo-splash-screen",
+        {
+          image: "./assets/images/icon_transparent.png",
+          resizeMode: "contain",
+          backgroundColor: "#000000",
+          imageWidth: 150,
+        }
+      ],
       "expo-font",
       "expo-image",
       "expo-secure-store",
       "expo-sqlite",
       "expo-video",
       "expo-web-browser",
+      "expo-status-bar",
     ],
     updates: {
       url: `https://u.expo.dev/${projectId}`,

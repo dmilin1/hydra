@@ -1,4 +1,3 @@
-import "react-native-url-polyfill/auto";
 import { CommentReply } from "./Messages";
 import { Comment, PostDetail, formatComments } from "./PostDetail";
 import { Post, formatPostData } from "./Posts";

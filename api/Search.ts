@@ -1,4 +1,3 @@
-import "react-native-url-polyfill/auto";
 import { Post, formatPostData } from "./Posts";
 import { api } from "./RedditApi";
 import { Subreddit, formatSubredditData } from "./Subreddits";

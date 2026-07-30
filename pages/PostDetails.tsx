@@ -72,7 +72,7 @@ function PostDetails(props: PostDetailsProps) {
   const commentsView = React.useRef<View>(null);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
 
   const deferredPostDetail = useDeferredValue(postDetail);
 

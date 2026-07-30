@@ -60,6 +60,16 @@ function levelForDelta(delta: number) {
   return delta > 0 ? magnitude : delta < 0 ? -magnitude : 0;
 }
 
+/**
+ * There's a shadow tree corruption bug in RNGH v3's GestureDetector
+ * (https://github.com/software-mansion/react-native-gesture-handler/issues/4241).
+ *
+ * This bug causes a crash when interacting with the top comment in a large comment
+ * tree. It also seems to be related to TextWithRepairedHeight, but I'm not certain
+ * if it's the same bug or 2 distinct bugs. The crash only seems to happen in
+ * development builds.
+ */
+
 export default function Slideable<SlideName extends string>({
   children,
   options,

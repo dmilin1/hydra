@@ -1,4 +1,3 @@
-import "react-native-url-polyfill/auto";
 import { api } from "./RedditApi";
 import Time from "../utils/Time";
 

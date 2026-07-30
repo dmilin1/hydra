@@ -1,11 +1,11 @@
-import { SplashScreen } from "expo-router";
-import React, { useContext } from "react";
+import * as SplashScreen from "expo-splash-screen";
+import { useContext } from "react";
 import { View, StyleSheet, Image, ActivityIndicator } from "react-native";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 
-const splash = require("./../../assets/images/splash.png");
-const splashInverted = require("./../../assets/images/splashInverted.png");
+const splash = require("./../../assets/images/icon_transparent.png");
+const splashInverted = require("./../../assets/images/icon_transparent_inverted.png");
 
 export default function LoadingSplash() {
   const { theme } = useContext(ThemeContext);
@@ -40,22 +40,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-  },
-  image: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  loaderContainer: {
-    flex: 1,
-    position: "absolute",
-    zIndex: 1001,
-    transform: [{ translateY: "10%" }],
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
     alignItems: "center",
     justifyContent: "center",
+  },
+  image: {
+    width: 150,
+    height: 150,
+  },
+  loaderContainer: {
+    height: 0,
+    transform: [{ translateY: 5 }],
   },
 });

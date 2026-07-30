@@ -6,10 +6,14 @@ import {
   Feather,
 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { SplashScreen, useNavigation } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { NavigationContainerRef, StackActions } from "@react-navigation/native";
+import {
+  NavigationContainerRef,
+  StackActions,
+  useNavigation,
+} from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 
 import LoadingSplash from "../../components/UI/LoadingSplash";
