@@ -160,16 +160,13 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
   const subscribe = async (subreddit: string) => {
     await setSubscriptionStatus(subreddit, true);
     loadSubreddits();
-    Alert.alert(
-      "Subscribed!",
-      "You've successfully subscribed to " + subreddit,
-    );
+    Alert.alert("Subscribed!", "You've subscribed to " + subreddit);
   };
 
   const unsubscribe = async (subreddit: string) => {
     await setSubscriptionStatus(subreddit, false);
     loadSubreddits();
-    alert("Unsubscribed from " + subreddit);
+    Alert.alert("Unsubscribed!", "You've unsubscribed from " + subreddit);
   };
 
   const addSubToMulti = async (

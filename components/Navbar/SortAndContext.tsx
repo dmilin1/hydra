@@ -55,6 +55,8 @@ export type ContextTypes =
   | "Select Text"
   | "Subscribe"
   | "Unsubscribe"
+  | "Follow"
+  | "Unfollow"
   | "Favorite"
   | "Unfavorite"
   | "New Post"
@@ -305,6 +307,10 @@ export default function SortAndContext({
               subscribe(new RedditURL(currentPath).getSubreddit());
             } else if (result === "Unsubscribe") {
               unsubscribe(new RedditURL(currentPath).getSubreddit());
+            } else if (result === "Follow" && pageData?.type === "user") {
+              subscribe(`u_${pageData.userName}`);
+            } else if (result === "Unfollow" && pageData?.type === "user") {
+              unsubscribe(`u_${pageData.userName}`);
             } else if (result === "Favorite" || result === "Unfavorite") {
               toggleFavorite(new RedditURL(currentPath).getSubreddit());
             } else if (result === "Add to Multireddit") {
