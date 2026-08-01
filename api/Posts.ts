@@ -46,7 +46,11 @@ export type Post = {
   images: (string | ImageSource[])[];
   imageThumbnail: ImageSource | null;
   mediaAspectRatio: number;
-  videos: { source: string; videoDownloadURL: string }[];
+  videos: {
+    source: string;
+    videoDownloadURL: string;
+    sourceLoadError?: string;
+  }[];
   poll: Poll | undefined;
   externalLink: string | undefined;
   openGraphData: OpenGraphData | undefined;
@@ -138,7 +142,9 @@ function formatImages(child: any): ImageSource[][] {
 
 async function formatVideos(
   child: any,
-): Promise<{ source: string; videoDownloadURL: string }[]> {
+): Promise<
+  { source: string; videoDownloadURL: string; sourceLoadError?: string }[]
+> {
   if (child.data.media?.reddit_video?.hls_url) {
     return [
       {
@@ -214,11 +220,12 @@ async function formatVideos(
         },
       ];
     } else if (url.includes("redgifs.com")) {
-      const videoURL = await Redgifs.getMediaURL(url);
+      const { videoURL, sourceLoadError } = await Redgifs.getMediaURL(url);
       return [
         {
           source: videoURL,
           videoDownloadURL: videoURL,
+          sourceLoadError,
         },
       ];
     }

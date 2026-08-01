@@ -172,7 +172,7 @@ export default function GalleryComponent({
                 allowDownscaling={Platform.OS === "ios" ? false : true}
               />
             ) : item.type === "video" ? (
-              <Video uri={item.source.source} />
+              <Video video={item.source} />
             ) : null}
           </Touchable>
         )}
@@ -182,7 +182,9 @@ export default function GalleryComponent({
             ? ((typeof item.source === "string"
                 ? item.source
                 : item.source[0].uri) ?? index.toString())
-            : item.source.source
+            : item.source.source.length
+              ? item.source.source
+              : index.toString()
         }
         masonry={true}
         optimizeItemArrangement={true}

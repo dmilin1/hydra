@@ -13,18 +13,19 @@ import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { MediaViewerContext } from "../../../contexts/MediaViewerContext";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
 import VideoCache from "../../../utils/VideoCache";
+import { Post } from "../../../api/Posts";
 
 type VideoProps = {
-  uri: string;
+  video: Post["videos"][number];
 };
 
-function Video({ uri }: VideoProps) {
+function Video({ video }: VideoProps) {
   const { theme } = useContext(ThemeContext);
   const { subscribeToVisibility } = useContext(MediaViewerContext);
   const progress = useRef(new Animated.Value(0)).current;
 
   const player = useVideoPlayer(
-    VideoCache.makeCachedVideoSource(uri),
+    VideoCache.makeCachedVideoSource(video.source),
     (player) => {
       player.audioMixingMode = "mixWithOthers";
       player.muted = true;
@@ -104,7 +105,12 @@ function Video({ uri }: VideoProps) {
 }
 
 export default function VideoPlayerWrapper(props: VideoProps) {
-  return (
+  const error = props.video.sourceLoadError ?? null;
+  return error ? (
+    <View style={styles.errorContainer}>
+      <Text style={styles.errorText}>{error}</Text>
+    </View>
+  ) : (
     <DismountWhenBackgrounded>
       <Video {...props} />
     </DismountWhenBackgrounded>
@@ -112,6 +118,12 @@ export default function VideoPlayerWrapper(props: VideoProps) {
 }
 
 const styles = StyleSheet.create({
+  errorContainer: {
+    width: "100%",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   videoContainer: {
     width: "100%",
     flex: 1,

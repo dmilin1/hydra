@@ -266,7 +266,12 @@ function MediaVideo(props: MediaVideoProps) {
 }
 
 export default function MediaVideoWrapper(props: MediaVideoProps) {
-  return (
+  const error = props.source.sourceLoadError ?? null;
+  return error ? (
+    <View style={styles.notReadyContainer}>
+      <Text style={styles.errorText}>{error}</Text>
+    </View>
+  ) : (
     <DismountWhenBackgrounded>
       <MediaVideo {...props} />
     </DismountWhenBackgrounded>

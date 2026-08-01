@@ -64,7 +64,7 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
           </View>
         ) : (
           <View style={{ flex: 1 }}>
-            <Video uri={post.videos[0].source} />
+            <Video video={post.videos[0]} />
           </View>
         )}
         {post.videos.length > 1 && (

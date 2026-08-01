@@ -321,7 +321,9 @@ export default function MediaViewer({
                   ? initialColumnIndex.current
                   : 0
               }
-              scrollEnabled={row[0]?.type !== "video"}
+              scrollEnabled={
+                row[0]?.type !== "video" || !!row[0]?.source.sourceLoadError
+              }
               pagingEnabled={true}
               horizontal={true}
               getItemType={(item) => item.type}
@@ -330,7 +332,9 @@ export default function MediaViewer({
                   ? ((typeof item.source === "string"
                       ? item.source
                       : item.source[0].uri) ?? index.toString())
-                  : item.source.source
+                  : item.source.source.length
+                    ? item.source.source
+                    : index.toString()
               }
               showsHorizontalScrollIndicator={false}
               onScroll={(event) => {
