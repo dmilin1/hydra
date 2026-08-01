@@ -1,4 +1,5 @@
 import Feather from "@react-native-vector-icons/feather";
+import MaterialDesignIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext } from "react";
 import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
 
@@ -14,9 +15,11 @@ import {
 } from "../../../utils/openExternalLink";
 import { useSettingsPicker } from "../../../utils/useSettingsPicker";
 import { Switch } from "react-native";
+import { useURLNavigation } from "../../../utils/navigation";
 
 export default function ExternalLinks() {
   const { theme } = useContext(ThemeContext);
+  const { pushURL } = useURLNavigation();
 
   const [storedBrowser, setBrowser] = useMMKVString(EXTERNAL_LINK_BROWSER_KEY);
   const selectedBrowser =
@@ -61,6 +64,18 @@ export default function ExternalLinks() {
               },
             ]
           : []),
+        {
+          key: "modifyLinks",
+          icon: (
+            <MaterialDesignIcons
+              name="link-edit"
+              size={26}
+              color={theme.text}
+            />
+          ),
+          text: "Modify Links",
+          onPress: () => pushURL("hydra://settings/general/modifyLinks"),
+        },
       ]}
     />
   );
