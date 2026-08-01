@@ -67,9 +67,11 @@ function MediaVideo(props: MediaVideoProps) {
   const [status, setStatus] = useState(player.status);
   const [error, setError] = useState<string | null>(null);
 
+  const videoTrack = useEvent(player, "videoTrackChange")?.videoTrack;
+
   const dimensions = {
-    width: player.videoTrack?.size.width ?? 0,
-    height: player.videoTrack?.size.height ?? 0,
+    width: videoTrack?.size.width ?? 0,
+    height: videoTrack?.size.height ?? 0,
   };
 
   const aspectRatio = dimensions.width / dimensions.height;
