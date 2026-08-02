@@ -48,7 +48,6 @@ export type Post = {
   mediaAspectRatio: number;
   videos: {
     source: string;
-    videoDownloadURL: string;
     sourceLoadError?: string;
   }[];
   poll: Poll | undefined;
@@ -140,16 +139,11 @@ function formatImages(child: any): ImageSource[][] {
   return [];
 }
 
-async function formatVideos(
-  child: any,
-): Promise<
-  { source: string; videoDownloadURL: string; sourceLoadError?: string }[]
-> {
+async function formatVideos(child: any): Promise<Post["videos"]> {
   if (child.data.media?.reddit_video?.hls_url) {
     return [
       {
         source: child.data.media.reddit_video.hls_url,
-        videoDownloadURL: child.data.media.reddit_video.fallback_url,
       },
     ];
   }
@@ -164,7 +158,6 @@ async function formatVideos(
         image.variants.mp4.resolutions.at(-1) ?? image.variants.mp4.source;
       return {
         source: decode(item.url),
-        videoDownloadURL: decode(item.url),
       };
     });
   }
@@ -195,7 +188,6 @@ async function formatVideos(
           const url = decode(data.s.mp4);
           return {
             source: url,
-            videoDownloadURL: url,
           };
         })
         .filter((video) => video !== null)
@@ -208,7 +200,6 @@ async function formatVideos(
       return [
         {
           source: videoURL,
-          videoDownloadURL: videoURL,
         },
       ];
     } else if (url.includes("gfycat.com")) {
@@ -216,7 +207,6 @@ async function formatVideos(
       return [
         {
           source: videoURL,
-          videoDownloadURL: videoURL,
         },
       ];
     } else if (url.includes("redgifs.com")) {
@@ -224,7 +214,6 @@ async function formatVideos(
       return [
         {
           source: videoURL,
-          videoDownloadURL: videoURL,
           sourceLoadError,
         },
       ];

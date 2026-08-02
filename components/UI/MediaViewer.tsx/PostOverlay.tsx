@@ -69,7 +69,7 @@ export default function PostOverlay({
               if (post.videos.length > 0) {
                 await shareMedia(
                   "video",
-                  post.videos[columnIndex].videoDownloadURL,
+                  post.videos[columnIndex].source,
                   (progress) => setDownloadProgress(progress),
                 );
               } else if (post.images.length > 0) {
