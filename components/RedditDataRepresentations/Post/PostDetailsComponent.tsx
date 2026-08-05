@@ -2,37 +2,28 @@ import AntDesign from "@react-native-vector-icons/ant-design";
 import Feather from "@react-native-vector-icons/feather";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import Octicons from "@react-native-vector-icons/octicons";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
-import { summarizePostDetails, summarizePostComments } from "../../../api/AI";
+import {
+  CommentsSummary,
+  PostSummary,
+  usePostSummaries,
+} from "./PostParts/Summaries";
 import { PostDetail, vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
 import { saveItem } from "../../../api/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
-import { CommentSettingsContext } from "../../../contexts/SettingsContexts/CommentSettingsContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
-import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import RedditURL from "../../../utils/RedditURL";
 import { useRoute, useURLNavigation } from "../../../utils/navigation";
 import NewComment from "../../Modals/NewComment";
 import Time from "../../../utils/Time";
 import { Touchable } from "react-native-gesture-handler";
 import { shareURL } from "../../../utils/sharing";
-
-type Summary = {
-  post: string | null;
-  comments: string | null;
-};
 
 type PostDetailsComponentProps = {
   postDetail: PostDetail;
@@ -51,14 +42,10 @@ export default function PostDetailsComponent({
 
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
-  const { isPro, customerId } = useContext(SubscriptionsContext);
-  const { showPostSummary, tapToCollapsePost } =
-    useContext(PostSettingsContext);
-  const { showCommentSummary } = useContext(CommentSettingsContext);
+  const { tapToCollapsePost } = useContext(PostSettingsContext);
 
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
-  const [commentSummaryCollapsed, setCommentSummaryCollapsed] = useState(false);
-  const [summary, setSummary] = useState<Summary | null>(null);
+  const { postSummary, commentsSummary } = usePostSummaries(postDetail);
 
   const contextDepth = Number(new RedditURL(url).getQueryParam("context") ?? 0);
 
@@ -70,40 +57,6 @@ export default function PostDetailsComponent({
       userVote: result,
     });
   };
-
-  const getSummary = async () => {
-    if (!isPro || !customerId) return;
-    let postSummary = null;
-    let commentsSummary = null;
-    if (showPostSummary && postDetail.text.length > 850) {
-      postSummary = await summarizePostDetails(customerId, postDetail);
-      setSummary({
-        post: postSummary,
-        comments: null,
-      });
-    }
-    if (
-      showCommentSummary &&
-      postDetail.comments.reduce(
-        (acc, comment) => acc + comment.text.length,
-        0,
-      ) > 1_000
-    ) {
-      commentsSummary = await summarizePostComments(
-        customerId,
-        postDetail,
-        postSummary ?? postDetail.text,
-      );
-      setSummary({
-        post: postSummary,
-        comments: commentsSummary,
-      });
-    }
-  };
-
-  useEffect(() => {
-    getSummary();
-  }, []);
 
   return (
     <View>
@@ -123,37 +76,7 @@ export default function PostDetailsComponent({
           >
             {postDetail.title}
           </Text>
-          {!mediaCollapsed && summary?.post && postDetail.text.length > 850 && (
-            <View
-              style={[
-                styles.postSummaryContainer,
-                {
-                  borderColor: theme.divider,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.postSummaryTitle,
-                  {
-                    color: theme.text,
-                  },
-                ]}
-              >
-                Summary
-              </Text>
-              <Text
-                style={[
-                  styles.postSummaryText,
-                  {
-                    color: theme.subtleText,
-                  },
-                ]}
-              >
-                {summary.post}
-              </Text>
-            </View>
-          )}
+          {!mediaCollapsed && <PostSummary summary={postSummary} />}
           {!mediaCollapsed && <PostMedia post={postDetail} />}
           <View style={styles.metadataContainer}>
             <View style={styles.metadataRow}>
@@ -410,53 +333,12 @@ export default function PostDetailsComponent({
           </Text>
         </Touchable>
       )}
-      {summary?.comments && (
-        <Touchable
-          activeOpacity={1}
-          underlayColor={theme.tint}
-          onPress={() => setCommentSummaryCollapsed(!commentSummaryCollapsed)}
-          style={[
-            styles.commentsSummaryContainer,
-            {
-              borderTopColor: theme.divider,
-            },
-          ]}
-        >
-          <View>
-            <Text
-              style={[
-                styles.commentsSummaryTitle,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              Comments Summary
-            </Text>
-            {!commentSummaryCollapsed && (
-              <Text
-                style={[
-                  styles.commentsSummaryText,
-                  {
-                    color: theme.subtleText,
-                  },
-                ]}
-              >
-                {summary.comments}
-              </Text>
-            )}
-          </View>
-        </Touchable>
-      )}
+      <CommentsSummary summary={commentsSummary} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  postDetailsOuterContainer: {
-    flex: 1,
-    justifyContent: "center",
-  },
   postDetailsContainer: {
     flex: 1,
     paddingVertical: 12,
@@ -518,46 +400,5 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     paddingHorizontal: 15,
     paddingVertical: 10,
-  },
-  noCommentsContainer: {
-    marginVertical: 25,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  noCommentsText: {
-    fontSize: 15,
-  },
-  postSummaryContainer: {
-    marginHorizontal: 15,
-    marginTop: 10,
-    marginBottom: 5,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 5,
-    borderWidth: 3,
-  },
-  postSummaryText: {
-    fontSize: 15,
-  },
-  postSummaryTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
-    marginBottom: 5,
-  },
-  commentsSummaryContainer: {
-    borderTopWidth: 1,
-    marginTop: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 5,
-  },
-  commentsSummaryTitle: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  commentsSummaryText: {
-    marginTop: 8,
-    fontSize: 15,
   },
 });

@@ -14,6 +14,7 @@ const initialValues = {
   blurSpoilers: true,
   blurNSFW: true,
   showPostSummary: true,
+  collapsePostSummary: false,
   autoPlayVideos: true,
   liveTextInteraction: false,
   tapToCollapsePost: true,
@@ -32,6 +33,7 @@ const initialPostSettingsContext = {
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
+  toggleCollapsePostSummary: (_newValue?: boolean) => {},
   toggleAutoPlayVideos: (_newValue?: boolean) => {},
   toggleLiveTextInteraction: (_newValue?: boolean) => {},
   toggleTapToCollapsePost: (_newValue?: boolean) => {},
@@ -88,6 +90,12 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     useMMKVBoolean("showPostSummary");
   const showPostSummary =
     storedShowPostSummary ?? initialValues.showPostSummary;
+
+  const [storedCollapsePostSummary, setCollapsePostSummary] = useMMKVBoolean(
+    "collapsePostSummary",
+  );
+  const collapsePostSummary =
+    storedCollapsePostSummary ?? initialValues.collapsePostSummary;
 
   const [storedAutoPlayVideos, setAutoPlayVideos] =
     useMMKVBoolean("autoPlayVideos");
@@ -151,6 +159,10 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         showPostSummary: showPostSummary ?? initialValues.showPostSummary,
         toggleShowPostSummary: (newValue = !showPostSummary) =>
           setShowPostSummary(newValue),
+
+        collapsePostSummary,
+        toggleCollapsePostSummary: (newValue = !collapsePostSummary) =>
+          setCollapsePostSummary(newValue),
 
         autoPlayVideos: autoPlayVideos ?? initialValues.autoPlayVideos,
         toggleAutoPlayVideos: (newValue = !autoPlayVideos) =>

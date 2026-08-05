@@ -6,6 +6,7 @@ const initialValues = {
   collapseAutoModerator: true,
   commentFlairs: true,
   showCommentSummary: true,
+  collapseCommentSummary: false,
   tapToCollapseComment: true,
   collapseChildrenOnly: false,
 };
@@ -16,6 +17,7 @@ const initialCommentSettingsContext = {
   toggleCollapseAutoModerator: (_newValue?: boolean) => {},
   toggleCommentFlairs: (_newValue?: boolean) => {},
   toggleShowCommentSummary: (_newValue?: boolean) => {},
+  toggleCollapseCommentSummary: (_newValue?: boolean) => {},
   toggleTapToCollapseComment: (_newValue?: boolean) => {},
   toggleCollapseChildrenOnly: (_newValue?: boolean) => {},
 };
@@ -39,6 +41,11 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
     useMMKVBoolean("showCommentSummary");
   const showCommentSummary =
     storedShowCommentSummary ?? initialValues.showCommentSummary;
+
+  const [storedCollapseCommentSummary, setCollapseCommentSummary] =
+    useMMKVBoolean("collapseCommentSummary");
+  const collapseCommentSummary =
+    storedCollapseCommentSummary ?? initialValues.collapseCommentSummary;
 
   const [storedTapToCollapseComment, setTapToCollapseComment] = useMMKVBoolean(
     "tapToCollapseComment",
@@ -70,6 +77,10 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
         showCommentSummary,
         toggleShowCommentSummary: (newValue = !showCommentSummary) =>
           setShowCommentSummary(newValue),
+
+        collapseCommentSummary,
+        toggleCollapseCommentSummary: (newValue = !collapseCommentSummary) =>
+          setCollapseCommentSummary(newValue),
 
         tapToCollapseComment:
           tapToCollapseComment ?? initialValues.tapToCollapseComment,

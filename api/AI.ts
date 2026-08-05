@@ -22,6 +22,9 @@ export async function summarizePostDetails(
       }),
     },
   );
+  if (!response.ok) {
+    throw new Error(`Failed to summarize post: ${response.status}`);
+  }
   return await response.text();
 }
 
@@ -39,10 +42,14 @@ export async function summarizePostComments(
       customerId,
       postTitle: post.title,
       postAuthor: post.author,
-      postSummary,
+      // Callers may pass raw post text in this slot, so bound it like postText
+      postSummary: postSummary.slice(0, 15_000),
       comments: topComments,
     }),
   });
+  if (!response.ok) {
+    throw new Error(`Failed to summarize comments: ${response.status}`);
+  }
   return await response.text();
 }
 
