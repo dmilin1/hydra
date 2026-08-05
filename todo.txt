@@ -1,10 +1,4 @@
-### Unlikely
-- 🚀 Full multiple pane iPad support
-
-
 ### Hard
-- 🚀 Android support
-
 - 🚀 Get polls working
 
 - 🚀 Accessibility support

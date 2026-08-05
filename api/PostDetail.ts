@@ -177,6 +177,12 @@ export async function getPostsDetail(
   };
 }
 
+export type LoadMoreCommentsFunc = (
+  commentIds: string[],
+  commentPath: number[],
+  childStartIndex: number,
+) => Promise<void>;
+
 export async function loadMoreComments(
   subreddit: string,
   postId: string,

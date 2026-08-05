@@ -31,7 +31,7 @@ const SPRING_CONFIG = {
   mass: 1,
 };
 
-type SlideItem<SlideName extends string> = {
+export type SlideItem<SlideName extends string> = {
   name: SlideName;
   icon: ReactElement<IconProps<string>>;
   size?: number;

@@ -10,7 +10,8 @@
     "lint": "eslint **/*.ts **/*.tsx",
     "lint:fix": "eslint **/*.ts **/*.tsx --fix",
     "tsc": "tsc --noEmit",
-    "generate-docs": "bun run generateDocumentation.ts"
+    "generate-docs": "bun run generateDocumentation.ts",
+    "test": "bun test"
   },
   "jest": {
     "preset": "jest-expo"

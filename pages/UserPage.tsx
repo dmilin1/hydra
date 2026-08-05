@@ -145,7 +145,6 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
               return (
                 <CommentComponent
                   comment={content}
-                  index={0}
                   displayInList
                   changeComment={(newComment) =>
                     modifyUserContent([newComment])

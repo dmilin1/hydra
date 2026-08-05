@@ -40,25 +40,11 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
   const showCommentSummary =
     storedShowCommentSummary ?? initialValues.showCommentSummary;
 
-  const toggleVoteIndicator = (newValue = !voteIndicator) => {
-    setVoteIndicator(newValue);
-    alert(
-      "Existing pages may need to be refreshed for this change to take effect.",
-    );
-  };
-
   const [storedTapToCollapseComment, setTapToCollapseComment] = useMMKVBoolean(
     "tapToCollapseComment",
   );
   const tapToCollapseComment =
     storedTapToCollapseComment ?? initialValues.tapToCollapseComment;
-
-  const toggleTapToCollapseComment = (newValue = !tapToCollapseComment) => {
-    setTapToCollapseComment(newValue);
-    alert(
-      "Existing pages may need to be refreshed for this change to take effect.",
-    );
-  };
 
   const [storedCollapseChildrenOnly, setCollapseChildrenOnly] = useMMKVBoolean(
     "collapseChildrenOnly",
@@ -70,7 +56,8 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
     <CommentSettingsContext.Provider
       value={{
         voteIndicator: voteIndicator ?? initialValues.voteIndicator,
-        toggleVoteIndicator,
+        toggleVoteIndicator: (newValue = !voteIndicator) =>
+          setVoteIndicator(newValue),
 
         collapseAutoModerator,
         toggleCollapseAutoModerator: (newValue = !collapseAutoModerator) =>
@@ -86,7 +73,8 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
 
         tapToCollapseComment:
           tapToCollapseComment ?? initialValues.tapToCollapseComment,
-        toggleTapToCollapseComment,
+        toggleTapToCollapseComment: (newValue = !tapToCollapseComment) =>
+          setTapToCollapseComment(newValue),
 
         collapseChildrenOnly,
         toggleCollapseChildrenOnly: (newValue = !collapseChildrenOnly) =>
