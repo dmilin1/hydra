@@ -102,7 +102,11 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
             )}
           </View>
           {post.imageThumbnail ? (
-            <Image source={post.imageThumbnail} style={styles.image} />
+            <Image
+              source={post.imageThumbnail}
+              style={styles.image}
+              recyclingKey={post.imageThumbnail.uri}
+            />
           ) : (
             <FontAwesome5
               name="image"
@@ -155,6 +159,7 @@ export default function CompactPostMedia({ post }: CompactPostMediaProps) {
           {post.openGraphData && currentDataMode !== "lowData" && (
             <Image
               source={{ uri: post.openGraphData.image }}
+              recyclingKey={post.openGraphData.image}
               contentFit="cover"
               style={styles.image}
             />
