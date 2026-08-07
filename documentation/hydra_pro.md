@@ -1,6 +1,6 @@
 ===METADATA===
 title: Hydra Pro
-description: What is Hydra Pro, all Pro features (Inbox Alerts, Gallery Mode unlimited scrolling, Stats Tracking, Advanced Post Filtering, Post & Comment Summaries, Pro Themes & Theme Maker), pricing, subscribing, managing subscription, grace period
+description: What is Hydra Pro, all Pro features (Inbox Alerts, Gallery Mode unlimited scrolling, Export Videos with Audio, Stats Tracking, Advanced Post Filtering, Post & Comment Summaries, Pro Themes & Theme Maker), pricing, subscribing, managing subscription, grace period
 ===END METADATA===
 
 # Hydra Pro
@@ -35,13 +35,19 @@ AI-powered smart filters that understand the meaning of content, not just keywor
 
 ### Post & Comment Summaries
 
-AI-generated summaries for long posts and comment sections. Post summaries appear below the post content, and comment summaries give you an overview of the discussion — so you can get the key points at a glance.
+AI-generated summaries for long posts and comment sections. Post summaries appear below the post title, and comment summaries give you an overview of the discussion — so you can get the key points at a glance.
 
 [Learn More](hydra://settings/guide/?doc=ai_summaries)
 
+### Export Videos with Audio
+
+Save and share Reddit videos with their audio included. Free users can only download Reddit videos without sound. Pro downloads include the full audio track.
+
+[Learn More](hydra://settings/guide/?doc=downloading_media)
+
 ### Pro Themes & Theme Maker
 
-Access five exclusive Pro themes: Gilded, Mulberry, Deep Ocean, Aurora, and Royal. You can also create fully custom themes with the Theme Maker, choosing colors for every part of the app. Free users can try the Theme Maker for 5 minutes — Pro lets you save and keep your custom themes permanently.
+Access five exclusive Pro themes: Gilded, Mulberry, Deep Ocean, Aurora, and Royal. You can also create fully custom themes with the Theme Maker, choosing colors for every part of the app. Free users can create and save custom themes, but can only apply them for 5 minutes at a time. Pro lets you keep them applied permanently.
 
 [Learn More](hydra://settings/guide/?doc=custom_themes)
 
@@ -60,7 +66,7 @@ Pro features unlock immediately after purchase.
 
 ## Managing Your Subscription
 
-You can view your subscription status on the [Hydra Pro settings page](hydra://settings/hydraPro). To manage or cancel your subscription, go to **Settings > Apple ID > Subscriptions** on your device. If you cancel, Pro features remain active until the end of your current billing period.
+You can view your subscription status on the [Hydra Pro settings page](hydra://settings/hydraPro). To manage or cancel your subscription, go to **Settings > Apple ID > Subscriptions** on iOS, or open the **Play Store** and go to **Payments & subscriptions > Subscriptions** on Android. If you cancel, Pro features remain active until the end of your current billing period.
 
 ## Grace Period
 
@@ -70,11 +76,12 @@ If a payment fails or you cancel your subscription, you may receive a temporary 
 
 If Pro features aren't working after subscribing:
 
-- Verify your subscription is active in the App Store
+- Verify your subscription is active in the App Store (iOS) or Google Play (Android)
+- Tap **"Restore Purchases"** at the bottom of the [Hydra Pro settings page](hydra://settings/hydraPro) to re-sync a subscription after reinstalling the app or switching devices
 - Restart the app
 - Check your subscription status on the [Hydra Pro settings page](hydra://settings/hydraPro)
 
-For billing issues, manage your subscription through the App Store or contact Apple Support.
+For billing issues, manage your subscription through the App Store (iOS) or Google Play (Android).
 
 ---
 

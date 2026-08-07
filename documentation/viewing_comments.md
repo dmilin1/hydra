@@ -15,6 +15,8 @@ Comments use a threaded structure: top-level comments reply directly to the post
 
 Each comment displays author username (with badges for moderators, OP, etc.), score, time posted, flair (if enabled), awards, and edited status.
 
+Comments can also contain inline media. Videos embedded in a comment appear as a tile with a play button. Tap it to watch in the full-screen media viewer. GIF links, including Giphy links, play in place instead of showing as plain links.
+
 ## Navigating Comment Threads
 
 Tap a comment to collapse or expand its thread (this behavior can be disabled via the "Tap to Collapse" toggle in [Appearance settings](hydra://settings/appearance)). Collapsed threads show only the top comment. Child comments remember their collapsed state when a parent thread is collapsed and re-expanded.
@@ -25,19 +27,19 @@ When more replies are available than what was initially loaded, tap the "load mo
 
 ## Comment Sorting
 
-Sort comments using the sort button in the top-right when viewing a post. Available options: Default, Best, New, Top, Controversial, Old, and Q&A.
+Sort comments using the sort button in the top-right when viewing a post. Available options: Best, New, Top, Controversial, Old, and Q&A.
 
 Configure your default comment sort in [Sorting settings](hydra://settings/general/sorting). You can also enable per-subreddit sort memory to have the app remember your preferred sort for each subreddit.
 
 ## Comment Interactions
 
-Vote by tapping the up or down arrow, or by using swipe gestures. Tap the same arrow again to remove your vote.
+Vote by tapping the arrow next to a comment's score to upvote. Tap it again to remove your vote. To downvote, long-press the comment and select **Downvote**, or use a swipe gesture.
 
 Long-press a comment for more options: collapse or collapse thread, select text, reply, save, share, and edit or delete your own comments.
 
 ## Comment Gestures
 
-Configure swipe gestures for comments in [Gestures settings](hydra://settings/general/gestures). Each direction — short right, long right, short left, long left — can be assigned one of these actions: upvote, downvote, reply, bookmark, share, collapse, or collapse thread.
+Configure swipe gestures for comments in [Gestures settings](hydra://settings/general/gestures). Each direction (short right, long right, short left, long left) can be assigned one of these actions: upvote, downvote, reply, bookmark, share, collapse, or collapse thread. You can also set a direction to **Disabled** to turn that gesture off.
 
 ## Special Comment Types
 
@@ -47,11 +49,13 @@ Configure swipe gestures for comments in [Gestures settings](hydra://settings/ge
 
 Customize how comments look in [Appearance settings](hydra://settings/appearance):
 
-- **Right-side vote indicators** — moves vote arrows to the right side of comments
+- **Right side vote indicators** — shows a colored border on the right edge of comments you've voted on
 - **Collapse AutoModerator** — auto-collapse AutoModerator comments (on by default)
 - **Show flairs** — display user flairs on comments (on by default)
 - **Show comment summary (Pro)** — display an AI-generated summary at the top of long comment threads
+- **Start summary collapsed (Pro)** — start the comment summary collapsed; it's only generated once you expand it (appears when comment summaries are enabled)
 - **Tap to collapse** — allow tapping a comment to collapse or expand its thread (on by default)
+- **Collapse children only** — when collapsing a comment, keep its text visible and hide only its replies (off by default)
 
 ---
 

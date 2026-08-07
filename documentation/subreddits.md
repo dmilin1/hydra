@@ -15,7 +15,7 @@ The Subreddits page is your starting point for navigating communities. It is the
 - **Favorites** — your favorited subreddits
 - **Multireddits** — your custom feeds
 - **Moderator** — subreddits you moderate
-- **Subscribed** — all subscribed subreddits, sorted alphabetically
+- **Subscriber** — all subscribed subreddits, sorted alphabetically
 
 An A-Z scroller on the right side lets you quickly jump to subreddits by their first letter. When not logged in, trending subreddits are shown instead of subscriptions.
 
@@ -27,7 +27,7 @@ The three-dot menu (...) provides additional options including Subscribe/Unsubsc
 
 ## Subscribing
 
-Open a subreddit, tap the three-dot menu (...), and select "Subscribe" to add it to your subscriptions. Posts from subscribed subreddits appear in your Home feed. To unsubscribe, open the same menu and select "Unsubscribe." Your subscriptions appear in the Subscribed section of the Subreddits page.
+Open a subreddit, tap the three-dot menu (...), and select "Subscribe" to add it to your subscriptions. Posts from subscribed subreddits appear in your Home feed. To unsubscribe, open the same menu and select "Unsubscribe." Your subscriptions appear in the Subscriber section of the Subreddits page. You can also follow users. Their posts join your Home feed and they appear in the Subscriber section as u_username. See the [Organizing Feeds guide](hydra://settings/guide/?doc=organizing_feeds).
 
 ## Favorites
 
@@ -41,7 +41,7 @@ To add a subreddit to an existing multireddit, open the subreddit's three-dot me
 
 ## Filtering Subreddits
 
-Long-press a post from a subreddit you want to hide and select "Filter Subreddit." This hides posts from that subreddit in combined feeds (Home, Popular, All, and multireddits) but does not apply when browsing a subreddit directly. Manage your filtered subreddits in [Filters settings](hydra://settings/general/filters).
+Long-press a post from a subreddit you want to hide, select "Filter Subreddit," and choose whether to filter it for a day, a week, or forever. Timed filters expire automatically. Filtering hides posts from that subreddit in combined feeds (Home, Popular, All, and multireddits) but does not apply when browsing a subreddit directly. Manage your filtered subreddits in [Filters settings](hydra://settings/general/filters).
 
 ## Gallery Mode
 
@@ -55,7 +55,8 @@ To view a subreddit's description, subscriber count, and rules, tap the three-do
 
 - **Subreddit at top** — displays the subreddit name prominently on posts. Configure in [Appearance settings](hydra://settings/appearance).
 - **Subreddit icons** — shows community icons next to subreddit names. Configure in [Appearance settings](hydra://settings/appearance).
-- **Remember sort per subreddit** — remembers your last sort choice for each subreddit. Configure in [Sorting settings](hydra://settings/general/sorting).
+- **Remember subreddit sort** — remembers your last sort choice for each subreddit. Configure in [Sorting settings](hydra://settings/general/sorting).
+- **Multireddit sorting** — set a default sort for multireddits and remember your last sort for each one. Configure in [Sorting settings](hydra://settings/general/sorting).
 
 ---
 

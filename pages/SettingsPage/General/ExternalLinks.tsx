@@ -14,7 +14,7 @@ import {
   OPEN_IN_READER_MODE_KEY,
 } from "../../../utils/openExternalLink";
 import { useSettingsPicker } from "../../../utils/useSettingsPicker";
-import { Switch } from "react-native";
+import { Platform, Switch } from "react-native";
 import { useURLNavigation } from "../../../utils/navigation";
 
 export default function ExternalLinks() {
@@ -48,21 +48,21 @@ export default function ExternalLinks() {
           rightIcon: rightIcon,
           onPress: () => openPicker(),
         },
-        ...(selectedBrowser === "internalBrowser"
+        ...(selectedBrowser === "internalBrowser" && (Platform.OS === "ios" || Platform.OS === "macos")
           ? [
-              {
-                key: "readerMode",
-                icon: <Feather name="book-open" size={24} color={theme.text} />,
-                text: "Open in reader mode",
-                rightIcon: (
-                  <Switch
-                    value={openInReaderMode}
-                    onValueChange={() => setOpenInReaderMode(!openInReaderMode)}
-                  />
-                ),
-                onPress: () => setOpenInReaderMode(!openInReaderMode),
-              },
-            ]
+            {
+              key: "readerMode",
+              icon: <Feather name="book-open" size={24} color={theme.text} />,
+              text: "Open in reader mode",
+              rightIcon: (
+                <Switch
+                  value={openInReaderMode}
+                  onValueChange={() => setOpenInReaderMode(!openInReaderMode)}
+                />
+              ),
+              onPress: () => setOpenInReaderMode(!openInReaderMode),
+            },
+          ]
           : []),
         {
           key: "modifyLinks",

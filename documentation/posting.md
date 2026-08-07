@@ -40,7 +40,7 @@ Hydra automatically saves your title and body text as you type. If you close the
 
 ## Editing Posts
 
-Open one of your own text posts, tap the context menu (three dots), and select **"Edit"**. The editor opens pre-filled with your current text. Make your changes and tap **"Edit"** to save. Only the body text can be edited — titles, links, and images cannot be changed after posting. This is a Reddit restriction. Edited posts display an edited indicator.
+Open one of your own text posts, tap the context menu (three dots), and select **"Edit"**. The editor opens pre-filled with your current text. Make your changes and tap **"Save"**. Only the body text can be edited. Titles, links, and images cannot be changed after posting. This is a Reddit restriction. Edited posts display an edited indicator.
 
 ## Deleting Posts
 

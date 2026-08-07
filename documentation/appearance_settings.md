@@ -1,6 +1,6 @@
 ===METADATA===
 title: Appearance Settings
-description: Post appearance (compact mode, split view, subreddit display, text lengths, flairs, blur options, summaries, auto-play, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, tap to collapse), tab appearance (username, hide on scroll)
+description: Post appearance (compact mode, thumbnails on right, split view, subreddit display, text lengths, flairs, blur options, summaries, start summary collapsed, auto-play, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, start summary collapsed, tap to collapse, collapse children only), tab appearance (username, hide on scroll)
 ===END METADATA===
 
 # Appearance Settings
@@ -11,7 +11,9 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 
 **Make Posts Compact**: Denser layout showing more posts at once with reduced spacing.
 
-**Enable Split View**: iPad only. Shows posts side-by-side with the feed. Learn more in the [Split View guide](hydra://settings/guide/?doc=split_view).
+**Show Thumbnails on Right**: Only shown while compact mode is on. Moves post thumbnails to the right side of each post.
+
+**Enable Split View**: Tablets and other large-screen devices only. Shows posts side-by-side with the feed. Learn more in the [Split View guide](hydra://settings/guide/?doc=split_view).
 
 **Show Subreddit at Top**: Displays the subreddit name prominently at the top of posts.
 
@@ -31,6 +33,8 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 
 **Show Post Summary**: Shows AI-generated post summaries. Requires [Hydra Pro](hydra://settings/hydraPro). Learn more in the [AI Summaries guide](hydra://settings/guide/?doc=ai_summaries).
 
+**Start Summary Collapsed**: Only shown while post summaries are enabled. Starts each AI summary collapsed — tap it to expand.
+
 **Auto Play Videos**: Automatically plays videos as you scroll. Uses more data and battery.
 
 **Live Text**: Enables text recognition in images using iOS Live Text, allowing you to select and copy text. Learn more in the [Live Text guide](hydra://settings/guide/?doc=live_text).
@@ -39,15 +43,19 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 
 ## Comment Appearance
 
-**Right Side Vote Indicators**: Moves vote indicators to the right side of comments. Can be more comfortable for one-handed or left-handed use.
+**Right Side Vote Indicators**: Shows a colored upvote/downvote border on the right edge of comments you've voted on.
 
 **Collapse AutoModerator**: Automatically collapses AutoModerator comments. You can still expand them manually.
 
 **Show Comment Flairs**: Displays user flairs on comments.
 
-**Show Comment Summary**: Shows AI-generated summaries for long comments. Requires [Hydra Pro](hydra://settings/hydraPro). Learn more in the [AI Summaries guide](hydra://settings/guide/?doc=ai_summaries).
+**Show Comment Summary**: Shows an AI-generated summary of the post's comment section. Requires [Hydra Pro](hydra://settings/hydraPro). Learn more in the [AI Summaries guide](hydra://settings/guide/?doc=ai_summaries).
 
-**Tap to Collapse**: When enabled, tapping on a comment collapses or expands its thread. When disabled, tapping a comment does nothing, so you can only collapse comments via long-press or swipe gestures. Enabled by default. Existing pages may need to be refreshed for changes to take effect.
+**Start Summary Collapsed**: Only shown while comment summaries are enabled. Starts each AI summary collapsed — tap it to expand.
+
+**Tap to Collapse**: When enabled, tapping on a comment collapses or expands its thread. When disabled, tapping a comment does nothing, so you can only collapse comments via long-press or swipe gestures. Enabled by default.
+
+**Collapse Children Only**: When enabled, collapsing a comment keeps its own text visible and hides only its replies, leaving a "more replies" row you can tap to expand.
 
 ## Tab Appearance
 

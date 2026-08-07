@@ -9,7 +9,7 @@ AI Summaries is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature tha
 
 ## Post Summaries
 
-Post summaries provide a brief overview of long text posts. When you open a post, a summary appears below the post content in a bordered box labeled **"Summary."** Summaries are only generated for text posts that are long enough to benefit from one — short posts won't show a summary.
+Post summaries provide a brief overview of long text posts. When you open a post, a summary appears below the post title in a bordered box labeled **"Summary."** Summaries are only generated for text posts that are long enough to benefit from one — short posts won't show a summary. You can tap the summary to collapse or expand it.
 
 To toggle post summaries, go to [Appearance settings](hydra://settings/appearance) and find **"Show post summary"** under **Post Appearance Settings**. This setting is enabled by default for Pro users.
 
@@ -21,9 +21,13 @@ You can tap the comment summary to collapse or expand it.
 
 To toggle comment summaries, go to [Appearance settings](hydra://settings/appearance) and find **"Show comment summary"** under **Comment Appearance Settings**. This setting is enabled by default for Pro users.
 
+## Starting Summaries Collapsed
+
+If you'd rather summaries stay out of the way until you want them, enable **"Start summary collapsed"** in [Appearance settings](hydra://settings/appearance). Once summaries are enabled, the toggle appears below **"Show post summary"** under **Post Appearance Settings** and below **"Show comment summary"** under **Comment Appearance Settings**. A collapsed summary shows just its header and is only generated once you tap to expand it.
+
 ## How Summaries Work
 
-When you open a post, Hydra sends the content to its server, which uses AI to generate a summary. Summaries are generated each time you open a post and are not cached.
+When you open a post, Hydra sends the content to its server, which uses AI to generate a summary. Summaries are generated each time you open a post (or expand a collapsed summary) and are not cached.
 
 If both post and comment summaries are enabled, the post summary is generated first. The comment summary is then generated with the post summary as additional context, resulting in a more relevant overview of the discussion.
 

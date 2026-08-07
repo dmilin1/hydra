@@ -9,13 +9,13 @@ Voting helps surface the best content. Upvote content you find valuable, and dow
 
 ## How to Vote
 
-Tap the up arrow (↑) on the left side of a post or comment to upvote. The arrow turns orange and the score increases by 1. Tap the down arrow (↓) to downvote. The arrow turns blue and the score decreases by 1. Tap the same arrow again to remove your vote.
+When viewing a post, tap the up arrow (↑) in the action bar at the bottom to upvote, or the down arrow (↓) to downvote. In feeds, vote on posts with swipe gestures or by long-pressing the post. On comments, tap the arrow next to the score to upvote, or long-press the comment to upvote or downvote. Voting the same way again removes your vote. Upvoted content is highlighted in orange and downvoted content in blue (colors vary by theme).
 
 You can also vote using swipe gestures if configured in [Gestures settings](hydra://settings/general/gestures). Short and long swipes can be assigned to different actions, including upvote and downvote.
 
 ## Vote Indicators
 
-Vote arrows appear on the left side of posts and comments by default. You can enable right-side vote indicators for comments in [Appearance settings](hydra://settings/appearance), which adds a colored border on the right edge of comments you've voted on.
+The arrow next to a post or comment's score changes color and direction to show your current vote. You can also enable **Right side vote indicators** for comments in [Appearance settings](hydra://settings/appearance), which adds a colored border on the right edge of comments you've voted on.
 
 ## Understanding Scores
 

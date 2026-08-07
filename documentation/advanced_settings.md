@@ -1,6 +1,6 @@
 ===METADATA===
 title: Advanced Settings
-description: Clear image cache, self-hosted Hydra server, custom server URL, and customer ID
+description: Clear image cache, clear video cache, self-hosted Hydra server, custom server URL, and customer ID
 ===END METADATA===
 
 # Advanced Settings
@@ -12,6 +12,12 @@ Advanced Settings are found in [Settings > Advanced](hydra://settings/advanced).
 Hydra caches images locally for faster loading and offline access. The current cache size is displayed on the **Clear Image Cache** button in megabytes.
 
 To free up storage, tap **"Clear Image Cache"** under the **Caching** section. The cache will rebuild automatically as you browse.
+
+## Clear Video Cache
+
+Hydra also caches videos for smoother playback. The current cache size is displayed on the **Clear Video Cache** button in megabytes.
+
+To free up storage, tap **"Clear Video Cache"** under the **Caching** section. The video cache is cleared the next time you restart Hydra.
 
 ## Self-Hosted Hydra Server
 

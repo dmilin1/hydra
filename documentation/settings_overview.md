@@ -11,7 +11,7 @@ Hydra's settings are organized into categories, making it easy to find and confi
 
 ### General
 
-General settings cover core functionality including swipe gestures, post and comment sorting preferences, content filters, link handling, app startup behavior, external link browser selection, and legal information.
+General settings cover core functionality including swipe gestures, post and comment sorting preferences, content filters, link handling, app startup behavior, external link browser selection, and custom link modification scripts.
 
 [View General Settings](hydra://settings/general) | [Learn More](hydra://settings/guide/?doc=general_settings)
 
@@ -35,7 +35,7 @@ Control how posts, comments, and the tab bar are displayed. Options include comp
 
 ### App Icon
 
-Change Hydra's home screen icon. Choose from alternate icons created by community members. This option only appears on iOS devices that support alternate icons.
+Change Hydra's home screen icon. Choose from alternate icons created by community members. This option only appears on devices that support alternate icons.
 
 [View App Icon Settings](hydra://settings/appIcon) | [Learn More](hydra://settings/guide/?doc=app_icons)
 
@@ -63,15 +63,21 @@ Control whether Hydra sends error reports when it encounters a crash or loading 
 
 [View Privacy Settings](hydra://settings/privacy) | [Learn More](hydra://settings/guide/?doc=privacy_settings)
 
+### Legal
+
+View Hydra's Privacy Policy and End User License Agreement.
+
+[View Legal](hydra://settings/general/legal)
+
 ### Advanced
 
-Advanced settings for power users. Clear the image cache, configure a self-hosted Hydra server, or view your customer ID.
+Advanced settings for power users. Clear the image and video caches, configure a self-hosted Hydra server, or view your customer ID.
 
 [View Advanced Settings](hydra://settings/advanced) | [Learn More](hydra://settings/guide/?doc=advanced_settings)
 
 ### Hydra Pro
 
-Subscribe to Hydra Pro or manage your existing subscription. Pro unlocks features like inbox alerts, gallery mode, stats tracking, AI-powered post filtering, post and comment summaries, and additional themes.
+Subscribe to Hydra Pro or manage your existing subscription. Pro unlocks features like inbox alerts, unlimited gallery mode scrolling, stats tracking, AI-powered post filtering, post and comment summaries, and additional themes.
 
 [View Hydra Pro](hydra://settings/hydraPro) | [Learn More](hydra://settings/guide/?doc=hydra_pro)
 

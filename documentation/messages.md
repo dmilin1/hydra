@@ -11,7 +11,7 @@ Private messages allow you to have direct conversations with other Reddit users.
 
 Private messages appear in the **Inbox** tab with a **mail icon**. Unread messages have a highlighted icon, while read messages have a subtle one. Each message shows the subject line, a preview of the content, the sender's name, and when it was sent.
 
-**Tap** a message to open the full conversation. **Swipe right** to quickly mark it as read. **Long press** for the option to toggle read/unread status.
+**Tap** a message to open the full conversation. **Swipe left** to quickly toggle it between read and unread. **Long press** for the option to toggle read/unread status.
 
 You can also mark all inbox items as read at once using the **checkmark button** in the top-right corner of the Inbox.
 

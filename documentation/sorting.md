@@ -39,11 +39,11 @@ Tap the sort icon in the top-right while browsing to change sort. For posts, sel
 
 ## Default Sorting
 
-Set default post and comment sorts in [Sorting settings](hydra://settings/general/sorting). If "Top" is selected for posts, you can also set the default time period. Enable "Apply sort to home" to apply your default sort to the home feed.
+Set default post, multireddit, and comment sorts in [Sorting settings](hydra://settings/general/sorting). Each has its own "Default sort" picker, and multireddits get their own section under **Multireddits**. If "Top" is selected, a "Default top sort" option appears for choosing the time period. Enable "Apply sort to home" to apply your default sort to the home feed.
 
 ## Remembering Per-Subreddit Sorts
 
-Enable "Remember subreddit sort" for posts and comments separately to have Hydra save each subreddit's last used sort. Use "Clear custom sorts" to reset all remembered sorts.
+Enable "Remember subreddit sort" for posts and comments separately to have Hydra save each subreddit's last used sort, or "Remember multireddit sort" to do the same for multireddits. Use the "Clear custom post sorts", "Clear custom multireddit sorts", and "Clear custom comment sorts" buttons to reset remembered sorts.
 
 ---
 

@@ -11,9 +11,11 @@ These are lesser-known features and techniques that can significantly improve yo
 
 **Tap the active tab** to go back one level in the navigation stack, instead of reaching for the back button.
 
-**Long press the Search tab** to instantly open a quick subreddit search overlay. This is faster than navigating to the Search tab and typing — just long press, type at least 3 characters, and jump straight to a subreddit.
+**Long press the Search tab** to instantly open a quick subreddit search overlay. This is faster than navigating to the Search tab and typing. Long press and your favorite and subscribed subreddits appear instantly, or type any part of a name to search.
 
-**Long press** on posts, comments, images, videos, subreddits, and users to access context menus with quick actions like save, share, copy, reply, and more.
+**Long press the Account tab** to open a quick account switcher and instantly swap between your logged-in accounts.
+
+**Long press** on posts, comments, and images to access context menus with quick actions like save, share, copy, reply, and more. On subreddit and user pages, tap the "..." button for similar options.
 
 **Swipe Anywhere to Navigate** lets you swipe right from anywhere on the screen to go back. Enable it in [Gestures settings](hydra://settings/general/gestures). Note that enabling this disables right swipe actions — only left swipe actions remain active.
 
@@ -29,7 +31,7 @@ You can reposition this button by holding it for about a second until move mode 
 
 For multi-image posts, swipe left and right to browse between images. An indicator shows which image you're viewing (e.g., "2 of 5").
 
-**Long press** any image to save it to your photo library or share it.
+**Long press** an image in a post to share or save it. In the full-screen viewer, tap the image to show the overlay, then tap the **share button**.
 
 **Live Text** (iOS 16+) lets you select, copy, and look up text found in images. Enable it in [Appearance settings](hydra://settings/appearance).
 
@@ -37,9 +39,9 @@ For multi-image posts, swipe left and right to browse between images. An indicat
 
 **Tap the playback speed button** (top-left corner in full-screen video) to cycle through 0.5x, 1x, 1.5x, and 2x playback speeds.
 
-**Drag horizontally** on a video to scrub through it. Videos also support **Picture-in-Picture** on iOS — use the system PiP gesture to keep watching while you browse.
+**Drag horizontally** on a video to scrub through it.
 
-**Long press** a video for options to save or share it. To download a video to your device, long press it, tap **"Share"**, then select **"Save Video"** from the share sheet. See the [Sharing guide](hydra://settings/guide/?doc=sharing) for more details.
+To save or share a video, open it full screen, tap once to show the overlay, then tap the **share button**. A progress ring shows the download, and your device's share sheet opens when it finishes. Select **"Save Video"** to save it to your device. Downloading Reddit-hosted videos with sound requires Hydra Pro; without Pro, Hydra offers to download them without sound. See the [Sharing guide](hydra://settings/guide/?doc=sharing) for more details.
 
 ## Gallery Mode
 
@@ -55,7 +57,7 @@ Hydra automatically saves drafts as you compose posts, comments, and messages. I
 
 ## Clipboard Link Detection
 
-Enable "Read Links from Clipboard" in [Settings → General → Open in Hydra](hydra://settings/general/open-in-hydra) and Hydra will check your clipboard when the app opens. If it finds a Reddit link, it will offer to open it directly in Hydra.
+Enable "Read Links from Clipboard" in [Settings → General → Open in Hydra](hydra://settings/general/openInHydra) and Hydra will check your clipboard when the app opens. If Hydra finds a Reddit link, it will offer to open the link directly in Hydra.
 
 ## Keeping Your Feed Fresh
 
@@ -79,13 +81,13 @@ Learn more about [Hydra Pro](hydra://settings/guide/?doc=hydra_pro).
 
 **Compact mode** in [Appearance settings](hydra://settings/appearance) shows more posts at once with a denser layout — great for quickly scanning a feed.
 
-**Per-subreddit sort memory** saves your preferred sort for each subreddit, so you don't have to change it every time you visit. Configure default sorts in [Sorting settings](hydra://settings/general/sorting).
+**Per-subreddit sort memory** saves your preferred sort for each subreddit and multireddit, so you don't have to change it every time you visit. Configure default sorts in [Sorting settings](hydra://settings/general/sorting).
 
-**Favorites** let you pin frequently visited subreddits to the top of your subreddit list. Long press a subreddit and select "Favorite," or manage them in the Subreddits tab.
+**Favorites** let you pin frequently visited subreddits to the top of your subreddit list. Tap the star next to a subreddit in the Posts tab's subreddit list, or open a subreddit and choose "Favorite" from the "..." menu.
 
 **Multireddits** let you group related subreddits into combined feeds — useful for browsing by topic or interest. See [Organizing Feeds](hydra://settings/guide/?doc=organizing_feeds).
 
-**Split View** (iPad only) shows posts side-by-side for a more efficient browsing experience. Enable it in [Appearance settings](hydra://settings/appearance).
+**Split View** (iPad and tablets) shows posts side-by-side for a more efficient browsing experience. Enable it in [Appearance settings](hydra://settings/appearance).
 
 ---
 

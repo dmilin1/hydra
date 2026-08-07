@@ -28,11 +28,13 @@ Hydra supports the following post types:
 - **Poll posts** — Interactive polls
 - **Crossposts** — Shows the original post and subreddit
 
-NSFW and spoiler content is blurred by default. Tap to reveal, or configure in [Appearance settings](hydra://settings/appearance).
+NSFW and spoiler content is blurred by default. Tap to reveal, or configure in [Appearance settings](hydra://settings/appearance). So that NSFW posts can load, Hydra automatically turns on the adult-content preference on your logged-in Reddit account. Blurring is handled in the app instead.
 
 ## Post Information
 
 Each post displays its title, subreddit, author, time posted, vote count, comment count, and flair (if enabled).
+
+Locked and archived posts show a lock icon with a "locked" or "archived" label next to the post details. Replying is disabled on these posts. Tapping the reply button shows a warning instead.
 
 ## Filtering and Sorting
 

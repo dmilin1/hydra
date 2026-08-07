@@ -26,12 +26,12 @@ Subreddit search includes sort options accessible from the header:
 - **Relevance** - Most relevant results first
 - **Hot** - Currently trending posts
 - **New** - Most recently posted
-- **Top** - Highest voted posts (with time filter: Hour, Day, Week, Month, Year, All Time)
+- **Top** - Highest voted posts
 - **Comment Count** - Most commented posts
 
 ## Quick Subreddit Search
 
-Long-pressing the **Search** tab opens a quick search overlay. Type a subreddit name (at least 3 characters) and tap a result to jump directly to it. Tap outside the overlay to dismiss it.
+Long-pressing the **Search** tab opens a quick search overlay. Before you type anything, your favorite and subscribed subreddits are listed for one-tap access. Type a subreddit name to search all of Reddit, then tap a result to jump directly to it. Tap outside the overlay to dismiss it.
 
 ## Search Operators
 

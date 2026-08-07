@@ -11,7 +11,7 @@ Hydra offers several ways to hide content from your feeds. Filters apply to post
 
 When enabled, posts you've already viewed are automatically hidden from your feed so you only see new content. To enable it, go to [Filters settings](hydra://settings/general/filters) and toggle **"Hide Seen Posts"**.
 
-Posts are marked as seen when you open them, vote on them, comment on them, or scroll past them (if "Mark as Seen On Scroll" is enabled). You can also manually mark a post by long-pressing it and selecting **"Mark as Read"**.
+Posts are marked as seen when you open them, interact with their media or links, or scroll past them (if "Mark as Seen On Scroll" is enabled). You can also manually mark a post by long-pressing it and selecting **"Mark as Read"**.
 
 ## Mark as Seen On Scroll
 
@@ -23,15 +23,15 @@ To enable it, go to [Filters settings](hydra://settings/general/filters) and tog
 
 You can override the global "Hide Seen Posts" setting for individual pages. For example, if you have "Hide Seen Posts" enabled globally, you can choose to show seen posts on a specific subreddit, or vice versa.
 
-To toggle this, open the context menu (three dots) on any feed page and select **"Show Seen Posts"** or **"Hide Seen Posts"**. Pages with overrides are listed in [Filters settings](hydra://settings/general/filters).
+To toggle this, open the context menu (three dots) on the Home feed or a subreddit page and select **"Show Seen Posts"** or **"Hide Seen Posts"**. This works in both the normal and Gallery Mode views of those pages, but is not available on multireddit pages. Pages with overrides are listed in [Filters settings](hydra://settings/general/filters).
 
 ## Filtering Subreddits
 
 You can hide all posts from specific subreddits. Subreddit filters apply on combined feeds such as the home feed, r/all, r/popular, and multireddits. They do not apply when browsing an individual subreddit directly.
 
-To filter a subreddit, long-press a post from that subreddit and select **"Filter Subreddit"**. The post is removed and all future posts from that subreddit are hidden.
+To filter a subreddit, long-press a post from that subreddit and select **"Filter Subreddit"**, then choose how long the filter lasts: **"Filter for a day"**, **"Filter for a week"**, or **"Filter forever"**. The post is removed and posts from that subreddit are hidden until the filter expires. Filters set to forever last until you remove them.
 
-To manage your filtered subreddits, go to [Filters settings](hydra://settings/general/filters) and scroll to the **"Filtered subreddits"** section. Tap a subreddit and confirm to remove the filter.
+To manage your filtered subreddits, go to [Filters settings](hydra://settings/general/filters) and scroll to the **"Filtered subreddits"** section. Each entry shows how long the filter lasts — "Forever" or an expiration date. Tap a subreddit and confirm to remove the filter.
 
 ## Text Filters and Smart Filters
 

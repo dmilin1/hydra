@@ -1,11 +1,11 @@
 ===METADATA===
 title: Split View Mode
-description: Split view mode for iPad (device-specific), viewing posts side-by-side, and multitasking with your feed
+description: Split view mode for iPads and Android tablets (device-specific), viewing posts side-by-side, and multitasking with your feed
 ===END METADATA===
 
 # Split View Mode
 
-Split View is an iPad feature that lets you view a post side-by-side with your feed. Instead of navigating away from your feed to read a post, the feed stays visible on the left while the post opens on the right.
+Split View is a wide screen feature that lets you view a post side-by-side with your feed. Instead of navigating away from your feed to read a post, the feed stays visible on the left while the post opens on the right.
 
 ## Enabling Split View
 
@@ -26,8 +26,8 @@ All standard post interactions (voting, commenting, saving, sharing) work normal
 
 ## Troubleshooting
 
-If the split view toggle doesn't appear in your settings, your device's screen may be too small to support it. Split view requires an iPad-sized screen.
+If the split view toggle doesn't appear in your settings, your device's screen may be too small to support it. Split view requires a tablet sized screen.
 
 ---
 
-Split View is an iPad feature. Learn about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or configure split view in [Appearance settings](hydra://settings/appearance).
+Split View is a tablet feature. Learn about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or configure split view in [Appearance settings](hydra://settings/appearance).

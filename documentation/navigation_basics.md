@@ -7,7 +7,7 @@ description: Basic navigation, tabs, back button, URL scheme, and navigation pat
 
 ## Tab Navigation
 
-The tab bar contains five sections: **Posts** (your feed and subreddit browsing), **Inbox** (replies and messages), **Account** (your profile and saved content), **Search** (find subreddits, posts, and users), and **Settings** (app preferences). Tapping the current tab goes back one level. Long pressing the Search tab opens quick subreddit search.
+The tab bar contains five sections: **Posts** (your feed and subreddit browsing), **Inbox** (replies and messages), **Account** (your profile and saved content), **Search** (find subreddits, posts, and users), and **Settings** (app preferences). Tapping the current tab goes back one level. Long pressing the Search tab opens quick subreddit search. Long pressing the Account tab opens a quick account switcher for swapping between logged-in accounts.
 
 ## Basic Navigation Actions
 
@@ -15,7 +15,7 @@ Navigate back by swiping right from the left screen edge, or tapping the back bu
 
 ## URL Scheme
 
-Hydra uses `hydra://` URLs for deep linking. Common patterns include `hydra://settings`, `hydra://settings/general/gestures`, and `hydra://accounts`. Regular Reddit URLs also work automatically.
+Links inside Hydra can use `hydra://` URLs, such as `hydra://settings` or `hydra://settings/general/gestures`. From outside the app, use `hydra://openurl?url=<reddit-url>` to open a Reddit link directly in Hydra. Regular Reddit URLs also work automatically.
 
 ## Navigation Gestures
 
@@ -25,9 +25,9 @@ Configure swipe gestures on posts and comments for quick actions. Enable "Swipe 
 
 Feeds use infinite scrolling. Content loads automatically as you scroll. Pull down at the top to refresh. Activity indicators show loading state.
 
-## Split View (iPad)
+## Split View (iPad and Tablets)
 
-Enable split view in [Appearance settings](hydra://settings/appearance) to show posts side-by-side with your feed. See the [Split View guide](hydra://settings/guide/?doc=split_view) for details.
+On iPads and tablets, enable split view in [Appearance settings](hydra://settings/appearance) to show posts side-by-side with your feed. See the [Split View guide](hydra://settings/guide/?doc=split_view) for details.
 
 ## Troubleshooting
 
