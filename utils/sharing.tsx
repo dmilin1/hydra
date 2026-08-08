@@ -2,6 +2,7 @@ import { useContext, useRef } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   Share,
   View,
   StyleSheet,
@@ -10,6 +11,10 @@ import {
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { ImageSource } from "expo-image";
+import {
+  Asset as MediaLibraryAsset,
+  requestPermissionsAsync as requestMediaLibraryPermissionsAsync,
+} from "expo-media-library";
 import { shareAsync } from "expo-sharing";
 
 import { ModalContext } from "../contexts/ModalContext";
@@ -116,6 +121,66 @@ export function useMediaSharing() {
       setModal(null);
     }
     alreadyAsking.current = false;
+  };
+}
+
+export function useMediaSaving() {
+  const { isPro } = useContext(SubscriptionsContext);
+  const { closeMediaViewer } = useContext(MediaViewerContext);
+
+  const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
+
+  const alreadySaving = useRef(false);
+
+  return async (
+    type: "image" | "video",
+    mediaSource: string | ImageSource[],
+    onProgress?: (progress: number) => void,
+  ): Promise<boolean> => {
+    if (alreadySaving.current) return false;
+    alreadySaving.current = true;
+    try {
+      const mediaUrl =
+        typeof mediaSource === "string" ? mediaSource : mediaSource.at(-1)?.uri;
+      if (!mediaUrl) {
+        return false;
+      }
+      const { granted } = await requestMediaLibraryPermissionsAsync(true);
+      if (!granted) {
+        Alert.alert(
+          "Permission Needed",
+          "Hydra needs permission to add media to your photo library.",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Open Settings", onPress: () => Linking.openSettings() },
+          ],
+        );
+        return false;
+      }
+      const { file, cleanup } = await download({
+        url: mediaUrl,
+        isPro,
+        onProgress,
+      });
+      await MediaLibraryAsset.create(file.uri);
+      cleanup();
+      return true;
+    } catch (e) {
+      if (e instanceof UserCancelledVideoMuxError) {
+        closeMediaViewer();
+        navigation.dispatch(TabActions.jumpTo("Posts"));
+        navigation.dispatch(
+          StackActions.push(PageTypeToNavName[PageType.SETTINGS], {
+            url: "hydra://settings/hydraPro",
+          }),
+        );
+      } else {
+        Alert.alert("Error", `Failed to save ${type}`);
+      }
+      return false;
+    } finally {
+      alreadySaving.current = false;
+    }
   };
 }
 

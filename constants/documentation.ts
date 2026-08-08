@@ -2024,11 +2024,13 @@ For multi-image posts, swipe left and right to browse between images. An indicat
 
 ## Video Player
 
-**Tap the playback speed button** (top-left corner in full-screen video) to cycle through 0.5x, 1x, 1.5x, and 2x playback speeds.
+Full-screen videos show playback controls when they open: **skip back/forward 10 seconds**, **play/pause**, and a **scrub bar with time codes** you can drag or tap to seek. The controls fade out after a few seconds while playing — tap the video to bring them back or hide them.
 
-**Drag horizontally** on a video to scrub through it.
+**Tap the playback speed button** (in the control bar) to cycle through 0.5x, 1x, 1.5x, and 2x playback speeds.
 
-To save or share a video, open it full screen, tap once to show the overlay, then tap the **share button**. A progress ring shows the download, and your device\'s share sheet opens when it finishes. Select **\"Save Video\"** to save it to your device. Downloading Reddit-hosted videos with sound requires Hydra Pro; without Pro, Hydra offers to download them without sound. See the [Sharing guide](hydra://settings/guide/?doc=sharing) for more details.
+For posts with multiple videos or gifs, **swipe left and right** to move between them, just like image albums. If you preferred dragging anywhere on the video to scrub, turn on **\"Slide anywhere to scrub videos\"** in [Appearance settings](hydra://settings/appearance) — note that swiping between album items then goes back to using the arrow buttons.
+
+The **download button** in the control bar saves the video straight to your photo library, and the **share button** opens your device\'s share sheet. A progress ring shows the download. Downloading Reddit-hosted videos with sound requires Hydra Pro; without Pro, Hydra offers to download them without sound. See the [Sharing guide](hydra://settings/guide/?doc=sharing) for more details.
 
 ## Gallery Mode
 

@@ -48,21 +48,22 @@ export default function ExternalLinks() {
           rightIcon: rightIcon,
           onPress: () => openPicker(),
         },
-        ...(selectedBrowser === "internalBrowser" && (Platform.OS === "ios" || Platform.OS === "macos")
+        ...(selectedBrowser === "internalBrowser" &&
+        (Platform.OS === "ios" || Platform.OS === "macos")
           ? [
-            {
-              key: "readerMode",
-              icon: <Feather name="book-open" size={24} color={theme.text} />,
-              text: "Open in reader mode",
-              rightIcon: (
-                <Switch
-                  value={openInReaderMode}
-                  onValueChange={() => setOpenInReaderMode(!openInReaderMode)}
-                />
-              ),
-              onPress: () => setOpenInReaderMode(!openInReaderMode),
-            },
-          ]
+              {
+                key: "readerMode",
+                icon: <Feather name="book-open" size={24} color={theme.text} />,
+                text: "Open in reader mode",
+                rightIcon: (
+                  <Switch
+                    value={openInReaderMode}
+                    onValueChange={() => setOpenInReaderMode(!openInReaderMode)}
+                  />
+                ),
+                onPress: () => setOpenInReaderMode(!openInReaderMode),
+              },
+            ]
           : []),
         {
           key: "modifyLinks",

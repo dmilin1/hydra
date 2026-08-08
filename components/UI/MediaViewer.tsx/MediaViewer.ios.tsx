@@ -1,33 +1,23 @@
-import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
-import { useDeferredValue, useEffect, useRef, useState } from "react";
-import { StyleSheet, Animated, Modal, Text, View } from "react-native";
-import { Touchable } from "react-native-gesture-handler";
+import { VideoPlayer } from "expo-video";
 import {
-  useSafeAreaInsets,
-  useSafeAreaFrame,
-} from "react-native-safe-area-context";
-import MediaVideo, { VideoItem } from "./MediaVideo";
-import { ImageItem, MediaImage } from "./MediaImage";
+  useContext,
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { StyleSheet, Animated, Modal, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 import * as ExpoOrientation from "expo-screen-orientation";
-import PostOverlay from "./PostOverlay";
-import { Post } from "../../../api/Posts";
-import { PostDetail } from "../../../api/PostDetail";
+import MediaVideo from "./MediaVideo.ios";
+import { MediaImage } from "./MediaImage.ios";
+import MediaOverlay, { MediaOverlayHandle } from "./Overlay/MediaOverlay";
+import { MediaItem, MediaItemRow, MediaViewerProps } from "./types";
+import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 
-type MediaItem = ImageItem | VideoItem;
-
-type MediaItemRow = MediaItem[];
-
-export type MediaItemCollection = MediaItemRow[];
-
-type MediaViewerProps = {
-  media: MediaItemCollection;
-  startingRowIndex: number;
-  startingColumnIndex: number;
-  onFocusedItemChange?: (index: number) => void;
-  getCurrentPost?: (rowIndex: number) => Post | PostDetail | null;
-  onClose: () => void;
-};
+export type { MediaItemCollection } from "./types";
 
 export default function MediaViewer({
   media,
@@ -38,15 +28,12 @@ export default function MediaViewer({
   onClose,
 }: MediaViewerProps) {
   const { width, height } = useSafeAreaFrame();
-  const {
-    top: safeAreaTop,
-    bottom: safeAreaBottom,
-    left: safeAreaLeft,
-    right: safeAreaRight,
-  } = useSafeAreaInsets();
+
+  const { slideAnywhereToScrub } = useContext(PostSettingsContext);
 
   const columnFlashListRef = useRef<FlashListRef<MediaItemRow>>(null);
   const rowFlashListRef = useRef<FlashListRef<MediaItem>>(null);
+  const overlayRef = useRef<MediaOverlayHandle>(null);
 
   const overlayTapStart = useRef<{
     x: number;
@@ -75,12 +62,10 @@ export default function MediaViewer({
     outputRange: [0.9, 0.95, 1],
   });
 
-  const showOverlay = useRef(false);
-  const overlayOpacity = useRef(new Animated.Value(0));
-
   const [currentRowIndex, setCurrentRowIndex] = useState(0);
   const [currentColumnIndex, setCurrentColumnIndex] = useState(0);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const [focusedPlayer, setFocusedPlayer] = useState<VideoPlayer | null>(null);
 
   const tapToScrollColumnIndex = useRef<number>(0);
   const lastTapToScrollTime = useRef<number>(0);
@@ -99,6 +84,17 @@ export default function MediaViewer({
   const currentRowSize = media[currentRowIndex]?.length ?? 0;
 
   const currentPost = getCurrentPost?.(currentRowIndex);
+
+  const focusedItem = media[currentRowIndex]?.[currentColumnIndex];
+
+  const handleFocusedPlayerChange = (
+    player: VideoPlayer,
+    nowFocused: boolean,
+  ) => {
+    setFocusedPlayer((previous) =>
+      nowFocused ? player : previous === player ? null : previous,
+    );
+  };
 
   const animateClose = () => {
     Animated.timing(flickedAway.current, {
@@ -132,7 +128,7 @@ export default function MediaViewer({
       trueIndex += media[i].length;
     }
     trueIndex += currentColumnIndex;
-    onFocusedItemChange?.(trueIndex);
+    onFocusedItemChange(trueIndex);
   }, [currentRowIndex, currentColumnIndex]);
 
   useEffect(() => {
@@ -149,332 +145,270 @@ export default function MediaViewer({
       transparent={true}
       supportedOrientations={["portrait", "landscape"]}
     >
-      <Animated.View
-        style={[
-          styles.background,
-          {
-            opacity,
-          },
-        ]}
-      />
-      {currentRowSize > 1 && (
+      <GestureHandlerRootView style={styles.flex}>
         <Animated.View
           style={[
-            styles.rowDetailsContainer,
+            styles.background,
             {
-              bottom: safeAreaBottom + 10,
-              right: safeAreaRight + 10,
-              opacity: overlayOpacity.current.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
+              opacity,
             },
           ]}
-        >
-          <Touchable
-            activeOpacity={0.2}
-            animationDuration={{ in: 0, out: 150 }}
-            style={[
-              styles.rowNavigationButton,
-              {
-                opacity: currentColumnIndex === 0 ? 0.5 : 1,
-              },
-            ]}
-            disabled={currentColumnIndex === 0}
-            onPress={() => handleTapToScrollRow("left")}
-            hitSlop={10}
-          >
-            <FontAwesome6
-              iconStyle="solid"
-              name="arrow-left"
-              size={16}
-              color="white"
-            />
-          </Touchable>
-          <Touchable
-            activeOpacity={0.2}
-            animationDuration={{ in: 0, out: 150 }}
-            style={[
-              styles.rowNavigationButton,
-              {
-                opacity: currentColumnIndex === currentRowSize - 1 ? 0.5 : 1,
-              },
-            ]}
-            disabled={currentColumnIndex === currentRowSize - 1}
-            onPress={() => handleTapToScrollRow("right")}
-            hitSlop={10}
-          >
-            <FontAwesome6
-              iconStyle="solid"
-              name="arrow-right"
-              size={16}
-              color="white"
-            />
-          </Touchable>
-          <View style={styles.itemIndexContainer}>
-            <Text style={styles.itemIndexText}>
-              {currentColumnIndex + 1} / {currentRowSize}
-            </Text>
-          </View>
-        </Animated.View>
-      )}
-      <Animated.View
-        style={[
-          styles.contentContainer,
-          {
-            opacity,
-            transform: [
-              {
-                scale,
-              },
-            ],
-          },
-        ]}
-        onTouchStart={(e) =>
-          (overlayTapStart.current = {
-            x: e.nativeEvent.locationX,
-            y: e.nativeEvent.locationY,
-            timestamp: Date.now(),
-          })
-        }
-        onTouchEnd={(e) => {
-          if (overlayTapStart.current) {
-            const { x, y, timestamp } = overlayTapStart.current;
-            const { locationX, locationY } = e.nativeEvent;
-            if (
-              Math.abs(locationX - x) < 10 &&
-              Math.abs(locationY - y) < 10 &&
-              Date.now() - timestamp < 300
-            ) {
-              showOverlay.current = !showOverlay.current;
-              Animated.timing(overlayOpacity.current, {
-                toValue: showOverlay.current ? 1 : 0,
-                duration: 150,
-                useNativeDriver: true,
-              }).start();
-            }
-          }
-        }}
-      >
-        <Animated.View
-          style={[
-            styles.overlayContainer,
-            {
-              paddingTop: safeAreaTop,
-              paddingBottom: safeAreaBottom,
-              paddingLeft: safeAreaLeft,
-              paddingRight: safeAreaRight,
-              opacity: overlayOpacity.current,
-            },
-          ]}
-        >
-          {currentPost && (
-            <PostOverlay
-              post={currentPost}
-              closeViewer={() => animateClose()}
-              columnIndex={currentColumnIndex}
-            />
-          )}
-        </Animated.View>
-        <FlashList
-          ref={columnFlashListRef}
-          /**
-           * Key ensures the outer list reset to the correct index when the orientation
-           * changes.
-           */
-          key={orientation}
-          data={media}
-          scrollEnabled={!isScrollLocked}
-          renderItem={({ item: row, index: columnIndex }) => (
-            <FlashList
-              ref={columnIndex === currentRowIndex ? rowFlashListRef : null}
-              /**
-               * Key ensures the inner list resets when the row data changes
-               * or the orientation changes.
-               */
-              key={`${columnIndex}-${orientation}`}
-              data={row}
-              style={{ width, height }}
-              renderItem={({ item: mediaItem, index: rowIndex }) => (
-                <View style={{ width, height }}>
-                  {mediaItem.type === "image" ? (
-                    <MediaImage
-                      item={mediaItem}
-                      setIsScrollLocked={setIsScrollLocked}
-                    />
-                  ) : mediaItem.type === "video" ? (
-                    <MediaVideo
-                      source={mediaItem.source}
-                      focused={
-                        columnIndex === currentRowIndex &&
-                        rowIndex === currentColumnIndex
-                      }
-                      overlayOpacity={overlayOpacity.current}
-                      setIsScrollLocked={setIsScrollLocked}
-                    />
-                  ) : null}
-                </View>
-              )}
-              // Only apply initial scroll to the row we want to open to
-              initialScrollIndex={
-                columnIndex === initialRowIndex.current
-                  ? initialColumnIndex.current
-                  : 0
-              }
-              scrollEnabled={
-                row[0]?.type !== "video" || !!row[0]?.source.sourceLoadError
-              }
-              pagingEnabled={true}
-              horizontal={true}
-              getItemType={(item) => item.type}
-              keyExtractor={(item, index) =>
-                item.type === "image"
-                  ? ((typeof item.source === "string"
-                      ? item.source
-                      : item.source[0].uri) ?? index.toString())
-                  : item.source.source.length
-                    ? item.source.source
-                    : index.toString()
-              }
-              showsHorizontalScrollIndicator={false}
-              onScroll={(event) => {
-                if (width !== event.nativeEvent.layoutMeasurement.width) {
-                  /**
-                   * Device orientation just changed. Don't handle this since
-                   * we will be updating the index in the listener above.
-                   */
-                  return;
-                }
-                const newIndex = Math.min(
-                  row.length - 1,
-                  Math.max(
-                    0,
-                    Math.round(event.nativeEvent.contentOffset.x / width),
-                  ),
-                );
-                rowScrollPositions.current.set(columnIndex, newIndex);
-                if (
-                  columnIndex === currentRowIndex &&
-                  newIndex !== currentColumnIndex
-                ) {
-                  setCurrentColumnIndex(newIndex);
-                }
-                if (newIndex === 0 && event.nativeEvent.contentOffset.x <= 0) {
-                  scrolledAwayX.current.setValue(
-                    event.nativeEvent.contentOffset.x,
-                  );
-                } else if (
-                  newIndex === row.length - 1 &&
-                  event.nativeEvent.contentOffset.x >=
-                    event.nativeEvent.contentSize.width -
-                      event.nativeEvent.layoutMeasurement.width
-                ) {
-                  scrolledAwayX.current.setValue(
-                    event.nativeEvent.contentSize.width -
-                      event.nativeEvent.layoutMeasurement.width -
-                      event.nativeEvent.contentOffset.x,
-                  );
-                }
-              }}
-              onScrollEndDrag={(event) => {
-                const rightLimit =
-                  event.nativeEvent.contentSize.width -
-                  event.nativeEvent.layoutMeasurement.width;
-                const pulledPastLeft = event.nativeEvent.contentOffset.x < -40;
-                const pulledPastRight =
-                  event.nativeEvent.contentOffset.x >= rightLimit + 40;
-                const momentumPastLeft =
-                  (event.nativeEvent.velocity?.x ?? 0) < -1 &&
-                  event.nativeEvent.contentOffset.x < 0;
-                const momentumPastRight =
-                  (event.nativeEvent.velocity?.x ?? 0) > 1 &&
-                  event.nativeEvent.contentOffset.x >= rightLimit;
-                if (
-                  pulledPastLeft ||
-                  pulledPastRight ||
-                  momentumPastLeft ||
-                  momentumPastRight
-                ) {
-                  Animated.timing(flickedAway.current, {
-                    toValue: -150,
-                    duration: 200,
-                    useNativeDriver: true,
-                  }).start(() => animateClose());
-                }
-              }}
-            />
-          )}
-          /**
-           * We have to do this because FlashList has a bug that causes calculations for
-           * the initial scroll index to be wrong when the index is larger than the initial
-           * batch of media items.
-           */
-          initialScrollIndex={0}
-          initialScrollIndexParams={{
-            viewOffset: height * initialRowIndex.current,
-          }}
-          pagingEnabled={true}
-          onScroll={(event) => {
-            const newIndex = Math.min(
-              media.length - 1,
-              Math.max(
-                0,
-                Math.round(event.nativeEvent.contentOffset.y / height),
-              ),
-            );
-            if (newIndex !== currentRowIndex) {
-              setCurrentRowIndex(newIndex);
-              setCurrentColumnIndex(
-                rowScrollPositions.current.get(newIndex) ?? 0,
-              );
-            }
-            const { contentOffset, contentSize, layoutMeasurement } =
-              event.nativeEvent;
-            const maxScrollY = contentSize.height - layoutMeasurement.height;
-            const isAtTop = newIndex === 0 && contentOffset.y <= 0;
-            const isAtBottom =
-              newIndex === media.length - 1 && contentOffset.y >= maxScrollY;
-            if (isAtTop) {
-              scrolledAwayY.current.setValue(contentOffset.y);
-            } else if (isAtBottom) {
-              scrolledAwayY.current.setValue(maxScrollY - contentOffset.y);
-            } else {
-              scrolledAwayY.current.setValue(0);
-            }
-          }}
-          onScrollEndDrag={(event) => {
-            const { contentOffset, contentSize, layoutMeasurement } =
-              event.nativeEvent;
-            const bottomLimit = contentSize.height - layoutMeasurement.height;
-            const momentumPastTop =
-              (event.nativeEvent.velocity?.y ?? 0) < -1 && contentOffset.y < 0;
-            const momentumPastBottom =
-              (event.nativeEvent.velocity?.y ?? 0) > 1 &&
-              contentOffset.y > bottomLimit;
-            const pulledPastTop = contentOffset.y < -50;
-            const pulledPastBottom = contentOffset.y > 50 + bottomLimit;
-            if (
-              pulledPastTop ||
-              pulledPastBottom ||
-              momentumPastTop ||
-              momentumPastBottom
-            ) {
-              Animated.timing(flickedAway.current, {
-                toValue: -150,
-                duration: 200,
-                useNativeDriver: true,
-              }).start(() => animateClose());
-            }
-          }}
-          drawDistance={100}
-          showsVerticalScrollIndicator={false}
         />
-      </Animated.View>
+        <Animated.View
+          style={[
+            styles.contentContainer,
+            {
+              opacity,
+              transform: [
+                {
+                  scale,
+                },
+              ],
+            },
+          ]}
+          onTouchStart={(e) =>
+            (overlayTapStart.current = {
+              x: e.nativeEvent.locationX,
+              y: e.nativeEvent.locationY,
+              timestamp: Date.now(),
+            })
+          }
+          onTouchEnd={(e) => {
+            if (overlayTapStart.current) {
+              const { x, y, timestamp } = overlayTapStart.current;
+              const { locationX, locationY } = e.nativeEvent;
+              if (
+                Math.abs(locationX - x) < 10 &&
+                Math.abs(locationY - y) < 10 &&
+                Date.now() - timestamp < 300
+              ) {
+                overlayRef.current?.toggle();
+              }
+            }
+          }}
+        >
+          <MediaOverlay
+            ref={overlayRef}
+            post={currentPost ?? null}
+            focusedItem={focusedItem}
+            player={focusedPlayer}
+            albumIndex={currentColumnIndex}
+            albumSize={currentRowSize}
+            onAlbumStep={handleTapToScrollRow}
+            closeViewer={() => animateClose()}
+          />
+          <FlashList
+            ref={columnFlashListRef}
+            /**
+             * Key ensures the outer list reset to the correct index when the orientation
+             * changes.
+             */
+            key={orientation}
+            data={media}
+            scrollEnabled={!isScrollLocked}
+            renderItem={({ item: row, index: columnIndex }) => (
+              <FlashList
+                ref={columnIndex === currentRowIndex ? rowFlashListRef : null}
+                /**
+                 * Key ensures the inner list resets when the row data changes
+                 * or the orientation changes.
+                 */
+                key={`${columnIndex}-${orientation}`}
+                data={row}
+                style={{ width, height }}
+                renderItem={({ item: mediaItem, index: rowIndex }) => (
+                  <View style={{ width, height }}>
+                    {mediaItem.type === "image" ? (
+                      <MediaImage
+                        item={mediaItem}
+                        setIsScrollLocked={setIsScrollLocked}
+                      />
+                    ) : mediaItem.type === "video" ? (
+                      <MediaVideo
+                        source={mediaItem.source}
+                        focused={
+                          columnIndex === currentRowIndex &&
+                          rowIndex === currentColumnIndex
+                        }
+                        onScrubbingChange={(isScrubbing) =>
+                          setIsScrollLocked(isScrubbing)
+                        }
+                        onFocusedPlayerChange={handleFocusedPlayerChange}
+                      />
+                    ) : null}
+                  </View>
+                )}
+                // Only apply initial scroll to the row we want to open to
+                initialScrollIndex={
+                  columnIndex === initialRowIndex.current
+                    ? initialColumnIndex.current
+                    : 0
+                }
+                scrollEnabled={
+                  row[0]?.type !== "video" ||
+                  !!row[0]?.source.sourceLoadError ||
+                  !slideAnywhereToScrub
+                }
+                pagingEnabled={true}
+                horizontal={true}
+                getItemType={(item) => item.type}
+                keyExtractor={(item, index) =>
+                  item.type === "image"
+                    ? ((typeof item.source === "string"
+                        ? item.source
+                        : item.source[0].uri) ?? index.toString())
+                    : item.source.source.length
+                      ? item.source.source
+                      : index.toString()
+                }
+                showsHorizontalScrollIndicator={false}
+                onScroll={(event) => {
+                  if (width !== event.nativeEvent.layoutMeasurement.width) {
+                    /**
+                     * Device orientation just changed. Don't handle this since
+                     * we will be updating the index in the listener above.
+                     */
+                    return;
+                  }
+                  const newIndex = Math.min(
+                    row.length - 1,
+                    Math.max(
+                      0,
+                      Math.round(event.nativeEvent.contentOffset.x / width),
+                    ),
+                  );
+                  rowScrollPositions.current.set(columnIndex, newIndex);
+                  if (
+                    columnIndex === currentRowIndex &&
+                    newIndex !== currentColumnIndex
+                  ) {
+                    setCurrentColumnIndex(newIndex);
+                  }
+                  if (
+                    newIndex === 0 &&
+                    event.nativeEvent.contentOffset.x <= 0
+                  ) {
+                    scrolledAwayX.current.setValue(
+                      event.nativeEvent.contentOffset.x,
+                    );
+                  } else if (
+                    newIndex === row.length - 1 &&
+                    event.nativeEvent.contentOffset.x >=
+                      event.nativeEvent.contentSize.width -
+                        event.nativeEvent.layoutMeasurement.width
+                  ) {
+                    scrolledAwayX.current.setValue(
+                      event.nativeEvent.contentSize.width -
+                        event.nativeEvent.layoutMeasurement.width -
+                        event.nativeEvent.contentOffset.x,
+                    );
+                  }
+                }}
+                onScrollEndDrag={(event) => {
+                  const rightLimit =
+                    event.nativeEvent.contentSize.width -
+                    event.nativeEvent.layoutMeasurement.width;
+                  const pulledPastLeft =
+                    event.nativeEvent.contentOffset.x < -40;
+                  const pulledPastRight =
+                    event.nativeEvent.contentOffset.x >= rightLimit + 40;
+                  const momentumPastLeft =
+                    (event.nativeEvent.velocity?.x ?? 0) < -1 &&
+                    event.nativeEvent.contentOffset.x < 0;
+                  const momentumPastRight =
+                    (event.nativeEvent.velocity?.x ?? 0) > 1 &&
+                    event.nativeEvent.contentOffset.x >= rightLimit;
+                  if (
+                    pulledPastLeft ||
+                    pulledPastRight ||
+                    momentumPastLeft ||
+                    momentumPastRight
+                  ) {
+                    Animated.timing(flickedAway.current, {
+                      toValue: -150,
+                      duration: 200,
+                      useNativeDriver: true,
+                    }).start(() => animateClose());
+                  }
+                }}
+              />
+            )}
+            /**
+             * We have to do this because FlashList has a bug that causes calculations for
+             * the initial scroll index to be wrong when the index is larger than the initial
+             * batch of media items.
+             */
+            initialScrollIndex={0}
+            initialScrollIndexParams={{
+              viewOffset: height * initialRowIndex.current,
+            }}
+            pagingEnabled={true}
+            onScroll={(event) => {
+              const newIndex = Math.min(
+                media.length - 1,
+                Math.max(
+                  0,
+                  Math.round(event.nativeEvent.contentOffset.y / height),
+                ),
+              );
+              if (newIndex !== currentRowIndex) {
+                setCurrentRowIndex(newIndex);
+                setCurrentColumnIndex(
+                  rowScrollPositions.current.get(newIndex) ?? 0,
+                );
+              }
+              const { contentOffset, contentSize, layoutMeasurement } =
+                event.nativeEvent;
+              const maxScrollY = contentSize.height - layoutMeasurement.height;
+              const isAtTop = newIndex === 0 && contentOffset.y <= 0;
+              const isAtBottom =
+                newIndex === media.length - 1 && contentOffset.y >= maxScrollY;
+              if (isAtTop) {
+                scrolledAwayY.current.setValue(contentOffset.y);
+              } else if (isAtBottom) {
+                scrolledAwayY.current.setValue(maxScrollY - contentOffset.y);
+              } else {
+                scrolledAwayY.current.setValue(0);
+              }
+            }}
+            onScrollEndDrag={(event) => {
+              const { contentOffset, contentSize, layoutMeasurement } =
+                event.nativeEvent;
+              const bottomLimit = contentSize.height - layoutMeasurement.height;
+              const momentumPastTop =
+                (event.nativeEvent.velocity?.y ?? 0) < -1 &&
+                contentOffset.y < 0;
+              const momentumPastBottom =
+                (event.nativeEvent.velocity?.y ?? 0) > 1 &&
+                contentOffset.y > bottomLimit;
+              const pulledPastTop = contentOffset.y < -50;
+              const pulledPastBottom = contentOffset.y > 50 + bottomLimit;
+              if (
+                pulledPastTop ||
+                pulledPastBottom ||
+                momentumPastTop ||
+                momentumPastBottom
+              ) {
+                Animated.timing(flickedAway.current, {
+                  toValue: -150,
+                  duration: 200,
+                  useNativeDriver: true,
+                }).start(() => animateClose());
+              }
+            }}
+            drawDistance={100}
+            showsVerticalScrollIndicator={false}
+          />
+        </Animated.View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   background: {
     position: "absolute",
     top: 0,
@@ -485,38 +419,5 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-  },
-  overlayContainer: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    justifyContent: "space-between",
-    zIndex: 1,
-    pointerEvents: "box-none",
-  },
-  rowDetailsContainer: {
-    position: "absolute",
-    flexDirection: "row",
-    right: 10,
-    zIndex: 1,
-    gap: 15,
-  },
-  rowNavigationButton: {
-    aspectRatio: 1,
-    borderRadius: 100,
-    padding: 10,
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemIndexContainer: {
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemIndexText: {
-    color: "white",
   },
 });

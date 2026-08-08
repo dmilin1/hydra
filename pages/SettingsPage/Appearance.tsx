@@ -58,6 +58,10 @@ export default function Appearance() {
     toggleLiveTextInteraction,
     tapToCollapsePost,
     toggleTapToCollapsePost,
+    slideAnywhereToScrub,
+    toggleSlideAnywhereToScrub,
+    showMediaPostInfo,
+    toggleShowMediaPostInfo,
   } = useContext(PostSettingsContext);
 
   const {
@@ -165,29 +169,29 @@ export default function Appearance() {
           },
           ...(postCompactMode
             ? [
-              {
-                key: "showThumbnailsOnRightSide",
-                icon: (
-                  <MaterialCommunityIcons
-                    name="image-outline"
-                    size={24}
-                    color={theme.text}
-                  />
-                ),
-                rightIcon: (
-                  <Switch
-                    trackColor={{
-                      false: theme.iconSecondary,
-                      true: theme.iconPrimary,
-                    }}
-                    value={showThumbnailsOnRightSide}
-                    onValueChange={() => toggleShowThumbnailsOnRightSide()}
-                  />
-                ),
-                text: "Show thumbnails on right",
-                onPress: () => toggleShowThumbnailsOnRightSide(),
-              },
-            ]
+                {
+                  key: "showThumbnailsOnRightSide",
+                  icon: (
+                    <MaterialCommunityIcons
+                      name="image-outline"
+                      size={24}
+                      color={theme.text}
+                    />
+                  ),
+                  rightIcon: (
+                    <Switch
+                      trackColor={{
+                        false: theme.iconSecondary,
+                        true: theme.iconPrimary,
+                      }}
+                      value={showThumbnailsOnRightSide}
+                      onValueChange={() => toggleShowThumbnailsOnRightSide()}
+                    />
+                  ),
+                  text: "Show thumbnails on right",
+                  onPress: () => toggleShowThumbnailsOnRightSide(),
+                },
+              ]
             : []),
           {
             key: "splitViewEnabled",
@@ -349,25 +353,25 @@ export default function Appearance() {
           },
           ...(isPro && showPostSummary
             ? [
-              {
-                key: "collapsePostSummary",
-                icon: (
-                  <Feather name="minimize-2" size={22} color={theme.text} />
-                ),
-                rightIcon: (
-                  <Switch
-                    trackColor={{
-                      false: theme.iconSecondary,
-                      true: theme.iconPrimary,
-                    }}
-                    value={collapsePostSummary}
-                    onValueChange={() => toggleCollapsePostSummary()}
-                  />
-                ),
-                text: "Start summary collapsed",
-                onPress: () => toggleCollapsePostSummary(),
-              },
-            ]
+                {
+                  key: "collapsePostSummary",
+                  icon: (
+                    <Feather name="minimize-2" size={22} color={theme.text} />
+                  ),
+                  rightIcon: (
+                    <Switch
+                      trackColor={{
+                        false: theme.iconSecondary,
+                        true: theme.iconPrimary,
+                      }}
+                      value={collapsePostSummary}
+                      onValueChange={() => toggleCollapsePostSummary()}
+                    />
+                  ),
+                  text: "Start summary collapsed",
+                  onPress: () => toggleCollapsePostSummary(),
+                },
+              ]
             : []),
           {
             key: "autoPlayVideos",
@@ -387,28 +391,72 @@ export default function Appearance() {
             text: "Auto play videos",
             onPress: () => toggleAutoPlayVideos(),
           },
-          ...((Platform.OS === "ios" || Platform.OS === "macos") ? [{
-            key: "liveTextInteraction",
-            icon: (
-              <MaterialIcons
-                name="document-scanner"
-                size={24}
-                color={theme.text}
-              />
-            ),
-            rightIcon: (
-              <Switch
-                trackColor={{
-                  false: theme.iconSecondary,
-                  true: theme.iconPrimary,
-                }}
-                value={liveTextInteraction}
-                onValueChange={() => toggleLiveTextInteraction()}
-              />
-            ),
-            text: "Live text",
-            onPress: () => toggleLiveTextInteraction(),
-          }] : []),
+          ...(Platform.OS === "ios" || Platform.OS === "macos"
+            ? [
+                {
+                  key: "liveTextInteraction",
+                  icon: (
+                    <MaterialIcons
+                      name="document-scanner"
+                      size={24}
+                      color={theme.text}
+                    />
+                  ),
+                  rightIcon: (
+                    <Switch
+                      trackColor={{
+                        false: theme.iconSecondary,
+                        true: theme.iconPrimary,
+                      }}
+                      value={liveTextInteraction}
+                      onValueChange={() => toggleLiveTextInteraction()}
+                    />
+                  ),
+                  text: "Live text",
+                  onPress: () => toggleLiveTextInteraction(),
+                },
+                {
+                  key: "slideAnywhereToScrub",
+                  icon: (
+                    <MaterialIcons
+                      name="fast-forward"
+                      size={24}
+                      color={theme.text}
+                    />
+                  ),
+                  rightIcon: (
+                    <Switch
+                      trackColor={{
+                        false: theme.iconSecondary,
+                        true: theme.iconPrimary,
+                      }}
+                      value={slideAnywhereToScrub}
+                      onValueChange={() => toggleSlideAnywhereToScrub()}
+                    />
+                  ),
+                  text: "Slide anywhere to scrub videos",
+                  onPress: () => toggleSlideAnywhereToScrub(),
+                },
+                {
+                  key: "showMediaPostInfo",
+                  icon: (
+                    <MaterialIcons name="title" size={24} color={theme.text} />
+                  ),
+                  rightIcon: (
+                    <Switch
+                      trackColor={{
+                        false: theme.iconSecondary,
+                        true: theme.iconPrimary,
+                      }}
+                      value={showMediaPostInfo}
+                      onValueChange={() => toggleShowMediaPostInfo()}
+                    />
+                  ),
+                  text: "Post title over fullscreen media",
+                  onPress: () => toggleShowMediaPostInfo(),
+                },
+              ]
+            : []),
           {
             key: "tapToCollapsePost",
             icon: (
@@ -525,25 +573,25 @@ export default function Appearance() {
           },
           ...(isPro && showCommentSummary
             ? [
-              {
-                key: "collapseCommentSummary",
-                icon: (
-                  <Feather name="minimize-2" size={22} color={theme.text} />
-                ),
-                rightIcon: (
-                  <Switch
-                    trackColor={{
-                      false: theme.iconSecondary,
-                      true: theme.iconPrimary,
-                    }}
-                    value={collapseCommentSummary}
-                    onValueChange={() => toggleCollapseCommentSummary()}
-                  />
-                ),
-                text: "Start summary collapsed",
-                onPress: () => toggleCollapseCommentSummary(),
-              },
-            ]
+                {
+                  key: "collapseCommentSummary",
+                  icon: (
+                    <Feather name="minimize-2" size={22} color={theme.text} />
+                  ),
+                  rightIcon: (
+                    <Switch
+                      trackColor={{
+                        false: theme.iconSecondary,
+                        true: theme.iconPrimary,
+                      }}
+                      value={collapseCommentSummary}
+                      onValueChange={() => toggleCollapseCommentSummary()}
+                    />
+                  ),
+                  text: "Start summary collapsed",
+                  onPress: () => toggleCollapseCommentSummary(),
+                },
+              ]
             : []),
           {
             key: "tapToCollapseComment",

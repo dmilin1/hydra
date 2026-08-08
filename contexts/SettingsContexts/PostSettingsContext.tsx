@@ -18,6 +18,8 @@ const initialValues = {
   autoPlayVideos: true,
   liveTextInteraction: false,
   tapToCollapsePost: true,
+  slideAnywhereToScrub: false,
+  showMediaPostInfo: true,
 };
 
 const initialPostSettingsContext = {
@@ -37,6 +39,8 @@ const initialPostSettingsContext = {
   toggleAutoPlayVideos: (_newValue?: boolean) => {},
   toggleLiveTextInteraction: (_newValue?: boolean) => {},
   toggleTapToCollapsePost: (_newValue?: boolean) => {},
+  toggleSlideAnywhereToScrub: (_newValue?: boolean) => {},
+  toggleShowMediaPostInfo: (_newValue?: boolean) => {},
 };
 
 export const PostSettingsContext = createContext(initialPostSettingsContext);
@@ -112,6 +116,17 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const tapToCollapsePost =
     storedTapToCollapsePost ?? initialValues.tapToCollapsePost;
 
+  const [storedSlideAnywhereToScrub, setSlideAnywhereToScrub] = useMMKVBoolean(
+    "slideAnywhereToScrub",
+  );
+  const slideAnywhereToScrub =
+    storedSlideAnywhereToScrub ?? initialValues.slideAnywhereToScrub;
+
+  const [storedShowMediaPostInfo, setShowMediaPostInfo] =
+    useMMKVBoolean("showMediaPostInfo");
+  const showMediaPostInfo =
+    storedShowMediaPostInfo ?? initialValues.showMediaPostInfo;
+
   return (
     <PostSettingsContext.Provider
       value={{
@@ -176,6 +191,14 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         tapToCollapsePost: tapToCollapsePost ?? initialValues.tapToCollapsePost,
         toggleTapToCollapsePost: (newValue = !tapToCollapsePost) =>
           setTapToCollapsePost(newValue),
+
+        slideAnywhereToScrub,
+        toggleSlideAnywhereToScrub: (newValue = !slideAnywhereToScrub) =>
+          setSlideAnywhereToScrub(newValue),
+
+        showMediaPostInfo,
+        toggleShowMediaPostInfo: (newValue = !showMediaPostInfo) =>
+          setShowMediaPostInfo(newValue),
       }}
     >
       {children}

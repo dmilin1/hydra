@@ -14,6 +14,10 @@ import { MediaViewerContext } from "../../../contexts/MediaViewerContext";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
 import VideoCache from "../../../utils/VideoCache";
 import { Post } from "../../../api/Posts";
+import {
+  getVideoPosition,
+  setVideoPosition,
+} from "../../../utils/videoPosition";
 
 type VideoProps = {
   video: Post["videos"][number];
@@ -34,6 +38,10 @@ function Video({ video }: VideoProps) {
       player.bufferOptions = {
         maxBufferBytes: 1024 * 1024 * 5, // 5MB - Android only setting (prevents crashes)
       };
+      const pos = getVideoPosition(video.source);
+      if (pos > 0) {
+        player.currentTime = pos;
+      }
       player.play();
     },
   );
@@ -42,6 +50,7 @@ function Video({ video }: VideoProps) {
 
   useEventListener(player, "timeUpdate", (e) => {
     progress.setValue(e.currentTime / player.duration);
+    setVideoPosition(video.source, e.currentTime);
   });
 
   useEffect(() => {
@@ -59,6 +68,7 @@ function Video({ video }: VideoProps) {
         player.pause();
       } else {
         player.play();
+        player.currentTime = getVideoPosition(video.source);
       }
     });
   }, [player, subscribeToVisibility]);

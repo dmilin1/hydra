@@ -97,7 +97,7 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
           previousTouchStart.current &&
           // Double touch is rapid enough
           newTouchStart.timestamp - previousTouchStart.current.timestamp <
-          300 &&
+            300 &&
           // Double touch is close enough
           Math.abs(currentX - previousTouchStart.current.x) < 20 &&
           Math.abs(currentY - previousTouchStart.current.y) < 20 &&
