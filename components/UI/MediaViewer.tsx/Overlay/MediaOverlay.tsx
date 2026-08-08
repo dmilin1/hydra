@@ -243,9 +243,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  actionsSpacer: {
-    flex: 1,
-  },
   imageActionsRow: {
     flexDirection: "row",
     alignSelf: "flex-end",

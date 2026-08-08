@@ -415,48 +415,42 @@ export default function Appearance() {
                   text: "Live text",
                   onPress: () => toggleLiveTextInteraction(),
                 },
-                {
-                  key: "slideAnywhereToScrub",
-                  icon: (
-                    <MaterialIcons
-                      name="fast-forward"
-                      size={24}
-                      color={theme.text}
-                    />
-                  ),
-                  rightIcon: (
-                    <Switch
-                      trackColor={{
-                        false: theme.iconSecondary,
-                        true: theme.iconPrimary,
-                      }}
-                      value={slideAnywhereToScrub}
-                      onValueChange={() => toggleSlideAnywhereToScrub()}
-                    />
-                  ),
-                  text: "Slide anywhere to scrub videos",
-                  onPress: () => toggleSlideAnywhereToScrub(),
-                },
-                {
-                  key: "showMediaPostInfo",
-                  icon: (
-                    <MaterialIcons name="title" size={24} color={theme.text} />
-                  ),
-                  rightIcon: (
-                    <Switch
-                      trackColor={{
-                        false: theme.iconSecondary,
-                        true: theme.iconPrimary,
-                      }}
-                      value={showMediaPostInfo}
-                      onValueChange={() => toggleShowMediaPostInfo()}
-                    />
-                  ),
-                  text: "Post title over fullscreen media",
-                  onPress: () => toggleShowMediaPostInfo(),
-                },
               ]
             : []),
+          {
+            key: "slideAnywhereToScrub",
+            icon: (
+              <MaterialIcons name="fast-forward" size={24} color={theme.text} />
+            ),
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={slideAnywhereToScrub}
+                onValueChange={() => toggleSlideAnywhereToScrub()}
+              />
+            ),
+            text: "Slide anywhere to scrub videos",
+            onPress: () => toggleSlideAnywhereToScrub(),
+          },
+          {
+            key: "showMediaPostInfo",
+            icon: <MaterialIcons name="title" size={24} color={theme.text} />,
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={showMediaPostInfo}
+                onValueChange={() => toggleShowMediaPostInfo()}
+              />
+            ),
+            text: "Post title over fullscreen media",
+            onPress: () => toggleShowMediaPostInfo(),
+          },
           {
             key: "tapToCollapsePost",
             icon: (
