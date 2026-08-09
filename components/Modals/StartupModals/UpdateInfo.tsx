@@ -8,6 +8,8 @@ import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../../UI/GetHydraProButton";
 import KeyStore from "../../../utils/KeyStore";
 import { TextWithRepairedHeight } from "../../Other/TextWithRepairedHeight";
+import { useURLNavigation } from "../../../utils/navigation";
+import { StackActions } from "@react-navigation/native";
 
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
@@ -113,6 +115,7 @@ export const updateInfo = {
 
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
   const { theme } = useContext(ThemeContext);
+  const { dispatch } = useURLNavigation();
 
   const exitUpdateInfo = () => {
     KeyStore.set(LAST_SEEN_UPDATE_KEY, updateInfo.updateKey);
@@ -386,7 +389,28 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               you can make a pull request at https://github.com/dmilin1/hydra
             </TextWithRepairedHeight>
           </View>
-          <GetHydraProButton onPress={() => exitUpdateInfo()} />
+          <View style={styles.getHydraProContainer}>
+            <GetHydraProButton onPress={() => exitUpdateInfo()} />
+          </View>
+          <Touchable
+            style={styles.tipJarContainer}
+            activeOpacity={0.5}
+            animationDuration={{ in: 0, out: 150 }}
+            onPress={() => {
+              dispatch(
+                StackActions.push("SettingsPage", {
+                  url: "hydra://settings/tipJar",
+                }),
+              );
+              exitUpdateInfo();
+            }}
+          >
+            <TextWithRepairedHeight
+              style={[styles.tipJarText, { color: theme.iconOrTextButton }]}
+            >
+              Leave a tip
+            </TextWithRepairedHeight>
+          </Touchable>
         </ScrollView>
       </View>
       <Touchable style={styles.background} onPress={() => exitUpdateInfo()} />
@@ -515,5 +539,18 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     gap: 15,
+  },
+  getHydraProContainer: {
+    marginTop: 10,
+  },
+  tipJarContainer: {
+    paddingTop: 10,
+    paddingBottom: 30,
+    marginHorizontal: 20,
+  },
+  tipJarText: {
+    fontSize: 16,
+    fontWeight: "500",
+    textAlign: "center",
   },
 });

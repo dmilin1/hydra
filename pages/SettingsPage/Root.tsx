@@ -125,6 +125,12 @@ export default function Root() {
             onPress: () => setStartupModal("updateInfo"),
           },
           {
+            key: "tipJar",
+            icon: <Feather name="heart" size={24} color={theme.text} />,
+            text: "Tip Jar",
+            onPress: () => pushURL("hydra://settings/tipJar"),
+          },
+          {
             key: "requestFeature",
             icon: (
               <Feather name="git-pull-request" size={24} color={theme.text} />

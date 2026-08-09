@@ -17,6 +17,7 @@ import Sorting from "./General/Sorting";
 import Startup from "./General/Startup";
 import Theme from "./Theme";
 import ThemeMaker from "./ThemeMaker";
+import TipJar from "./TipJar";
 import { StackPageProps } from "../../app/stack";
 import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroller";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -85,6 +86,7 @@ export default function SettingsPage({
         {relativePath === "settings/privacy" && <Privacy />}
         {relativePath === "settings/advanced" && <Advanced />}
         {relativePath === "settings/hydraPro" && <HydraPro />}
+        {relativePath === "settings/tipJar" && <TipJar />}
       </KeyboardAvoidingScroller>
     </View>
   );

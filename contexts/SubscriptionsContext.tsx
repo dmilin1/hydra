@@ -3,7 +3,9 @@ import { Alert, Platform } from "react-native";
 import Purchases, {
   CustomerInfo,
   CustomerInfoUpdateListener,
+  PRODUCT_CATEGORY,
   PurchasesPackage,
+  PurchasesStoreProduct,
 } from "react-native-purchases";
 
 import { registerCustomer } from "../api/Customer";
@@ -25,16 +27,27 @@ const HYDRA_299_1M_PRODUCT_ID =
     : HYDRA_299_1M_PRODUCT_ID_IOS;
 const HYDRA_PRO_ENTITLEMENT = "Hydra Pro";
 
+export const TIP_PRODUCT_IDS_IOS = [
+  "com.dmilin.hydra.tip.small",
+  "com.dmilin.hydra.tip.medium",
+  "com.dmilin.hydra.tip.large",
+  "com.dmilin.hydra.tip.huge",
+] as const;
+
+export type TipProductId = (typeof TIP_PRODUCT_IDS_IOS)[number];
+
 interface SubscriptionContextType {
   purchasesInitialized: boolean;
   customerInfo: CustomerInfo | null;
   customerId: string | null;
   isPro: boolean;
   buyPro: () => Promise<void>;
+  buyTip: (product: PurchasesStoreProduct) => Promise<boolean>;
   getCustomerInfo: (refresh?: boolean) => Promise<void>;
   restorePurchases: () => Promise<void>;
   proOffering: PurchasesPackage | null;
-  isLoadingOffering: boolean;
+  tipProducts: PurchasesStoreProduct[] | null;
+  isLoadingProductsAndOfferings: boolean;
   inGracePeriod: boolean;
   gracePeriodEndsAt: number | null;
 }
@@ -45,10 +58,12 @@ const initialSubscriptionContext: SubscriptionContextType = {
   customerId: null,
   isPro: false,
   buyPro: async () => {},
+  buyTip: async () => false,
   getCustomerInfo: async () => {},
   restorePurchases: async () => {},
   proOffering: null,
-  isLoadingOffering: true,
+  tipProducts: null,
+  isLoadingProductsAndOfferings: true,
   inGracePeriod: false,
   gracePeriodEndsAt: null,
 };
@@ -63,7 +78,11 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
     initialSubscriptionContext.customerInfo,
   );
   const [proOffering, setProOffering] = useState<PurchasesPackage | null>(null);
-  const [isLoadingOffering, setIsLoadingOffering] = useState(true);
+  const [tipProducts, setTipProducts] = useState<
+    PurchasesStoreProduct[] | null
+  >(null);
+  const [isLoadingProductsAndOfferings, setIsLoadingProductsAndOfferings] =
+    useState(true);
 
   const customerId = customerInfo?.originalAppUserId ?? null;
 
@@ -81,17 +100,41 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
         ?.expirationDateMillis ?? null)
     : null;
 
-  const loadOffering = async () => {
+  const loadHydraProOffering = async () => {
+    const offerings = await Purchases.getOfferings();
+    const hydraProOffering = offerings.current?.availablePackages.find(
+      (p) => p.product.identifier === HYDRA_299_1M_PRODUCT_ID,
+    );
+    return hydraProOffering ?? null;
+  };
+
+  const loadTipProducts = async () => {
+    const products = await Purchases.getProducts(
+      TIP_PRODUCT_IDS_IOS as unknown as string[],
+      PRODUCT_CATEGORY.NON_SUBSCRIPTION,
+    );
+    const productsInOrder = TIP_PRODUCT_IDS_IOS.map((id) => {
+      const item = products.find((p) => p.identifier === id);
+      if (!item) {
+        throw new Error(`Product ${id} not found`);
+      }
+      return item;
+    });
+    return productsInOrder;
+  };
+
+  const loadProductsAndOfferings = async () => {
     try {
-      const offerings = await Purchases.getOfferings();
-      const hydraProOffering = offerings.current?.availablePackages.find(
-        (p) => p.product.identifier === HYDRA_299_1M_PRODUCT_ID,
-      );
-      setProOffering(hydraProOffering ?? null);
+      const [hydraProOffering, tipProducts] = await Promise.all([
+        loadHydraProOffering(),
+        loadTipProducts(),
+      ]);
+      setProOffering(hydraProOffering);
+      setTipProducts(tipProducts);
     } catch (error) {
       console.error("Error loading offering:", error);
     } finally {
-      setIsLoadingOffering(false);
+      setIsLoadingProductsAndOfferings(false);
     }
   };
 
@@ -122,6 +165,29 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
     }
   };
 
+  const buyTip = async (product: PurchasesStoreProduct) => {
+    try {
+      await Purchases.purchaseStoreProduct(product);
+      return true;
+    } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        "message" in error
+      ) {
+        if (
+          error.code !== Purchases.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR
+        ) {
+          Alert.alert(error.message as string);
+        }
+      } else {
+        Alert.alert("Something went wrong");
+      }
+      return false;
+    }
+  };
+
   const restorePurchases = async () => {
     setPurchasesInitialized(false);
     const customerInfo = await Purchases.restorePurchases();
@@ -141,7 +207,7 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
 
   useEffect(() => {
     getCustomerInfo();
-    loadOffering();
+    loadProductsAndOfferings();
     const handleCustomerInfoUpdate: CustomerInfoUpdateListener = async (
       customerInfo,
     ) => {
@@ -169,9 +235,11 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
         customerId,
         isPro,
         buyPro,
+        buyTip,
         proOffering,
+        tipProducts,
         getCustomerInfo,
-        isLoadingOffering,
+        isLoadingProductsAndOfferings,
         inGracePeriod,
         gracePeriodEndsAt,
         restorePurchases,
