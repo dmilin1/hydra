@@ -18,7 +18,7 @@ const backgroundPositions = new Map<string, number>();
  * player has getter functions as properies that call native code. This means
  * that after we release the player, React will try to access the properties
  * and cause the app to crash. This fixes it by overriding all the getters.
- * 
+ *
  * https://github.com/react/react/issues/35126
  * https://github.com/react/react/pull/36867
  */
