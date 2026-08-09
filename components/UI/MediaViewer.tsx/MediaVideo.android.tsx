@@ -1,18 +1,14 @@
 import { useEvent, useEventListener } from "expo";
-import { useVideoPlayer, VideoPlayer, VideoView } from "expo-video";
+import { VideoPlayer, VideoView } from "expo-video";
 import { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-worklets";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
-import VideoCache from "../../../utils/VideoCache";
 import { Post } from "../../../api/Posts";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
-import {
-  getVideoPosition,
-  setVideoPosition,
-} from "../../../utils/videoPosition";
+import { useSharedVideoPlayer } from "../../../utils/useSharedVideoPlayer";
 
 type MediaVideoProps = {
   source: Post["videos"][number];
@@ -28,22 +24,7 @@ function MediaVideo({
   const { slideAnywhereToScrub } = useContext(PostSettingsContext);
   const { width, height } = useSafeAreaFrame();
 
-  const player = useVideoPlayer(
-    VideoCache.makeCachedVideoSource(source.source),
-    (player) => {
-      player.audioMixingMode = "mixWithOthers";
-      player.loop = true;
-      player.timeUpdateEventInterval = 1 / 15;
-      player.seekTolerance = {
-        toleranceBefore: 0.1,
-        toleranceAfter: 0.1,
-      };
-      const pos = getVideoPosition(source.source);
-      if (pos > 0) {
-        player.currentTime = pos;
-      }
-    },
-  );
+  const player = useSharedVideoPlayer(source.source);
 
   const videoTimeAtSeekStart = useRef(0);
   const wasPlayingAtSeekStart = useRef(false);
@@ -51,7 +32,9 @@ function MediaVideo({
   const [status, setStatus] = useState(player.status);
   const [error, setError] = useState<string | null>(null);
 
-  const videoTrack = useEvent(player, "videoTrackChange")?.videoTrack;
+  // A shared player may have fired videoTrackChange before this mount.
+  const videoTrack =
+    useEvent(player, "videoTrackChange")?.videoTrack ?? player.videoTrack;
 
   const dimensions = {
     width: videoTrack?.size.width ?? 0,
@@ -105,16 +88,14 @@ function MediaVideo({
     }
   });
 
-  useEventListener(player, "timeUpdate", (e) => {
-    setVideoPosition(source.source, e.currentTime);
-  });
-
   useEffect(() => {
     if (!focused) {
       player.pause();
+      player.muted = true;
       player.volume = 0;
       return;
     }
+    player.muted = false;
     player.play();
     player.volume = 1;
     onFocusedPlayerChange(player, true);
