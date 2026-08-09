@@ -67,7 +67,18 @@ export default function PostMedia({
           </View>
         ) : post.images.length > 0 &&
           !post.crossCommentLink &&
-          !post.externalLink ? (
+          /**
+           * This last condition is weird. If the post has an external link,
+           * we usually don't want to render it because for news link posts,
+           * we end up double rendering the images on them. However, if the
+           * link has no open graph data, then it's safe to render any
+           * images on it. One example of this is imgur link posts which have
+           * images and an external link, but no open graph data.
+           *
+           * https://www.reddit.com/r/HydraClient/comments/1vj3g9c/why_isnt_the_image_in_this_post_showing_inline/
+           * https://www.reddit.com/r/EufyCam/comments/1vj2qsr/this_was_a_fun_thumbnail_notification/
+           */
+          (!post.externalLink || !post.openGraphData) ? (
           <View style={styles.imgContainer}>
             <ImageViewer
               images={post.images}
