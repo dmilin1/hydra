@@ -9,6 +9,8 @@ import IconButton from "../../components/Navbar/IconButton";
 import { InboxContext } from "../../contexts/InboxContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import InboxPage from "../../pages/InboxPage";
+import { ToastContext } from "../../contexts/ToastContext";
+import { oneTimeAlert } from "../../utils/oneTimeAlert";
 
 type InboxScreenProps = {
   StackNavigator: ReturnType<
@@ -19,6 +21,20 @@ type InboxScreenProps = {
 export default function InboxScreen({ StackNavigator }: InboxScreenProps) {
   const { theme } = useContext(ThemeContext);
   const { checkForMessages } = useContext(InboxContext);
+  const { showToast } = useContext(ToastContext);
+
+  const markAllItemsRead = async () => {
+    try {
+      await markAllMessagesRead();
+      showToast({
+        title: "Marking all messages as read",
+        body: "This may take a moment to update...",
+      });
+      setTimeout(() => checkForMessages(), 1000);
+    } catch (_e) {
+      Alert.alert("Error", "Failed to mark all messages as read.");
+    }
+  };
 
   return (
     <StackNavigator.Screen<"InboxPage">
@@ -36,31 +52,23 @@ export default function InboxScreen({ StackNavigator }: InboxScreenProps) {
               />
             }
             onPress={() => {
-              Alert.alert("Mark All Items Read?", undefined, [
-                {
-                  text: "Cancel",
-                  style: "cancel",
-                },
-                {
-                  text: "Ok",
-                  style: "default",
-                  onPress: async () => {
-                    try {
-                      await markAllMessagesRead();
-                      Alert.alert(
-                        "Success!",
-                        "This may take a moment to update, especially if you have a lot of unread messages.",
-                      );
-                      setTimeout(() => checkForMessages(), 1000);
-                    } catch (_e) {
-                      Alert.alert(
-                        "Error",
-                        "Failed to mark all messages as read.",
-                      );
-                    }
+              const didShow = oneTimeAlert(
+                "mark-all-items-read",
+                "Mark All Items Read?",
+                undefined,
+                [
+                  {
+                    text: "Cancel",
+                    style: "cancel",
                   },
-                },
-              ]);
+                  {
+                    text: "Ok",
+                    style: "default",
+                    onPress: markAllItemsRead,
+                  },
+                ],
+              );
+              if (!didShow) markAllItemsRead();
             }}
             touchableOpacityProps={{
               accessibilityLabel: "Mark all messages as read",

@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Alert } from "react-native";
 
 import { AccountContext } from "./AccountContext";
 import {
@@ -16,6 +15,7 @@ import {
   setSubscriptionStatus,
 } from "../api/Subreddits";
 import KeyStore from "../utils/KeyStore";
+import { ToastContext } from "./ToastContext";
 
 type SubredditContextType = {
   isLoadingSubreddits: boolean;
@@ -66,6 +66,7 @@ export class NeedsSubscriptionToFavorite extends Error {
 
 export function SubredditProvider({ children }: React.PropsWithChildren) {
   const { currentUser, loginInitialized } = useContext(AccountContext);
+  const { showToast } = useContext(ToastContext);
 
   const [subreddits, setSubreddits] = useState(
     initialAccountContext.subreddits,
@@ -160,13 +161,19 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
   const subscribe = async (subreddit: string) => {
     await setSubscriptionStatus(subreddit, true);
     loadSubreddits();
-    Alert.alert("Subscribed!", "You've subscribed to " + subreddit);
+    showToast({
+      title: "Subscribed!",
+      body: "You've subscribed to " + subreddit,
+    });
   };
 
   const unsubscribe = async (subreddit: string) => {
     await setSubscriptionStatus(subreddit, false);
     loadSubreddits();
-    Alert.alert("Unsubscribed!", "You've unsubscribed from " + subreddit);
+    showToast({
+      title: "Unsubscribed!",
+      body: "You've unsubscribed from " + subreddit,
+    });
   };
 
   const addSubToMulti = async (
@@ -176,7 +183,10 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     try {
       await addToMulti(multi, subredditName);
       loadMultis();
-      alert(`Added ${subredditName} to ${multi.name}`);
+      showToast({
+        title: "Added to multi!",
+        body: `${subredditName} has been added to ${multi.name}`,
+      });
     } catch (e) {
       alert("Something went wrong: " + e);
     }
@@ -189,7 +199,10 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     try {
       await removeFromMulti(multi, subredditName);
       loadMultis();
-      alert(`Removed ${subredditName} from ${multi.name}`);
+      showToast({
+        title: "Removed from multi!",
+        body: `${subredditName} has been removed from ${multi.name}`,
+      });
     } catch (e) {
       alert("Something went wrong: " + e);
     }

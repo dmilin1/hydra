@@ -30,6 +30,7 @@ import RedditURL from "../../utils/RedditURL";
 import { PostFlair, useAllowedPostFlairs } from "../../api/PostFlair";
 import useContextMenu from "../../utils/useContextMenu";
 import WebView from "react-native-webview";
+import { ToastContext } from "../../contexts/ToastContext";
 
 type NewPostProps = {
   contentSent: (text: string) => void;
@@ -46,6 +47,7 @@ export default function NewPostEditor({
 }: NewPostProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
+  const { showToast } = useContext(ToastContext);
 
   const openContextMenu = useContextMenu();
 
@@ -97,7 +99,10 @@ export default function NewPostEditor({
          * Image uploads don't return a URL. They do give a websocket, so there
          * might be a way to get the URL from that. But that's a future problem.
          */
-        Alert.alert(`Submitted post successfully`, "Post is being processed");
+        showToast({
+          title: "Post submitted successfully",
+          body: "The post is being processed by Reddit",
+        });
       }
       clearTitleDraft();
       clearTextDraft();

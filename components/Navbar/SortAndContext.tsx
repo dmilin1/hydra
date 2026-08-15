@@ -38,6 +38,7 @@ import SelectText from "../Modals/SelectText";
 import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
 import { shareURL } from "../../utils/sharing";
 import ShareAsImage from "../Modals/ShareAsImage/ShareAsImage";
+import { ToastContext } from "../../contexts/ToastContext";
 
 export type SortTypes =
   | "Best"
@@ -94,6 +95,7 @@ export default function SortAndContext({
   const { subscribe, unsubscribe, toggleFavorite, multis, addSubToMulti } =
     useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
+  const { showToast } = useContext(ToastContext);
 
   const { replaceURL, pushURL, setParams, openGallery } = useURLNavigation();
 
@@ -341,7 +343,10 @@ export default function SortAndContext({
             } else if (result === "Delete" && pageData?.type === "postDetail") {
               try {
                 await deleteUserContent(pageData);
-                alert("Post deleted");
+                showToast({
+                  title: "Post deleted",
+                  body: "The post has been deleted successfully",
+                });
                 navigation.goBack();
               } catch (_e) {
                 alert("Failed to delete post");

@@ -20,6 +20,7 @@ import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
+import { ToastContext } from "../../contexts/ToastContext";
 
 type NewMessageProps = {
   recipient: User;
@@ -34,6 +35,7 @@ export default function NewMessage({
 }: NewMessageProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
+  const { showToast } = useContext(ToastContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subject, setSubject, clearSubjectDraft] = useDraftState(
@@ -52,7 +54,10 @@ export default function NewMessage({
         setModal(undefined);
         clearSubjectDraft();
         clearTextDraft();
-        Alert.alert(`Message sent!`);
+        showToast({
+          title: "Message sent!",
+          body: "Your message has been sent to " + recipient.userName,
+        });
       } else {
         throw new Error(`Failed to submit comment`);
       }

@@ -35,6 +35,7 @@ import { ERROR_REPORTING_STORAGE_KEY } from "../pages/SettingsPage/Privacy";
 import KeyStore from "../utils/KeyStore";
 import { TabScrollProvider } from "../contexts/TabScrollContext";
 import { StartupModalProvider } from "../contexts/StartupModalContext";
+import { ToastProvider } from "../contexts/ToastProvider";
 import { modifyStat, Stat } from "../db/functions/Stats";
 import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
 import VideoCache from "../utils/VideoCache";
@@ -117,26 +118,28 @@ function RootLayout() {
           <AccountProvider>
             <SubscriptionsProvider>
               <SettingsProvider>
-                <TabScrollProvider>
-                  <NavigationProvider>
-                    <ActionSheetProvider>
-                      <ActionSheetBgProvider>
-                        <InboxProvider>
-                          <ModalProvider>
-                            <MediaViewerProvider>
-                              <SubredditProvider>
-                                <StartupModalProvider>
-                                  <SubscribeToHydra />
-                                  <Tabs />
-                                </StartupModalProvider>
-                              </SubredditProvider>
-                            </MediaViewerProvider>
-                          </ModalProvider>
-                        </InboxProvider>
-                      </ActionSheetBgProvider>
-                    </ActionSheetProvider>
-                  </NavigationProvider>
-                </TabScrollProvider>
+                <ToastProvider>
+                  <TabScrollProvider>
+                    <NavigationProvider>
+                      <ActionSheetProvider>
+                        <ActionSheetBgProvider>
+                          <InboxProvider>
+                            <ModalProvider>
+                              <MediaViewerProvider>
+                                <SubredditProvider>
+                                  <StartupModalProvider>
+                                    <SubscribeToHydra />
+                                    <Tabs />
+                                  </StartupModalProvider>
+                                </SubredditProvider>
+                              </MediaViewerProvider>
+                            </ModalProvider>
+                          </InboxProvider>
+                        </ActionSheetBgProvider>
+                      </ActionSheetProvider>
+                    </NavigationProvider>
+                  </TabScrollProvider>
+                </ToastProvider>
               </SettingsProvider>
             </SubscriptionsProvider>
           </AccountProvider>

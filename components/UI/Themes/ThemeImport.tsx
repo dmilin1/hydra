@@ -8,6 +8,7 @@ import Themes, { CustomTheme } from "../../../constants/Themes";
 import { useSetTheme } from "../../../utils/useSetTheme";
 import { saveCustomTheme } from "../../../db/functions/CustomThemes";
 import ThemeColorBand from "./ThemeColorBand";
+import { ToastContext } from "../../../contexts/ToastContext";
 
 type ThemeImportProps = {
   customTheme: CustomTheme;
@@ -16,6 +17,7 @@ type ThemeImportProps = {
 export default function ThemeImport({ customTheme }: ThemeImportProps) {
   const { theme: currentTheme } = useContext(ThemeContext);
   const { isPro } = useContext(SubscriptionsContext);
+  const { showToast } = useContext(ToastContext);
 
   const setTheme = useSetTheme();
 
@@ -49,7 +51,10 @@ export default function ThemeImport({ customTheme }: ThemeImportProps) {
           text: "Import",
           onPress: () => {
             saveCustomTheme(customTheme);
-            Alert.alert(`"${customTheme.name}" imported successfully!`);
+            showToast({
+              title: "Theme imported successfully!",
+              body: `"${customTheme.name}" has been imported to your custom themes`,
+            });
           },
         },
         {
