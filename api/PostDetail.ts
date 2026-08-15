@@ -284,6 +284,7 @@ export async function submitPost(
         title,
         ...(flairId ? { flair_id: flairId } : {}),
         [kind === "self" ? "text" : "url"]: content,
+        sendreplies: "true",
         extension: "json",
       },
     },
