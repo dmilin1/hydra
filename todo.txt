@@ -7,8 +7,6 @@
 
 - 🚀 Fancy bookmarks with folders and categories (available in Reddit API)
 
-- 🚀⭐ Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
-
 - 🚀 Auto translation of posts and comments to another language
 
 - 🐛 Upvoting in the post details is not reflected on the posts list

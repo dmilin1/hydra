@@ -132,6 +132,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
           fullyLoaded={fullyLoaded}
           hitFilterLimit={hitFilterLimit}
           data={userContent}
+          noDataFoundMessage={`${user?.userName ?? "This user"} has no activity or has set their account to private.`}
           renderItem={({ item: content }) => {
             if (content.type === "post") {
               return (
@@ -165,11 +166,5 @@ const styles = StyleSheet.create({
   userContainer: {
     flex: 1,
     justifyContent: "center",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  loaderContainer: {
-    marginTop: 20,
   },
 });

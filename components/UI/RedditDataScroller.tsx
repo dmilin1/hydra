@@ -46,6 +46,7 @@ type RedditDataScrollerProps<T> = OverridableFlashListProps<T> & {
   data: T[];
   fullyLoaded: boolean;
   hitFilterLimit: boolean;
+  noDataFoundMessage?: string;
 };
 
 function RedditDataScroller<T extends RedditDataObject>(
@@ -89,6 +90,10 @@ function RedditDataScroller<T extends RedditDataObject>(
   return (
     <FlashList<T>
       {...props}
+      contentContainerStyle={{
+        minHeight: "100%",
+        ...props.contentContainerStyle,
+      }}
       scrollEnabled={!scrollDisabled}
       indicatorStyle={theme.systemModeStyle === "dark" ? "white" : "black"}
       refreshControl={
@@ -121,7 +126,21 @@ function RedditDataScroller<T extends RedditDataObject>(
       keyExtractor={(item) => `${item.type}-${item.id}`}
       ListFooterComponent={
         <View style={styles.endOfListContainer}>
-          {isLoadingMore && <ActivityIndicator size="small" />}
+          {isLoadingMore && !props.fullyLoaded && (
+            <ActivityIndicator size="small" />
+          )}
+          {props.fullyLoaded && !props.data.length && (
+            <Text
+              style={[
+                styles.endOfListText,
+                {
+                  color: theme.text,
+                },
+              ]}
+            >
+              {props.noDataFoundMessage ?? `There's nothing here.`}
+            </Text>
+          )}
           {!isLoadingMore && props.fullyLoaded && !!props.data.length && (
             <Text
               style={[
@@ -131,7 +150,7 @@ function RedditDataScroller<T extends RedditDataObject>(
                 },
               ]}
             >
-              {`Wow. You've reached the bottom.`}
+              Wow. You've reached the bottom.
             </Text>
           )}
           {!isLoadingMore && props.hitFilterLimit && (
@@ -171,6 +190,6 @@ const styles = StyleSheet.create({
   },
   endOfListText: {
     fontSize: 14,
-    marginHorizontal: 10,
+    marginHorizontal: 20,
   },
 });
