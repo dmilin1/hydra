@@ -14,6 +14,7 @@ type CommentTopBarProps = {
   theme: Theme;
   showFlair: boolean;
   bodyHidden: boolean;
+  hideUsername: boolean;
   onPressAuthor: () => void;
   onPressUpvote: () => void;
 };
@@ -28,6 +29,7 @@ export default function CommentTopBar({
   theme,
   showFlair,
   bodyHidden,
+  hideUsername,
   onPressAuthor,
   onPressUpvote,
 }: CommentTopBarProps) {
@@ -37,6 +39,12 @@ export default function CommentTopBar({
       : comment.userVote === VoteOption.DownVote
         ? theme.downvote
         : theme.subtleText;
+
+  const authorColor = comment.isOP
+    ? theme.iconOrTextButton
+    : comment.isModerator
+      ? theme.moderator
+      : theme.text;
 
   return (
     <View style={[styles.topBar, { marginBottom: bodyHidden ? 0 : 8 }]}>
@@ -55,11 +63,9 @@ export default function CommentTopBar({
           style={[
             styles.author,
             {
-              color: comment.isOP
-                ? theme.iconOrTextButton
-                : comment.isModerator
-                  ? theme.moderator
-                  : theme.text,
+              color: hideUsername ? theme.subtleText : authorColor,
+              backgroundColor: hideUsername ? theme.subtleText : undefined,
+              opacity: hideUsername ? 0.5 : 1,
             },
           ]}
         >

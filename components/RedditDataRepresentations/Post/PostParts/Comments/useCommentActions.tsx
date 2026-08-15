@@ -18,6 +18,7 @@ import useContextMenu from "../../../../../utils/useContextMenu";
 import EditComment from "../../../../Modals/EditComment";
 import NewComment from "../../../../Modals/NewComment";
 import SelectText from "../../../../Modals/SelectText";
+import ShareAsImage from "../../../../Modals/ShareAsImage/ShareAsImage";
 
 type UseCommentActionsParams = {
   comment: PostDetail | Comment;
@@ -26,6 +27,7 @@ type UseCommentActionsParams = {
   collapseThread?: (comment: Comment) => void;
   interactionDisabledStatus?: PostDetail["interactionDisabledStatus"];
   displayInList?: boolean;
+  postDetail?: PostDetail;
 };
 
 export default function useCommentActions({
@@ -35,6 +37,7 @@ export default function useCommentActions({
   collapseThread,
   interactionDisabledStatus,
   displayInList,
+  postDetail,
 }: UseCommentActionsParams) {
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
@@ -131,6 +134,11 @@ export default function useCommentActions({
     shareURL(new RedditURL(comment.link).toString());
   };
 
+  const shareCommentAsImage = () => {
+    if (comment.type !== "comment" || !postDetail) return;
+    setModal(<ShareAsImage comment={comment} postDetail={postDetail} />);
+  };
+
   const showCommentOptions = async () => {
     const options = [
       "Upvote",
@@ -141,6 +149,7 @@ export default function useCommentActions({
       "Reply",
       ...(comment.saved ? ["Unsave"] : ["Save"]),
       ...(currentUser?.userName === comment.author ? ["Edit", "Delete"] : []),
+      "Share as Image",
       "Share",
     ];
     const result = await showContextMenu({ options });
@@ -165,6 +174,8 @@ export default function useCommentActions({
       setModal(<SelectText text={comment.text} />);
     } else if (result === "Share") {
       shareComment();
+    } else if (result === "Share as Image") {
+      shareCommentAsImage();
     }
   };
 

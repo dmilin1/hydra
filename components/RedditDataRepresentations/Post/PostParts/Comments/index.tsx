@@ -102,6 +102,7 @@ const Comments = forwardRef(
           collapseThread={collapseThread}
           interactionDisabledStatus={interactionDisabledStatus}
           registerTopLevelNode={registerTopLevelNode}
+          postDetail={postDetail}
         />
       </View>
     );

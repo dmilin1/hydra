@@ -29,6 +29,12 @@ export default function HydraProFeatureList({
       description: "Save and share Reddit videos with their audio included",
     },
     {
+      icon: <Ionicons name="share-social" size={24} color={theme.text} />,
+      title: "Remove Sharing Watermark",
+      description:
+        "Share posts and comments as images without a Hydra watermark",
+    },
+    {
       icon: <Ionicons name="stats-chart" size={24} color={theme.text} />,
       title: "Stats Tracking",
       description:

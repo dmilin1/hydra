@@ -55,6 +55,7 @@ export default function usePostDetail(url: string, isSplitView: boolean) {
         : []),
       "Report",
       "Select Text",
+      "Share as Image",
       "Share",
     ];
     const contextSort: SortTypes[] = [

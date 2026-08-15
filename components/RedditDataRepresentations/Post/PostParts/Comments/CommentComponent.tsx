@@ -33,6 +33,11 @@ type CommentProps = {
   collapseThread?: (comment: Comment) => void;
   interactionDisabledStatus?: PostDetail["interactionDisabledStatus"];
   registerTopLevelNode?: (id: string, node: CommentNode | null) => void;
+  postDetail?: PostDetail; // Tree root, for actions that need the comment's ancestors
+  displayForImageShareSettings?: {
+    depth: number;
+    hideUsernames: boolean;
+  };
 };
 
 export default function CommentComponent({
@@ -45,6 +50,8 @@ export default function CommentComponent({
   collapseThread,
   interactionDisabledStatus = null,
   registerTopLevelNode,
+  postDetail,
+  displayForImageShareSettings,
 }: CommentProps) {
   const { theme } = useContext(ThemeContext);
   const {
@@ -64,6 +71,7 @@ export default function CommentComponent({
     collapseThread,
     interactionDisabledStatus,
     displayInList,
+    postDetail,
   });
 
   const commentRef = useRef<CommentNode>(null);
@@ -137,7 +145,7 @@ export default function CommentComponent({
                 onLongPress={() => actions.showCommentOptions()}
                 style={[
                   styles.outerCommentContainer,
-                  displayInList
+                  displayInList || displayForImageShareSettings?.depth === 0
                     ? styles.outerCommentContainerDisplayInList
                     : {},
                   {
@@ -172,6 +180,7 @@ export default function CommentComponent({
                     theme={theme}
                     showFlair={commentFlairs}
                     bodyHidden={comment.collapsed && !collapseChildrenOnly}
+                    hideUsername={!!displayForImageShareSettings?.hideUsernames}
                     onPressAuthor={() => pushURL(`/user/${comment.author}`)}
                     onPressUpvote={() =>
                       actions.voteOnComment(VoteOption.UpVote)
@@ -238,6 +247,8 @@ export default function CommentComponent({
                   registerTopLevelNode={
                     comment.depth === -1 ? registerTopLevelNode : undefined
                   }
+                  postDetail={postDetail}
+                  displayForImageShareSettings={displayForImageShareSettings}
                 />
               ))}
               {comment.loadMore && comment.loadMore.childIds.length > 0 && (
@@ -289,6 +300,7 @@ export default function CommentComponent({
       commentSwipeOptions.right,
       commentSwipeOptions.farLeft,
       commentSwipeOptions.farRight,
+      displayForImageShareSettings?.hideUsernames,
     ],
   );
 }

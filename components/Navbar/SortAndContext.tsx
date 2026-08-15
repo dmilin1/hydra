@@ -37,6 +37,7 @@ import NewPost from "../Modals/NewPost";
 import SelectText from "../Modals/SelectText";
 import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
 import { shareURL } from "../../utils/sharing";
+import ShareAsImage from "../Modals/ShareAsImage/ShareAsImage";
 
 export type SortTypes =
   | "Best"
@@ -70,7 +71,8 @@ export type ContextTypes =
   | "Hide Seen Posts"
   | "Sidebar"
   | "Wiki"
-  | "Open in Gallery Mode";
+  | "Open in Gallery Mode"
+  | "Share as Image";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes> | string;
@@ -388,6 +390,11 @@ export default function SortAndContext({
               pushURL(`https://www.reddit.com/r/${subreddit}/wiki/index`);
             } else if (result === "Open in Gallery Mode") {
               openGallery(currentPath);
+            } else if (
+              result === "Share as Image" &&
+              pageData?.type === "postDetail"
+            ) {
+              setModal(<ShareAsImage postDetail={pageData} />);
             }
           }}
         >
