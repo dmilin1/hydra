@@ -55,11 +55,14 @@ export default function MessageComponent({
           },
         ]}
         onPress={() => {
-          setInboxItemNewStatus(message, false);
-          setMessage({
-            ...message,
-            new: false,
-          });
+          if (message.new) {
+            setInboxItemNewStatus(message, false);
+            setInboxCount(inboxCount - 1);
+            setMessage({
+              ...message,
+              new: false,
+            });
+          }
           pushURL(`https://www.reddit.com/message/messages/${message.id}`);
         }}
         onLongPress={async () => {

@@ -86,11 +86,14 @@ export default function CommentReplyComponent({
           },
         ]}
         onPress={() => {
-          setInboxItemNewStatus(commentReply, false);
-          setMessage({
-            ...commentReply,
-            new: false,
-          });
+          if (commentReply.new) {
+            setInboxItemNewStatus(commentReply, false);
+            setInboxCount(inboxCount - 1);
+            setMessage({
+              ...commentReply,
+              new: false,
+            });
+          }
           pushURL(commentReply.contextLink);
         }}
         onLongPress={async () => {
