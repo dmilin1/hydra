@@ -29,7 +29,7 @@ The post overlay shows the title, a text preview, the subreddit, and the author.
 
 ## Filters
 
-Gallery Mode automatically filters out non-media posts. Your text filters and "hide seen posts" settings still apply. On multireddit pages, subreddit filters are also applied.
+Gallery Mode automatically filters out non-media posts. Your text filters and "hide seen posts" settings still apply. When **"Mark as Seen On Scroll"** is enabled, a post is marked as seen after all of its Gallery Mode media tiles have been viewed in the grid and scrolled past. On multireddit pages, subreddit filters are also applied.
 
 Note that AI filters do not apply in Gallery Mode.
 

@@ -17,6 +17,7 @@ import { SubredditContext } from "../contexts/SubredditContext";
 import GalleryComponent from "../components/UI/Gallery/GalleryComponent";
 import { filterNonMediaItems } from "../utils/filters/filterNonMediaItems";
 import AccessFailureComponent from "../components/UI/AccessFailureComponent";
+import { markPostSeen } from "../db/functions/SeenPosts";
 
 export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
   const { url } = route.params;
@@ -32,8 +33,12 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
   const { theme } = useContext(ThemeContext);
   const { subreddits } = useContext(SubredditContext);
 
-  const { filterPostsByText, filterPostsBySubreddit, getHideSeenURLStatus } =
-    useContext(FiltersContext);
+  const {
+    filterPostsByText,
+    filterPostsBySubreddit,
+    getHideSeenURLStatus,
+    autoMarkAsSeen,
+  } = useContext(FiltersContext);
 
   const shouldFilterSeen = getHideSeenURLStatus(url);
 
@@ -116,6 +121,7 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
           loadMore={loadMorePosts}
           fullyLoaded={fullyLoaded}
           hitFilterLimit={hitFilterLimit}
+          onPostScrolledPast={autoMarkAsSeen ? markPostSeen : undefined}
         />
       </AccessFailureComponent>
     </View>
