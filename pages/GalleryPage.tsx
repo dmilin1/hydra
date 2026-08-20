@@ -85,6 +85,8 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
     } else if (pageType === PageType.MULTIREDDIT) {
       contextOptions = ["Share"];
       sortOptions = ["Hot", "New", "Top", "Rising", "Controversial"];
+    } else if (pageType === PageType.USER) {
+      contextOptions = ["Share"];
     }
     navigation.setOptions({
       headerRight: () => (

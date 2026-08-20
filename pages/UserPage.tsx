@@ -55,7 +55,23 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     refreshDependencies: [sort, sortTime],
   });
 
-  const isDeepPath = !!new URL(url).getBasePath().split("/")[5]; // More than just /user/username like /user/username/comments
+  const urlObject = new URL(url);
+  const userSubPage = urlObject.getBasePath().split("/")[5];
+  const savedType = urlObject.getQueryParam("type");
+
+  const isDeepPath = !!userSubPage; // More than just /user/username like /user/username/comments
+
+  const supportsGalleryMode =
+    /**
+     * Base user pages have both posts and comments, so we reroute base user pages
+     * to the /submitted page when gallery mode is requested. This happens in
+     * navigation.ts's openGallery function.
+     */
+    !userSubPage ||
+    userSubPage === "submitted" ||
+    userSubPage === "upvoted" ||
+    userSubPage === "downvoted" ||
+    savedType === "links";
 
   const loadUser = async () => {
     const userUrl = new RedditURL(url)
@@ -82,12 +98,16 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
   }, []);
 
   useEffect(() => {
-    const contextOptions: ContextTypes[] = ["Block", "Share"];
+    const contextOptions: ContextTypes[] = ["Share"];
     if (currentUser?.userName !== user?.userName) {
+      contextOptions.unshift("Block");
       const isFollowing = subreddits.subscriber.some(
         (sub) => sub.name === `u_${user?.userName}`,
       );
       contextOptions.unshift(isFollowing ? "Unfollow" : "Follow", "Message");
+    }
+    if (supportsGalleryMode) {
+      contextOptions.unshift("Open in Gallery Mode");
     }
     const sortOptions: SortTypes[] | undefined =
       section === "submitted" || section === "comments"
@@ -106,7 +126,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
         );
       },
     });
-  }, [sort, sortTime, user, subreddits.subscriber.length]);
+  }, [sort, sortTime, user, supportsGalleryMode, subreddits.subscriber.length]);
 
   return (
     <View

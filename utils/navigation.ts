@@ -49,10 +49,29 @@ export function useURLNavigation<
     clearFuture();
   };
 
+  const openGallery = (url: string) => {
+    /**
+     * Base user pages have both posts and comments, so we need to
+     * reroute these urls to the /submitted page for gallery mode
+     */
+    const urlObject = new RedditURL(url);
+    const basePath = urlObject.getBasePath();
+    const pageType = urlObject.getPageType();
+    const userSubPage = basePath.split("/").at(5);
+    const userName = basePath.split("/").at(4);
+    if (pageType === PageType.USER && !userSubPage) {
+      navigation.push("GalleryPage", {
+        url: `https://www.reddit.com/user/${userName}/submitted`,
+      });
+    } else {
+      navigation.push("GalleryPage", { url });
+    }
+  };
+
   return {
     ...navigation,
     pushURL: (url: string) => doNavigationAction(url, "push"),
     replaceURL: (url: string) => doNavigationAction(url, "replace"),
-    openGallery: (url: string) => navigation.push("GalleryPage", { url }),
+    openGallery,
   };
 }
