@@ -42,6 +42,17 @@ export default function useHandleIncomingURLs() {
   };
 
   const handleDeepLink = (deepLink: string) => {
+    if (
+      Platform.OS === "android" &&
+      !!deepLink &&
+      !deepLink.startsWith("hydra://")
+    ) {
+      /**
+       * Android deep links can deliver the tapped reddit URL directly.
+       */
+      handleURL(deepLink);
+      return;
+    }
     if (!deepLink || !deepLink.toLowerCase().startsWith("hydra://openurl?url="))
       return;
     const url = deepLink.replace(/hydra:\/\/openurl\?url=/i, "");

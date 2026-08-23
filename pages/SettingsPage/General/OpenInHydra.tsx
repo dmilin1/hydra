@@ -21,6 +21,37 @@ export default function OpenInHydra() {
 
   return (
     <>
+      {Platform.OS === "android" && (
+        <>
+          <List
+            title="Reddit Links"
+            items={[
+              {
+                key: "openByDefault",
+                icon: <Feather name="link" size={24} color={theme.text} />,
+                text: "Open Hydra's App Settings",
+                onPress: () => Linking.openSettings(),
+              },
+            ]}
+          />
+          <Text
+            style={[
+              styles.textDescription,
+              {
+                color: theme.text,
+              },
+            ]}
+          >
+            Hydra can open Reddit links from other apps directly. Since Hydra is
+            not the official Reddit app, Android requires you to turn this on
+            manually.
+            {"\n\n"}
+            In Hydra's app settings, tap "Open by default", then "Add links",
+            and select all of the Reddit domains. On some devices this option is
+            called "Open supported links" or "Supported web addresses".
+          </Text>
+        </>
+      )}
       {Platform.OS === "ios" && (
         <>
           <List

@@ -4,6 +4,13 @@ import packageJson from "./package.json";
 const projectId = "7e403d7f-7747-4daa-a3c9-4acb948f7a60";
 const IS_DEV = process.env.APP_VARIANT === "development";
 
+const REDDIT_DEEP_LINK_HOSTS = [
+  "reddit.com",
+  "www.reddit.com",
+  "old.reddit.com",
+  "new.reddit.com",
+];
+
 module.exports = {
   expo: {
     name: "Hydra",
@@ -31,6 +38,16 @@ module.exports = {
         foregroundImage: "./assets/images/icon_android.png",
         backgroundColor: "#000000",
       },
+      intentFilters: [
+        {
+          action: "VIEW",
+          category: ["BROWSABLE", "DEFAULT"],
+          data: REDDIT_DEEP_LINK_HOSTS.flatMap((host) => [
+            { scheme: "https", host },
+            { scheme: "http", host },
+          ]),
+        },
+      ],
     },
     web: {
       bundler: "metro",
