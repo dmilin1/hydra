@@ -7,11 +7,10 @@ type Customer = {
 
 export async function registerCustomer(customer: Customer) {
   try {
-    const response = await fetch(`${HYDRA_SERVER_URL}/api/customers/register`, {
+    await fetch(`${HYDRA_SERVER_URL}/api/customers/register`, {
       method: "POST",
       body: JSON.stringify(customer),
     });
-    return response.json();
   } catch (error) {
     console.error("error registering customer", error);
   }
