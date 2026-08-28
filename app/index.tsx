@@ -57,6 +57,7 @@ Sentry.init({
   tracesSampleRate: 0.1,
   profilesSampleRate: 0.1,
   integrations: [sentryNavigationIntegration],
+  enableTombstone: true,
 
   // Disable app hang tracking because it's bugged when asking for permissions
   // https://stackoverflow.com/a/79085057
