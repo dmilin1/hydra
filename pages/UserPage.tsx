@@ -81,7 +81,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
       .join("/");
     try {
       const userData = await getUser(`https://www.reddit.com${userUrl}`, {
-        allowSuspended: true,
+        allowSuspended: currentUser?.userName === user?.userName,
       });
       setUser(userData);
     } catch (e) {
