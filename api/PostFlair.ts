@@ -34,6 +34,11 @@ export async function getAllowedPostFlairs(
     `https://www.reddit.com/r/${subreddit}/api/link_flair_v2.json`,
   );
 
+  if (data.error === 403) {
+    // User is not a moderator or not allowed to set their own flairs
+    return [];
+  }
+
   return data.map((flair: any) => formatAllowedPostFlair(flair));
 }
 
