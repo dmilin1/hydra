@@ -8,9 +8,22 @@ type Entry = {
 };
 
 const entries = new Map<string, Entry>();
-const graveyardPlayers = new Array<VideoPlayer>();
 
 const backgroundPositions = new Map<string, number>();
+
+/**
+ * Players are never reused: a slow load could land on a recycled player after
+ * it was parked and leave it playing audio with no owner. They also can't be
+ * left to the garbage collector, because expo-video's cache layer pins players
+ * that loaded a cached source. So released players are torn down explicitly,
+ * but release() drops frames, so it's paced: one player at a time, only after
+ * releases have gone quiet (a proxy for the user having stopped scrolling).
+ */
+const graveyard: VideoPlayer[] = [];
+const MAX_GRAVEYARD = 30;
+const QUIET_BEFORE_RELEASE_MS = 1500;
+const BETWEEN_RELEASES_MS = 250;
+let drainTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * In dev mode, when React rerenders a component, it calls logComponentRender
@@ -32,6 +45,45 @@ function devModePlayerFix(player: VideoPlayer) {
   }
 }
 
+function destroyPlayer(player: VideoPlayer) {
+  player.release();
+  if (__DEV__) {
+    devModePlayerFix(player);
+  }
+}
+
+function scheduleDrain(delay: number) {
+  if (drainTimer) {
+    clearTimeout(drainTimer);
+  }
+  drainTimer = setTimeout(() => {
+    drainTimer = null;
+    const player = graveyard.shift();
+    if (!player) {
+      return;
+    }
+    destroyPlayer(player);
+    if (graveyard.length) {
+      scheduleDrain(BETWEEN_RELEASES_MS);
+    }
+  }, delay);
+}
+
+function parkPlayer(player: VideoPlayer) {
+  player.pause();
+  player.muted = true;
+  player.replaceAsync(null);
+  graveyard.push(player);
+  if (graveyard.length > MAX_GRAVEYARD) {
+    const player = graveyard.shift();
+    if (player) {
+      destroyPlayer(player);
+    }
+  }
+  // Every park resets the timer, so draining waits until scrolling stops.
+  scheduleDrain(QUIET_BEFORE_RELEASE_MS);
+}
+
 function releaseEntry(source: string, entry: Entry) {
   if (entry.refCount > 0) {
     return;
@@ -39,13 +91,9 @@ function releaseEntry(source: string, entry: Entry) {
   /**
    * React runs all cleanups before all mount effects within a commit.
    * So, if a component is trying to claim an entry in the same render
-   * cycle as another component that to release it to the graveyard, the
-   * release will happen first, moving the claimed entry to the graveyard.
-   * This fixes the problem by waiting until the claiming component's use
-   * effect (entry.refCount++) has finished running.
-   *
-   * I tried triggering this bug during testing and couldn't trigger it,
-   * so maybe it's fine, but better safe than sorry.
+   * cycle as another component that is releasing it, the release would
+   * happen first. Waiting a microtask lets the claiming component's
+   * effect (entry.refCount++) run first.
    */
   queueMicrotask(() => {
     if (entry.refCount > 0 || entries.get(source) !== entry) {
@@ -55,13 +103,7 @@ function releaseEntry(source: string, entry: Entry) {
     if (Number.isFinite(position) && position > 0) {
       backgroundPositions.set(source, position);
     }
-    if (graveyardPlayers.length > 5) {
-      entry.player.release();
-      devModePlayerFix(entry.player);
-    } else {
-      entry.player.replaceAsync(null);
-      graveyardPlayers.push(entry.player);
-    }
+    parkPlayer(entry.player);
     entries.delete(source);
   });
 }
@@ -70,26 +112,6 @@ function getEntry(source: string): Entry {
   const existing = entries.get(source);
   if (existing) {
     return existing;
-  }
-  const graveyardPlayer = graveyardPlayers.pop();
-  if (graveyardPlayer) {
-    graveyardPlayer
-      .replaceAsync(VideoCache.makeCachedVideoSource(source))
-      .then(() => {
-        const position = backgroundPositions.get(source) ?? 0;
-        if (position > 0) {
-          backgroundPositions.delete(source);
-          graveyardPlayer.currentTime = position;
-        }
-      });
-    graveyardPlayer.muted = true;
-    graveyardPlayer.playbackRate = 1;
-    graveyardPlayer.scrubbingModeOptions = {
-      scrubbingModeEnabled: false,
-    };
-    const entry = { player: graveyardPlayer, refCount: 0 };
-    entries.set(source, entry);
-    return entry;
   }
   const player = createVideoPlayer(VideoCache.makeCachedVideoSource(source));
   player.audioMixingMode = "mixWithOthers";

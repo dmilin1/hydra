@@ -138,7 +138,11 @@ function MediaVideo({
     player.play();
     player.volume = 1;
     onFocusedPlayerChange(player, true);
-    return () => onFocusedPlayerChange(player, false);
+    return () => {
+      player.volume = 0;
+      player.muted = true;
+      onFocusedPlayerChange(player, false);
+    };
   }, [focused, player]);
 
   useEffect(() => {

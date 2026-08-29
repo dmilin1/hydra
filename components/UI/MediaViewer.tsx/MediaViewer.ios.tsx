@@ -62,8 +62,9 @@ export default function MediaViewer({
     outputRange: [0.9, 0.95, 1],
   });
 
-  const [currentRowIndex, setCurrentRowIndex] = useState(0);
-  const [currentColumnIndex, setCurrentColumnIndex] = useState(0);
+  const [currentRowIndex, setCurrentRowIndex] = useState(startingRowIndex);
+  const [currentColumnIndex, setCurrentColumnIndex] =
+    useState(startingColumnIndex);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
   const [focusedPlayer, setFocusedPlayer] = useState<VideoPlayer | null>(null);
 
