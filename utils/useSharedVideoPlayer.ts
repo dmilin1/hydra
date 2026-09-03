@@ -1,29 +1,15 @@
 import { createVideoPlayer, VideoPlayer } from "expo-video";
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import VideoCache from "./VideoCache";
 
 type Entry = {
   player: VideoPlayer;
-  refCount: number;
+  owners: Set<string>;
 };
 
 const entries = new Map<string, Entry>();
 
 const backgroundPositions = new Map<string, number>();
-
-/**
- * Players are never reused: a slow load could land on a recycled player after
- * it was parked and leave it playing audio with no owner. They also can't be
- * left to the garbage collector, because expo-video's cache layer pins players
- * that loaded a cached source. So released players are torn down explicitly,
- * but release() drops frames, so it's paced: one player at a time, only after
- * releases have gone quiet (a proxy for the user having stopped scrolling).
- */
-const graveyard: VideoPlayer[] = [];
-const MAX_GRAVEYARD = 30;
-const QUIET_BEFORE_RELEASE_MS = 1500;
-const BETWEEN_RELEASES_MS = 250;
-let drainTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * In dev mode, when React rerenders a component, it calls logComponentRender
@@ -52,69 +38,32 @@ function destroyPlayer(player: VideoPlayer) {
   }
 }
 
-function scheduleDrain(delay: number) {
-  if (drainTimer) {
-    clearTimeout(drainTimer);
+function releaseEntry(source: string, ownerId: string) {
+  const entry = entries.get(source);
+  if (!entry) {
+    throw new Error(`Tried to release player, but found no entry`);
   }
-  drainTimer = setTimeout(() => {
-    drainTimer = null;
-    const player = graveyard.shift();
-    if (!player) {
-      return;
-    }
-    destroyPlayer(player);
-    if (graveyard.length) {
-      scheduleDrain(BETWEEN_RELEASES_MS);
-    }
-  }, delay);
-}
-
-function parkPlayer(player: VideoPlayer) {
-  player.pause();
-  player.muted = true;
-  player.replaceAsync(null);
-  graveyard.push(player);
-  if (graveyard.length > MAX_GRAVEYARD) {
-    const player = graveyard.shift();
-    if (player) {
-      destroyPlayer(player);
-    }
-  }
-  // Every park resets the timer, so draining waits until scrolling stops.
-  scheduleDrain(QUIET_BEFORE_RELEASE_MS);
-}
-
-function releaseEntry(source: string, entry: Entry) {
-  if (entry.refCount > 0) {
-    return;
-  }
-  /**
-   * React runs all cleanups before all mount effects within a commit.
-   * So, if a component is trying to claim an entry in the same render
-   * cycle as another component that is releasing it, the release would
-   * happen first. Waiting a microtask lets the claiming component's
-   * effect (entry.refCount++) run first.
-   */
-  queueMicrotask(() => {
-    if (entry.refCount > 0 || entries.get(source) !== entry) {
-      return;
-    }
+  entry.owners.delete(ownerId);
+  setTimeout(() => {
+    if (entry.owners.size > 0) return;
+    entries.delete(source);
     const position = entry.player.currentTime;
     if (Number.isFinite(position) && position > 0) {
       backgroundPositions.set(source, position);
     }
-    parkPlayer(entry.player);
-    entries.delete(source);
-  });
+    destroyPlayer(entry.player);
+  }, 250);
 }
 
-function getEntry(source: string): Entry {
+function getEntry(source: string, ownerId: string): Entry {
   const existing = entries.get(source);
   if (existing) {
+    existing.owners.add(ownerId);
     return existing;
   }
   const player = createVideoPlayer(VideoCache.makeCachedVideoSource(source));
   player.audioMixingMode = "mixWithOthers";
+  player.volume = 0;
   player.muted = true;
   player.loop = true;
   player.timeUpdateEventInterval = 1 / 15;
@@ -130,7 +79,7 @@ function getEntry(source: string): Entry {
     backgroundPositions.delete(source);
     player.currentTime = position;
   }
-  const entry: Entry = { player, refCount: 0 };
+  const entry: Entry = { player, owners: new Set([ownerId]) };
   entries.set(source, entry);
   return entry;
 }
@@ -140,21 +89,18 @@ function getEntry(source: string): Entry {
  * fullscreen viewer took over a player the post's inline video owns.
  */
 export function isPlayerShared(source: string): boolean {
-  return (entries.get(source)?.refCount ?? 0) > 1;
+  return (entries.get(source)?.owners.size ?? 0) > 1;
 }
 
 export function useSharedVideoPlayer(source: string): VideoPlayer {
-  const entry = getEntry(source);
+  const ownerId = useId();
+  const entry = getEntry(source, ownerId);
 
   useEffect(() => {
-    entry.refCount++;
-    const prevEntry = entry;
-    const prevSource = source;
     return () => {
-      prevEntry.refCount--;
-      releaseEntry(prevSource, prevEntry);
+      releaseEntry(source, ownerId);
     };
-  }, [entry]);
+  }, []);
 
   return entry.player;
 }
