@@ -9,6 +9,7 @@ import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { WebView } from "react-native-webview";
 import RedditCookies from "../../utils/RedditCookies";
+import { USER_AGENT } from "../../api/UserAgent";
 
 const INJECTED_JAVASCRIPT = `
   const modifyThroughShadowDOM = (selector, styleOrFunction) => {
@@ -62,6 +63,7 @@ const ALLOWED_URLS = [
   "redditinc.com/policies/user-agreement",
   "redditinc.com/policies/privacy-policy",
   "reddit.com/policies/privacy-policy",
+  "reddit.com/r/HydraClient",
 ];
 
 export default function Login() {
@@ -158,6 +160,7 @@ export default function Login() {
                   handleLoginFinished();
                 }
               }}
+              userAgent={USER_AGENT}
               injectedJavaScript={INJECTED_JAVASCRIPT}
               // Injected js doesn't run unless you pass a function here even if it doesn't do anything. No idea why.
               onMessage={() => {}}
