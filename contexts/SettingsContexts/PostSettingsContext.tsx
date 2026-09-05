@@ -16,6 +16,7 @@ const initialValues = {
   showPostSummary: true,
   collapsePostSummary: false,
   autoPlayVideos: true,
+  muteVideosByDefault: false,
   liveTextInteraction: false,
   tapToCollapsePost: true,
   slideAnywhereToScrub: false,
@@ -37,6 +38,7 @@ const initialPostSettingsContext = {
   toggleShowPostSummary: (_newValue?: boolean) => {},
   toggleCollapsePostSummary: (_newValue?: boolean) => {},
   toggleAutoPlayVideos: (_newValue?: boolean) => {},
+  toggleMuteVideosByDefault: (_newValue?: boolean) => {},
   toggleLiveTextInteraction: (_newValue?: boolean) => {},
   toggleTapToCollapsePost: (_newValue?: boolean) => {},
   toggleSlideAnywhereToScrub: (_newValue?: boolean) => {},
@@ -104,6 +106,12 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [storedAutoPlayVideos, setAutoPlayVideos] =
     useMMKVBoolean("autoPlayVideos");
   const autoPlayVideos = storedAutoPlayVideos ?? initialValues.autoPlayVideos;
+
+  const [storedMuteVideosByDefault, setMuteVideosByDefault] = useMMKVBoolean(
+    "muteVideosByDefault",
+  );
+  const muteVideosByDefault =
+    storedMuteVideosByDefault ?? initialValues.muteVideosByDefault;
 
   const [storedliveTextInteraction, setliveTextInteraction] = useMMKVBoolean(
     "liveTextInteraction",
@@ -182,6 +190,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         autoPlayVideos: autoPlayVideos ?? initialValues.autoPlayVideos,
         toggleAutoPlayVideos: (newValue = !autoPlayVideos) =>
           setAutoPlayVideos(newValue),
+
+        muteVideosByDefault:
+          muteVideosByDefault ?? initialValues.muteVideosByDefault,
+        toggleMuteVideosByDefault: (newValue = !muteVideosByDefault) =>
+          setMuteVideosByDefault(newValue),
 
         liveTextInteraction:
           liveTextInteraction ?? initialValues.liveTextInteraction,
