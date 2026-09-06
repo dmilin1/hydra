@@ -1,6 +1,6 @@
 ===METADATA===
 title: Appearance Settings
-description: Post appearance (compact mode, thumbnails on right, split view, subreddit display, text lengths, flairs, blur options, summaries, start summary collapsed, auto-play, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, start summary collapsed, tap to collapse, collapse children only), tab appearance (username, hide on scroll)
+description: Post appearance (compact mode, thumbnails on right, split view, subreddit display, text lengths, flairs, blur options, summaries, start summary collapsed, auto-play, default video mute, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, start summary collapsed, tap to collapse, collapse children only), tab appearance (username, hide on scroll)
 ===END METADATA===
 
 # Appearance Settings
@@ -36,6 +36,8 @@ Appearance settings control how posts, comments, and tabs are displayed. Configu
 **Start Summary Collapsed**: Only shown while post summaries are enabled. Starts each AI summary collapsed — tap it to expand.
 
 **Auto Play Videos**: Automatically plays videos as you scroll. Uses more data and battery.
+
+**Mute Videos by Default**: Starts full-screen videos muted. Changing mute from the video controls applies to other videos until Hydra leaves the foreground.
 
 **Live Text**: Enables text recognition in images using iOS Live Text, allowing you to select and copy text. Learn more in the [Live Text guide](hydra://settings/guide/?doc=live_text).
 

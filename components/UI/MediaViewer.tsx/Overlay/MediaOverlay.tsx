@@ -20,7 +20,11 @@ import {
   OverlayIsland,
 } from "./OverlayContext";
 import PostInfoHeader from "./PostInfoHeader";
-import { PlaybackCluster, PlaybackRateButton } from "./VideoPlaybackControls";
+import {
+  PlaybackCluster,
+  PlaybackRateButton,
+  MuteButton,
+} from "./VideoPlaybackControls";
 import VideoSeekBar from "./VideoSeekBar";
 
 const AUTO_HIDE_MS = 3500;
@@ -33,6 +37,8 @@ type MediaOverlayProps = {
   post: Post | PostDetail | null;
   focusedItem: MediaItem | undefined;
   player: VideoPlayer | null;
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
   albumIndex: number;
   albumSize: number;
   onAlbumStep: (direction: "left" | "right") => void;
@@ -50,6 +56,8 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
       post,
       focusedItem,
       player,
+      isMuted,
+      setIsMuted,
       albumIndex,
       albumSize,
       onAlbumStep,
@@ -172,7 +180,8 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
                   />
                 ) : null}
                 <View style={styles.videoActionsContainer}>
-                  <OverlayIsland>
+                  <OverlayIsland style={styles.videoSaveActionsContainer}>
+                    <MuteButton isMuted={isMuted} setIsMuted={setIsMuted} />
                     <PlaybackRateButton player={player} />
                   </OverlayIsland>
                   <OverlayIsland style={styles.videoSaveActionsContainer}>

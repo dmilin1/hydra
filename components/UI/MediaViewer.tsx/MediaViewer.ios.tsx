@@ -25,6 +25,8 @@ export default function MediaViewer({
   startingColumnIndex,
   onFocusedItemChange,
   getCurrentPost,
+  isMuted,
+  setIsMuted,
   onClose,
 }: MediaViewerProps) {
   const { width, height } = useSafeAreaFrame();
@@ -193,6 +195,8 @@ export default function MediaViewer({
             post={currentPost ?? null}
             focusedItem={focusedItem}
             player={focusedPlayer}
+            isMuted={isMuted}
+            setIsMuted={setIsMuted}
             albumIndex={currentColumnIndex}
             albumSize={currentRowSize}
             onAlbumStep={handleTapToScrollRow}
@@ -235,6 +239,8 @@ export default function MediaViewer({
                           setIsScrollLocked(isScrubbing)
                         }
                         onFocusedPlayerChange={handleFocusedPlayerChange}
+                        isMuted={isMuted}
+                        setIsMuted={setIsMuted}
                       />
                     ) : null}
                   </View>
