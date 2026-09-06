@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { isMediaVolumeChange } from "./videoAudioControls";
+import { isMediaVolumeChange } from "../components/UI/MediaViewer.tsx/videoAudioControls";
 
 test("detects both directions of iOS and Android media volume changes", () => {
   expect(isMediaVolumeChange(0.25, 0.5)).toBe(true);

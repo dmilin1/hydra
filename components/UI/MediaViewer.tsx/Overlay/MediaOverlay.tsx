@@ -180,11 +180,11 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
                   />
                 ) : null}
                 <View style={styles.videoActionsContainer}>
-                  <OverlayIsland style={styles.videoSaveActionsContainer}>
+                  <OverlayIsland style={styles.videoActionsRow}>
                     <MuteButton isMuted={isMuted} setIsMuted={setIsMuted} />
                     <PlaybackRateButton player={player} />
                   </OverlayIsland>
-                  <OverlayIsland style={styles.videoSaveActionsContainer}>
+                  <OverlayIsland style={styles.videoActionsRow}>
                     <SaveMediaButton item={videoItem} />
                     <ShareMediaButton item={videoItem} />
                   </OverlayIsland>
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginHorizontal: 10,
   },
-  videoSaveActionsContainer: {
+  videoActionsRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,

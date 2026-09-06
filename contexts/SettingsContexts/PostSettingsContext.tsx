@@ -16,7 +16,7 @@ const initialValues = {
   showPostSummary: true,
   collapsePostSummary: false,
   autoPlayVideos: true,
-  muteVideosByDefault: false,
+  muteVideosByDefault: true,
   liveTextInteraction: false,
   tapToCollapsePost: true,
   slideAnywhereToScrub: false,

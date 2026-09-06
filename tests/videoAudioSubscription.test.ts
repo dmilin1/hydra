@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { subscribeToVideoUnmute } from "./videoAudioControls";
+import { subscribeToVideoUnmute } from "../components/UI/MediaViewer.tsx/videoAudioControls";
 
 function fixture() {
   let resolve!: (value: { volume: number }) => void;
