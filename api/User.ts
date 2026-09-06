@@ -1,4 +1,4 @@
-import { CommentReply } from "./Messages";
+import { CommentReply } from "./Inbox";
 import { Comment, PostDetail, formatComments } from "./PostDetail";
 import { Post, formatPostData } from "./Posts";
 import { api } from "./RedditApi";

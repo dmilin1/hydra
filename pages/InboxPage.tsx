@@ -2,9 +2,8 @@ import { useIsFocused } from "@react-navigation/native";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { getInboxItems, InboxItem } from "../api/Messages";
+import { getInboxItems } from "../api/Inbox";
 import CommentReplyComponent from "../components/RedditDataRepresentations/InboxItem/CommentReplyComponent";
-import MessageComponent from "../components/RedditDataRepresentations/InboxItem/MessageComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
 import { InboxContext } from "../contexts/InboxContext";
@@ -19,13 +18,13 @@ export default function InboxPage() {
   const isFocused = useIsFocused();
 
   const {
-    data: messages,
-    loadMoreData: loadMoreMessages,
-    refreshData: refreshMessages,
-    modifyData: modifyMessages,
+    data: inboxItems,
+    loadMoreData: loadMoreInboxItems,
+    refreshData: refreshInboxItems,
+    modifyData: modifyInboxItems,
     fullyLoaded,
     hitFilterLimit,
-  } = useRedditDataState<InboxItem>({
+  } = useRedditDataState({
     loadData: async (after) => {
       if (!currentUser) return [];
       return await getInboxItems({ after });
@@ -34,7 +33,7 @@ export default function InboxPage() {
 
   useEffect(() => {
     if (!isFocused) return;
-    refreshMessages();
+    refreshInboxItems();
   }, [inboxCount, isFocused]);
 
   return (
@@ -46,25 +45,18 @@ export default function InboxPage() {
         },
       ]}
     >
-      <RedditDataScroller<InboxItem>
-        loadMore={loadMoreMessages}
-        refresh={refreshMessages}
+      <RedditDataScroller
+        loadMore={loadMoreInboxItems}
+        refresh={refreshInboxItems}
         fullyLoaded={fullyLoaded}
         hitFilterLimit={hitFilterLimit}
-        data={messages}
-        renderItem={({ item }) =>
-          item.type === "message" ? (
-            <MessageComponent
-              message={item}
-              setMessage={(newMessage) => modifyMessages([newMessage])}
-            />
-          ) : (
-            <CommentReplyComponent
-              commentReply={item}
-              setMessage={(newMessage) => modifyMessages([newMessage])}
-            />
-          )
-        }
+        data={inboxItems}
+        renderItem={({ item }) => (
+          <CommentReplyComponent
+            commentReply={item}
+            setInboxItem={(inboxItem) => modifyInboxItems([inboxItem])}
+          />
+        )}
       />
     </View>
   );

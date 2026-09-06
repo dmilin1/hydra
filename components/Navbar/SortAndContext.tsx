@@ -32,7 +32,6 @@ import { useURLNavigation } from "../../utils/navigation";
 import { FlexibleNavigationProp } from "../../utils/navigationTypes";
 import useContextMenu from "../../utils/useContextMenu";
 import EditPost from "../Modals/EditPost";
-import NewMessage from "../Modals/NewMessage";
 import NewPost from "../Modals/NewPost";
 import SelectText from "../Modals/SelectText";
 import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
@@ -352,12 +351,7 @@ export default function SortAndContext({
                 alert("Failed to delete post");
               }
             } else if (result === "Message" && pageData?.type === "user") {
-              setModal(
-                <NewMessage
-                  recipient={pageData}
-                  contentSent={() => setModal(undefined)}
-                />,
-              );
+              pushURL(`https://www.reddit.com/chat/user/${pageData.id}`);
             } else if (result === "Block" && pageData?.type === "user") {
               Alert.alert(
                 "Block User",

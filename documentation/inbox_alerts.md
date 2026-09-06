@@ -1,11 +1,11 @@
 ===METADATA===
 title: Inbox Alerts
-description: Push notifications for inbox (Pro feature), getting notified about replies and messages, and configuring notifications
+description: Push notifications for inbox (Pro feature), getting notified about replies, and configuring notifications
 ===END METADATA===
 
 # Inbox Alerts
 
-Inbox Alerts is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature that sends you push notifications when you receive new comment replies, post replies, or private messages. This lets you stay connected to Reddit discussions without having to open the app to check.
+Inbox Alerts is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature that sends you push notifications when you receive new comment replies or post replies. This lets you stay connected to Reddit discussions without having to open the app to check.
 
 ## Setup
 
@@ -24,7 +24,6 @@ You'll receive push notifications for new items in your inbox:
 
 - **Comment replies** - When someone replies to your comments
 - **Post replies** - When someone comments on your posts
-- **Private messages** - When someone sends you a private message
 
 Tapping a notification opens Hydra, where you'll find the new item in your Inbox tab. The app icon badge also updates to show your current unread count.
 

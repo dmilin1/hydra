@@ -92,7 +92,7 @@ You can delete a custom theme by swiping it left in the theme list, or by long-p
 
 ### Sharing Your Theme
 
-You can share custom themes by attaching them to comments or posts. When composing a reply or message, tap the **paint brush icon** in the editor toolbar, select a custom theme, and tap **Attach**. This embeds the theme data in your text. Post it to [r/HydraThemes](https://reddit.com/r/HydraThemes) or anywhere on Reddit for others to use.
+You can share custom themes by attaching them to comments or posts. When composing a post or comment, tap the **paint brush icon** in the editor toolbar, select a custom theme, and tap **Attach**. This embeds the theme data in your text. Post it to [r/HydraThemes](https://reddit.com/r/HydraThemes) or anywhere on Reddit for others to use.
 
 ### Importing a Theme
 

@@ -7,7 +7,7 @@ description: Basic navigation, tabs, back button, URL scheme, and navigation pat
 
 ## Tab Navigation
 
-The tab bar contains five sections: **Posts** (your feed and subreddit browsing), **Inbox** (replies and messages), **Account** (your profile and saved content), **Search** (find subreddits, posts, and users), and **Settings** (app preferences). Tapping the current tab goes back one level. Long pressing the Search tab opens quick subreddit search. Long pressing the Account tab opens a quick account switcher for swapping between logged-in accounts.
+The tab bar contains five sections: **Posts** (your feed and subreddit browsing), **Inbox** (replies and chat), **Account** (your profile and saved content), **Search** (find subreddits, posts, and users), and **Settings** (app preferences). Tapping the current tab goes back one level. Long pressing the Search tab opens quick subreddit search. Long pressing the Account tab opens a quick account switcher for swapping between logged-in accounts.
 
 ## Basic Navigation Actions
 

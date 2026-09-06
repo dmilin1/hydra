@@ -9,7 +9,7 @@ Hydra is a native Reddit client for iPhone, iPad, and Android. No account or set
 
 ## Basic Navigation
 
-Hydra uses a tab bar at the bottom with five sections: **Posts** (home feed, subreddits, multireddits), **Inbox** (messages and replies), **Account** (your profile and account management), **Search** (Reddit search), and **Settings** (app preferences).
+Hydra uses a tab bar at the bottom with five sections: **Posts** (home feed, subreddits, multireddits), **Inbox** (replies and chat), **Account** (your profile and account management), **Search** (Reddit search), and **Settings** (app preferences).
 
 Tap posts, comments, or subreddits to open them. Swipe right or use the back button to go back. Long press items for additional options. Configure swipe gestures for quick actions in [Gestures settings](hydra://settings/general/gestures).
 

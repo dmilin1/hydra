@@ -2,7 +2,7 @@ import Feather from "@react-native-vector-icons/feather";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
-import { CommentReply, setInboxItemNewStatus } from "../../../api/Messages";
+import { CommentReply, setInboxItemNewStatus } from "../../../api/Inbox";
 import { vote } from "../../../api/PostDetail";
 import { VoteOption } from "../../../api/Posts";
 import { InboxContext } from "../../../contexts/InboxContext";
@@ -15,12 +15,12 @@ import { Touchable } from "react-native-gesture-handler";
 
 type CommentReplyComponentProps = {
   commentReply: CommentReply;
-  setMessage: (message: CommentReply) => void;
+  setInboxItem: (message: CommentReply) => void;
 };
 
 export default function CommentReplyComponent({
   commentReply,
-  setMessage,
+  setInboxItem,
 }: CommentReplyComponentProps) {
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
@@ -34,9 +34,9 @@ export default function CommentReplyComponent({
         ? theme.downvote
         : theme.subtleText;
 
-  const voteOnMessage = async (voteOption: VoteOption) => {
+  const voteOnItem = async (voteOption: VoteOption) => {
     const result = await vote(commentReply, voteOption);
-    setMessage({
+    setInboxItem({
       ...commentReply,
       upvotes: commentReply.upvotes - commentReply.userVote + result,
       userVote: result,
@@ -46,7 +46,7 @@ export default function CommentReplyComponent({
   const toggleSeen = async () => {
     await setInboxItemNewStatus(commentReply, !commentReply.new);
     setInboxCount(inboxCount + (commentReply.new ? -1 : 1));
-    setMessage({
+    setInboxItem({
       ...commentReply,
       new: !commentReply.new,
     });
@@ -59,13 +59,13 @@ export default function CommentReplyComponent({
           name: "upvote",
           icon: <Feather name="arrow-up" />,
           color: theme.upvote,
-          action: async () => voteOnMessage(VoteOption.UpVote),
+          action: async () => voteOnItem(VoteOption.UpVote),
         },
         {
           name: "downvote",
           icon: <Feather name="arrow-down" />,
           color: theme.downvote,
-          action: async () => voteOnMessage(VoteOption.DownVote),
+          action: async () => voteOnItem(VoteOption.DownVote),
         },
         {
           name: "markAsRead",
@@ -89,7 +89,7 @@ export default function CommentReplyComponent({
           if (commentReply.new) {
             setInboxItemNewStatus(commentReply, false);
             setInboxCount(inboxCount - 1);
-            setMessage({
+            setInboxItem({
               ...commentReply,
               new: false,
             });
@@ -105,9 +105,9 @@ export default function CommentReplyComponent({
             ],
           });
           if (result === "Upvote") {
-            await voteOnMessage(VoteOption.UpVote);
+            await voteOnItem(VoteOption.UpVote);
           } else if (result === "Downvote") {
-            await voteOnMessage(VoteOption.DownVote);
+            await voteOnItem(VoteOption.DownVote);
           } else if (result === "Mark as Unread" || result === "Mark as Read") {
             toggleSeen();
           }

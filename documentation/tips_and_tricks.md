@@ -55,7 +55,7 @@ Gallery Mode is unlimited for Pro users. Free users can browse up to 100 posts.
 
 ## Drafts
 
-Hydra automatically saves drafts as you compose posts, comments, and messages. If you accidentally close the editor or navigate away, your draft will be restored when you return. No action needed — it just works.
+Hydra automatically saves drafts as you compose posts and comments. If you accidentally close the editor or navigate away, your draft will be restored when you return. No action needed — it just works.
 
 ## Clipboard Link Detection
 
@@ -74,7 +74,7 @@ Several Pro features work quietly in the background once enabled:
 - **AI Filters** — Automatically hide posts matching natural-language descriptions like "no politics" or "no negativity."
 - **AI Summaries** — Get quick overviews of long posts and comment threads.
 - **Stats** — Track your browsing activity, favorite communities, and achievements.
-- **Inbox Alerts** — Receive push notifications for replies and messages.
+- **Inbox Alerts** — Receive push notifications for replies.
 - **Custom Themes** — Create and share your own color themes.
 
 Learn more about [Hydra Pro](hydra://settings/guide/?doc=hydra_pro).

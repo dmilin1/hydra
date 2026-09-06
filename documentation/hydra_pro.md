@@ -11,7 +11,7 @@ Hydra Pro is a monthly subscription that unlocks advanced features and helps sup
 
 ### Inbox Alerts
 
-Push notifications for your Reddit inbox. Get notified instantly when you receive replies and messages so you never miss a conversation.
+Push notifications for your Reddit inbox. Get notified instantly when you receive replies so you never miss a conversation.
 
 [Learn More](hydra://settings/guide/?doc=inbox_alerts)
 

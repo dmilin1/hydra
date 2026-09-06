@@ -29,8 +29,7 @@ export enum PageType {
   INBOX,
   SIDEBAR,
   WIKI,
-
-  MESSAGES,
+  CHAT,
 
   ACCOUNTS,
   SETTINGS,
@@ -237,8 +236,8 @@ export default class RedditURL extends URL {
       return PageType.SUBREDDIT;
     } else if (relativePath.startsWith("/message/inbox")) {
       return PageType.INBOX;
-    } else if (relativePath.startsWith("/message/messages")) {
-      return PageType.MESSAGES;
+    } else if (relativePath.startsWith("/chat")) {
+      return PageType.CHAT;
     } else if (relativePath.match(/\/(user|u)\/.*\/m\/.*/)) {
       return PageType.MULTIREDDIT;
     } else if (
@@ -271,6 +270,8 @@ export default class RedditURL extends URL {
       name = "Sidebar";
     } else if (pageType === PageType.WIKI) {
       name = "Wiki";
+    } else if (pageType === PageType.CHAT) {
+      name = "Chat";
     } else if (pageType === PageType.SUBREDDIT) {
       name = this.getSubreddit();
     } else if (pageType === PageType.MULTIREDDIT) {
