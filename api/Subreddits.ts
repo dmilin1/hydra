@@ -95,6 +95,21 @@ export async function getTrending(
   return data.data.children.map((child: any) => formatSubredditData(child));
 }
 
+/**
+ * Reddit doesn't provide a way to get trending random subreddits,
+ * but loading from /r/all/rising and deduplicating is a good way
+ * to approximate it.
+ */
+export async function getTrendingRandom(): Promise<Subreddit[]> {
+  const data = await api(
+    `https://www.reddit.com/r/all/rising/.json?sr_detail=true&limit=10`,
+  );
+  const subreddits: Subreddit[] = data.data.children.map((child: any) =>
+    formatSubredditData({ data: child.data.sr_detail }),
+  );
+  return [...new Map(subreddits.map((sub) => [sub.id, sub])).values()];
+}
+
 export async function setSubscriptionStatus(
   subreddit: string,
   subscribe: boolean,

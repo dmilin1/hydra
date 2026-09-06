@@ -15,7 +15,7 @@ import {
   SearchTypes,
   getSearchResults,
 } from "../api/Search";
-import { Subreddit, getTrending } from "../api/Subreddits";
+import { Subreddit, getTrendingRandom } from "../api/Subreddits";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import SubredditComponent from "../components/RedditDataRepresentations/Subreddit/SubredditComponent";
 import UserComponent from "../components/RedditDataRepresentations/User/UserComponent";
@@ -67,7 +67,7 @@ export default function SearchPage() {
   });
 
   const loadTrending = async () => {
-    const newTrending = await getTrending();
+    const newTrending = await getTrendingRandom();
     setTrending(
       newTrending.filter((sub) => !sub.subscribed && sub.name !== "Home"),
     );
