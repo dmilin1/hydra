@@ -17,5 +17,16 @@ class VideoAudioControlsPackage : Package {
         }
         return false
       }
+
+      override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        // React Native Modal owns a Dialog window and forwards only key-up to
+        // the Activity. The Activity itself has no window focus in that case.
+        // The owner exists only while a foreground, focused viewer is muted.
+        if (event != null && !event.isCanceled &&
+          (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+          VolumeKeyIntent.notify?.invoke()
+        }
+        return false
+      }
     })
 }
