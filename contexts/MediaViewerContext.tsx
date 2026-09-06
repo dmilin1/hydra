@@ -1,16 +1,19 @@
 import {
   createContext,
   RefObject,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+import { AppState } from "react-native";
 import MediaViewer, {
   MediaItemCollection,
 } from "../components/UI/MediaViewer.tsx/MediaViewer";
 import { Post } from "../api/Posts";
 import { PostDetail } from "../api/PostDetail";
+import { PostSettingsContext } from "./SettingsContexts/PostSettingsContext";
 
 type DisplayMediaDataRequest = {
   media: MediaItemCollection;
@@ -40,8 +43,26 @@ const initialMediaViewerContext = {
 export const MediaViewerContext = createContext(initialMediaViewerContext);
 
 export function MediaViewerProvider({ children }: React.PropsWithChildren) {
+  const { muteVideosByDefault } = useContext(PostSettingsContext);
   const [displayMediaData, setDisplayMediaData] =
     useState<DisplayMediaData | null>(null);
+  const [isMuted, setIsMuted] = useState(muteVideosByDefault);
+
+  useEffect(() => {
+    setIsMuted(muteVideosByDefault);
+  }, [muteVideosByDefault]);
+
+  useEffect(() => {
+    let previousAppState = AppState.currentState;
+    const subscription = AppState.addEventListener("change", (appState) => {
+      if (previousAppState !== "active" && appState === "active") {
+        setIsMuted(muteVideosByDefault);
+      }
+      previousAppState = appState;
+    });
+
+    return () => subscription.remove();
+  }, [muteVideosByDefault]);
 
   const isShowing = useRef(false);
   const visibilityListeners = useRef<Set<VisibilityListener>>(new Set());
@@ -125,6 +146,8 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
           }}
           startingRowIndex={displayMediaData.startingRowIndex ?? 0}
           startingColumnIndex={displayMediaData.startingColumnIndex ?? 0}
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
           onClose={() => setDisplayMediaData(null)}
         />
       )}

@@ -143,6 +143,35 @@ export function PlaybackRateButton({ player }: { player: VideoPlayer }) {
   );
 }
 
+export function MuteButton({
+  isMuted,
+  setIsMuted,
+}: {
+  isMuted: boolean;
+  setIsMuted: (isMuted: boolean) => void;
+}) {
+  const { bumpAutoHide } = useOverlayInteraction();
+  return (
+    <Touchable
+      activeOpacity={0.2}
+      animationDuration={{ in: 0, out: 150 }}
+      style={styles.rateButton}
+      accessibilityRole="button"
+      accessibilityLabel={isMuted ? "Unmute video" : "Mute video"}
+      onPress={() => {
+        setIsMuted(!isMuted);
+        bumpAutoHide();
+      }}
+    >
+      <FontAwesome
+        name={isMuted ? "volume-off" : "volume-up"}
+        size={20}
+        color="white"
+      />
+    </Touchable>
+  );
+}
+
 const styles = StyleSheet.create({
   clusterRow: {
     flexDirection: "row",
