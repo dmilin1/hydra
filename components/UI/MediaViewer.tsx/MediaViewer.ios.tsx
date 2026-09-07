@@ -1,5 +1,4 @@
 import { FlashList, FlashListRef } from "@shopify/flash-list";
-import { VideoPlayer } from "expo-video";
 import {
   useContext,
   useDeferredValue,
@@ -66,7 +65,6 @@ export default function MediaViewer({
   const [currentColumnIndex, setCurrentColumnIndex] =
     useState(startingColumnIndex);
   const [isScrollLocked, setIsScrollLocked] = useState(false);
-  const [focusedPlayer, setFocusedPlayer] = useState<VideoPlayer | null>(null);
 
   const tapToScrollColumnIndex = useRef<number>(0);
   const lastTapToScrollTime = useRef<number>(0);
@@ -87,15 +85,6 @@ export default function MediaViewer({
   const currentPost = getCurrentPost?.(currentRowIndex);
 
   const focusedItem = media[currentRowIndex]?.[currentColumnIndex];
-
-  const handleFocusedPlayerChange = (
-    player: VideoPlayer,
-    nowFocused: boolean,
-  ) => {
-    setFocusedPlayer((previous) =>
-      nowFocused ? player : previous === player ? null : previous,
-    );
-  };
 
   const animateClose = () => {
     Animated.timing(flickedAway.current, {
@@ -168,11 +157,11 @@ export default function MediaViewer({
             },
           ]}
           onTouchStart={(e) =>
-          (overlayTapStart.current = {
-            x: e.nativeEvent.locationX,
-            y: e.nativeEvent.locationY,
-            timestamp: Date.now(),
-          })
+            (overlayTapStart.current = {
+              x: e.nativeEvent.locationX,
+              y: e.nativeEvent.locationY,
+              timestamp: Date.now(),
+            })
           }
           onTouchEnd={(e) => {
             if (overlayTapStart.current) {
@@ -192,7 +181,6 @@ export default function MediaViewer({
             ref={overlayRef}
             post={currentPost ?? null}
             focusedItem={focusedItem}
-            player={focusedPlayer}
             albumIndex={currentColumnIndex}
             albumSize={currentRowSize}
             onAlbumStep={handleTapToScrollRow}
@@ -234,7 +222,6 @@ export default function MediaViewer({
                         onScrubbingChange={(isScrubbing) =>
                           setIsScrollLocked(isScrubbing)
                         }
-                        onFocusedPlayerChange={handleFocusedPlayerChange}
                       />
                     ) : null}
                   </View>
@@ -256,8 +243,8 @@ export default function MediaViewer({
                 keyExtractor={(item, index) =>
                   item.type === "image"
                     ? ((typeof item.source === "string"
-                      ? item.source
-                      : item.source[0].uri) ?? index.toString())
+                        ? item.source
+                        : item.source[0].uri) ?? index.toString())
                     : item.source.source.length
                       ? item.source.source
                       : index.toString()
@@ -295,13 +282,13 @@ export default function MediaViewer({
                   } else if (
                     newIndex === row.length - 1 &&
                     event.nativeEvent.contentOffset.x >=
-                    event.nativeEvent.contentSize.width -
-                    event.nativeEvent.layoutMeasurement.width
+                      event.nativeEvent.contentSize.width -
+                        event.nativeEvent.layoutMeasurement.width
                   ) {
                     scrolledAwayX.current.setValue(
                       event.nativeEvent.contentSize.width -
-                      event.nativeEvent.layoutMeasurement.width -
-                      event.nativeEvent.contentOffset.x,
+                        event.nativeEvent.layoutMeasurement.width -
+                        event.nativeEvent.contentOffset.x,
                     );
                   }
                 }}

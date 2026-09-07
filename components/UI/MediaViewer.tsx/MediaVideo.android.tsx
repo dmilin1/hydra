@@ -1,5 +1,5 @@
 import { useEvent, useEventListener } from "expo";
-import { VideoPlayer, VideoView } from "expo-video";
+import { VideoView } from "expo-video";
 import { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
@@ -13,18 +13,13 @@ import { useSharedVideoPlayer } from "../../../utils/useSharedVideoPlayer";
 type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
-  onFocusedPlayerChange: (player: VideoPlayer, focused: boolean) => void;
 };
 
-function MediaVideo({
-  source,
-  focused,
-  onFocusedPlayerChange,
-}: MediaVideoProps) {
+function MediaVideo({ source, focused }: MediaVideoProps) {
   const { slideAnywhereToScrub } = useContext(PostSettingsContext);
   const { width, height } = useSafeAreaFrame();
 
-  const player = useSharedVideoPlayer(source.source, true);
+  const player = useSharedVideoPlayer(source.source);
 
   const videoTimeAtSeekStart = useRef(0);
   const wasPlayingAtSeekStart = useRef(false);
@@ -94,10 +89,6 @@ function MediaVideo({
       return;
     }
     player.play();
-    onFocusedPlayerChange(player, true);
-    return () => {
-      onFocusedPlayerChange(player, false);
-    };
   }, [focused, player]);
 
   return (

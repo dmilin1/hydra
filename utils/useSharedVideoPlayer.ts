@@ -14,33 +14,6 @@ const entries = new Map<string, Entry>();
 
 const backgroundPositions = new Map<string, number>();
 
-/**
- * In dev mode, when React rerenders a component, it calls logComponentRender
- * which iterates over all the properties of a component's old props. The
- * player has getter functions as properies that call native code. This means
- * that after we release the player, React will try to access the properties
- * and cause the app to crash. This fixes it by overriding all the getters.
- *
- * https://github.com/react/react/issues/35126
- * https://github.com/react/react/pull/36867
- */
-function devModePlayerFix(player: VideoPlayer) {
-  for (const key in player) {
-    Object.defineProperty(player, key, {
-      get() {
-        return undefined;
-      },
-    });
-  }
-}
-
-function destroyPlayer(player: VideoPlayer) {
-  player.release();
-  if (__DEV__) {
-    devModePlayerFix(player);
-  }
-}
-
 function releaseEntry(source: string, ownerId: string) {
   const entry = entries.get(source);
   if (!entry) {
@@ -55,7 +28,7 @@ function releaseEntry(source: string, ownerId: string) {
     if (Number.isFinite(position) && position > 0) {
       backgroundPositions.set(source, position);
     }
-    destroyPlayer(entry.player);
+    entry.player.release();
   }, 250);
 }
 
@@ -97,20 +70,29 @@ export function isPlayerShared(source: string): boolean {
 
 let hasUnmutedThisSession = false;
 
-AppState.addEventListener('change', (state) => {
-  if (state === 'background') {
+AppState.addEventListener("change", (state) => {
+  if (state === "background") {
     hasUnmutedThisSession = false;
   }
 });
 
 export function useSharedVideoPlayer(
   source: string,
-  canPlayAudio: boolean = false
-): VideoPlayer {
+  canPlayAudio?: boolean,
+): VideoPlayer;
+export function useSharedVideoPlayer(
+  source: string | null,
+  canPlayAudio?: boolean,
+): VideoPlayer | null;
+export function useSharedVideoPlayer(
+  source: string | null,
+  canPlayAudio: boolean = false,
+): VideoPlayer | null {
   const ownerId = useId();
-  const entry = getEntry(source, ownerId);
+  const entry = source ? getEntry(source, ownerId) : null;
 
   useEffect(() => {
+    if (!entry || !source) return;
     /**
      * This line is no-op normally, but fixes a leak during development fast refresh.
      * When React fast refreshes, it reruns useEffects. Which means we release and
@@ -121,18 +103,19 @@ export function useSharedVideoPlayer(
   }, [source]);
 
   useEffect(() => {
-    if (!canPlayAudio) return;
-    const muteVideosByDefault = KeyStore.getBoolean('muteVideosByDefault') ?? true;
+    if (!entry || !canPlayAudio) return;
+    const muteVideosByDefault =
+      KeyStore.getBoolean("muteVideosByDefault") ?? true;
     if (!muteVideosByDefault || hasUnmutedThisSession) {
       entry.player.muted = false;
-    };
+    }
     return () => {
       entry.player.muted = true;
-    }
+    };
   }, [source]);
 
   useEffect(() => {
-    if (!canPlayAudio) return;
+    if (!entry || !canPlayAudio) return;
     let unsubscribeVolPress: (() => void) | undefined = undefined;
     const startVolPress = () => {
       unsubscribeVolPress?.();
@@ -149,7 +132,7 @@ export function useSharedVideoPlayer(
         if (!muted) {
           hasUnmutedThisSession = true;
         }
-      }
+      },
     );
     return () => {
       unsubscribeMuted();
@@ -157,5 +140,5 @@ export function useSharedVideoPlayer(
     };
   }, [source]);
 
-  return entry.player;
+  return entry?.player ?? null;
 }

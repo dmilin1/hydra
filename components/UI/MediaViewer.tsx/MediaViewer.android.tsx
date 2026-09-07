@@ -1,5 +1,4 @@
 import * as ExpoOrientation from "expo-screen-orientation";
-import { VideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
 import {
@@ -86,7 +85,6 @@ export default function MediaViewer({
   const pagerEnabled = useSharedValue(true);
   const flickAway = useSharedValue(0);
 
-  const [focusedPlayer, setFocusedPlayer] = useState<VideoPlayer | null>(null);
   const overlayRef = useRef<MediaOverlayHandle>(null);
   const overlayTapStart = useRef<{
     x: number;
@@ -114,15 +112,6 @@ export default function MediaViewer({
     flickAway.value = withTiming(150, CLOSE_TIMING, () => {
       runOnJS(onClose)();
     });
-  };
-
-  const handleFocusedPlayerChange = (
-    player: VideoPlayer,
-    nowFocused: boolean,
-  ) => {
-    setFocusedPlayer((previous) =>
-      nowFocused ? player : previous === player ? null : previous,
-    );
   };
 
   const scrollToColumn = (column: number) => {
@@ -371,7 +360,6 @@ export default function MediaViewer({
             ref={overlayRef}
             post={currentPost ?? null}
             focusedItem={focusedItem}
-            player={focusedPlayer}
             albumIndex={columnIndex}
             albumSize={currentRowSize}
             onAlbumStep={handleTapToScrollRow}
@@ -399,7 +387,6 @@ export default function MediaViewer({
                   scrollX={scrollX}
                   columns={columns}
                   pagerEnabled={pagerEnabled}
-                  onFocusedPlayerChange={handleFocusedPlayerChange}
                 />
               ))}
             </Animated.View>
@@ -421,7 +408,6 @@ type RowStripProps = {
   scrollX: SharedValue<number>;
   columns: SharedValue<Record<number, number>>;
   pagerEnabled: SharedValue<boolean>;
-  onFocusedPlayerChange: (player: VideoPlayer, focused: boolean) => void;
 };
 
 function RowStrip({
@@ -435,7 +421,6 @@ function RowStrip({
   scrollX,
   columns,
   pagerEnabled,
-  onFocusedPlayerChange,
 }: RowStripProps) {
   const horizontalStyle = useAnimatedStyle(() => ({
     transform: [
@@ -479,7 +464,6 @@ function RowStrip({
               <MediaVideo
                 source={item.source}
                 focused={centerColumn === column && isRowFocused}
-                onFocusedPlayerChange={onFocusedPlayerChange}
               />
             )}
           </View>

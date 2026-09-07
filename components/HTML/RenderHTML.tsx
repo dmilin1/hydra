@@ -147,6 +147,7 @@ function InlineVideo({ videoId }: { videoId: string }) {
                 type: "video",
                 source: {
                   source: videoURL,
+                  hasAudio: false,
                 },
               },
             ],

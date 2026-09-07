@@ -1,5 +1,5 @@
 import { useEvent, useEventListener } from "expo";
-import { VideoPlayer, VideoView } from "expo-video";
+import { VideoView } from "expo-video";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
@@ -18,19 +18,13 @@ type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
   onScrubbingChange: (isScrubbing: boolean) => void;
-  onFocusedPlayerChange: (player: VideoPlayer, focused: boolean) => void;
 };
 
-function MediaVideo({
-  source,
-  focused,
-  onFocusedPlayerChange,
-  onScrubbingChange,
-}: MediaVideoProps) {
+function MediaVideo({ source, focused, onScrubbingChange }: MediaVideoProps) {
   const { slideAnywhereToScrub } = useContext(PostSettingsContext);
   const { width, height } = useSafeAreaFrame();
 
-  const player = useSharedVideoPlayer(source.source, true);
+  const player = useSharedVideoPlayer(source.source);
 
   const touchStart = useRef({
     x: 0,
@@ -133,10 +127,6 @@ function MediaVideo({
       return;
     }
     player.play();
-    onFocusedPlayerChange(player, true);
-    return () => {
-      onFocusedPlayerChange(player, false);
-    };
   }, [focused, player]);
 
   useEffect(() => {

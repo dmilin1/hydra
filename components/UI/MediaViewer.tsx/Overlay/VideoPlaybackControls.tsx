@@ -166,7 +166,7 @@ export function MuteButton({
         if (!hasAudio) {
           Alert.alert("This video does not have an audio track");
           return;
-        };
+        }
         player.muted = !player.muted;
         bumpAutoHide();
       }}
@@ -174,7 +174,7 @@ export function MuteButton({
       <Feather
         name={muted || !hasAudio ? "volume-x" : "volume-2"}
         size={20}
-        color={hasAudio ? "white" : '#888'}
+        color={hasAudio ? "white" : "#888"}
       />
     </Touchable>
   );

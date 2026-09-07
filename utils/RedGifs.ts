@@ -112,7 +112,7 @@ export default class Redgifs {
   static async getMedia(
     url: string,
     attemptsLeft = 1,
-  ): Promise<Post['videos'][number]> {
+  ): Promise<Post["videos"][number]> {
     const videoId = url.split(/watch\/|\?|#/)[1];
     let token = Redgifs.getStoredToken();
     if (!token) {
@@ -129,10 +129,17 @@ export default class Redgifs {
         },
       );
       if (res.status === 410) {
-        return { source: "", hasAudio: false, sourceLoadError: "Video has been deleted" };
+        return {
+          source: "",
+          hasAudio: false,
+          sourceLoadError: "Video has been deleted",
+        };
       }
       const json = (await res.json()) as RedGifResponse;
-      return { source: json.gif.urls.hd ?? json.gif.urls.sd, hasAudio: json.gif.hasAudio };
+      return {
+        source: json.gif.urls.hd ?? json.gif.urls.sd,
+        hasAudio: json.gif.hasAudio,
+      };
     } catch (_) {
       if (attemptsLeft > 0) {
         await Redgifs.refreshStoredToken();

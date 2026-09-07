@@ -35,6 +35,7 @@ const initialMediaViewerContext = {
   subscribeToVisibility:
     (_listener: VisibilityListener): (() => void) =>
     () => {},
+  getIsShowing: () => false,
 };
 
 export const MediaViewerContext = createContext(initialMediaViewerContext);
@@ -106,6 +107,7 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
           visibilityListeners.current.delete(listener);
         };
       },
+      getIsShowing: () => isShowing.current,
     }),
     [],
   );

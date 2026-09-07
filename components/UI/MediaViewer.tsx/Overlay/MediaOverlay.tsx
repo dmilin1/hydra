@@ -1,4 +1,3 @@
-import { VideoPlayer } from "expo-video";
 import {
   forwardRef,
   useEffect,
@@ -6,11 +5,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, AppState, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Post } from "../../../../api/Posts";
 import { PostDetail } from "../../../../api/PostDetail";
+import { useSharedVideoPlayer } from "../../../../utils/useSharedVideoPlayer";
 import { MediaItem } from "../types";
 import AlbumNavigation from "./AlbumNavigation";
 import { SaveMediaButton, ShareMediaButton } from "./MediaActionButtons";
@@ -36,7 +36,6 @@ export type MediaOverlayHandle = {
 type MediaOverlayProps = {
   post: Post | PostDetail | null;
   focusedItem: MediaItem | undefined;
-  player: VideoPlayer | null;
   albumIndex: number;
   albumSize: number;
   onAlbumStep: (direction: "left" | "right") => void;
@@ -50,19 +49,14 @@ type MediaOverlayProps = {
  */
 const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
   function MediaOverlay(
-    {
-      post,
-      focusedItem,
-      player,
-      albumIndex,
-      albumSize,
-      onAlbumStep,
-      closeViewer,
-    },
+    { post, focusedItem, albumIndex, albumSize, onAlbumStep, closeViewer },
     ref,
   ) {
     const insets = useSafeAreaInsets();
 
+    const [isBackgrounded, setIsBackgrounded] = useState(
+      AppState.currentState === "background",
+    );
     const [visible, setVisible] = useState(true);
     const visibleRef = useRef(true);
     const opacity = useRef(new Animated.Value(1));
@@ -73,6 +67,18 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
       focusedItem?.type === "video" && !focusedItem.source.sourceLoadError
         ? focusedItem
         : null;
+
+    /**
+     * We need to drop the player when the app is backgrounded or the player
+     * can't be discarded to reduce memory. This is essentially the
+     * MediaOverlay version of DismountWhenBackgrounded wrapping the video
+     * components.
+     */
+    const player = useSharedVideoPlayer(
+      videoItem && !isBackgrounded ? (videoItem.source.source ?? null) : null,
+      true,
+    );
+
     const showVideoControls = !!videoItem && !!player;
 
     const hasAudio = videoItem?.source.hasAudio ?? false;
@@ -112,6 +118,13 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
     useImperativeHandle(ref, () => ({
       toggle: () => setVisibility(!visibleRef.current),
     }));
+
+    useEffect(() => {
+      const subscription = AppState.addEventListener("change", (state) =>
+        setIsBackgrounded(state === "background"),
+      );
+      return () => subscription.remove();
+    }, []);
 
     /**
      * Playback drives the countdown: controls stay up while the video is

@@ -25,14 +25,17 @@ type VideoProps = {
 
 function Video({ video }: VideoProps) {
   const { theme } = useContext(ThemeContext);
-  const { subscribeToVisibility } = useContext(MediaViewerContext);
+  const { subscribeToVisibility, getIsShowing } =
+    useContext(MediaViewerContext);
   const progress = useRef(new Animated.Value(0)).current;
 
   const player = useSharedVideoPlayer(video.source);
 
   const [status, setStatus] = useState(player.status);
   const [error, setError] = useState<string | null>(null);
-  const [hideVideoView, setHideVideoView] = useState(false);
+  const [hideVideoView, setHideVideoView] = useState(
+    Platform.OS === "android" && getIsShowing(),
+  );
 
   useEventListener(player, "statusChange", (e) => {
     setStatus(e.status);

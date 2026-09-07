@@ -216,9 +216,7 @@ async function formatVideos(child: any): Promise<Post["videos"]> {
         },
       ];
     } else if (url.includes("redgifs.com")) {
-      return [
-        await Redgifs.getMedia(url)
-      ];
+      return [await Redgifs.getMedia(url)];
     }
   }
   return [];
