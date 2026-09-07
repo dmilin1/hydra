@@ -1,9 +1,9 @@
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import MaterialIcons from "@react-native-vector-icons/material-icons";
-import { useEventListener } from "expo";
+import { useEvent, useEventListener } from "expo";
 import { VideoPlayer } from "expo-video";
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { Alert, StyleSheet, Text } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
 import {
@@ -11,6 +11,7 @@ import {
   OverlayIsland,
   useOverlayInteraction,
 } from "./OverlayContext";
+import Feather from "@react-native-vector-icons/feather";
 
 const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
 const SKIP_SECONDS = 10;
@@ -144,29 +145,36 @@ export function PlaybackRateButton({ player }: { player: VideoPlayer }) {
 }
 
 export function MuteButton({
-  isMuted,
-  setIsMuted,
+  player,
+  hasAudio,
 }: {
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
+  player: VideoPlayer;
+  hasAudio: boolean;
 }) {
   const { bumpAutoHide } = useOverlayInteraction();
+
+  const muted = useEvent(player, "mutedChange", player).muted;
+
   return (
     <Touchable
       activeOpacity={0.2}
       animationDuration={{ in: 0, out: 150 }}
       style={styles.rateButton}
       accessibilityRole="button"
-      accessibilityLabel={isMuted ? "Unmute video" : "Mute video"}
+      accessibilityLabel={muted ? "Unmute video" : "Mute video"}
       onPress={() => {
-        setIsMuted(!isMuted);
+        if (!hasAudio) {
+          Alert.alert("This video does not have an audio track");
+          return;
+        };
+        player.muted = !player.muted;
         bumpAutoHide();
       }}
     >
-      <FontAwesome
-        name={isMuted ? "volume-off" : "volume-up"}
+      <Feather
+        name={muted || !hasAudio ? "volume-x" : "volume-2"}
         size={20}
-        color="white"
+        color={hasAudio ? "white" : '#888'}
       />
     </Touchable>
   );

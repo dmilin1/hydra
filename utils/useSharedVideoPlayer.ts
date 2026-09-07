@@ -1,6 +1,9 @@
 import { createVideoPlayer, VideoPlayer } from "expo-video";
 import { useEffect, useId } from "react";
 import VideoCache from "./VideoCache";
+import { onVolumeButtonPressed } from "../modules/volume-button-detector";
+import KeyStore from "./KeyStore";
+import { AppState } from "react-native";
 
 type Entry = {
   player: VideoPlayer;
@@ -45,7 +48,8 @@ function releaseEntry(source: string, ownerId: string) {
   }
   entry.owners.delete(ownerId);
   setTimeout(() => {
-    if (entry.owners.size > 0) return;
+    // A later release may have already destroyed this entry or replaced it in the map.
+    if (entry.owners.size > 0 || entries.get(source) !== entry) return;
     entries.delete(source);
     const position = entry.player.currentTime;
     if (Number.isFinite(position) && position > 0) {
@@ -63,7 +67,6 @@ function getEntry(source: string, ownerId: string): Entry {
   }
   const player = createVideoPlayer(VideoCache.makeCachedVideoSource(source));
   player.audioMixingMode = "mixWithOthers";
-  player.volume = 0;
   player.muted = true;
   player.loop = true;
   player.timeUpdateEventInterval = 1 / 15;
@@ -92,15 +95,67 @@ export function isPlayerShared(source: string): boolean {
   return (entries.get(source)?.owners.size ?? 0) > 1;
 }
 
-export function useSharedVideoPlayer(source: string): VideoPlayer {
+let hasUnmutedThisSession = false;
+
+AppState.addEventListener('change', (state) => {
+  if (state === 'background') {
+    hasUnmutedThisSession = false;
+  }
+});
+
+export function useSharedVideoPlayer(
+  source: string,
+  canPlayAudio: boolean = false
+): VideoPlayer {
   const ownerId = useId();
   const entry = getEntry(source, ownerId);
 
   useEffect(() => {
-    return () => {
-      releaseEntry(source, ownerId);
+    /**
+     * This line is no-op normally, but fixes a leak during development fast refresh.
+     * When React fast refreshes, it reruns useEffects. Which means we release and
+     * might not reacquire the player.
+     */
+    entry.owners.add(ownerId);
+    return () => releaseEntry(source, ownerId);
+  }, [source]);
+
+  useEffect(() => {
+    if (!canPlayAudio) return;
+    const muteVideosByDefault = KeyStore.getBoolean('muteVideosByDefault') ?? true;
+    if (!muteVideosByDefault || hasUnmutedThisSession) {
+      entry.player.muted = false;
     };
-  }, []);
+    return () => {
+      entry.player.muted = true;
+    }
+  }, [source]);
+
+  useEffect(() => {
+    if (!canPlayAudio) return;
+    let unsubscribeVolPress: (() => void) | undefined = undefined;
+    const startVolPress = () => {
+      unsubscribeVolPress?.();
+      if (!entry.player.muted) return;
+      unsubscribeVolPress = onVolumeButtonPressed(() => {
+        entry.player.muted = false;
+      });
+    };
+    startVolPress();
+    const { remove: unsubscribeMuted } = entry.player.addListener(
+      "mutedChange",
+      ({ muted }) => {
+        startVolPress();
+        if (!muted) {
+          hasUnmutedThisSession = true;
+        }
+      }
+    );
+    return () => {
+      unsubscribeMuted();
+      unsubscribeVolPress?.();
+    };
+  }, [source]);
 
   return entry.player;
 }

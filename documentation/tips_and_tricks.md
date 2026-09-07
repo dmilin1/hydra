@@ -37,8 +37,6 @@ For multi-image posts, swipe left and right to browse between images. An indicat
 
 ## Video Player
 
-Videos show a mute button in the full-screen controls. Enable **Mute Videos by Default** in Appearance settings to begin muted. Hydra remembers your mute choice until you leave the app, then restores the setting when you return. Using the device’s volume controls can also unmute the current video, whether you turn the volume up or down. On iOS 26 and later, Hydra also responds when iOS signals an intent to unmute, including at maximum volume. On older iOS versions, the media volume must actually change. If the volume controls leave a video muted, tap the mute button.
-
 Full-screen videos show playback controls when they open: **skip back/forward 10 seconds**, **play/pause**, and a **scrub bar with time codes** you can drag or tap to seek. The controls fade out after a few seconds while playing. Tap the video to bring them back or hide them.
 
 **Tap the playback speed button** (in the control bar) to cycle through 0.5x, 1x, 1.5x, and 2x playback speeds.

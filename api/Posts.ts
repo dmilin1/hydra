@@ -48,6 +48,7 @@ export type Post = {
   mediaAspectRatio: number;
   videos: {
     source: string;
+    hasAudio: boolean;
     sourceLoadError?: string;
   }[];
   poll: Poll | undefined;
@@ -144,6 +145,7 @@ async function formatVideos(child: any): Promise<Post["videos"]> {
     return [
       {
         source: child.data.media.reddit_video.hls_url,
+        hasAudio: child.data.media.reddit_video.has_audio,
       },
     ];
   }
@@ -158,6 +160,7 @@ async function formatVideos(child: any): Promise<Post["videos"]> {
         image.variants.mp4.resolutions.at(-1) ?? image.variants.mp4.source;
       return {
         source: decode(item.url),
+        hasAudio: false,
       };
     });
   }
@@ -188,6 +191,7 @@ async function formatVideos(child: any): Promise<Post["videos"]> {
           const url = decode(data.s.mp4);
           return {
             source: url,
+            hasAudio: false,
           };
         })
         .filter((video) => video !== null)
@@ -200,6 +204,7 @@ async function formatVideos(child: any): Promise<Post["videos"]> {
       return [
         {
           source: videoURL,
+          hasAudio: false,
         },
       ];
     } else if (url.includes("gfycat.com")) {
@@ -207,15 +212,12 @@ async function formatVideos(child: any): Promise<Post["videos"]> {
       return [
         {
           source: videoURL,
+          hasAudio: false,
         },
       ];
     } else if (url.includes("redgifs.com")) {
-      const { videoURL, sourceLoadError } = await Redgifs.getMediaURL(url);
       return [
-        {
-          source: videoURL,
-          sourceLoadError,
-        },
+        await Redgifs.getMedia(url)
       ];
     }
   }

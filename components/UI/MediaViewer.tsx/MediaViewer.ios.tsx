@@ -25,8 +25,6 @@ export default function MediaViewer({
   startingColumnIndex,
   onFocusedItemChange,
   getCurrentPost,
-  isMuted,
-  setIsMuted,
   onClose,
 }: MediaViewerProps) {
   const { width, height } = useSafeAreaFrame();
@@ -170,11 +168,11 @@ export default function MediaViewer({
             },
           ]}
           onTouchStart={(e) =>
-            (overlayTapStart.current = {
-              x: e.nativeEvent.locationX,
-              y: e.nativeEvent.locationY,
-              timestamp: Date.now(),
-            })
+          (overlayTapStart.current = {
+            x: e.nativeEvent.locationX,
+            y: e.nativeEvent.locationY,
+            timestamp: Date.now(),
+          })
           }
           onTouchEnd={(e) => {
             if (overlayTapStart.current) {
@@ -195,8 +193,6 @@ export default function MediaViewer({
             post={currentPost ?? null}
             focusedItem={focusedItem}
             player={focusedPlayer}
-            isMuted={isMuted}
-            setIsMuted={setIsMuted}
             albumIndex={currentColumnIndex}
             albumSize={currentRowSize}
             onAlbumStep={handleTapToScrollRow}
@@ -239,8 +235,6 @@ export default function MediaViewer({
                           setIsScrollLocked(isScrubbing)
                         }
                         onFocusedPlayerChange={handleFocusedPlayerChange}
-                        isMuted={isMuted}
-                        setIsMuted={setIsMuted}
                       />
                     ) : null}
                   </View>
@@ -262,8 +256,8 @@ export default function MediaViewer({
                 keyExtractor={(item, index) =>
                   item.type === "image"
                     ? ((typeof item.source === "string"
-                        ? item.source
-                        : item.source[0].uri) ?? index.toString())
+                      ? item.source
+                      : item.source[0].uri) ?? index.toString())
                     : item.source.source.length
                       ? item.source.source
                       : index.toString()
@@ -301,13 +295,13 @@ export default function MediaViewer({
                   } else if (
                     newIndex === row.length - 1 &&
                     event.nativeEvent.contentOffset.x >=
-                      event.nativeEvent.contentSize.width -
-                        event.nativeEvent.layoutMeasurement.width
+                    event.nativeEvent.contentSize.width -
+                    event.nativeEvent.layoutMeasurement.width
                   ) {
                     scrolledAwayX.current.setValue(
                       event.nativeEvent.contentSize.width -
-                        event.nativeEvent.layoutMeasurement.width -
-                        event.nativeEvent.contentOffset.x,
+                      event.nativeEvent.layoutMeasurement.width -
+                      event.nativeEvent.contentOffset.x,
                     );
                   }
                 }}

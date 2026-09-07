@@ -1,4 +1,3 @@
-import useVideoAudioControls from "./useVideoAudioControls";
 import { useEvent, useEventListener } from "expo";
 import { VideoPlayer, VideoView } from "expo-video";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -18,8 +17,6 @@ import { useSharedVideoPlayer } from "../../../utils/useSharedVideoPlayer";
 type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
   onScrubbingChange: (isScrubbing: boolean) => void;
   onFocusedPlayerChange: (player: VideoPlayer, focused: boolean) => void;
 };
@@ -27,15 +24,13 @@ type MediaVideoProps = {
 function MediaVideo({
   source,
   focused,
-  isMuted,
-  setIsMuted,
   onFocusedPlayerChange,
   onScrubbingChange,
 }: MediaVideoProps) {
   const { slideAnywhereToScrub } = useContext(PostSettingsContext);
   const { width, height } = useSafeAreaFrame();
 
-  const player = useSharedVideoPlayer(source.source);
+  const player = useSharedVideoPlayer(source.source, true);
 
   const touchStart = useRef({
     x: 0,
@@ -135,17 +130,11 @@ function MediaVideo({
   useEffect(() => {
     if (!focused) {
       player.pause();
-      player.muted = true;
-      player.volume = 0;
       return;
     }
-    player.muted = isMuted;
     player.play();
-    player.volume = 1;
     onFocusedPlayerChange(player, true);
     return () => {
-      player.volume = 0;
-      player.muted = true;
       onFocusedPlayerChange(player, false);
     };
   }, [focused, player]);
@@ -158,8 +147,6 @@ function MediaVideo({
       }
     };
   }, []);
-
-  useVideoAudioControls({ player, focused, isMuted, setIsMuted });
 
   return (
     <View

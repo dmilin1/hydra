@@ -69,7 +69,6 @@ function Video({ video }: VideoProps) {
           setHideVideoView(true);
         }
       } else {
-        player.muted = true;
         player.play();
         setHideVideoView(false);
       }

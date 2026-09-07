@@ -37,8 +37,6 @@ type MediaOverlayProps = {
   post: Post | PostDetail | null;
   focusedItem: MediaItem | undefined;
   player: VideoPlayer | null;
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
   albumIndex: number;
   albumSize: number;
   onAlbumStep: (direction: "left" | "right") => void;
@@ -56,8 +54,6 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
       post,
       focusedItem,
       player,
-      isMuted,
-      setIsMuted,
       albumIndex,
       albumSize,
       onAlbumStep,
@@ -78,6 +74,8 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
         ? focusedItem
         : null;
     const showVideoControls = !!videoItem && !!player;
+
+    const hasAudio = videoItem?.source.hasAudio ?? false;
 
     const cancelAutoHide = () => {
       if (hideTimeout.current) {
@@ -181,7 +179,7 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
                 ) : null}
                 <View style={styles.videoActionsContainer}>
                   <OverlayIsland style={styles.videoActionsRow}>
-                    <MuteButton isMuted={isMuted} setIsMuted={setIsMuted} />
+                    <MuteButton player={player} hasAudio={hasAudio} />
                     <PlaybackRateButton player={player} />
                   </OverlayIsland>
                   <OverlayIsland style={styles.videoActionsRow}>

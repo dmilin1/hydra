@@ -1,4 +1,3 @@
-import useVideoAudioControls from "./useVideoAudioControls";
 import { useEvent, useEventListener } from "expo";
 import { VideoPlayer, VideoView } from "expo-video";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -14,22 +13,18 @@ import { useSharedVideoPlayer } from "../../../utils/useSharedVideoPlayer";
 type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
   onFocusedPlayerChange: (player: VideoPlayer, focused: boolean) => void;
 };
 
 function MediaVideo({
   source,
   focused,
-  isMuted,
-  setIsMuted,
   onFocusedPlayerChange,
 }: MediaVideoProps) {
   const { slideAnywhereToScrub } = useContext(PostSettingsContext);
   const { width, height } = useSafeAreaFrame();
 
-  const player = useSharedVideoPlayer(source.source);
+  const player = useSharedVideoPlayer(source.source, true);
 
   const videoTimeAtSeekStart = useRef(0);
   const wasPlayingAtSeekStart = useRef(false);
@@ -96,22 +91,14 @@ function MediaVideo({
   useEffect(() => {
     if (!focused) {
       player.pause();
-      player.muted = true;
-      player.volume = 0;
       return;
     }
-    player.muted = isMuted;
     player.play();
-    player.volume = 1;
     onFocusedPlayerChange(player, true);
     return () => {
-      player.volume = 0;
-      player.muted = true;
       onFocusedPlayerChange(player, false);
     };
   }, [focused, player]);
-
-  useVideoAudioControls({ player, focused, isMuted, setIsMuted });
 
   return (
     <GestureDetector gesture={panGesture}>

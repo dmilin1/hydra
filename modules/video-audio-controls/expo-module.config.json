@@ -1,9 +1,0 @@
-{
-  "platforms": ["ios", "android"],
-  "ios": {
-    "modules": ["VideoAudioControlsModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.videoaudiocontrols.VideoAudioControlsModule"]
-  }
-}

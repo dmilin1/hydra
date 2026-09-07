@@ -63,8 +63,6 @@ export default function MediaViewer({
   startingColumnIndex,
   onFocusedItemChange,
   getCurrentPost,
-  isMuted,
-  setIsMuted,
   onClose,
 }: MediaViewerProps) {
   const { width, height } = useSafeAreaFrame();
@@ -374,8 +372,6 @@ export default function MediaViewer({
             post={currentPost ?? null}
             focusedItem={focusedItem}
             player={focusedPlayer}
-            isMuted={isMuted}
-            setIsMuted={setIsMuted}
             albumIndex={columnIndex}
             albumSize={currentRowSize}
             onAlbumStep={handleTapToScrollRow}
@@ -404,8 +400,6 @@ export default function MediaViewer({
                   columns={columns}
                   pagerEnabled={pagerEnabled}
                   onFocusedPlayerChange={handleFocusedPlayerChange}
-                  isMuted={isMuted}
-                  setIsMuted={setIsMuted}
                 />
               ))}
             </Animated.View>
@@ -427,8 +421,6 @@ type RowStripProps = {
   scrollX: SharedValue<number>;
   columns: SharedValue<Record<number, number>>;
   pagerEnabled: SharedValue<boolean>;
-  isMuted: boolean;
-  setIsMuted: (isMuted: boolean) => void;
   onFocusedPlayerChange: (player: VideoPlayer, focused: boolean) => void;
 };
 
@@ -443,8 +435,6 @@ function RowStrip({
   scrollX,
   columns,
   pagerEnabled,
-  isMuted,
-  setIsMuted,
   onFocusedPlayerChange,
 }: RowStripProps) {
   const horizontalStyle = useAnimatedStyle(() => ({
@@ -490,8 +480,6 @@ function RowStrip({
                 source={item.source}
                 focused={centerColumn === column && isRowFocused}
                 onFocusedPlayerChange={onFocusedPlayerChange}
-                isMuted={isMuted}
-                setIsMuted={setIsMuted}
               />
             )}
           </View>
