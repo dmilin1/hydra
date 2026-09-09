@@ -15,8 +15,13 @@ import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../GetHydraProButton";
 import { SubscriptionsContext } from "../../../contexts/SubscriptionsContext";
 import { MediaViewerContext } from "../../../contexts/MediaViewerContext";
+import GallerySeenTracker from "./gallerySeenTracker";
 
 type GalleryItem = {
+  post: Post;
+  postId: string;
+  mediaIndex: number;
+  mediaCount: number;
   mediaAspectRatio: number;
 } & (
   | {
@@ -34,6 +39,7 @@ type GalleryComponentProps = {
   loadMore: () => Promise<void>;
   fullyLoaded: boolean;
   hitFilterLimit: boolean;
+  onPostScrolledPast?: (post: Post) => void | Promise<void>;
 };
 
 const FREE_LIMIT_POST_COUNT = 100;
@@ -43,6 +49,7 @@ export default function GalleryComponent({
   loadMore,
   fullyLoaded,
   hitFilterLimit,
+  onPostScrolledPast,
 }: GalleryComponentProps) {
   const { theme } = useContext(ThemeContext);
   const { isPro } = useContext(SubscriptionsContext);
@@ -56,6 +63,9 @@ export default function GalleryComponent({
   const [hitFreeLimit, setHitFreeLimit] = useState(false);
 
   const flashListRef = useRef<FlashListRef<GalleryItem>>(null);
+  const seenTrackerRef = useRef(new GallerySeenTracker());
+  const lastScrollPositionRef = useRef(0);
+  const scrollingForwardRef = useRef(true);
 
   /**
    * This looks weird, but it's because we need to be able to fetch the post data
@@ -69,15 +79,25 @@ export default function GalleryComponent({
 
   const galleryMedia: GalleryItem[] = posts.flatMap((post) => {
     if (post.videos.length > 0) {
-      return post.videos.map((video) => ({
-        type: "video",
+      const mediaCount = post.videos.length;
+      return post.videos.map((video, mediaIndex) => ({
+        type: "video" as const,
         source: video,
+        post,
+        postId: post.id,
+        mediaIndex,
+        mediaCount,
         mediaAspectRatio: post.mediaAspectRatio,
       }));
     } else if (post.images.length > 0) {
-      return post.images.map((image) => ({
-        type: "image",
+      const mediaCount = post.images.length;
+      return post.images.map((image, mediaIndex) => ({
+        type: "image" as const,
         source: image,
+        post,
+        postId: post.id,
+        mediaIndex,
+        mediaCount,
         mediaAspectRatio: post.mediaAspectRatio,
       }));
     } else {
@@ -177,20 +197,51 @@ export default function GalleryComponent({
           </Touchable>
         )}
         getItemType={(item) => item.type}
-        keyExtractor={(item, index) =>
-          item.type === "image"
-            ? ((typeof item.source === "string"
-                ? item.source
-                : item.source[0].uri) ?? index.toString())
-            : item.source.source.length
-              ? item.source.source
-              : index.toString()
-        }
+        keyExtractor={(item) => `${item.postId}-${item.mediaIndex}`}
         masonry={true}
         optimizeItemArrangement={true}
         drawDistance={200}
         numColumns={2}
         showsVerticalScrollIndicator={false}
+        scrollEventThrottle={100}
+        onScroll={
+          onPostScrolledPast
+            ? (event) => {
+                const scrollPosition = event.nativeEvent.contentOffset.y;
+                const scrollDelta =
+                  scrollPosition - lastScrollPositionRef.current;
+                if (Math.abs(scrollDelta) > 1) {
+                  scrollingForwardRef.current = scrollDelta > 0;
+                }
+                lastScrollPositionRef.current = scrollPosition;
+              }
+            : undefined
+        }
+        onViewableItemsChanged={
+          onPostScrolledPast
+            ? ({ changed }) => {
+                const changedPosts = new Map<string, Post>();
+                for (const { item } of changed) {
+                  changedPosts.set(item.postId, item.post);
+                }
+
+                const newlySeenPostIds = seenTrackerRef.current.update(
+                  changed.map(({ item, isViewable }) => ({
+                    item,
+                    isViewable,
+                  })),
+                  scrollingForwardRef.current,
+                );
+
+                for (const postId of newlySeenPostIds) {
+                  const post = changedPosts.get(postId);
+                  if (post) {
+                    void onPostScrolledPast(post);
+                  }
+                }
+              }
+            : undefined
+        }
         onEndReachedThreshold={2}
         onEndReached={() => loadMoreData()}
         ListFooterComponent={
