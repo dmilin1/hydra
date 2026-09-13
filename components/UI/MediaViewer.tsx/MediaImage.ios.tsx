@@ -1,6 +1,5 @@
-import { useRecyclingState } from "@shopify/flash-list";
 import { Image, ImageSource } from "expo-image";
-import { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useContext, useLayoutEffect } from "react";
 import { ScrollView } from "react-native";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
@@ -26,38 +25,32 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
     y: number;
     timestamp: number;
   } | null>(null);
+  const awaitingZoomReset = useRef(false);
   const [isLoaded, setIsLoaded] = useState(false);
-
-  const [isZoomed, setIsZoomed] = useRecyclingState(
-    false,
-    [item.source],
-    () => {
-      scrollViewRef.current?.scrollResponderZoomTo({
-        x: 0,
-        y: 0,
-        width: width,
-        height: height,
-        animated: false,
-      });
-    },
-  );
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomResets, setZoomResets] = useState(0);
 
   const highestResSource =
     typeof item.source === "string"
       ? item.source
       : item.source[item.source.length - 1];
 
-  useEffect(() => {
-    return () => {
+  /**
+   * A zoom framed for the old shape is meaningless after a resize. Zooming out
+   * also emits the scroll event that lifts the pager lock.
+   */
+  useLayoutEffect(() => {
+    if (isZoomed) {
+      awaitingZoomReset.current = true;
       scrollViewRef.current?.scrollResponderZoomTo({
         x: 0,
         y: 0,
-        width: width,
-        height: height,
+        width,
+        height,
         animated: false,
       });
-    };
-  }, []);
+    }
+  }, [width, height]);
 
   return (
     <ScrollView
@@ -81,7 +74,7 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
        */
       contentOffset={{ x: 0, y: 0.5 }}
       contentContainerStyle={{
-        height: height + (isLoaded ? -1 : 10),
+        height: height + (isLoaded ? -1 : 10) + (zoomResets % 2),
       }}
       bounces={isZoomed}
       onTouchStart={(event) => {
@@ -120,6 +113,14 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
         if (newIsZoomed !== isZoomed) {
           setIsZoomed(newIsZoomed);
           setIsScrollLocked(newIsZoomed);
+        }
+        /**
+         * Fixes an issue where rotating the device while zoomed would
+         * break scrolling after zooming in again.
+         */
+        if (!newIsZoomed && awaitingZoomReset.current) {
+          awaitingZoomReset.current = false;
+          setZoomResets((count) => count + 1);
         }
       }}
     >
