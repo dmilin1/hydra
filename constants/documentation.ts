@@ -730,7 +730,7 @@ If you select a third-party browser that isn\'t installed, Hydra will offer to o
 
 ## Reader Mode
 
-When **\"Open links with\"** is set to **\"Hydra\"**, an additional **\"Open in reader mode\"** setting becomes available. Enabling this makes the built-in browser automatically open pages in reader mode, which strips away ads, navigation, and other clutter to show a clean, text-focused view of the page content. Reader mode is only available on iOS.
+When **\"Open links with\"** is set to **\"Hydra\"**, an additional **\"Open in reader mode\"** setting becomes available. Enabling this makes the built-in browser automatically open pages in reader mode, which strips away ads, navigation, and other clutter to show a clean, text-focused view of the page content. On Android, tap the book icon in the browser toolbar to enable or disable reader mode for the current browsing session. Pages without a readable article stay in their original view.
 
 ## Modify Links
 
@@ -854,7 +854,7 @@ Legal documents can be found on the main Settings page. Access Privacy Policy an
 
 **Open Links With**: Choose which browser opens external links. Options: Hydra (built-in browser), Default Browser (your device\'s default), Chrome, Brave, Firefox, Edge, Opera. Third-party browsers must be installed on your device. Configure in [External Links settings](hydra://settings/general/externalLinks).
 
-**Open in Reader Mode**: When \"Open links with\" is set to \"Hydra\", this toggle appears and makes the built-in browser automatically open pages in reader mode for a cleaner reading experience. This setting is only visible when using Hydra\'s built-in browser, and reader mode is only available on iOS.
+**Open in Reader Mode**: When \"Open links with\" is set to \"Hydra\", this toggle appears and makes the built-in browser automatically open pages in reader mode for a cleaner reading experience. This setting is only visible when using Hydra\'s built-in browser, and is supported on Android and iOS. On Android, the book icon in the browser toolbar toggles reader mode without changing this default.
 
 **Modify Links**: Write your own JavaScript to change how Hydra opens web links. Tap **\"Modify Links\"** in [External Links settings](hydra://settings/general/externalLinks) to write a script, add ready-made examples (like removing tracking parameters or always using HTTPS), and test it on a link before enabling it. Links that open inside Hydra, like Reddit posts and subreddits, are left alone. If your script has an error, the original link opens instead.
 

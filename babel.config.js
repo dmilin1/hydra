@@ -8,7 +8,7 @@ module.exports = function (api) {
       [
         'inline-import',
         {
-          extensions: ['.sql'],
+          extensions: ['.sql', 'Readability.js'],
         }
       ]
     ],

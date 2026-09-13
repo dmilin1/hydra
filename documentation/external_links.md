@@ -29,7 +29,7 @@ If you select a third-party browser that isn't installed, Hydra will offer to op
 
 ## Reader Mode
 
-When **"Open links with"** is set to **"Hydra"**, an additional **"Open in reader mode"** setting becomes available. Enabling this makes the built-in browser automatically open pages in reader mode, which strips away ads, navigation, and other clutter to show a clean, text-focused view of the page content. Reader mode is only available on iOS.
+When **"Open links with"** is set to **"Hydra"**, an additional **"Open in reader mode"** setting becomes available. Enabling this makes the built-in browser automatically open pages in reader mode, which strips away ads, navigation, and other clutter to show a clean, text-focused view of the page content. On Android, tap the book icon in the browser toolbar to enable or disable reader mode for the current browsing session. Pages without a readable article stay in their original view.
 
 ## Modify Links
 

@@ -38,6 +38,7 @@ import { StartupModalProvider } from "../contexts/StartupModalContext";
 import { ToastProvider } from "../contexts/ToastProvider";
 import { modifyStat, Stat } from "../db/functions/Stats";
 import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
+import InternalBrowser from "../components/HTML/InternalBrowser";
 import VideoCache from "../utils/VideoCache";
 
 LogBox.ignoreLogs([
@@ -120,6 +121,7 @@ function RootLayout() {
             <SubscriptionsProvider>
               <SettingsProvider>
                 <ToastProvider>
+                  <InternalBrowser />
                   <TabScrollProvider>
                     <NavigationProvider>
                       <ActionSheetProvider>

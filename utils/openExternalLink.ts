@@ -1,7 +1,8 @@
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import KeyStore from "./KeyStore";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
+import { openInternalBrowser } from "../components/HTML/InternalBrowser";
 import * as ExpoOrientation from "expo-screen-orientation";
 import { applyLinkScript } from "./linkScript";
 
@@ -85,6 +86,14 @@ export async function openExternalLink(
   const browserConfig = BROWSER_CONFIGS[browserSetting];
 
   if (browserSetting === "internalBrowser") {
+    if (Platform.OS === "android") {
+      openInternalBrowser(
+        url,
+        KeyStore.getBoolean(OPEN_IN_READER_MODE_KEY) ??
+          OPEN_IN_READER_MODE_DEFAULT,
+      );
+      return;
+    }
     ExpoOrientation.unlockAsync();
     await WebBrowser.openBrowserAsync(url, {
       presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
