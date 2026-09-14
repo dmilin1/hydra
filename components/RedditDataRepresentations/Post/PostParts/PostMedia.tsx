@@ -60,7 +60,15 @@ export default function PostMedia({
   ) : (
     <>
       {/* On Android, the blur cover becomes see-thru when the post has been read. Making the contents invisible fixes this problem. */}
-      <View style={{ opacity: Platform.OS === "android" && blur ? 0 : 1 }}>
+      <View
+        style={{ opacity: Platform.OS === "android" && blur ? 0 : 1 }}
+        /**
+         * Fabric does some magic view flattening behind the scenes that causes this view to sometimes
+         * not be rendered. This causes the text on posts to not get blurred. Setting collapsable to
+         * false hits to Fabric not to do the flattening optimization.
+         */
+        collapsable={false}
+      >
         {post.videos.length > 0 && !post.crossCommentLink ? (
           <View style={styles.videoContainer}>
             <VideoPlayer post={post} />
