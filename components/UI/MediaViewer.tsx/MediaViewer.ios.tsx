@@ -180,18 +180,18 @@ export default function MediaViewer({
           style={[styles.flex, { opacity, transform: [{ scale }] }]}
           onTouchStart={(e) =>
             (overlayTapStart.current = {
-              x: e.nativeEvent.locationX,
-              y: e.nativeEvent.locationY,
+              x: e.nativeEvent.pageX,
+              y: e.nativeEvent.pageY,
               timestamp: Date.now(),
             })
           }
           onTouchEnd={(e) => {
             if (!overlayTapStart.current) return;
             const { x, y, timestamp } = overlayTapStart.current;
-            const { locationX, locationY } = e.nativeEvent;
+            const { pageX, pageY } = e.nativeEvent;
             if (
-              Math.abs(locationX - x) < 10 &&
-              Math.abs(locationY - y) < 10 &&
+              Math.abs(pageX - x) < 10 &&
+              Math.abs(pageY - y) < 10 &&
               Date.now() - timestamp < 300
             ) {
               overlayRef.current?.toggle();
