@@ -269,6 +269,7 @@ export async function submitPost(
   title: string,
   content: string,
   flairId?: string,
+  sendReplies = true,
 ): Promise<string | undefined> {
   const response = await api(
     // Must use old.reddit.com because only oauth.reddit.com is supported otherwise
@@ -284,7 +285,7 @@ export async function submitPost(
         title,
         ...(flairId ? { flair_id: flairId } : {}),
         [kind === "self" ? "text" : "url"]: content,
-        sendreplies: "true",
+        sendreplies: sendReplies ? "true" : "false",
         extension: "json",
       },
     },
