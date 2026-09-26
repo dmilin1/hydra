@@ -26,6 +26,8 @@
 
 - 🚀 Add favorited subreddit reordering
 
+- 🚀 Add sort to search
+
 - 🐛 Figure out why Google sign in is missing in the login screen
 
 ### Easy
