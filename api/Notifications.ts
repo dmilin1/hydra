@@ -1,4 +1,4 @@
-import { HYDRA_SERVER_URL } from "../constants/HydraServer";
+import { hydraFetch } from "../constants/HydraServer";
 
 export async function registerNotifications(
   customerId: string,
@@ -6,13 +6,10 @@ export async function registerNotifications(
   accounts: { username: string; session: string }[],
 ) {
   try {
-    const response = await fetch(
-      `${HYDRA_SERVER_URL}/api/notifications/register`,
-      {
-        method: "POST",
-        body: JSON.stringify({ customerId, pushToken, accounts }),
-      },
-    );
+    const response = await hydraFetch("/api/notifications/register", {
+      method: "POST",
+      body: JSON.stringify({ customerId, pushToken, accounts }),
+    });
     return response.text();
   } catch (error) {
     console.error("error registering notifications", error);

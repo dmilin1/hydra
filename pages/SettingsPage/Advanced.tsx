@@ -8,11 +8,13 @@ import * as Clipboard from "expo-clipboard";
 import List from "../../components/UI/List";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import {
+  CUSTOM_HYDRA_SERVER_HEADERS_KEY,
   CUSTOM_HYDRA_SERVER_URL_KEY,
   DEFAULT_HYDRA_SERVER_URL,
+  parseCustomHeaders,
   USE_CUSTOM_HYDRA_SERVER_KEY,
 } from "../../constants/HydraServer";
-import { useMMKVBoolean } from "react-native-mmkv";
+import { useMMKVBoolean, useMMKVString } from "react-native-mmkv";
 import TextInput from "../../components/UI/TextInput";
 import KeyStore from "../../utils/KeyStore";
 import { hydraServerStatus } from "../../api/HydraServerStatus";
@@ -38,13 +40,21 @@ export default function Advanced() {
   const [customServerUrl, setCustomServerUrl] = useState(
     KeyStore.getString(CUSTOM_HYDRA_SERVER_URL_KEY) ?? DEFAULT_HYDRA_SERVER_URL,
   );
+  const [storedCustomHeaders, setStoredCustomHeaders] = useMMKVString(
+    CUSTOM_HYDRA_SERVER_HEADERS_KEY,
+  );
+  const customHeaders = storedCustomHeaders ?? "";
+
   const [isCustomServerValid, setIsCustomServerValid] = useState<
     boolean | null
   >(null);
 
   const validateCustomServerUrl = async (url: string) => {
     setIsCustomServerValid(null);
-    const isValid = await hydraServerStatus(url);
+    const isValid = await hydraServerStatus(
+      url,
+      parseCustomHeaders(customHeaders),
+    );
     setIsCustomServerValid(isValid);
     if (isValid) {
       KeyStore.set(CUSTOM_HYDRA_SERVER_URL_KEY, url);
@@ -55,7 +65,7 @@ export default function Advanced() {
     if (customServerUrl) {
       validateCustomServerUrl(customServerUrl);
     }
-  }, [customServerUrl, useCustomHydraServer]);
+  }, [customServerUrl, customHeaders, useCustomHydraServer]);
 
   return (
     <>
@@ -116,6 +126,23 @@ export default function Advanced() {
             value={customServerUrl}
             onChangeText={setCustomServerUrl}
           />
+          <TextInput
+            style={[
+              styles.hydraServerUrlInput,
+              styles.hydraServerHeadersInput,
+              {
+                backgroundColor: theme.tint,
+                borderColor: theme.divider,
+                color: theme.text,
+              },
+            ]}
+            placeholder={"Custom headers (optional), one per line\nName: value"}
+            value={customHeaders}
+            onChangeText={setStoredCustomHeaders}
+            multiline
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
           <View style={styles.hydraServerUrlStatus}>
             {isCustomServerValid === null && (
               <Text
@@ -170,6 +197,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 10,
     padding: 10,
+  },
+  hydraServerHeadersInput: {
+    minHeight: 80,
+    textAlignVertical: "top",
   },
   hydraServerUrlStatus: {
     marginHorizontal: 10,

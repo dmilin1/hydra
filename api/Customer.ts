@@ -1,4 +1,4 @@
-import { HYDRA_SERVER_URL } from "../constants/HydraServer";
+import { hydraFetch } from "../constants/HydraServer";
 
 type Customer = {
   customerId: string;
@@ -7,7 +7,7 @@ type Customer = {
 
 export async function registerCustomer(customer: Customer) {
   try {
-    await fetch(`${HYDRA_SERVER_URL}/api/customers/register`, {
+    await hydraFetch("/api/customers/register", {
       method: "POST",
       body: JSON.stringify(customer),
     });

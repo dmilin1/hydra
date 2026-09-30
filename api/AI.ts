@@ -1,27 +1,21 @@
 import { PostDetail } from "./PostDetail";
 import { Post } from "./Posts";
-import {
-  DEFAULT_HYDRA_SERVER_URL,
-  HYDRA_SERVER_URL,
-} from "../constants/HydraServer";
+import { DEFAULT_HYDRA_SERVER_URL, hydraFetch } from "../constants/HydraServer";
 
 export async function summarizePostDetails(
   customerId: string,
   post: PostDetail,
 ): Promise<string> {
-  const response = await fetch(
-    `${HYDRA_SERVER_URL}/api/ai/summarizePostDetails`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        customerId,
-        subreddit: post.subreddit,
-        postTitle: post.title,
-        postAuthor: post.author,
-        postText: post.text.slice(0, 15_000),
-      }),
-    },
-  );
+  const response = await hydraFetch("/api/ai/summarizePostDetails", {
+    method: "POST",
+    body: JSON.stringify({
+      customerId,
+      subreddit: post.subreddit,
+      postTitle: post.title,
+      postAuthor: post.author,
+      postText: post.text.slice(0, 15_000),
+    }),
+  });
   if (!response.ok) {
     throw new Error(`Failed to summarize post: ${response.status}`);
   }
@@ -36,7 +30,7 @@ export async function summarizePostComments(
   const topComments = post.comments
     .slice(0, 5)
     .map((comment) => comment.text.slice(0, 3_000));
-  const response = await fetch(`${HYDRA_SERVER_URL}/api/ai/summarizeComments`, {
+  const response = await hydraFetch("/api/ai/summarizeComments", {
     method: "POST",
     body: JSON.stringify({
       customerId,
@@ -58,7 +52,7 @@ export async function filterPosts(
   filterDescription: string,
   posts: Post[],
 ): Promise<Record<Post["id"], boolean>> {
-  const response = await fetch(`${HYDRA_SERVER_URL}/api/ai/filterPosts`, {
+  const response = await hydraFetch("/api/ai/filterPosts", {
     method: "POST",
     body: JSON.stringify({
       customerId,
@@ -89,7 +83,7 @@ export async function askQuestion(
   question: string,
   docs: string[],
 ): Promise<{ markdown: string }> {
-  const response = await fetch(`${HYDRA_SERVER_URL}/api/ai/askQuestion`, {
+  const response = await hydraFetch("/api/ai/askQuestion", {
     method: "POST",
     body: JSON.stringify({ question, docs }),
   });
