@@ -25,6 +25,8 @@ When viewing a post's comments, a floating button appears to help you navigate b
 
 You can reposition this button by holding it for about a second until move mode activates — a dark overlay with snap points will appear. Drag the button to any snap point and release to save its new position.
 
+If you'd rather not have the button floating over comments, turn off **Show Scroll to Next Button** in [Comment Appearance settings](hydra://settings/appearance/comments).
+
 ## Image Viewer
 
 **Double-tap** an image in full-screen view to zoom in (2x). Double-tap again to zoom back out. You can also **pinch to zoom** and pan around when zoomed in. **Swipe down** to close the full-screen image viewer.

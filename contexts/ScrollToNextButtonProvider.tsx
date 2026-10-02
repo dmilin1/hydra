@@ -13,6 +13,7 @@ import React, {
   useState,
 } from "react";
 import { ThemeContext } from "./SettingsContexts/ThemeContext";
+import { CommentSettingsContext } from "./SettingsContexts/CommentSettingsContext";
 import AntDesign from "@react-native-vector-icons/ant-design";
 import { useMMKVString } from "react-native-mmkv";
 import { ScrollToNextButtonContext } from "./ScrollToNextButtonContext";
@@ -26,6 +27,7 @@ export default function ScrollToNextButtonProvider({
   children,
 }: PropsWithChildren) {
   const { theme } = useContext(ThemeContext);
+  const { showScrollToNextButton } = useContext(CommentSettingsContext);
 
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -163,7 +165,7 @@ export default function ScrollToNextButtonProvider({
 
   return (
     <ScrollToNextButtonContext.Provider value={value}>
-      {containerHeight > 0 && containerWidth > 0 && (
+      {showScrollToNextButton && containerHeight > 0 && containerWidth > 0 && (
         <Animated.View
           style={[
             styles.skipToNextButton,

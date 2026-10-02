@@ -1,6 +1,6 @@
 ===METADATA===
 title: Appearance Settings
-description: Post appearance (compact mode, thumbnails on right, split view, subreddit display, text lengths, flairs, blur options, summaries, start summary collapsed, auto-play, default video mute, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, start summary collapsed, tap to collapse, collapse children only), tab appearance (username, hide on scroll), subreddits page appearance (show Popular, show All)
+description: Post appearance (compact mode, thumbnails on right, split view, subreddit display, text lengths, flairs, blur options, summaries, start summary collapsed, auto-play, default video mute, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, start summary collapsed, tap to collapse, collapse children only, scroll to next button), tab appearance (username, hide on scroll), subreddits page appearance (show Popular, show All)
 ===END METADATA===
 
 # Appearance Settings
@@ -62,6 +62,8 @@ Configure in [Comment Appearance settings](hydra://settings/appearance/comments)
 **Tap to Collapse**: When enabled, tapping on a comment collapses or expands its thread. When disabled, tapping a comment does nothing, so you can only collapse comments via long-press or swipe gestures. Enabled by default.
 
 **Collapse Children Only**: When enabled, collapsing a comment keeps its own text visible and hides only its replies, leaving a "more replies" row you can tap to expand.
+
+**Show Scroll to Next Button**: Shows the floating button on the comments page that jumps between top-level comments. Learn more in [Tips and Tricks](hydra://settings/guide/?doc=tips_and_tricks). Enabled by default.
 
 ## Tab Appearance
 

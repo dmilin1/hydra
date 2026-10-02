@@ -9,6 +9,7 @@ const initialValues = {
   collapseCommentSummary: false,
   tapToCollapseComment: true,
   collapseChildrenOnly: false,
+  showScrollToNextButton: true,
 };
 
 const initialCommentSettingsContext = {
@@ -20,6 +21,7 @@ const initialCommentSettingsContext = {
   toggleCollapseCommentSummary: (_newValue?: boolean) => {},
   toggleTapToCollapseComment: (_newValue?: boolean) => {},
   toggleCollapseChildrenOnly: (_newValue?: boolean) => {},
+  toggleShowScrollToNextButton: (_newValue?: boolean) => {},
 };
 
 export const CommentSettingsContext = createContext(
@@ -59,6 +61,11 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
   const collapseChildrenOnly =
     storedCollapseChildrenOnly ?? initialValues.collapseChildrenOnly;
 
+  const [storedShowScrollToNextButton, setShowScrollToNextButton] =
+    useMMKVBoolean("showScrollToNextButton");
+  const showScrollToNextButton =
+    storedShowScrollToNextButton ?? initialValues.showScrollToNextButton;
+
   return (
     <CommentSettingsContext.Provider
       value={{
@@ -90,6 +97,10 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
         collapseChildrenOnly,
         toggleCollapseChildrenOnly: (newValue = !collapseChildrenOnly) =>
           setCollapseChildrenOnly(newValue),
+
+        showScrollToNextButton,
+        toggleShowScrollToNextButton: (newValue = !showScrollToNextButton) =>
+          setShowScrollToNextButton(newValue),
       }}
     >
       {children}

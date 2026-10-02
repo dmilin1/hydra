@@ -33,6 +33,8 @@ export default function CommentAppearance() {
     toggleTapToCollapseComment,
     collapseChildrenOnly,
     toggleCollapseChildrenOnly,
+    showScrollToNextButton,
+    toggleShowScrollToNextButton,
   } = useContext(CommentSettingsContext);
 
   const showProAlert = (title: string, message: string) => {
@@ -206,6 +208,22 @@ export default function CommentAppearance() {
           ),
           text: "Collapse children only",
           onPress: () => toggleCollapseChildrenOnly(),
+        },
+        {
+          key: "showScrollToNextButton",
+          icon: <AntDesign name="down-circle" size={24} color={theme.text} />,
+          rightIcon: (
+            <Switch
+              trackColor={{
+                false: theme.iconSecondary,
+                true: theme.iconPrimary,
+              }}
+              value={showScrollToNextButton}
+              onValueChange={() => toggleShowScrollToNextButton()}
+            />
+          ),
+          text: "Show scroll to next button",
+          onPress: () => toggleShowScrollToNextButton(),
         },
       ]}
     />
