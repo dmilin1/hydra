@@ -9,6 +9,7 @@ import {
   GestureResponderEvent,
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
+import { useMMKVBoolean } from "react-native-mmkv";
 
 import MultiredditLink from "../components/RedditDataRepresentations/Multireddit/MultiredditLink";
 import SubredditCompactLink from "../components/RedditDataRepresentations/Subreddit/SubredditCompactLink";
@@ -18,6 +19,9 @@ import { useURLNavigation } from "../utils/navigation";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
 import { Subreddit } from "../api/Subreddits";
 import { Multi } from "../api/Multireddit";
+
+export const SHOW_POPULAR_BUTTON_STORAGE_KEY = "showSubredditsPopularButton";
+export const SHOW_ALL_BUTTON_STORAGE_KEY = "showSubredditsAllButton";
 
 type TopButtonItem = {
   type: "topButton";
@@ -230,8 +234,10 @@ export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
   const { subreddits, multis } = useContext(SubredditContext);
   const flashListRef = useRef<FlashListRef<ScrollItem>>(null);
+  const [showPopular] = useMMKVBoolean(SHOW_POPULAR_BUTTON_STORAGE_KEY);
+  const [showAll] = useMMKVBoolean(SHOW_ALL_BUTTON_STORAGE_KEY);
 
-  const scrollItems: ScrollItem[] = [
+  const topButtons: (TopButtonItem | false)[] = [
     {
       type: "topButton",
       title: "Home",
@@ -247,7 +253,7 @@ export default function Subreddits() {
       ),
       color: "#fa045e",
     },
-    {
+    showPopular !== false && {
       type: "topButton",
       title: "Popular",
       path: "https://www.reddit.com/r/popular",
@@ -255,7 +261,7 @@ export default function Subreddits() {
       icon: <Feather name="trending-up" size={24} color={theme.text} />,
       color: "#008ffe",
     },
-    {
+    showAll !== false && {
       type: "topButton",
       title: "All",
       path: "https://www.reddit.com/r/all",
@@ -271,6 +277,7 @@ export default function Subreddits() {
       color: "#02d82b",
     },
   ];
+  const scrollItems: ScrollItem[] = topButtons.filter((item) => !!item);
 
   if (subreddits["favorites"].length > 0) {
     scrollItems.push({

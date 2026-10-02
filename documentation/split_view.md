@@ -9,7 +9,7 @@ Split View is a wide screen feature that lets you view a post side-by-side with 
 
 ## Enabling Split View
 
-Split view is enabled by default on supported devices. To toggle it, go to [Appearance settings](hydra://settings/appearance) and use the **"Enable split view"** toggle. The setting only appears on devices that support split view.
+Split view is enabled by default on supported devices. To toggle it, go to [Post Appearance settings](hydra://settings/appearance/posts) and use the **"Enable split view"** toggle. The setting only appears on devices that support split view.
 
 When disabled, posts open in the standard full-screen view.
 
@@ -30,4 +30,4 @@ If the split view toggle doesn't appear in your settings, your device's screen m
 
 ---
 
-Split View is a tablet feature. Learn about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or configure split view in [Appearance settings](hydra://settings/appearance).
+Split View is a tablet feature. Learn about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or configure split view in [Post Appearance settings](hydra://settings/appearance/posts).

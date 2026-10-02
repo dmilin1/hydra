@@ -33,7 +33,7 @@ For multi-image posts, swipe left and right to browse between images. An indicat
 
 **Long press** an image in a post to share or save it. In the full-screen viewer, tap the image to show the overlay, then tap the **share button**.
 
-**Live Text** (iOS 16+) lets you select, copy, and look up text found in images. Enable it in [Appearance settings](hydra://settings/appearance).
+**Live Text** (iOS 16+) lets you select, copy, and look up text found in images. Enable it in [Post Appearance settings](hydra://settings/appearance/posts).
 
 ## Video Player
 
@@ -41,7 +41,7 @@ Full-screen videos show playback controls when they open: **skip back/forward 10
 
 **Tap the playback speed button** (in the control bar) to cycle through 0.5x, 1x, 1.5x, and 2x playback speeds.
 
-For posts with multiple videos or gifs, **swipe left and right** to move between them, just like image albums. If you preferred dragging anywhere on the video to scrub, turn on **"Slide anywhere to scrub videos"** in [Appearance settings](hydra://settings/appearance) — note that swiping between album items then goes back to using the arrow buttons.
+For posts with multiple videos or gifs, **swipe left and right** to move between them, just like image albums. If you preferred dragging anywhere on the video to scrub, turn on **"Slide anywhere to scrub videos"** in [Post Appearance settings](hydra://settings/appearance/posts) — note that swiping between album items then goes back to using the arrow buttons.
 
 The **download button** in the control bar saves the video straight to your photo library, and the **share button** opens your device's share sheet. A progress ring shows the download. Downloading Reddit-hosted videos with sound requires Hydra Pro; without Pro, Hydra offers to download them without sound. See the [Sharing guide](hydra://settings/guide/?doc=sharing) for more details.
 
@@ -81,7 +81,7 @@ Learn more about [Hydra Pro](hydra://settings/guide/?doc=hydra_pro).
 
 ## Other Useful Tips
 
-**Compact mode** in [Appearance settings](hydra://settings/appearance) shows more posts at once with a denser layout — great for quickly scanning a feed.
+**Compact mode** in [Post Appearance settings](hydra://settings/appearance/posts) shows more posts at once with a denser layout — great for quickly scanning a feed.
 
 **Per-subreddit sort memory** saves your preferred sort for each subreddit and multireddit, so you don't have to change it every time you visit. Configure default sorts in [Sorting settings](hydra://settings/general/sorting).
 
@@ -89,7 +89,7 @@ Learn more about [Hydra Pro](hydra://settings/guide/?doc=hydra_pro).
 
 **Multireddits** let you group related subreddits into combined feeds — useful for browsing by topic or interest. See [Organizing Feeds](hydra://settings/guide/?doc=organizing_feeds).
 
-**Split View** (iPad and tablets) shows posts side-by-side for a more efficient browsing experience. Enable it in [Appearance settings](hydra://settings/appearance).
+**Split View** (iPad and tablets) shows posts side-by-side for a more efficient browsing experience. Enable it in [Post Appearance settings](hydra://settings/appearance/posts).
 
 ---
 

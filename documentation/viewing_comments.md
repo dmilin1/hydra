@@ -19,7 +19,7 @@ Comments can also contain inline media. Videos embedded in a comment appear as a
 
 ## Navigating Comment Threads
 
-Tap a comment to collapse or expand its thread (this behavior can be disabled via the "Tap to Collapse" toggle in [Appearance settings](hydra://settings/appearance)). Collapsed threads show only the top comment. Child comments remember their collapsed state when a parent thread is collapsed and re-expanded.
+Tap a comment to collapse or expand its thread (this behavior can be disabled via the "Tap to Collapse" toggle in [Comment Appearance settings](hydra://settings/appearance/comments)). Collapsed threads show only the top comment. Child comments remember their collapsed state when a parent thread is collapsed and re-expanded.
 
 A floating navigation button lets you jump between top-level comments. Tap to go to the next comment, or long-press to go to the previous one. You can drag the button to reposition it on screen.
 
@@ -43,11 +43,11 @@ Configure swipe gestures for comments in [Gestures settings](hydra://settings/ge
 
 ## Special Comment Types
 
-**Stickied** comments are pinned to the top of a thread by moderators, marked with a pin icon. **Moderator** comments are highlighted in a distinct color. **OP** comments from the post author are color-coded with an "OP" badge. **AutoModerator** comments come from Reddit's automated moderation bot and are auto-collapsed by default (configurable in [Appearance settings](hydra://settings/appearance)). **Deleted/removed** comments show as "[deleted]" or "[removed]" but the thread structure remains visible.
+**Stickied** comments are pinned to the top of a thread by moderators, marked with a pin icon. **Moderator** comments are highlighted in a distinct color. **OP** comments from the post author are color-coded with an "OP" badge. **AutoModerator** comments come from Reddit's automated moderation bot and are auto-collapsed by default (configurable in [Comment Appearance settings](hydra://settings/appearance/comments)). **Deleted/removed** comments show as "[deleted]" or "[removed]" but the thread structure remains visible.
 
 ## Comment Appearance
 
-Customize how comments look in [Appearance settings](hydra://settings/appearance):
+Customize how comments look in [Comment Appearance settings](hydra://settings/appearance/comments):
 
 - **Right side vote indicators** — shows a colored border on the right edge of comments you've voted on
 - **Collapse AutoModerator** — auto-collapse AutoModerator comments (on by default)

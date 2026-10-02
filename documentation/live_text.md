@@ -15,8 +15,8 @@ Live Text requires iOS 15 or newer on a device with an A12 chip or later. It mus
 
 Live Text is disabled by default because it interferes with image long press gestures. To enable it:
 
-1. Go to [Appearance settings](hydra://settings/appearance)
-2. Under **"Post Appearance Settings"**, enable **"Live text"**
+1. Go to [Post Appearance settings](hydra://settings/appearance/posts)
+2. Enable **"Live text"**
 
 ## Using Live Text
 
@@ -38,4 +38,4 @@ If Live Text isn't working:
 
 ---
 
-Learn more about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or go to [Appearance settings](hydra://settings/appearance).
+Learn more about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or go to [Post Appearance settings](hydra://settings/appearance/posts).

@@ -11,7 +11,7 @@ AI Summaries is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature tha
 
 Post summaries provide a brief overview of long text posts. When you open a post, a summary appears below the post title in a bordered box labeled **"Summary."** Summaries are only generated for text posts that are long enough to benefit from one — short posts won't show a summary. You can tap the summary to collapse or expand it.
 
-To toggle post summaries, go to [Appearance settings](hydra://settings/appearance) and find **"Show post summary"** under **Post Appearance Settings**. This setting is enabled by default for Pro users.
+To toggle post summaries, go to [Post Appearance settings](hydra://settings/appearance/posts) and find **"Show post summary"**. This setting is enabled by default for Pro users.
 
 ## Comment Summaries
 
@@ -19,11 +19,11 @@ Comment summaries provide an overview of the discussion by summarizing the top c
 
 You can tap the comment summary to collapse or expand it.
 
-To toggle comment summaries, go to [Appearance settings](hydra://settings/appearance) and find **"Show comment summary"** under **Comment Appearance Settings**. This setting is enabled by default for Pro users.
+To toggle comment summaries, go to [Comment Appearance settings](hydra://settings/appearance/comments) and find **"Show comment summary"**. This setting is enabled by default for Pro users.
 
 ## Starting Summaries Collapsed
 
-If you'd rather summaries stay out of the way until you want them, enable **"Start summary collapsed"** in [Appearance settings](hydra://settings/appearance). Once summaries are enabled, the toggle appears below **"Show post summary"** under **Post Appearance Settings** and below **"Show comment summary"** under **Comment Appearance Settings**. A collapsed summary shows just its header and is only generated once you tap to expand it.
+If you'd rather summaries stay out of the way until you want them, enable **"Start summary collapsed"** in [Post Appearance settings](hydra://settings/appearance/posts) or [Comment Appearance settings](hydra://settings/appearance/comments). Once summaries are enabled, the toggle appears below **"Show post summary"** or **"Show comment summary"**. A collapsed summary shows just its header and is only generated once you tap to expand it.
 
 ## How Summaries Work
 

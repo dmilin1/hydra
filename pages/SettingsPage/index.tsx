@@ -2,7 +2,11 @@ import React, { lazy, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 
 import Advanced from "./Advanced";
-import Appearance from "./Appearance";
+import AppearanceRoot from "./Appearance/AppearanceRoot";
+import CommentAppearance from "./Appearance/CommentAppearance";
+import PostAppearance from "./Appearance/PostAppearance";
+import SubredditsAppearance from "./Appearance/SubredditsAppearance";
+import TabAppearance from "./Appearance/TabAppearance";
 import DataUse from "./DataUse";
 import Filters from "./General/Filters";
 import GeneralRoot from "./General/GeneralRoot";
@@ -74,7 +78,15 @@ export default function SettingsPage({
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/themeMaker" && <ThemeMaker />}
-        {relativePath === "settings/appearance" && <Appearance />}
+        {relativePath === "settings/appearance" && <AppearanceRoot />}
+        {relativePath === "settings/appearance/posts" && <PostAppearance />}
+        {relativePath === "settings/appearance/comments" && (
+          <CommentAppearance />
+        )}
+        {relativePath === "settings/appearance/tabs" && <TabAppearance />}
+        {relativePath === "settings/appearance/subreddits" && (
+          <SubredditsAppearance />
+        )}
 
         {relativePath === "settings/appIcon" && <AppIcon />}
         {relativePath.includes("settings/appIconDetails/") && (

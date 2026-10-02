@@ -15,7 +15,7 @@ You can also vote using swipe gestures if configured in [Gestures settings](hydr
 
 ## Vote Indicators
 
-The arrow next to a post or comment's score changes color and direction to show your current vote. You can also enable **Right side vote indicators** for comments in [Appearance settings](hydra://settings/appearance), which adds a colored border on the right edge of comments you've voted on.
+The arrow next to a post or comment's score changes color and direction to show your current vote. You can also enable **Right side vote indicators** for comments in [Comment Appearance settings](hydra://settings/appearance/comments), which adds a colored border on the right edge of comments you've voted on.
 
 ## Understanding Scores
 

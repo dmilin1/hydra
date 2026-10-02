@@ -27,7 +27,7 @@ Feeds use infinite scrolling. Content loads automatically as you scroll. Pull do
 
 ## Split View (iPad and Tablets)
 
-On iPads and tablets, enable split view in [Appearance settings](hydra://settings/appearance) to show posts side-by-side with your feed. See the [Split View guide](hydra://settings/guide/?doc=split_view) for details.
+On iPads and tablets, enable split view in [Post Appearance settings](hydra://settings/appearance/posts) to show posts side-by-side with your feed. See the [Split View guide](hydra://settings/guide/?doc=split_view) for details.
 
 ## Troubleshooting
 
