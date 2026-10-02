@@ -14,133 +14,79 @@ import { StackActions } from "@react-navigation/native";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v4.2.0",
+  updateKey: "v4.3.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
-  proFeatures: [
-    {
-      title: "Export Videos with Audio",
-      description:
-        "Shared and downloaded videos now automatically mux the audio track into the saved video file.",
-    },
-    {
-      title: "Collapsed Summaries",
-      description:
-        "Make post and comment summaries start collapsed. Enable this under Settings => Appearance => Post/Comment section => Start summary collapsed.",
-    },
-    {
-      title: "No Automod in Summaries",
-      description:
-        "Template automoderator comments will be ignored in comment summaries.",
-    },
-    {
-      title: "Smarter Post Filters",
-      description:
-        "The smart post filter has been upgraded to use a better model. This should help reduce the number of false positives and false negatives for the filter you've written in Settings => General => Filters => Smart Post Filter.",
-    },
-  ] as { title: string; description: string }[],
+  proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Share as Image",
+      title: "Mute Videos by Default",
       description:
-        "Export a post or a comment thread as an image. Long press on a comment or press the ... button while inside a post to open up the Share as Image menu. Upgrade to Hydra Pro to remove the small Hydra watermark.",
+        "Pressing a volume button or the unmute button in the media viewer will unmute videos for the rest of the session. Videos will be muted again when you leave the app. You can disable this in Settings => Appearance => Posts => Mute Videos by Default.",
     },
     {
-      title: "Media Player Redesign",
+      title: "Chat",
       description:
-        "The new media player adds new controls and a more intuitive UI. It also comes with significant performance improvements. Swipe anywhere to seek in a video is now off by default. You can reenable it in Settings => Appearance => Slide anywhere to scrub videos.",
+        'Open Chat by pressing the chat icon in the top right corner of the Inbox tab. When viewing a user\'s profile, press the "Message" button in the ... menu to open a chat with the user.',
     },
     {
-      title: "Better Gallery Mode Support",
+      title: "Smarter Trending Subreddits",
       description:
-        "Gallery Mode can now be opened when viewing your saved posts, your upvoted/downvoted posts, and on user pages.",
+        "The algorithm for loading trending subreddits in the Search tab has been improved to give more relevant results.",
     },
     {
-      title: "Follow Users",
+      title: "Hide Next Comment Button",
       description:
-        "When on a user page, you can now follow and unfollow users. Press the ... button in the top right corner of a user page to see these options.",
+        "The next comment button in the comment view can be hidden in Settings => Appearance => Comments => Show Scroll to Next Button.",
     },
     {
-      title: "Remap Outbound Links",
+      title: "Hide Popular & All",
       description:
-        "Write custom JavaScript to remap outbound links. For example, you can redirect all outbound links from x.com to xcancel.com. Set this up in Settings => General => External Links => Modify Links.",
+        "The Popular and All buttons in the subreddit list can be hidden in Settings => Appearance => Subreddits => Show Popular / Show All.",
     },
     {
-      title: "Download Progress Indicator",
+      title: "Disable Inbox Replies",
       description:
-        "When downloading or sharing media, a progress circle appears around the button indicating download progress.",
+        'When making a post, you\'ll now see a new "Send replies to my inbox" option. When disabled, you will no longer receive replies to that post in your inbox.',
     },
     {
-      title: "Toast Indicators",
+      title: "Media Viewer Performance",
       description:
-        "Previously, many actions in Hydra would display a blocking alert. These have been replaced with a non intrusive toast that slides in from the top of the screen.",
+        "The media viewer has been optimized to reduce render cycles. Changing device orientation should no longer show a temporary blank screen.",
     },
     {
-      title: "Updated Guide",
+      title: "Deep Linking for Android",
       description:
-        "The guide's contents have been updated to align more closely with all the features and changes added to Hydra since it was first built. Check it out in Settings => Guide.",
-    },
-    {
-      title: "Reorganized Settings",
-      description:
-        "Settings are now organized into groups to make options easier to find. The settings tab now has links to Hydra related websites, servers, and subreddits.",
-    },
-    {
-      title: "Added a Tip Jar",
-      description:
-        "I've had a few people tell me they aren't interested in Hydra Pro, but would still like a way to contribute. You can access this in Settings => Tip Jar.",
-    },
-    {
-      title: "Improved Comments Performance",
-      description: "Very long comment sections should render a bit faster now.",
+        "On Android, Hydra can automatically open when you click links to Reddit's website. Go to Settings => General => Open in Hydra to enable this.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description: "Videos would sometimes display as a black screen.",
+      description:
+        "The login page could sometimes freeze or report a browser error, causing login to fail.",
     },
     {
       description:
-        "Image thumbnails in compact mode would show up on the wrong post for link posts and multi image posts.",
+        "The audio track on videos could stutter after rotating the device.",
     },
     {
       description:
-        "RedGif videos would load forever if they had been deleted. They now show an indicator.",
+        "Pan gestures on zoomed in images would sometimes be counted as a tap by the media viewer overlay.",
     },
     {
       description:
-        "Trying to load deleted RedGif videos would result in being rate limited.",
-    },
-    {
-      description: "Sorting by top would lock the app on Android.",
+        "Text bodies in NSFW or spoiler posts would sometimes not be blurred correctly.",
     },
     {
       description:
-        "Subreddit image icons could be slow to load on a bad connection.",
-    },
-    {
-      description: "Certain subreddit images would fail to load.",
-    },
-    {
-      description: "Posts linking to Imgur would show a link, but no image.",
+        "In certain cases, Hydra would fail to indicate when a user is banned.",
     },
     {
       description:
-        "Posts made in Hydra would not get inbox replies in certain cases.",
-    },
-    {
-      description:
-        "The inbox tab would not immediately update the unread message badge counter when opening an unread message.",
-    },
-    {
-      description:
-        "User pages would load forever instead of indicating if they had no posts or were set to private.",
+        "Certain gestures would cause Hydra to crash after backgrounding the app.",
     },
   ] as { description: string }[],
-  notes: [
-    "Apologies for the long delay between updates. A significant amount of work over the last few months has gone into porting Hydra to Android. Hydra for Android is now in closed beta testing and should be publicly available soon!",
-    "Many of you have requested tweaks to the media viewer. I want to honor those requests, and they will be my next priority after finishing the Android port.",
-  ] as string[],
+  notes: [] as string[],
 };
 
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {

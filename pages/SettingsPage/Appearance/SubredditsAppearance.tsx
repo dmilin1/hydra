@@ -26,7 +26,7 @@ export default function SubredditsAppearance() {
 
   return (
     <List
-      title="Subreddits Page Appearance Settings"
+      title="Subreddits Appearance Settings"
       items={[
         {
           key: "showPopularButton",

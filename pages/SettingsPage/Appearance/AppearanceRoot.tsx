@@ -41,7 +41,7 @@ export default function AppearanceRoot() {
         {
           key: "subreddits",
           icon: <Feather name="list" size={22} color={theme.text} />,
-          text: "Subreddits Page",
+          text: "Subreddits",
           onPress: () => pushURL("hydra://settings/appearance/subreddits"),
         },
       ]}
