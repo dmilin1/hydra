@@ -27,6 +27,7 @@ import { GesturesContext } from "../../../contexts/SettingsContexts/GesturesCont
 import useComponentActions from "../../../utils/useComponentActions";
 import useContextMenu from "../../../utils/useContextMenu";
 import { Touchable } from "react-native-gesture-handler";
+import * as Haptics from "expo-haptics";
 
 type PostComponentProps = {
   post: Post;
@@ -50,6 +51,7 @@ export default function PostComponent({
     postTitleLength,
     postTextLength,
     showPostFlair,
+    showFeedVoteButtons,
     showThumbnailsOnRightSide,
   } = useContext(PostSettingsContext);
 
@@ -376,9 +378,14 @@ export default function PostComponent({
                 />
               )}
             </View>
-            <View>
+            <View style={showFeedVoteButtons ? styles.feedFooter : undefined}>
               <View style={styles.footerLeft}>
-                <View style={styles.subAndAuthorContainer}>
+                <View
+                  style={[
+                    styles.subAndAuthorContainer,
+                    showFeedVoteButtons && { flexWrap: "nowrap" },
+                  ]}
+                >
                   {post.isStickied && (
                     <AntDesign
                       name="pushpin"
@@ -422,12 +429,19 @@ export default function PostComponent({
                     by{" "}
                   </Text>
                   <Touchable
+                    style={
+                      showFeedVoteButtons
+                        ? { flexShrink: 1, minWidth: 0 }
+                        : undefined
+                    }
                     activeOpacity={0.5}
                     onPress={() =>
                       pushURL(`https://www.reddit.com/user/${post.author}`)
                     }
                   >
                     <Text
+                      numberOfLines={showFeedVoteButtons ? 1 : undefined}
+                      ellipsizeMode="tail"
                       style={[
                         styles.boldedSmallText,
                         {
@@ -444,6 +458,7 @@ export default function PostComponent({
                 <View style={styles.metadataContainer}>
                   <Feather
                     name={
+                      !showFeedVoteButtons &&
                       post.userVote === VoteOption.DownVote
                         ? "arrow-down"
                         : "arrow-up"
@@ -452,12 +467,7 @@ export default function PostComponent({
                     color={currentVoteColor}
                   />
                   <Text
-                    style={[
-                      styles.metadataText,
-                      {
-                        color: currentVoteColor,
-                      },
-                    ]}
+                    style={[styles.metadataText, { color: currentVoteColor }]}
                   >
                     {post.upvotes}
                   </Text>
@@ -489,7 +499,79 @@ export default function PostComponent({
                   </Text>
                 </View>
               </View>
-              <View style={styles.footerRight} />
+              {showFeedVoteButtons && (
+                <View style={styles.feedVoteButtons}>
+                  <Touchable
+                    style={[
+                      styles.feedVoteButton,
+                      post.userVote === VoteOption.UpVote && {
+                        backgroundColor: theme.upvote,
+                      },
+                    ]}
+                    hitSlop={{ top: 3, bottom: 3, left: 3, right: 3 }}
+                    onPress={() => {
+                      void Haptics.impactAsync(
+                        Haptics.ImpactFeedbackStyle.Light,
+                      );
+                      void voteOnPost(VoteOption.UpVote);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      post.userVote === VoteOption.UpVote
+                        ? "Remove upvote"
+                        : "Upvote"
+                    }
+                    accessibilityState={{
+                      selected: post.userVote === VoteOption.UpVote,
+                    }}
+                  >
+                    <Feather
+                      name="arrow-up"
+                      size={32}
+                      color={
+                        post.userVote === VoteOption.UpVote
+                          ? theme.text
+                          : theme.subtleText
+                      }
+                    />
+                  </Touchable>
+
+                  <Touchable
+                    style={[
+                      styles.feedVoteButton,
+                      post.userVote === VoteOption.DownVote && {
+                        backgroundColor: theme.downvote,
+                      },
+                    ]}
+                    hitSlop={{ top: 3, bottom: 3, left: 3, right: 3 }}
+                    onPress={() => {
+                      void Haptics.impactAsync(
+                        Haptics.ImpactFeedbackStyle.Light,
+                      );
+                      void voteOnPost(VoteOption.DownVote);
+                    }}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      post.userVote === VoteOption.DownVote
+                        ? "Remove downvote"
+                        : "Downvote"
+                    }
+                    accessibilityState={{
+                      selected: post.userVote === VoteOption.DownVote,
+                    }}
+                  >
+                    <Feather
+                      name="arrow-down"
+                      size={32}
+                      color={
+                        post.userVote === VoteOption.DownVote
+                          ? theme.text
+                          : theme.subtleText
+                      }
+                    />
+                  </Touchable>
+                </View>
+              )}
             </View>
           </View>
           {post.saved && (
@@ -515,6 +597,24 @@ export default function PostComponent({
 }
 
 const styles = StyleSheet.create({
+  feedFooter: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 8,
+  },
+  feedVoteButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexShrink: 0,
+    gap: 10,
+  },
+  feedVoteButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   postContainer: {
     flex: 1,
     paddingVertical: 12,

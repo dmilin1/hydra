@@ -46,6 +46,8 @@ export default function Appearance() {
     changeLinkDescriptionLength,
     showPostFlair,
     toggleShowPostFlair,
+    showFeedVoteButtons,
+    toggleShowFeedVoteButtons,
     blurNSFW,
     toggleBlurNSFW,
     blurSpoilers,
@@ -163,29 +165,29 @@ export default function Appearance() {
           },
           ...(postCompactMode
             ? [
-                {
-                  key: "showThumbnailsOnRightSide",
-                  icon: (
-                    <MaterialCommunityIcons
-                      name="image-outline"
-                      size={24}
-                      color={theme.text}
-                    />
-                  ),
-                  rightIcon: (
-                    <Switch
-                      trackColor={{
-                        false: theme.iconSecondary,
-                        true: theme.iconPrimary,
-                      }}
-                      value={showThumbnailsOnRightSide}
-                      onValueChange={() => toggleShowThumbnailsOnRightSide()}
-                    />
-                  ),
-                  text: "Show thumbnails on right",
-                  onPress: () => toggleShowThumbnailsOnRightSide(),
-                },
-              ]
+              {
+                key: "showThumbnailsOnRightSide",
+                icon: (
+                  <MaterialCommunityIcons
+                    name="image-outline"
+                    size={24}
+                    color={theme.text}
+                  />
+                ),
+                rightIcon: (
+                  <Switch
+                    trackColor={{
+                      false: theme.iconSecondary,
+                      true: theme.iconPrimary,
+                    }}
+                    value={showThumbnailsOnRightSide}
+                    onValueChange={() => toggleShowThumbnailsOnRightSide()}
+                  />
+                ),
+                text: "Show thumbnails on right",
+                onPress: () => toggleShowThumbnailsOnRightSide(),
+              },
+            ]
             : []),
           {
             key: "splitViewEnabled",
@@ -274,6 +276,22 @@ export default function Appearance() {
             ),
             text: "Show post flairs",
             onPress: () => toggleShowPostFlair(),
+          },
+          {
+            key: "showFeedVoteButtons",
+            icon: <Feather name="arrow-up" size={24} color={theme.text} />,
+            rightIcon: (
+              <Switch
+                trackColor={{
+                  false: theme.iconSecondary,
+                  true: theme.iconPrimary,
+                }}
+                value={showFeedVoteButtons}
+                onValueChange={() => toggleShowFeedVoteButtons()}
+              />
+            ),
+            text: "Show vote buttons in feed",
+            onPress: () => toggleShowFeedVoteButtons(),
           },
           {
             key: "blurSpoilers",
