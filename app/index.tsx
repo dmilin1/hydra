@@ -10,7 +10,7 @@ import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useState } from "react";
-import { AppState, LogBox } from "react-native";
+import { AppState, LogBox, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableFreeze } from "react-native-screens";
@@ -38,6 +38,7 @@ import { StartupModalProvider } from "../contexts/StartupModalContext";
 import { ToastProvider } from "../contexts/ToastProvider";
 import { modifyStat, Stat } from "../db/functions/Stats";
 import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
+import ContextMenuSheet from "../components/UI/ContextMenuSheet";
 import VideoCache from "../utils/VideoCache";
 
 LogBox.ignoreLogs([
@@ -120,6 +121,7 @@ function RootLayout() {
             <SubscriptionsProvider>
               <SettingsProvider>
                 <ToastProvider>
+                  {Platform.OS === "android" && <ContextMenuSheet />}
                   <TabScrollProvider>
                     <NavigationProvider>
                       <ActionSheetProvider>
