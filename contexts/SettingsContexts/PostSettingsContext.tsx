@@ -15,9 +15,13 @@ const initialValues = {
   blurSpoilers: true,
   blurNSFW: true,
   showPostSummary: true,
+  collapsePostSummary: false,
   autoPlayVideos: true,
+  muteVideosByDefault: true,
   liveTextInteraction: false,
   tapToCollapsePost: true,
+  slideAnywhereToScrub: false,
+  showMediaPostInfo: true,
 };
 
 const initialPostSettingsContext = {
@@ -34,9 +38,13 @@ const initialPostSettingsContext = {
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
+  toggleCollapsePostSummary: (_newValue?: boolean) => {},
   toggleAutoPlayVideos: (_newValue?: boolean) => {},
+  toggleMuteVideosByDefault: (_newValue?: boolean) => {},
   toggleLiveTextInteraction: (_newValue?: boolean) => {},
   toggleTapToCollapsePost: (_newValue?: boolean) => {},
+  toggleSlideAnywhereToScrub: (_newValue?: boolean) => {},
+  toggleShowMediaPostInfo: (_newValue?: boolean) => {},
 };
 
 export const PostSettingsContext = createContext(initialPostSettingsContext);
@@ -96,9 +104,21 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const showPostSummary =
     storedShowPostSummary ?? initialValues.showPostSummary;
 
+  const [storedCollapsePostSummary, setCollapsePostSummary] = useMMKVBoolean(
+    "collapsePostSummary",
+  );
+  const collapsePostSummary =
+    storedCollapsePostSummary ?? initialValues.collapsePostSummary;
+
   const [storedAutoPlayVideos, setAutoPlayVideos] =
     useMMKVBoolean("autoPlayVideos");
   const autoPlayVideos = storedAutoPlayVideos ?? initialValues.autoPlayVideos;
+
+  const [storedMuteVideosByDefault, setMuteVideosByDefault] = useMMKVBoolean(
+    "muteVideosByDefault",
+  );
+  const muteVideosByDefault =
+    storedMuteVideosByDefault ?? initialValues.muteVideosByDefault;
 
   const [storedliveTextInteraction, setliveTextInteraction] = useMMKVBoolean(
     "liveTextInteraction",
@@ -110,6 +130,17 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     useMMKVBoolean("tapToCollapsePost");
   const tapToCollapsePost =
     storedTapToCollapsePost ?? initialValues.tapToCollapsePost;
+
+  const [storedSlideAnywhereToScrub, setSlideAnywhereToScrub] = useMMKVBoolean(
+    "slideAnywhereToScrub",
+  );
+  const slideAnywhereToScrub =
+    storedSlideAnywhereToScrub ?? initialValues.slideAnywhereToScrub;
+
+  const [storedShowMediaPostInfo, setShowMediaPostInfo] =
+    useMMKVBoolean("showMediaPostInfo");
+  const showMediaPostInfo =
+    storedShowMediaPostInfo ?? initialValues.showMediaPostInfo;
 
   return (
     <PostSettingsContext.Provider
@@ -164,9 +195,18 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         toggleShowPostSummary: (newValue = !showPostSummary) =>
           setShowPostSummary(newValue),
 
+        collapsePostSummary,
+        toggleCollapsePostSummary: (newValue = !collapsePostSummary) =>
+          setCollapsePostSummary(newValue),
+
         autoPlayVideos: autoPlayVideos ?? initialValues.autoPlayVideos,
         toggleAutoPlayVideos: (newValue = !autoPlayVideos) =>
           setAutoPlayVideos(newValue),
+
+        muteVideosByDefault:
+          muteVideosByDefault ?? initialValues.muteVideosByDefault,
+        toggleMuteVideosByDefault: (newValue = !muteVideosByDefault) =>
+          setMuteVideosByDefault(newValue),
 
         liveTextInteraction:
           liveTextInteraction ?? initialValues.liveTextInteraction,
@@ -176,6 +216,14 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         tapToCollapsePost: tapToCollapsePost ?? initialValues.tapToCollapsePost,
         toggleTapToCollapsePost: (newValue = !tapToCollapsePost) =>
           setTapToCollapsePost(newValue),
+
+        slideAnywhereToScrub,
+        toggleSlideAnywhereToScrub: (newValue = !slideAnywhereToScrub) =>
+          setSlideAnywhereToScrub(newValue),
+
+        showMediaPostInfo,
+        toggleShowMediaPostInfo: (newValue = !showMediaPostInfo) =>
+          setShowMediaPostInfo(newValue),
       }}
     >
       {children}

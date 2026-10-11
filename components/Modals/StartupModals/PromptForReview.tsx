@@ -1,4 +1,5 @@
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, Image, Linking } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
@@ -47,7 +48,12 @@ export default function PromptForReview({ onExit }: { onExit: () => void }) {
             ]}
             onPress={() => exitPromptForReview()}
           >
-            <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
+            <FontAwesome6
+              iconStyle="solid"
+              name="xmark"
+              size={16}
+              color={theme.subtleText}
+            />
           </Touchable>
 
           <View style={styles.headerArea}>

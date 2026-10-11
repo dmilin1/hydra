@@ -35,9 +35,15 @@ Multireddits must be created on Reddit's website or another app that supports it
 
 To **add a subreddit** to a multireddit, open the subreddit, tap the **three-dots menu**, and select **Add to Multireddit**, then choose which multireddit to add it to. To **remove a subreddit**, expand the multireddit on the Subreddits page, long press the subreddit you want to remove, and select **Delete From Multireddit**.
 
+You can set a default sort for multireddit feeds, or have Hydra remember your last sort for each multireddit, in [Sorting settings](hydra://settings/general/sorting).
+
 ## Subscribing and Unsubscribing
 
 Subscribing to a subreddit adds its posts to your Home feed. To subscribe or unsubscribe, open a subreddit, tap the **three-dots menu**, and select **Subscribe** or **Unsubscribe**. You can view and manage all your subscriptions from the Subreddits page. For more details, see the [Subreddits guide](hydra://settings/guide/?doc=subreddits).
+
+## Following Users
+
+You can follow individual users to see their posts in your Home feed. Open a user's profile, tap the **three-dots menu**, and select **Follow**. To stop following, open the same menu and select **Unfollow**. Following works like subscribing to the user's profile community — followed users appear in the Subscriber section of the Subreddits page as u_username.
 
 ## Customizing Your Feed
 

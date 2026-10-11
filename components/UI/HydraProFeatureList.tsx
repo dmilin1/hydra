@@ -1,7 +1,9 @@
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 
 export default function HydraProFeatureList({
   invertColors,
@@ -20,6 +22,17 @@ export default function HydraProFeatureList({
       icon: <FontAwesome name="picture-o" size={22} color={theme.text} />,
       title: "Gallery Mode",
       description: "Unlimited scrolling in Gallery Mode",
+    },
+    {
+      icon: <MaterialIcons name="video-file" size={26} color={theme.text} />,
+      title: "Export Videos with Audio",
+      description: "Save and share Reddit videos with their audio included",
+    },
+    {
+      icon: <Ionicons name="share-social" size={24} color={theme.text} />,
+      title: "Remove Sharing Watermark",
+      description:
+        "Share posts and comments as images without a Hydra watermark",
     },
     {
       icon: <Ionicons name="stats-chart" size={24} color={theme.text} />,

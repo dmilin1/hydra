@@ -1,4 +1,3 @@
-import "react-native-url-polyfill/auto";
 import { decode } from "html-entities";
 
 import { Flair, formatFlair } from "./Flair";
@@ -47,7 +46,11 @@ export type Post = {
   images: (string | ImageSource[])[];
   imageThumbnail: ImageSource | null;
   mediaAspectRatio: number;
-  videos: { source: string; videoDownloadURL: string }[];
+  videos: {
+    source: string;
+    hasAudio: boolean;
+    sourceLoadError?: string;
+  }[];
   poll: Poll | undefined;
   externalLink: string | undefined;
   openGraphData: OpenGraphData | undefined;
@@ -137,24 +140,27 @@ function formatImages(child: any): ImageSource[][] {
   return [];
 }
 
-async function formatVideos(
-  child: any,
-): Promise<{ source: string; videoDownloadURL: string }[]> {
+async function formatVideos(child: any): Promise<Post["videos"]> {
   if (child.data.media?.reddit_video?.hls_url) {
     return [
       {
         source: child.data.media.reddit_video.hls_url,
-        videoDownloadURL: child.data.media.reddit_video.fallback_url,
+        hasAudio: child.data.media.reddit_video.has_audio,
       },
     ];
   }
   if (child.data.preview?.images?.[0]?.variants?.mp4) {
     // Example post: https://www.reddit.com/r/gifs/comments/1rzl4fp/seth_hernandez_throws_a_1024_mph_laser_on_the/
     return child.data.preview.images.map((image: any) => {
-      const item = image.variants.mp4.resolutions.at(-1);
+      /**
+       * Some posts have no resolutions so we have to use source instead:
+       * https://www.reddit.com/r/StardewValley/comments/1v617mf/celebrate_saturday_july_25_2026/
+       */
+      const item =
+        image.variants.mp4.resolutions.at(-1) ?? image.variants.mp4.source;
       return {
         source: decode(item.url),
-        videoDownloadURL: decode(item.url),
+        hasAudio: false,
       };
     });
   }
@@ -185,7 +191,7 @@ async function formatVideos(
           const url = decode(data.s.mp4);
           return {
             source: url,
-            videoDownloadURL: url,
+            hasAudio: false,
           };
         })
         .filter((video) => video !== null)
@@ -198,7 +204,7 @@ async function formatVideos(
       return [
         {
           source: videoURL,
-          videoDownloadURL: videoURL,
+          hasAudio: false,
         },
       ];
     } else if (url.includes("gfycat.com")) {
@@ -206,17 +212,11 @@ async function formatVideos(
       return [
         {
           source: videoURL,
-          videoDownloadURL: videoURL,
+          hasAudio: false,
         },
       ];
     } else if (url.includes("redgifs.com")) {
-      const videoURL = await Redgifs.getMediaURL(url);
-      return [
-        {
-          source: videoURL,
-          videoDownloadURL: videoURL,
-        },
-      ];
+      return [await Redgifs.getMedia(url)];
     }
   }
   return [];

@@ -1,9 +1,10 @@
-import { useEvent, useEventListener } from "expo";
-import { useVideoPlayer, VideoView } from "expo-video";
-import { useContext, useEffect, useRef } from "react";
+import { useEventListener } from "expo";
+import { VideoView } from "expo-video";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Animated,
   AppState,
+  Platform,
   StyleSheet,
   View,
   Text,
@@ -12,32 +13,34 @@ import {
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { MediaViewerContext } from "../../../contexts/MediaViewerContext";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
-import VideoCache from "../../../utils/VideoCache";
+import { Post } from "../../../api/Posts";
+import {
+  isPlayerShared,
+  useSharedVideoPlayer,
+} from "../../../utils/useSharedVideoPlayer";
 
 type VideoProps = {
-  uri: string;
+  video: Post["videos"][number];
 };
 
-function Video({ uri }: VideoProps) {
+function Video({ video }: VideoProps) {
   const { theme } = useContext(ThemeContext);
-  const { subscribeToVisibility } = useContext(MediaViewerContext);
+  const { subscribeToVisibility, getIsShowing } =
+    useContext(MediaViewerContext);
   const progress = useRef(new Animated.Value(0)).current;
 
-  const player = useVideoPlayer(
-    VideoCache.makeCachedVideoSource(uri),
-    (player) => {
-      player.audioMixingMode = "mixWithOthers";
-      player.muted = true;
-      player.loop = true;
-      player.timeUpdateEventInterval = 1 / 15;
-      player.bufferOptions = {
-        maxBufferBytes: 1024 * 1024 * 5, // 5MB - Android only setting (prevents crashes)
-      };
-      player.play();
-    },
+  const player = useSharedVideoPlayer(video.source);
+
+  const [status, setStatus] = useState(player.status);
+  const [error, setError] = useState<string | null>(null);
+  const [hideVideoView, setHideVideoView] = useState(
+    Platform.OS === "android" && getIsShowing(),
   );
 
-  const status = useEvent(player, "statusChange");
+  useEventListener(player, "statusChange", (e) => {
+    setStatus(e.status);
+    setError(e.error?.message ?? null);
+  });
 
   useEventListener(player, "timeUpdate", (e) => {
     progress.setValue(e.currentTime / player.duration);
@@ -55,31 +58,46 @@ function Video({ uri }: VideoProps) {
   useEffect(() => {
     return subscribeToVisibility((isShowing) => {
       if (isShowing) {
-        player.pause();
+        // The fullscreen viewer drives the player when it holds the same one.
+        if (!isPlayerShared(video.source)) {
+          player.pause();
+        }
+        if (Platform.OS === "android") {
+          /**
+           * Android allows one view per player and its native assertion fires
+           * if a recycled view swaps players while the fullscreen view holds
+           * ours. No mounted view, no assertion; remounting on close also
+           * reclaims the stolen surface. The decoder is untouched.
+           */
+          setHideVideoView(true);
+        }
       } else {
         player.play();
+        setHideVideoView(false);
       }
     });
   }, [player, subscribeToVisibility]);
 
   return (
     <View style={styles.videoContainer} pointerEvents="none">
-      {status?.error ? (
+      {error ? (
         <View style={styles.notReadyContainer}>
-          <Text style={styles.errorText}>{status.error.message}</Text>
+          <Text style={styles.errorText}>{error}</Text>
         </View>
-      ) : status === null || status.status === "loading" ? (
+      ) : status === "loading" ? (
         <View style={styles.notReadyContainer}>
           <ActivityIndicator color={theme.text} />
         </View>
       ) : null}
-      <VideoView
-        player={player}
-        style={styles.video}
-        contentFit="contain"
-        nativeControls={false}
-        allowsVideoFrameAnalysis={false}
-      />
+      {hideVideoView ? null : (
+        <VideoView
+          player={player}
+          style={styles.video}
+          contentFit="contain"
+          nativeControls={false}
+          allowsVideoFrameAnalysis={false}
+        />
+      )}
       <View
         style={[
           styles.progressBarBackground,
@@ -104,7 +122,12 @@ function Video({ uri }: VideoProps) {
 }
 
 export default function VideoPlayerWrapper(props: VideoProps) {
-  return (
+  const error = props.video.sourceLoadError ?? null;
+  return error ? (
+    <View style={styles.errorContainer}>
+      <Text style={styles.errorText}>{error}</Text>
+    </View>
+  ) : (
     <DismountWhenBackgrounded>
       <Video {...props} />
     </DismountWhenBackgrounded>
@@ -112,6 +135,12 @@ export default function VideoPlayerWrapper(props: VideoProps) {
 }
 
 const styles = StyleSheet.create({
+  errorContainer: {
+    width: "100%",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   videoContainer: {
     width: "100%",
     flex: 1,

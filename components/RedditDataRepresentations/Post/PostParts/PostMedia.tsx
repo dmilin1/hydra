@@ -1,4 +1,4 @@
-import { AntDesign } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
 import { BlurView } from "expo-blur";
 import React, { useContext, useRef, useState } from "react";
 import { Text, StyleSheet, View, Platform } from "react-native";
@@ -60,14 +60,33 @@ export default function PostMedia({
   ) : (
     <>
       {/* On Android, the blur cover becomes see-thru when the post has been read. Making the contents invisible fixes this problem. */}
-      <View style={{ opacity: Platform.OS === "android" && blur ? 0 : 1 }}>
+      <View
+        style={{ opacity: Platform.OS === "android" && blur ? 0 : 1 }}
+        /**
+         * Fabric does some magic view flattening behind the scenes that causes this view to sometimes
+         * not be rendered. This causes the text on posts to not get blurred. Setting collapsable to
+         * false hits to Fabric not to do the flattening optimization.
+         */
+        collapsable={false}
+      >
         {post.videos.length > 0 && !post.crossCommentLink ? (
           <View style={styles.videoContainer}>
             <VideoPlayer post={post} />
           </View>
         ) : post.images.length > 0 &&
           !post.crossCommentLink &&
-          !post.externalLink ? (
+          /**
+           * This last condition is weird. If the post has an external link,
+           * we usually don't want to render it because for news link posts,
+           * we end up double rendering the images on them. However, if the
+           * link has no open graph data, then it's safe to render any
+           * images on it. One example of this is imgur link posts which have
+           * images and an external link, but no open graph data.
+           *
+           * https://www.reddit.com/r/HydraClient/comments/1vj3g9c/why_isnt_the_image_in_this_post_showing_inline/
+           * https://www.reddit.com/r/EufyCam/comments/1vj2qsr/this_was_a_fun_thumbnail_notification/
+           */
+          (!post.externalLink || !post.openGraphData) ? (
           <View style={styles.imgContainer}>
             <ImageViewer
               images={post.images}

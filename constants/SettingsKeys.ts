@@ -8,6 +8,15 @@ export const makePostSubredditSortKey = (subreddit: string) =>
 export const makePostSubredditSortTopKey = (subreddit: string) =>
   `PostSubredditSortTop-${subreddit.toLowerCase()}`;
 
+export const DEFAULT_MULTIREDDIT_SORT_KEY = "defaultMultiredditSort";
+export const DEFAULT_MULTIREDDIT_SORT_TOP_KEY = "defaultMultiredditSortTop";
+
+export const REMEMBER_MULTIREDDIT_SORT_KEY = "rememberMultiredditSort";
+export const makePostMultiredditSortKey = (multiPath: string) =>
+  `PostMultiredditSort-${multiPath.toLowerCase()}`;
+export const makePostMultiredditSortTopKey = (multiPath: string) =>
+  `PostMultiredditSortTop-${multiPath.toLowerCase()}`;
+
 export const DEFAULT_COMMENT_SORT_KEY = "defaultCommentSort";
 
 export const REMEMBER_COMMENT_SUBREDDIT_SORT_KEY =

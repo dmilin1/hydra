@@ -1,50 +1,30 @@
 import { useEvent, useEventListener } from "expo";
-import { useVideoPlayer, VideoView } from "expo-video";
-import { useEffect, useRef, useState } from "react";
+import { VideoView } from "expo-video";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
-  Animated,
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
+  GestureResponderEvent,
 } from "react-native";
-import { Touchable } from "react-native-gesture-handler";
-import { FontAwesome } from "@expo/vector-icons";
-import {
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
-import VideoCache from "../../../utils/VideoCache";
 import { Post } from "../../../api/Posts";
-
-export type VideoItem = {
-  type: "video";
-  source: Post["videos"][number];
-};
+import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
+import { useSharedVideoPlayer } from "../../../utils/useSharedVideoPlayer";
 
 type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
-  overlayOpacity: Animated.Value;
-  setIsScrollLocked: (isScrollLocked: boolean) => void;
+  onScrubbingChange: (isScrubbing: boolean) => void;
 };
 
-const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
-
-function MediaVideo(props: MediaVideoProps) {
-  const { source, focused, overlayOpacity } = props;
+function MediaVideo({ source, focused, onScrubbingChange }: MediaVideoProps) {
+  const { slideAnywhereToScrub } = useContext(PostSettingsContext);
   const { width, height } = useSafeAreaFrame();
-  const { top: safeAreaTop, left: safeAreaLeft } = useSafeAreaInsets();
 
-  const player = useVideoPlayer(
-    VideoCache.makeCachedVideoSource(source.source),
-    (player) => {
-      player.audioMixingMode = "mixWithOthers";
-      player.loop = true;
-      player.timeUpdateEventInterval = 1 / 15;
-    },
-  );
+  const player = useSharedVideoPlayer(source.source);
 
   const touchStart = useRef({
     x: 0,
@@ -54,20 +34,19 @@ function MediaVideo(props: MediaVideoProps) {
     isSkimming: false,
   });
 
-  const [isPlaying, setIsPlaying] = useState(player.playing);
   const [status, setStatus] = useState(player.status);
   const [error, setError] = useState<string | null>(null);
 
+  // A shared player may have fired videoTrackChange before this mount.
+  const videoTrack =
+    useEvent(player, "videoTrackChange")?.videoTrack ?? player.videoTrack;
+
   const dimensions = {
-    width: player.videoTrack?.size.width ?? 0,
-    height: player.videoTrack?.size.height ?? 0,
+    width: videoTrack?.size.width ?? 0,
+    height: videoTrack?.size.height ?? 0,
   };
 
   const aspectRatio = dimensions.width / dimensions.height;
-
-  const progress = useRef(new Animated.Value(0)).current;
-
-  const playbackRate = useEvent(player, "playbackRateChange")?.playbackRate;
 
   const animationFrameRequest = useRef<number | null>(null);
 
@@ -81,7 +60,7 @@ function MediaVideo(props: MediaVideoProps) {
           scrubbingModeEnabled: true,
         };
         player.pause();
-        props.setIsScrollLocked(true);
+        onScrubbingChange(true);
       }
       return;
     }
@@ -94,6 +73,47 @@ function MediaVideo(props: MediaVideoProps) {
     });
   };
 
+  const handleScrubTouchStart = (e: GestureResponderEvent) => {
+    touchStart.current = {
+      x: e.nativeEvent.pageX,
+      y: e.nativeEvent.pageY,
+      videoTime: player.currentTime,
+      initiallyPlaying: player.playing,
+      isSkimming: false,
+    };
+  };
+
+  const handleScrubTouchMove = (e: GestureResponderEvent) => {
+    const deltaX = e.nativeEvent.pageX - touchStart.current.x;
+    const deltaY = e.nativeEvent.pageY - touchStart.current.y;
+    panThroughVideo(deltaX, deltaY);
+  };
+
+  const handleScrubTouchEnd = () => {
+    /**
+     * Always cancel the pending seek frame: it reads videoTime through the
+     * ref, so letting it fire after the reset below would seek relative to 0.
+     */
+    if (animationFrameRequest.current) {
+      cancelAnimationFrame(animationFrameRequest.current);
+      animationFrameRequest.current = null;
+    }
+    if (touchStart.current.initiallyPlaying && touchStart.current.isSkimming) {
+      player.play();
+    }
+    player.scrubbingModeOptions = {
+      scrubbingModeEnabled: false,
+    };
+    touchStart.current = {
+      x: 0,
+      y: 0,
+      videoTime: 0,
+      initiallyPlaying: player.playing,
+      isSkimming: false,
+    };
+    onScrubbingChange(false);
+  };
+
   useEventListener(player, "statusChange", (e) => {
     if (e.status !== "loading") {
       setStatus(e.status);
@@ -101,29 +121,13 @@ function MediaVideo(props: MediaVideoProps) {
     }
   });
 
-  useEventListener(player, "playingChange", (e) => {
-    if (touchStart.current.isSkimming) {
+  useEffect(() => {
+    if (!focused) {
+      player.pause();
       return;
     }
-    const newIsPlaying = e.isPlaying;
-    if (newIsPlaying !== isPlaying) {
-      setIsPlaying(newIsPlaying);
-    }
-  });
-
-  useEventListener(player, "timeUpdate", (e) => {
-    progress.setValue(e.currentTime / player.duration);
-  });
-
-  useEffect(() => {
-    if (focused) {
-      player.play();
-      player.volume = 1;
-    } else {
-      player.pause();
-      player.volume = 0;
-    }
-  }, [focused]);
+    player.play();
+  }, [focused, player]);
 
   useEffect(() => {
     return () => {
@@ -137,42 +141,9 @@ function MediaVideo(props: MediaVideoProps) {
   return (
     <View
       style={[styles.container, { width, height }]}
-      onTouchStart={(e) => {
-        touchStart.current = {
-          x: e.nativeEvent.pageX,
-          y: e.nativeEvent.pageY,
-          videoTime: player.currentTime,
-          initiallyPlaying: player.playing,
-          isSkimming: false,
-        };
-      }}
-      onTouchMove={(e) => {
-        const deltaX = e.nativeEvent.pageX - touchStart.current.x;
-        const deltaY = e.nativeEvent.pageY - touchStart.current.y;
-        panThroughVideo(deltaX, deltaY);
-      }}
-      onTouchEnd={() => {
-        if (
-          touchStart.current.initiallyPlaying &&
-          touchStart.current.isSkimming
-        ) {
-          if (animationFrameRequest.current) {
-            cancelAnimationFrame(animationFrameRequest.current);
-          }
-          player.play();
-        }
-        player.scrubbingModeOptions = {
-          scrubbingModeEnabled: false,
-        };
-        touchStart.current = {
-          x: 0,
-          y: 0,
-          videoTime: 0,
-          initiallyPlaying: player.playing,
-          isSkimming: false,
-        };
-        props.setIsScrollLocked(false);
-      }}
+      onTouchStart={slideAnywhereToScrub ? handleScrubTouchStart : undefined}
+      onTouchMove={slideAnywhereToScrub ? handleScrubTouchMove : undefined}
+      onTouchEnd={slideAnywhereToScrub ? handleScrubTouchEnd : undefined}
     >
       {error ? (
         <View style={styles.notReadyContainer}>
@@ -196,89 +167,18 @@ function MediaVideo(props: MediaVideoProps) {
           nativeControls={false}
           allowsVideoFrameAnalysis={false}
         />
-        <Animated.View
-          style={[
-            styles.playButtonContainer,
-            {
-              opacity: overlayOpacity,
-            },
-          ]}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <Touchable
-            activeOpacity={0.2}
-            animationDuration={{ in: 0, out: 150 }}
-            style={styles.playButton}
-            onPress={() => {
-              if (isPlaying) {
-                player.pause();
-              } else {
-                player.play();
-              }
-            }}
-          >
-            {isPlaying ? (
-              <FontAwesome name="pause" size={24} color="white" />
-            ) : (
-              <FontAwesome
-                name="play"
-                size={24}
-                color="white"
-                style={styles.playButtonIcon}
-              />
-            )}
-          </Touchable>
-        </Animated.View>
-        <View style={styles.progressBarBackground} />
-        <Animated.View
-          style={[
-            styles.progressBar,
-            {
-              transform: [
-                {
-                  scaleX: progress,
-                },
-              ],
-            },
-          ]}
-        />
       </View>
-      <Animated.View
-        style={[
-          styles.playbackRateContainer,
-          {
-            top: safeAreaTop + 10,
-            left: safeAreaLeft + 10,
-            opacity: overlayOpacity,
-          },
-        ]}
-        onTouchStart={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
-        <Touchable
-          activeOpacity={0.2}
-          animationDuration={{ in: 0, out: 150 }}
-          style={styles.playbackRateButton}
-          onPress={() => {
-            const currentIndex = PLAYBACK_RATES.indexOf(playbackRate ?? 1);
-            const newIndex = (currentIndex + 1) % PLAYBACK_RATES.length;
-            player.playbackRate = PLAYBACK_RATES[newIndex];
-          }}
-        >
-          <Text style={{ color: "white" }}>{playbackRate ?? 1}x</Text>
-        </Touchable>
-      </Animated.View>
     </View>
   );
 }
 
 export default function MediaVideoWrapper(props: MediaVideoProps) {
-  return (
+  const error = props.source.sourceLoadError ?? null;
+  return error ? (
+    <View style={styles.notReadyContainer}>
+      <Text style={styles.errorText}>{error}</Text>
+    </View>
+  ) : (
     <DismountWhenBackgrounded>
       <MediaVideo {...props} />
     </DismountWhenBackgrounded>
@@ -311,49 +211,5 @@ const styles = StyleSheet.create({
   },
   video: {
     flex: 1,
-  },
-  playButtonContainer: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-  },
-  playButton: {
-    borderRadius: 100,
-    padding: 15,
-    aspectRatio: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
-  },
-  playButtonIcon: {
-    marginRight: -5,
-  },
-  progressBarBackground: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: 2,
-    backgroundColor: "black",
-  },
-  progressBar: {
-    position: "absolute",
-    bottom: 0,
-    width: "200%",
-    left: "-100%",
-    height: 2,
-    backgroundColor: "#ccc",
-  },
-  playbackRateContainer: {
-    position: "absolute",
-    left: 10,
-  },
-  playbackRateButton: {
-    borderRadius: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    width: 40,
-    aspectRatio: 1,
   },
 });

@@ -1,6 +1,7 @@
-const iosVersion = Math.floor(Math.random() * 5) + 9;
-const safariVersion = Math.floor(Math.random() * 5) + 600;
-const webkitVersion = Math.floor(Math.random() * 700) + 500;
-const osPlatform = `CPU iPhone OS ${iosVersion}_${Math.floor(Math.random() * 10)} like Mac OS X) AppleWebKit/${webkitVersion}.60 (KHTML, like Gecko) Version/${safariVersion}.0 Mobile/15E148 Safari/${webkitVersion}.60`;
+// Only the iOS version varies between real iPhones; every other token is frozen
+// by Apple, so randomizing them would fingerprint us instead of blending in.
+const majors = [16, 17, 18, 26];
+const major = majors[Math.floor(Math.random() * majors.length)];
+const minor = Math.floor(Math.random() * 6);
 
-export const USER_AGENT = `Mozilla/5.0 (${osPlatform}`;
+export const USER_AGENT = `Mozilla/5.0 (iPhone; CPU iPhone OS ${major}_${minor} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/${major}.${minor} Mobile/15E148 Safari/604.1`;

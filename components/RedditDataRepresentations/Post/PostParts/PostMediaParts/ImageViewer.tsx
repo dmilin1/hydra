@@ -5,7 +5,7 @@ import { Touchable } from "react-native-gesture-handler";
 
 import { DataModeContext } from "../../../../../contexts/SettingsContexts/DataModeContext";
 import { ThemeContext } from "../../../../../contexts/SettingsContexts/ThemeContext";
-import useMediaSharing from "../../../../../utils/useMediaSharing";
+import { useMediaSharing } from "../../../../../utils/sharing";
 import { MediaViewerContext } from "../../../../../contexts/MediaViewerContext";
 import { PostInteractionContext } from "../../../../../contexts/PostInteractionContext";
 import { Post } from "../../../../../api/Posts";

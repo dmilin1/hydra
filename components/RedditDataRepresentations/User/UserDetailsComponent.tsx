@@ -1,8 +1,6 @@
-import {
-  Feather,
-  FontAwesome5,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 

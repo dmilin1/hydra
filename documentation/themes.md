@@ -29,7 +29,7 @@ Hydra includes 12 built-in themes. Seven are free and five require [Hydra Pro](h
 - **Aurora** — Dark theme with green/cyan accents
 - **Royal** — Dark purple theme
 
-Free users can preview Pro themes for 5 minutes before they revert to the default theme.
+Free users can preview Pro themes for 5 minutes before they revert to your previously selected theme.
 
 ## Selecting a Theme
 
@@ -49,7 +49,7 @@ You can also share your own custom themes by embedding them in posts or comments
 
 ## Custom Themes
 
-The Theme Maker lets you create fully custom themes with control over 19 color properties. Tap **"Custom Theme +"** in [Theme settings](hydra://settings/theme) to get started. The Theme Maker is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature, though free users can try it for 5 minutes.
+The Theme Maker lets you create fully custom themes with control over many color properties. Tap **"Custom Theme +"** in [Theme settings](hydra://settings/theme) to get started. The Theme Maker is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature, though free users can create, save, and apply themes for 5 minutes at a time.
 
 For full details, see [Creating Custom Themes](hydra://settings/guide/?doc=custom_themes).
 

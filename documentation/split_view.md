@@ -1,15 +1,15 @@
 ===METADATA===
 title: Split View Mode
-description: Split view mode for iPad (device-specific), viewing posts side-by-side, and multitasking with your feed
+description: Split view mode for iPads and Android tablets (device-specific), viewing posts side-by-side, and multitasking with your feed
 ===END METADATA===
 
 # Split View Mode
 
-Split View is an iPad feature that lets you view a post side-by-side with your feed. Instead of navigating away from your feed to read a post, the feed stays visible on the left while the post opens on the right.
+Split View is a wide screen feature that lets you view a post side-by-side with your feed. Instead of navigating away from your feed to read a post, the feed stays visible on the left while the post opens on the right.
 
 ## Enabling Split View
 
-Split view is enabled by default on supported devices. To toggle it, go to [Appearance settings](hydra://settings/appearance) and use the **"Enable split view"** toggle. The setting only appears on devices that support split view.
+Split view is enabled by default on supported devices. To toggle it, go to [Post Appearance settings](hydra://settings/appearance/posts) and use the **"Enable split view"** toggle. The setting only appears on devices that support split view.
 
 When disabled, posts open in the standard full-screen view.
 
@@ -26,8 +26,8 @@ All standard post interactions (voting, commenting, saving, sharing) work normal
 
 ## Troubleshooting
 
-If the split view toggle doesn't appear in your settings, your device's screen may be too small to support it. Split view requires an iPad-sized screen.
+If the split view toggle doesn't appear in your settings, your device's screen may be too small to support it. Split view requires a tablet sized screen.
 
 ---
 
-Split View is an iPad feature. Learn about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or configure split view in [Appearance settings](hydra://settings/appearance).
+Split View is a tablet feature. Learn about [Appearance Settings](hydra://settings/guide/?doc=appearance_settings) or configure split view in [Post Appearance settings](hydra://settings/appearance/posts).

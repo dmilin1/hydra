@@ -1,6 +1,8 @@
-import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import React, { useContext, useMemo, useState } from "react";
-import { StyleSheet, View, Text, Share, AccessibilityInfo } from "react-native";
+import { StyleSheet, View, Text, AccessibilityInfo } from "react-native";
 import { openExternalLink } from "../../../utils/openExternalLink";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
@@ -28,6 +30,7 @@ import useComponentActions from "../../../utils/useComponentActions";
 import useContextMenu from "../../../utils/useContextMenu";
 import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
+import { shareURL } from "../../../utils/sharing";
 
 type PostComponentProps = {
   post: Post;
@@ -160,7 +163,7 @@ export default function PostComponent({
     {
       label: "Share",
       handle: async () => {
-        await Share.share({ url: post.link });
+        await shareURL(post.link);
       },
     },
   ]);
@@ -304,7 +307,16 @@ export default function PostComponent({
               <CompactPostMedia post={post} />
             </View>
           )}
-          <View style={styles.bodyContainer}>
+          <View
+            style={[
+              styles.bodyContainer,
+              postCompactMode &&
+              showFeedVoteButtons && {
+                flex: 1,
+                minWidth: 0,
+              },
+            ]}
+          >
             {subredditAtTop && isOnMultiSubredditPage && (
               <Touchable
                 style={[
@@ -459,7 +471,7 @@ export default function PostComponent({
                   <Feather
                     name={
                       !showFeedVoteButtons &&
-                      post.userVote === VoteOption.DownVote
+                        post.userVote === VoteOption.DownVote
                         ? "arrow-down"
                         : "arrow-up"
                     }
@@ -488,10 +500,14 @@ export default function PostComponent({
                   </Text>
                   <Feather name="clock" size={18} color={theme.subtleText} />
                   <Text
+                    numberOfLines={showFeedVoteButtons ? 1 : undefined}
+                    ellipsizeMode="tail"
                     style={[
                       styles.metadataText,
-                      {
-                        color: theme.subtleText,
+                      { color: theme.subtleText },
+                      showFeedVoteButtons && {
+                        flexShrink: 1,
+                        minWidth: 0,
                       },
                     ]}
                   >
@@ -504,6 +520,7 @@ export default function PostComponent({
                   <Touchable
                     style={[
                       styles.feedVoteButton,
+                      postCompactMode && styles.compactFeedVoteButton,
                       post.userVote === VoteOption.UpVote && {
                         backgroundColor: theme.upvote,
                       },
@@ -527,7 +544,7 @@ export default function PostComponent({
                   >
                     <Feather
                       name="arrow-up"
-                      size={32}
+                      size={postCompactMode ? 24 : 32}
                       color={
                         post.userVote === VoteOption.UpVote
                           ? theme.text
@@ -539,6 +556,7 @@ export default function PostComponent({
                   <Touchable
                     style={[
                       styles.feedVoteButton,
+                      postCompactMode && styles.compactFeedVoteButton,
                       post.userVote === VoteOption.DownVote && {
                         backgroundColor: theme.downvote,
                       },
@@ -562,7 +580,7 @@ export default function PostComponent({
                   >
                     <Feather
                       name="arrow-down"
-                      size={32}
+                      size={postCompactMode ? 24 : 32}
                       color={
                         post.userVote === VoteOption.DownVote
                           ? theme.text
@@ -614,6 +632,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+  },
+  compactFeedVoteButton: {
+    width: 30,
+    height: 30,
   },
   postContainer: {
     flex: 1,

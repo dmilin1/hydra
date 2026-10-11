@@ -13,6 +13,7 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Switch,
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -30,6 +31,9 @@ import RedditURL from "../../utils/RedditURL";
 import { PostFlair, useAllowedPostFlairs } from "../../api/PostFlair";
 import useContextMenu from "../../utils/useContextMenu";
 import WebView from "react-native-webview";
+import { ToastContext } from "../../contexts/ToastContext";
+import KeyStore from "../../utils/KeyStore";
+import { useMMKVBoolean } from "react-native-mmkv";
 
 type NewPostProps = {
   contentSent: (text: string) => void;
@@ -39,6 +43,7 @@ type NewPostProps = {
 type PostType = "self" | "link" | "image";
 
 const DRAFT_PREFIX = "newPostDraft-";
+const SEND_REPLIES_KEY = "newPostSendReplies";
 
 export default function NewPostEditor({
   contentSent,
@@ -46,6 +51,7 @@ export default function NewPostEditor({
 }: NewPostProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
+  const { showToast } = useContext(ToastContext);
 
   const openContextMenu = useContextMenu();
 
@@ -69,6 +75,9 @@ export default function NewPostEditor({
 
   const [submitThroughBrowser, setSubmitThroughBrowser] = useState(false);
 
+  const [storedSendReplies, setSendReplies] = useMMKVBoolean(SEND_REPLIES_KEY);
+  const sendReplies = storedSendReplies ?? true;
+
   const selectFlair = async () => {
     const flair = await openContextMenu({
       options: ["No Flair", ...allowedPostFlairs.map((flair) => flair.text)],
@@ -89,6 +98,7 @@ export default function NewPostEditor({
         title,
         text,
         selectedFlair?.id,
+        sendReplies,
       );
       if (newPostUrl) {
         contentSent(newPostUrl);
@@ -97,7 +107,10 @@ export default function NewPostEditor({
          * Image uploads don't return a URL. They do give a websocket, so there
          * might be a way to get the URL from that. But that's a future problem.
          */
-        Alert.alert(`Submitted post successfully`, "Post is being processed");
+        showToast({
+          title: "Post submitted successfully",
+          body: "The post is being processed by Reddit",
+        });
       }
       clearTitleDraft();
       clearTextDraft();
@@ -343,6 +356,33 @@ export default function NewPostEditor({
                   </Touchable>
                 )}
               </View>
+              <Touchable
+                onPress={() => {
+                  KeyStore.set(SEND_REPLIES_KEY, !sendReplies);
+                  setSendReplies(!sendReplies);
+                }}
+                style={[
+                  styles.settingRow,
+                  {
+                    backgroundColor: theme.tint,
+                  },
+                ]}
+              >
+                <Text style={[styles.settingLabel, { color: theme.text }]}>
+                  Send replies to my inbox
+                </Text>
+                <Switch
+                  trackColor={{
+                    false: theme.iconSecondary,
+                    true: theme.iconPrimary,
+                  }}
+                  value={sendReplies}
+                  onValueChange={() => {
+                    KeyStore.set(SEND_REPLIES_KEY, !sendReplies);
+                    setSendReplies(!sendReplies);
+                  }}
+                />
+              </Touchable>
               {kind === "self" ? (
                 <>
                   <MarkdownEditor
@@ -510,6 +550,20 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 15,
     maxWidth: 100,
+  },
+  settingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginHorizontal: 5,
+    marginBottom: 10,
+    paddingVertical: 10,
+    paddingLeft: 20,
+    paddingRight: 10,
+    borderRadius: 15,
+  },
+  settingLabel: {
+    fontSize: 16,
   },
   urlInput: {
     fontSize: 16,

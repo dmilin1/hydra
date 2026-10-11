@@ -10,7 +10,7 @@ import { Post } from "../../../../../api/Posts";
 import { MediaViewerContext } from "../../../../../contexts/MediaViewerContext";
 import Video from "../../../../UI/Gallery/Video";
 import { PostDetail } from "../../../../../api/PostDetail";
-import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { Touchable } from "react-native-gesture-handler";
 
@@ -64,7 +64,7 @@ export default function VideoPlayer({ post }: VideoPlayerProps) {
           </View>
         ) : (
           <View style={{ flex: 1 }}>
-            <Video uri={post.videos[0].source} />
+            <Video video={post.videos[0]} />
           </View>
         )}
         {post.videos.length > 1 && (

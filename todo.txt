@@ -1,10 +1,4 @@
-### Unlikely
-- 🚀 Full multiple pane iPad support
-
-
 ### Hard
-- 🚀 Android support
-
 - 🚀 Get polls working
 
 - 🚀 Accessibility support
@@ -12,8 +6,6 @@
 - 🚀 Endpoint caching, future navigation stack state caching
 
 - 🚀 Fancy bookmarks with folders and categories (available in Reddit API)
-
-- 🚀⭐ Save posts and comments as image (https://www.reddit.com/r/HydraFeatureRequests/comments/1ifk8dx/save_as_image/)
 
 - 🚀 Auto translation of posts and comments to another language
 
@@ -25,15 +17,12 @@
 
 - 🐛 Lists in lists render improperly (https://www.reddit.com/r/MacOSBeta/comments/1lat3xv/guide_how_to_try_macos_26_developer_beta_in_a/)
 
+- 🚀 Add advanced search operators and filters (https://medium.com/@nammooo/reddit-advance-search-operators-and-filters-310206356be1)
 
 ### Medium
 - 🚀 Load favicons when sites don't support the Open Graph Protocol
 
-- 🐛 Enable landscape mode in the browser
-
 - 🚀 Add sort to search tab
-
-- 🚀 Add chat back
 
 - 🚀 Add favorited subreddit reordering
 

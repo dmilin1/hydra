@@ -7,7 +7,7 @@ description: Creating custom themes with the Theme Maker (Pro feature with 5-min
 
 The Theme Maker lets you create fully custom themes with complete control over colors and appearance. You can design themes that match your personal style or create themes to share with the community.
 
-The Theme Maker is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature. Free users can try it for 5 minutes before a Pro subscription is required to save themes.
+The Theme Maker is a [Hydra Pro](hydra://settings/guide/?doc=hydra_pro) feature. Free users can create and save custom themes, but can only apply them for 5 minutes at a time before a Pro subscription is required.
 
 ## Opening the Theme Maker
 
@@ -27,7 +27,7 @@ Controls whether system elements like the color picker, scroll bars, and splash 
 
 ### Status Bar
 
-Controls whether the iOS status bar (time, battery, etc.) displays in **Light** (dark text) or **Dark** (light text) mode.
+Controls whether the system status bar (time, battery, etc.) displays in **Light** (light text, for dark themes) or **Dark** (dark text, for light themes) mode.
 
 ## Color Groups
 
@@ -92,7 +92,7 @@ You can delete a custom theme by swiping it left in the theme list, or by long-p
 
 ### Sharing Your Theme
 
-You can share custom themes by attaching them to comments or posts. When composing a reply or message, tap the **paint brush icon** in the editor toolbar, select a custom theme, and tap **Attach**. This embeds the theme data in your text. Post it to [r/HydraThemes](https://reddit.com/r/HydraThemes) or anywhere on Reddit for others to use.
+You can share custom themes by attaching them to comments or posts. When composing a post or comment, tap the **paint brush icon** in the editor toolbar, select a custom theme, and tap **Attach**. This embeds the theme data in your text. Post it to [r/HydraThemes](https://reddit.com/r/HydraThemes) or anywhere on Reddit for others to use.
 
 ### Importing a Theme
 

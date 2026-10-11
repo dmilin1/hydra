@@ -1,4 +1,3 @@
-import "react-native-url-polyfill/auto";
 import { decode } from "html-entities";
 
 import { Flair, formatFlair } from "./Flair";
@@ -178,6 +177,12 @@ export async function getPostsDetail(
   };
 }
 
+export type LoadMoreCommentsFunc = (
+  commentIds: string[],
+  commentPath: number[],
+  childStartIndex: number,
+) => Promise<void>;
+
 export async function loadMoreComments(
   subreddit: string,
   postId: string,
@@ -264,6 +269,7 @@ export async function submitPost(
   title: string,
   content: string,
   flairId?: string,
+  sendReplies = true,
 ): Promise<string | undefined> {
   const response = await api(
     // Must use old.reddit.com because only oauth.reddit.com is supported otherwise
@@ -279,6 +285,7 @@ export async function submitPost(
         title,
         ...(flairId ? { flair_id: flairId } : {}),
         [kind === "self" ? "text" : "url"]: content,
+        sendreplies: sendReplies ? "true" : "false",
         extension: "json",
       },
     },

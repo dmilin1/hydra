@@ -69,9 +69,9 @@ const categoryData: {
     docs: ["themes", "custom_themes", "app_icons"],
   },
   {
-    name: "Messages",
-    description: "Managing your inbox and private messages",
-    docs: ["inbox", "messages", "inbox_alerts"],
+    name: "Inbox",
+    description: "Managing your inbox, chat, and notifications",
+    docs: ["inbox", "chat", "inbox_alerts"],
   },
   {
     name: "Advanced",

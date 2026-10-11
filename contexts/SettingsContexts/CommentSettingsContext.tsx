@@ -6,8 +6,10 @@ const initialValues = {
   collapseAutoModerator: true,
   commentFlairs: true,
   showCommentSummary: true,
+  collapseCommentSummary: false,
   tapToCollapseComment: true,
   collapseChildrenOnly: false,
+  showScrollToNextButton: true,
 };
 
 const initialCommentSettingsContext = {
@@ -16,8 +18,10 @@ const initialCommentSettingsContext = {
   toggleCollapseAutoModerator: (_newValue?: boolean) => {},
   toggleCommentFlairs: (_newValue?: boolean) => {},
   toggleShowCommentSummary: (_newValue?: boolean) => {},
+  toggleCollapseCommentSummary: (_newValue?: boolean) => {},
   toggleTapToCollapseComment: (_newValue?: boolean) => {},
   toggleCollapseChildrenOnly: (_newValue?: boolean) => {},
+  toggleShowScrollToNextButton: (_newValue?: boolean) => {},
 };
 
 export const CommentSettingsContext = createContext(
@@ -40,12 +44,10 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
   const showCommentSummary =
     storedShowCommentSummary ?? initialValues.showCommentSummary;
 
-  const toggleVoteIndicator = (newValue = !voteIndicator) => {
-    setVoteIndicator(newValue);
-    alert(
-      "Existing pages may need to be refreshed for this change to take effect.",
-    );
-  };
+  const [storedCollapseCommentSummary, setCollapseCommentSummary] =
+    useMMKVBoolean("collapseCommentSummary");
+  const collapseCommentSummary =
+    storedCollapseCommentSummary ?? initialValues.collapseCommentSummary;
 
   const [storedTapToCollapseComment, setTapToCollapseComment] = useMMKVBoolean(
     "tapToCollapseComment",
@@ -53,24 +55,23 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
   const tapToCollapseComment =
     storedTapToCollapseComment ?? initialValues.tapToCollapseComment;
 
-  const toggleTapToCollapseComment = (newValue = !tapToCollapseComment) => {
-    setTapToCollapseComment(newValue);
-    alert(
-      "Existing pages may need to be refreshed for this change to take effect.",
-    );
-  };
-
   const [storedCollapseChildrenOnly, setCollapseChildrenOnly] = useMMKVBoolean(
     "collapseChildrenOnly",
   );
   const collapseChildrenOnly =
     storedCollapseChildrenOnly ?? initialValues.collapseChildrenOnly;
 
+  const [storedShowScrollToNextButton, setShowScrollToNextButton] =
+    useMMKVBoolean("showScrollToNextButton");
+  const showScrollToNextButton =
+    storedShowScrollToNextButton ?? initialValues.showScrollToNextButton;
+
   return (
     <CommentSettingsContext.Provider
       value={{
         voteIndicator: voteIndicator ?? initialValues.voteIndicator,
-        toggleVoteIndicator,
+        toggleVoteIndicator: (newValue = !voteIndicator) =>
+          setVoteIndicator(newValue),
 
         collapseAutoModerator,
         toggleCollapseAutoModerator: (newValue = !collapseAutoModerator) =>
@@ -84,13 +85,22 @@ export function CommentSettingsProvider({ children }: React.PropsWithChildren) {
         toggleShowCommentSummary: (newValue = !showCommentSummary) =>
           setShowCommentSummary(newValue),
 
+        collapseCommentSummary,
+        toggleCollapseCommentSummary: (newValue = !collapseCommentSummary) =>
+          setCollapseCommentSummary(newValue),
+
         tapToCollapseComment:
           tapToCollapseComment ?? initialValues.tapToCollapseComment,
-        toggleTapToCollapseComment,
+        toggleTapToCollapseComment: (newValue = !tapToCollapseComment) =>
+          setTapToCollapseComment(newValue),
 
         collapseChildrenOnly,
         toggleCollapseChildrenOnly: (newValue = !collapseChildrenOnly) =>
           setCollapseChildrenOnly(newValue),
+
+        showScrollToNextButton,
+        toggleShowScrollToNextButton: (newValue = !showScrollToNextButton) =>
+          setShowScrollToNextButton(newValue),
       }}
     >
       {children}

@@ -1,33 +1,97 @@
-import { FontAwesome6 } from "@expo/vector-icons";
-import { FlashList, FlashListRef } from "@shopify/flash-list";
-import { useDeferredValue, useEffect, useRef, useState } from "react";
-import { StyleSheet, Animated, Modal, Text, View } from "react-native";
-import { Touchable } from "react-native-gesture-handler";
-import {
-  useSafeAreaInsets,
-  useSafeAreaFrame,
-} from "react-native-safe-area-context";
-import MediaVideo, { VideoItem } from "./MediaVideo";
-import { ImageItem, MediaImage } from "./MediaImage";
 import * as ExpoOrientation from "expo-screen-orientation";
-import PostOverlay from "./PostOverlay";
-import { Post } from "../../../api/Posts";
-import { PostDetail } from "../../../api/PostDetail";
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Animated,
+  Modal,
+  NativeScrollEvent,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
+import { MediaImage } from "./MediaImage.ios";
+import MediaVideo from "./MediaVideo.ios";
+import MediaOverlay, { MediaOverlayHandle } from "./Overlay/MediaOverlay";
+import { MediaItemRow, MediaViewerProps } from "./types";
+import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 
-type MediaItem = ImageItem | VideoItem;
+export type { MediaItemCollection } from "./types";
 
-type MediaItemRow = MediaItem[];
+const pageAt = (offset: number, size: number, count: number) =>
+  Math.min(count - 1, Math.max(0, Math.round(offset / size)));
 
-export type MediaItemCollection = MediaItemRow[];
+// Negative while pulled past either end, which fades the viewer toward dismissal.
+const overscroll = (offset: number, maxOffset: number) =>
+  offset < 0 ? offset : offset > maxOffset ? maxOffset - offset : 0;
 
-type MediaViewerProps = {
-  media: MediaItemCollection;
-  startingRowIndex: number;
-  startingColumnIndex: number;
-  onFocusedItemChange?: (index: number) => void;
-  getCurrentPost?: (rowIndex: number) => Post | PostDetail | null;
-  onClose: () => void;
-};
+const flungPastEnd = (
+  offset: number,
+  maxOffset: number,
+  velocity: number,
+  pullDistance: number,
+) =>
+  offset < -pullDistance ||
+  offset > maxOffset + pullDistance ||
+  (velocity < -1 && offset < 0) ||
+  (velocity > 1 && offset > maxOffset);
+
+/**
+ * A paged ScrollView keeps its pixel offset when the frame resizes, which lands it
+ * mid-page, so the page is re-applied after every resize. The resize itself can
+ * emit scroll events (a clamp when the content shrinks, or one measured against
+ * the old frame) that reach JS after the resize commit and report a bogus page,
+ * so events are dropped until the correction lands or the user scrolls again.
+ */
+function usePager(page: number, horizontal: boolean) {
+  const { width, height } = useSafeAreaFrame();
+  const size = horizontal ? width : height;
+  const ref = useRef<ScrollView>(null);
+  const [initialOffset] = useState(() =>
+    horizontal ? { x: page * size, y: 0 } : { x: 0, y: page * size },
+  );
+  const previousSize = useRef(size);
+  const pendingOffset = useRef<number | null>(null);
+
+  useLayoutEffect(() => {
+    if (previousSize.current === size) return;
+    previousSize.current = size;
+    pendingOffset.current = page * size;
+    ref.current?.scrollTo(
+      horizontal
+        ? { x: pendingOffset.current, animated: false }
+        : { y: pendingOffset.current, animated: false },
+    );
+  }, [size]);
+
+  const release = () => {
+    pendingOffset.current = null;
+  };
+
+  const accepts = ({ layoutMeasurement, contentOffset }: NativeScrollEvent) => {
+    const offset = horizontal ? contentOffset.x : contentOffset.y;
+    if (
+      Math.abs(layoutMeasurement.width - width) >= 1 ||
+      Math.abs(layoutMeasurement.height - height) >= 1 ||
+      (pendingOffset.current !== null &&
+        Math.abs(offset - pendingOffset.current) >= 1)
+    ) {
+      return false;
+    }
+    release();
+    return true;
+  };
+
+  return { ref, initialOffset, accepts, release };
+}
 
 export default function MediaViewer({
   media,
@@ -37,103 +101,64 @@ export default function MediaViewer({
   getCurrentPost,
   onClose,
 }: MediaViewerProps) {
-  const { width, height } = useSafeAreaFrame();
-  const {
-    top: safeAreaTop,
-    bottom: safeAreaBottom,
-    left: safeAreaLeft,
-    right: safeAreaRight,
-  } = useSafeAreaInsets();
+  const { height } = useSafeAreaFrame();
 
-  const columnFlashListRef = useRef<FlashListRef<MediaItemRow>>(null);
-  const rowFlashListRef = useRef<FlashListRef<MediaItem>>(null);
+  const [rowIndex, setRowIndex] = useState(startingRowIndex);
+  const [columnIndex, setColumnIndex] = useState(startingColumnIndex);
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  // Rows outside the mounted window keep their page here so revisiting them resumes it.
+  const columnMemory = useRef(
+    new Map([[startingRowIndex, startingColumnIndex]]),
+  );
 
+  const rows = usePager(rowIndex, false);
+  const focusedRowRef = useRef<MediaRowHandle>(null);
+  const overlayRef = useRef<MediaOverlayHandle>(null);
   const overlayTapStart = useRef<{
     x: number;
     y: number;
     timestamp: number;
   } | null>(null);
 
-  // Track horizontal scroll position for each row independently
-  const rowScrollPositions = useRef<Map<number, number>>(new Map());
-
   const scrolledAwayY = useRef(new Animated.Value(0));
   const scrolledAwayX = useRef(new Animated.Value(0));
   const flickedAway = useRef(new Animated.Value(0));
-  const opacity = Animated.add(
+  const dismissAmount = Animated.add(
     flickedAway.current,
     Animated.add(scrolledAwayY.current, scrolledAwayX.current),
-  ).interpolate({
+  );
+  const opacity = dismissAmount.interpolate({
     inputRange: [-150, -50, 0],
     outputRange: [0, 0.85, 1],
   });
-  const scale = Animated.add(
-    flickedAway.current,
-    Animated.add(scrolledAwayY.current, scrolledAwayX.current),
-  ).interpolate({
+  const scale = dismissAmount.interpolate({
     inputRange: [-150, -50, 0],
     outputRange: [0.9, 0.95, 1],
   });
 
-  const showOverlay = useRef(false);
-  const overlayOpacity = useRef(new Animated.Value(0));
-
-  const [currentRowIndex, setCurrentRowIndex] = useState(0);
-  const [currentColumnIndex, setCurrentColumnIndex] = useState(0);
-  const [isScrollLocked, setIsScrollLocked] = useState(false);
-
-  const tapToScrollColumnIndex = useRef<number>(0);
-  const lastTapToScrollTime = useRef<number>(0);
-
-  const orientation = height > width ? "vertical" : "horizontal";
-  const deferredOrientation = useDeferredValue(orientation);
-  // These track the initial position when opening - used for initialScrollIndex
-  // They don't change during scrolling, only when open() is called or orientation changes
-  const initialRowIndex = useRef(startingRowIndex);
-  const initialColumnIndex = useRef(startingColumnIndex);
-  if (orientation !== deferredOrientation) {
-    initialRowIndex.current = currentRowIndex;
-    initialColumnIndex.current = currentColumnIndex;
-  }
-
-  const currentRowSize = media[currentRowIndex]?.length ?? 0;
-
-  const currentPost = getCurrentPost?.(currentRowIndex);
+  const currentRow = media[rowIndex];
+  const focusedItem = currentRow?.[columnIndex];
+  const currentPost = getCurrentPost?.(rowIndex);
+  const visibleRows = [rowIndex - 1, rowIndex, rowIndex + 1].filter(
+    (index) => index >= 0 && index < media.length,
+  );
 
   const animateClose = () => {
     Animated.timing(flickedAway.current, {
       toValue: -150,
       duration: 200,
       useNativeDriver: true,
-    }).start(() => {
-      onClose();
-    });
-  };
-
-  const handleTapToScrollRow = (direction: "left" | "right") => {
-    const now = Date.now();
-    const timeSinceLastTap = now - lastTapToScrollTime.current;
-    const currentIndex =
-      timeSinceLastTap < 300
-        ? tapToScrollColumnIndex.current
-        : currentColumnIndex;
-    lastTapToScrollTime.current = now;
-    tapToScrollColumnIndex.current =
-      currentIndex + (direction === "left" ? -1 : 1);
-    rowFlashListRef.current?.scrollToIndex({
-      index: tapToScrollColumnIndex.current,
-    });
+    }).start(() => onClose());
   };
 
   useEffect(() => {
     if (!onFocusedItemChange) return;
     let trueIndex = 0;
-    for (let i = 0; i < currentRowIndex; i++) {
+    for (let i = 0; i < rowIndex; i++) {
       trueIndex += media[i].length;
     }
-    trueIndex += currentColumnIndex;
-    onFocusedItemChange?.(trueIndex);
-  }, [currentRowIndex, currentColumnIndex]);
+    onFocusedItemChange(trueIndex + columnIndex);
+  }, [rowIndex, columnIndex]);
 
   useEffect(() => {
     ExpoOrientation.unlockAsync();
@@ -145,322 +170,220 @@ export default function MediaViewer({
   return (
     <Modal
       visible={true}
-      onRequestClose={() => animateClose()}
+      onRequestClose={animateClose}
       transparent={true}
       supportedOrientations={["portrait", "landscape"]}
     >
-      <Animated.View
-        style={[
-          styles.background,
-          {
-            opacity,
-          },
-        ]}
-      />
-      {currentRowSize > 1 && (
+      <GestureHandlerRootView style={styles.flex}>
+        <Animated.View style={[styles.background, { opacity }]} />
         <Animated.View
-          style={[
-            styles.rowDetailsContainer,
-            {
-              bottom: safeAreaBottom + 10,
-              right: safeAreaRight + 10,
-              opacity: overlayOpacity.current.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
-            },
-          ]}
-        >
-          <Touchable
-            activeOpacity={0.2}
-            animationDuration={{ in: 0, out: 150 }}
-            style={[
-              styles.rowNavigationButton,
-              {
-                opacity: currentColumnIndex === 0 ? 0.5 : 1,
-              },
-            ]}
-            disabled={currentColumnIndex === 0}
-            onPress={() => handleTapToScrollRow("left")}
-            hitSlop={10}
-          >
-            <FontAwesome6 name="arrow-left" size={16} color="white" />
-          </Touchable>
-          <Touchable
-            activeOpacity={0.2}
-            animationDuration={{ in: 0, out: 150 }}
-            style={[
-              styles.rowNavigationButton,
-              {
-                opacity: currentColumnIndex === currentRowSize - 1 ? 0.5 : 1,
-              },
-            ]}
-            disabled={currentColumnIndex === currentRowSize - 1}
-            onPress={() => handleTapToScrollRow("right")}
-            hitSlop={10}
-          >
-            <FontAwesome6 name="arrow-right" size={16} color="white" />
-          </Touchable>
-          <View style={styles.itemIndexContainer}>
-            <Text style={styles.itemIndexText}>
-              {currentColumnIndex + 1} / {currentRowSize}
-            </Text>
-          </View>
-        </Animated.View>
-      )}
-      <Animated.View
-        style={[
-          styles.contentContainer,
-          {
-            opacity,
-            transform: [
-              {
-                scale,
-              },
-            ],
-          },
-        ]}
-        onTouchStart={(e) =>
-          (overlayTapStart.current = {
-            x: e.nativeEvent.locationX,
-            y: e.nativeEvent.locationY,
-            timestamp: Date.now(),
-          })
-        }
-        onTouchEnd={(e) => {
-          if (overlayTapStart.current) {
+          style={[styles.flex, { opacity, transform: [{ scale }] }]}
+          onTouchStart={(e) =>
+            (overlayTapStart.current = {
+              x: e.nativeEvent.pageX,
+              y: e.nativeEvent.pageY,
+              timestamp: Date.now(),
+            })
+          }
+          onTouchEnd={(e) => {
+            if (!overlayTapStart.current) return;
             const { x, y, timestamp } = overlayTapStart.current;
-            const { locationX, locationY } = e.nativeEvent;
+            const { pageX, pageY } = e.nativeEvent;
             if (
-              Math.abs(locationX - x) < 10 &&
-              Math.abs(locationY - y) < 10 &&
+              Math.abs(pageX - x) < 10 &&
+              Math.abs(pageY - y) < 10 &&
               Date.now() - timestamp < 300
             ) {
-              showOverlay.current = !showOverlay.current;
-              Animated.timing(overlayOpacity.current, {
-                toValue: showOverlay.current ? 1 : 0,
-                duration: 150,
-                useNativeDriver: true,
-              }).start();
+              overlayRef.current?.toggle();
             }
-          }
-        }}
-      >
-        <Animated.View
-          style={[
-            styles.overlayContainer,
-            {
-              paddingTop: safeAreaTop,
-              paddingBottom: safeAreaBottom,
-              paddingLeft: safeAreaLeft,
-              paddingRight: safeAreaRight,
-              opacity: overlayOpacity.current,
-            },
-          ]}
+          }}
         >
-          {currentPost && (
-            <PostOverlay
-              post={currentPost}
-              closeViewer={() => animateClose()}
-              columnIndex={currentColumnIndex}
-            />
-          )}
-        </Animated.View>
-        <FlashList
-          ref={columnFlashListRef}
-          /**
-           * Key ensures the outer list reset to the correct index when the orientation
-           * changes.
-           */
-          key={orientation}
-          data={media}
-          scrollEnabled={!isScrollLocked}
-          renderItem={({ item: row, index: columnIndex }) => (
-            <FlashList
-              ref={columnIndex === currentRowIndex ? rowFlashListRef : null}
-              /**
-               * Key ensures the inner list resets when the row data changes
-               * or the orientation changes.
-               */
-              key={`${columnIndex}-${orientation}`}
-              data={row}
-              style={{ width, height }}
-              renderItem={({ item: mediaItem, index: rowIndex }) => (
-                <View style={{ width, height }}>
-                  {mediaItem.type === "image" ? (
-                    <MediaImage
-                      item={mediaItem}
-                      setIsScrollLocked={setIsScrollLocked}
-                    />
-                  ) : mediaItem.type === "video" ? (
-                    <MediaVideo
-                      source={mediaItem.source}
-                      focused={
-                        columnIndex === currentRowIndex &&
-                        rowIndex === currentColumnIndex
-                      }
-                      overlayOpacity={overlayOpacity.current}
-                      setIsScrollLocked={setIsScrollLocked}
-                    />
-                  ) : null}
-                </View>
-              )}
-              // Only apply initial scroll to the row we want to open to
-              initialScrollIndex={
-                columnIndex === initialRowIndex.current
-                  ? initialColumnIndex.current
-                  : 0
+          <MediaOverlay
+            ref={overlayRef}
+            post={currentPost ?? null}
+            focusedItem={focusedItem}
+            albumIndex={columnIndex}
+            albumSize={currentRow?.length ?? 0}
+            onAlbumStep={(direction) => focusedRowRef.current?.step(direction)}
+            closeViewer={animateClose}
+          />
+          <ScrollView
+            ref={rows.ref}
+            contentContainerStyle={{ height: media.length * height }}
+            contentOffset={rows.initialOffset}
+            pagingEnabled={true}
+            scrollEnabled={!isScrollLocked}
+            showsVerticalScrollIndicator={false}
+            onScrollBeginDrag={rows.release}
+            onScroll={({ nativeEvent }) => {
+              if (!rows.accepts(nativeEvent)) return;
+              const { y } = nativeEvent.contentOffset;
+              const newRowIndex = pageAt(y, height, media.length);
+              if (newRowIndex !== rowIndex) {
+                setRowIndex(newRowIndex);
+                setColumnIndex(columnMemory.current.get(newRowIndex) ?? 0);
               }
-              scrollEnabled={row[0]?.type !== "video"}
-              pagingEnabled={true}
-              horizontal={true}
-              getItemType={(item) => item.type}
-              keyExtractor={(item, index) =>
-                item.type === "image"
-                  ? ((typeof item.source === "string"
-                      ? item.source
-                      : item.source[0].uri) ?? index.toString())
-                  : item.source.source
-              }
-              showsHorizontalScrollIndicator={false}
-              onScroll={(event) => {
-                if (width !== event.nativeEvent.layoutMeasurement.width) {
-                  /**
-                   * Device orientation just changed. Don't handle this since
-                   * we will be updating the index in the listener above.
-                   */
-                  return;
-                }
-                const newIndex = Math.min(
-                  row.length - 1,
-                  Math.max(
-                    0,
-                    Math.round(event.nativeEvent.contentOffset.x / width),
-                  ),
-                );
-                rowScrollPositions.current.set(columnIndex, newIndex);
-                if (
-                  columnIndex === currentRowIndex &&
-                  newIndex !== currentColumnIndex
-                ) {
-                  setCurrentColumnIndex(newIndex);
-                }
-                if (newIndex === 0 && event.nativeEvent.contentOffset.x <= 0) {
-                  scrolledAwayX.current.setValue(
-                    event.nativeEvent.contentOffset.x,
-                  );
-                } else if (
-                  newIndex === row.length - 1 &&
-                  event.nativeEvent.contentOffset.x >=
-                    event.nativeEvent.contentSize.width -
-                      event.nativeEvent.layoutMeasurement.width
-                ) {
-                  scrolledAwayX.current.setValue(
-                    event.nativeEvent.contentSize.width -
-                      event.nativeEvent.layoutMeasurement.width -
-                      event.nativeEvent.contentOffset.x,
-                  );
-                }
-              }}
-              onScrollEndDrag={(event) => {
-                const rightLimit =
-                  event.nativeEvent.contentSize.width -
-                  event.nativeEvent.layoutMeasurement.width;
-                const pulledPastLeft = event.nativeEvent.contentOffset.x < -40;
-                const pulledPastRight =
-                  event.nativeEvent.contentOffset.x >= rightLimit + 40;
-                const momentumPastLeft =
-                  (event.nativeEvent.velocity?.x ?? 0) < -1 &&
-                  event.nativeEvent.contentOffset.x < 0;
-                const momentumPastRight =
-                  (event.nativeEvent.velocity?.x ?? 0) > 1 &&
-                  event.nativeEvent.contentOffset.x >= rightLimit;
-                if (
-                  pulledPastLeft ||
-                  pulledPastRight ||
-                  momentumPastLeft ||
-                  momentumPastRight
-                ) {
-                  Animated.timing(flickedAway.current, {
-                    toValue: -150,
-                    duration: 200,
-                    useNativeDriver: true,
-                  }).start(() => animateClose());
-                }
-              }}
-            />
-          )}
-          /**
-           * We have to do this because FlashList has a bug that causes calculations for
-           * the initial scroll index to be wrong when the index is larger than the initial
-           * batch of media items.
-           */
-          initialScrollIndex={0}
-          initialScrollIndexParams={{
-            viewOffset: height * initialRowIndex.current,
-          }}
-          pagingEnabled={true}
-          onScroll={(event) => {
-            const newIndex = Math.min(
-              media.length - 1,
-              Math.max(
-                0,
-                Math.round(event.nativeEvent.contentOffset.y / height),
-              ),
-            );
-            if (newIndex !== currentRowIndex) {
-              setCurrentRowIndex(newIndex);
-              setCurrentColumnIndex(
-                rowScrollPositions.current.get(newIndex) ?? 0,
+              scrolledAwayY.current.setValue(
+                overscroll(y, (media.length - 1) * height),
               );
-            }
-            const { contentOffset, contentSize, layoutMeasurement } =
-              event.nativeEvent;
-            const maxScrollY = contentSize.height - layoutMeasurement.height;
-            const isAtTop = newIndex === 0 && contentOffset.y <= 0;
-            const isAtBottom =
-              newIndex === media.length - 1 && contentOffset.y >= maxScrollY;
-            if (isAtTop) {
-              scrolledAwayY.current.setValue(contentOffset.y);
-            } else if (isAtBottom) {
-              scrolledAwayY.current.setValue(maxScrollY - contentOffset.y);
-            } else {
-              scrolledAwayY.current.setValue(0);
-            }
-          }}
-          onScrollEndDrag={(event) => {
-            const { contentOffset, contentSize, layoutMeasurement } =
-              event.nativeEvent;
-            const bottomLimit = contentSize.height - layoutMeasurement.height;
-            const momentumPastTop =
-              (event.nativeEvent.velocity?.y ?? 0) < -1 && contentOffset.y < 0;
-            const momentumPastBottom =
-              (event.nativeEvent.velocity?.y ?? 0) > 1 &&
-              contentOffset.y > bottomLimit;
-            const pulledPastTop = contentOffset.y < -50;
-            const pulledPastBottom = contentOffset.y > 50 + bottomLimit;
-            if (
-              pulledPastTop ||
-              pulledPastBottom ||
-              momentumPastTop ||
-              momentumPastBottom
-            ) {
-              Animated.timing(flickedAway.current, {
-                toValue: -150,
-                duration: 200,
-                useNativeDriver: true,
-              }).start(() => animateClose());
-            }
-          }}
-          drawDistance={100}
-          showsVerticalScrollIndicator={false}
-        />
-      </Animated.View>
+            }}
+            onScrollEndDrag={({ nativeEvent }) => {
+              if (
+                flungPastEnd(
+                  nativeEvent.contentOffset.y,
+                  (media.length - 1) * height,
+                  nativeEvent.velocity?.y ?? 0,
+                  50,
+                )
+              ) {
+                animateClose();
+              }
+            }}
+          >
+            {visibleRows.map((index) => (
+              <MediaRow
+                key={index}
+                ref={index === rowIndex ? focusedRowRef : null}
+                items={media[index]}
+                top={index * height}
+                isFocused={index === rowIndex}
+                initialColumn={columnMemory.current.get(index) ?? 0}
+                onColumnChange={(column) => {
+                  columnMemory.current.set(index, column);
+                  if (index === rowIndex) setColumnIndex(column);
+                }}
+                scrolledAwayX={scrolledAwayX.current}
+                setIsScrollLocked={setIsScrollLocked}
+                dismiss={animateClose}
+              />
+            ))}
+          </ScrollView>
+        </Animated.View>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
 
+type MediaRowHandle = {
+  step: (direction: "left" | "right") => void;
+};
+
+type MediaRowProps = {
+  items: MediaItemRow;
+  top: number;
+  isFocused: boolean;
+  initialColumn: number;
+  onColumnChange: (column: number) => void;
+  scrolledAwayX: Animated.Value;
+  setIsScrollLocked: (isScrollLocked: boolean) => void;
+  dismiss: () => void;
+};
+
+const MediaRow = forwardRef<MediaRowHandle, MediaRowProps>(function MediaRow(
+  {
+    items,
+    top,
+    isFocused,
+    initialColumn,
+    onColumnChange,
+    scrolledAwayX,
+    setIsScrollLocked,
+    dismiss,
+  },
+  ref,
+) {
+  const { width, height } = useSafeAreaFrame();
+  const { slideAnywhereToScrub } = useContext(PostSettingsContext);
+
+  const [column, setColumn] = useState(initialColumn);
+  const pages = usePager(column, true);
+  // Rapid arrow taps step from the page still being scrolled to, not the settled one.
+  const lastStep = useRef({ column: initialColumn, time: 0 });
+
+  useImperativeHandle(ref, () => ({
+    step: (direction) => {
+      const now = Date.now();
+      const from =
+        now - lastStep.current.time < 300 ? lastStep.current.column : column;
+      const target = Math.min(
+        items.length - 1,
+        Math.max(0, from + (direction === "left" ? -1 : 1)),
+      );
+      lastStep.current = { column: target, time: now };
+      pages.release();
+      pages.ref.current?.scrollTo({ x: target * width, animated: true });
+    },
+  }));
+
+  const visibleColumns = [column - 1, column, column + 1].filter(
+    (index) => index >= 0 && index < items.length,
+  );
+
+  return (
+    <ScrollView
+      ref={pages.ref}
+      style={[styles.row, { top, width, height }]}
+      contentContainerStyle={{ width: items.length * width, height }}
+      contentOffset={pages.initialOffset}
+      horizontal={true}
+      pagingEnabled={true}
+      showsHorizontalScrollIndicator={false}
+      scrollEnabled={
+        items[0]?.type !== "video" ||
+        !!items[0]?.source.sourceLoadError ||
+        !slideAnywhereToScrub
+      }
+      onScrollBeginDrag={pages.release}
+      onScroll={({ nativeEvent }) => {
+        if (!pages.accepts(nativeEvent)) return;
+        const { x } = nativeEvent.contentOffset;
+        const newColumn = pageAt(x, width, items.length);
+        if (newColumn !== column) {
+          setColumn(newColumn);
+          onColumnChange(newColumn);
+        }
+        scrolledAwayX.setValue(overscroll(x, (items.length - 1) * width));
+      }}
+      onScrollEndDrag={({ nativeEvent }) => {
+        if (
+          flungPastEnd(
+            nativeEvent.contentOffset.x,
+            (items.length - 1) * width,
+            nativeEvent.velocity?.x ?? 0,
+            40,
+          )
+        ) {
+          dismiss();
+        }
+      }}
+    >
+      {visibleColumns.map((index) => {
+        const item = items[index];
+        return (
+          <View
+            key={index}
+            style={[styles.page, { left: index * width, width, height }]}
+          >
+            {item.type === "image" ? (
+              <MediaImage item={item} setIsScrollLocked={setIsScrollLocked} />
+            ) : (
+              <MediaVideo
+                source={item.source}
+                focused={isFocused && index === column}
+                onScrubbingChange={setIsScrollLocked}
+              />
+            )}
+          </View>
+        );
+      })}
+    </ScrollView>
+  );
+});
+
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   background: {
     position: "absolute",
     top: 0,
@@ -469,40 +392,12 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: "black",
   },
-  contentContainer: {
-    flex: 1,
-  },
-  overlayContainer: {
+  row: {
     position: "absolute",
-    width: "100%",
-    height: "100%",
-    justifyContent: "space-between",
-    zIndex: 1,
-    pointerEvents: "box-none",
+    left: 0,
   },
-  rowDetailsContainer: {
+  page: {
     position: "absolute",
-    flexDirection: "row",
-    right: 10,
-    zIndex: 1,
-    gap: 15,
-  },
-  rowNavigationButton: {
-    aspectRatio: 1,
-    borderRadius: 100,
-    padding: 10,
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemIndexContainer: {
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemIndexText: {
-    color: "white",
+    top: 0,
   },
 });

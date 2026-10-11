@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import React, { useContext } from "react";
 import { ColorValue, StyleSheet, Switch, Text } from "react-native";
 import { useMMKVBoolean } from "react-native-mmkv";

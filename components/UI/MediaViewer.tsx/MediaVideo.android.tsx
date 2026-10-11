@@ -1,97 +1,58 @@
 import { useEvent, useEventListener } from "expo";
-import { useVideoPlayer, VideoView } from "expo-video";
-import { useEffect, useRef, useState } from "react";
+import { VideoView } from "expo-video";
+import { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import Animated, { useSharedValue } from "react-native-reanimated";
-import { FontAwesome } from "@expo/vector-icons";
-import {
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
-import VideoCache from "../../../utils/VideoCache";
-import { Post } from "../../../api/Posts";
-import { AnimatedStyleHandle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import {
-  GestureDetector,
-  Touchable,
-  usePanGesture,
-} from "react-native-gesture-handler";
+import { GestureDetector, usePanGesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-worklets";
-
-export type VideoItem = {
-  type: "video";
-  source: Post["videos"][number];
-};
+import { useSafeAreaFrame } from "react-native-safe-area-context";
+import DismountWhenBackgrounded from "../../Other/DismountWhenBackgrounded";
+import { Post } from "../../../api/Posts";
+import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
+import { useSharedVideoPlayer } from "../../../utils/useSharedVideoPlayer";
 
 type MediaVideoProps = {
   source: Post["videos"][number];
   focused: boolean;
-  overlayStyle: AnimatedStyleHandle<{ opacity: number }>;
 };
 
-const PLAYBACK_RATES = [0.5, 1, 1.5, 2];
-
-function MediaVideo(props: MediaVideoProps) {
-  const { source, focused, overlayStyle } = props;
+function MediaVideo({ source, focused }: MediaVideoProps) {
+  const { slideAnywhereToScrub } = useContext(PostSettingsContext);
   const { width, height } = useSafeAreaFrame();
-  const { top: safeAreaTop, left: safeAreaLeft } = useSafeAreaInsets();
 
-  const player = useVideoPlayer(
-    VideoCache.makeCachedVideoSource(source.source),
-    (player) => {
-      player.audioMixingMode = "mixWithOthers";
-      player.loop = true;
-      player.timeUpdateEventInterval = 1 / 15;
-      player.seekTolerance = {
-        toleranceBefore: 0.1,
-        toleranceAfter: 0.1,
-      };
-    },
-  );
+  const player = useSharedVideoPlayer(source.source);
 
-  const videoTimeAtSeekStart = useSharedValue(0);
-  const wasPlayingAtSeekStart = useSharedValue(false);
-  const isSeeking = useSharedValue(false);
+  const videoTimeAtSeekStart = useRef(0);
+  const wasPlayingAtSeekStart = useRef(false);
 
-  const [isPlaying, setIsPlaying] = useState(player.playing);
   const [status, setStatus] = useState(player.status);
   const [error, setError] = useState<string | null>(null);
 
+  // A shared player may have fired videoTrackChange before this mount.
+  const videoTrack =
+    useEvent(player, "videoTrackChange")?.videoTrack ?? player.videoTrack;
+
   const dimensions = {
-    width: player.videoTrack?.size.width ?? 0,
-    height: player.videoTrack?.size.height ?? 0,
+    width: videoTrack?.size.width ?? 0,
+    height: videoTrack?.size.height ?? 0,
   };
 
   const aspectRatio = dimensions.width / dimensions.height;
 
-  const progress = useSharedValue(0);
-
-  const playbackRate = useEvent(player, "playbackRateChange")?.playbackRate;
-
-  const animationFrameRequest = useRef<number | null>(null);
-
-  const handleActivateOnJS = () => {
-    videoTimeAtSeekStart.value = player.currentTime;
-    wasPlayingAtSeekStart.value = player.playing;
+  const handleScrubStart = () => {
+    videoTimeAtSeekStart.current = player.currentTime;
+    wasPlayingAtSeekStart.current = player.playing;
     player.scrubbingModeOptions = {
       scrubbingModeEnabled: true,
     };
   };
 
-  const handleUpdateOnJS = (translationX: number) => {
-    const duration = player.duration;
-    const newTime =
-      videoTimeAtSeekStart.value + translationX / (width / duration);
-    player.currentTime = newTime;
-    progress.value = Math.max(0, newTime / duration);
+  const handleScrubUpdate = (translationX: number) => {
+    player.currentTime =
+      videoTimeAtSeekStart.current + translationX / (width / player.duration);
   };
 
-  const handleDeactivateOnJS = () => {
-    if (animationFrameRequest.current) {
-      cancelAnimationFrame(animationFrameRequest.current);
-    }
-    if (wasPlayingAtSeekStart.value) {
+  const handleScrubEnd = () => {
+    if (wasPlayingAtSeekStart.current) {
       player.play();
     }
     player.scrubbingModeOptions = {
@@ -100,20 +61,18 @@ function MediaVideo(props: MediaVideoProps) {
   };
 
   const panGesture = usePanGesture({
-    enabled: true,
+    enabled: slideAnywhereToScrub,
     maxPointers: 1,
     activeOffsetX: [-3, 3],
     failOffsetY: [-5, 5],
     onActivate: () => {
-      isSeeking.value = true;
-      runOnJS(handleActivateOnJS)();
+      runOnJS(handleScrubStart)();
     },
     onUpdate: (event) => {
-      runOnJS(handleUpdateOnJS)(event.translationX);
+      runOnJS(handleScrubUpdate)(event.translationX);
     },
     onDeactivate: () => {
-      runOnJS(handleDeactivateOnJS)();
-      isSeeking.value = false;
+      runOnJS(handleScrubEnd)();
     },
   });
 
@@ -124,39 +83,13 @@ function MediaVideo(props: MediaVideoProps) {
     }
   });
 
-  useEventListener(player, "playingChange", (e) => {
-    if (isSeeking.value) {
+  useEffect(() => {
+    if (!focused) {
+      player.pause();
       return;
     }
-    const newIsPlaying = e.isPlaying;
-    if (newIsPlaying !== isPlaying) {
-      setIsPlaying(newIsPlaying);
-    }
-  });
-
-  useEventListener(player, "timeUpdate", (e) => {
-    if (isSeeking.value) return;
-    progress.value = e.currentTime / player.duration;
-  });
-
-  useEffect(() => {
-    if (focused) {
-      player.play();
-      player.volume = 1;
-    } else {
-      player.pause();
-      player.volume = 0;
-    }
-  }, [focused]);
-
-  useEffect(() => {
-    return () => {
-      if (animationFrameRequest.current) {
-        cancelAnimationFrame(animationFrameRequest.current);
-        animationFrameRequest.current = null;
-      }
-    };
-  }, []);
+    player.play();
+  }, [focused, player]);
 
   return (
     <GestureDetector gesture={panGesture}>
@@ -186,85 +119,19 @@ function MediaVideo(props: MediaVideoProps) {
               allowsVideoFrameAnalysis={false}
             />
           </View>
-          <Animated.View
-            style={[styles.playButtonContainer, overlayStyle]}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          >
-            <Touchable
-              activeOpacity={0.2}
-              animationDuration={{ in: 0, out: 150 }}
-              style={styles.playButton}
-              onPress={() => {
-                if (isPlaying) {
-                  player.pause();
-                } else {
-                  player.play();
-                }
-              }}
-            >
-              {isPlaying ? (
-                <FontAwesome name="pause" size={24} color="white" />
-              ) : (
-                <FontAwesome
-                  name="play"
-                  size={24}
-                  color="white"
-                  style={styles.playButtonIcon}
-                />
-              )}
-            </Touchable>
-          </Animated.View>
-          <View style={styles.progressBarBackground} />
-          <Animated.View
-            style={[
-              styles.progressBar,
-              {
-                transform: [
-                  {
-                    scaleX: progress,
-                  },
-                ],
-              },
-            ]}
-          />
         </View>
-        <Animated.View
-          style={[
-            styles.playbackRateContainer,
-            {
-              top: safeAreaTop + 10,
-              left: safeAreaLeft + 10,
-            },
-            overlayStyle,
-          ]}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <Touchable
-            activeOpacity={0.2}
-            animationDuration={{ in: 0, out: 150 }}
-            style={styles.playbackRateButton}
-            onPress={() => {
-              const currentIndex = PLAYBACK_RATES.indexOf(playbackRate ?? 1);
-              const newIndex = (currentIndex + 1) % PLAYBACK_RATES.length;
-              player.playbackRate = PLAYBACK_RATES[newIndex];
-            }}
-          >
-            <Text style={{ color: "white" }}>{playbackRate ?? 1}x</Text>
-          </Touchable>
-        </Animated.View>
       </View>
     </GestureDetector>
   );
 }
 
 export default function MediaVideoWrapper(props: MediaVideoProps) {
-  return (
+  const error = props.source.sourceLoadError ?? null;
+  return error ? (
+    <View style={styles.notReadyContainer}>
+      <Text style={styles.errorText}>{error}</Text>
+    </View>
+  ) : (
     <DismountWhenBackgrounded>
       <MediaVideo {...props} />
     </DismountWhenBackgrounded>
@@ -301,49 +168,5 @@ const styles = StyleSheet.create({
   },
   video: {
     flex: 1,
-  },
-  playButtonContainer: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-  },
-  playButton: {
-    borderRadius: 100,
-    padding: 15,
-    aspectRatio: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    transform: [{ translateX: "-50%" }, { translateY: "-50%" }],
-  },
-  playButtonIcon: {
-    marginRight: -5,
-  },
-  progressBarBackground: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: 2,
-    backgroundColor: "black",
-  },
-  progressBar: {
-    position: "absolute",
-    bottom: 0,
-    width: "200%",
-    left: "-100%",
-    height: 2,
-    backgroundColor: "#ccc",
-  },
-  playbackRateContainer: {
-    position: "absolute",
-    left: 10,
-  },
-  playbackRateButton: {
-    borderRadius: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    width: 40,
-    aspectRatio: 1,
   },
 });

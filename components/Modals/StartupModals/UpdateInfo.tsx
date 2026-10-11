@@ -1,4 +1,5 @@
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import React, { useContext } from "react";
 import { View, StyleSheet, ScrollView, Image } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
@@ -7,133 +8,90 @@ import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../../UI/GetHydraProButton";
 import KeyStore from "../../../utils/KeyStore";
 import { TextWithRepairedHeight } from "../../Other/TextWithRepairedHeight";
+import { useURLNavigation } from "../../../utils/navigation";
+import { StackActions } from "@react-navigation/native";
 
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v4.0.0",
+  updateKey: "v4.3.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Media Viewer Rewrite",
+      title: "Mute Videos by Default",
       description:
-        "The media viewer has been rebuilt from scratch offering new features and better performance. This represents a significant step towards preparing Hydra for release on Android. Many of the features listed below are a result of the rewrite.",
+        "Pressing a volume button or the unmute button in the media viewer will unmute videos for the rest of the session. Videos will be muted again when you leave the app. You can disable this in Settings => Appearance => Posts => Mute Videos by Default.",
     },
     {
-      title: "Hydra in Share Sheet",
+      title: "Chat",
       description:
-        "Hydra now appears as an option when you share a URL from another app.",
+        'Open Chat by pressing the chat icon in the top right corner of the Inbox tab. When viewing a user\'s profile, press the "Message" button in the ... menu to open a chat with the user.',
     },
     {
-      title: "Right Side Thumbnails in Compact Mode",
+      title: "Smarter Trending Subreddits",
       description:
-        "Moves post thumbnail previews from the left to the right side when in compact mode. Enable this in Settings => Appearance => Post Appearance Settings => Show Thumbnails on Right. This setting will only show up if you have compact mode enabled.",
+        "The algorithm for loading trending subreddits in the Search tab has been improved to give more relevant results.",
     },
     {
-      title: "Collapse Child Comments Only",
+      title: "Hide Next Comment Button",
       description:
-        "Tapping a comment now collapses its children instead of the comment itself. This setting can be enabled in Settings => Appearance => Comment Appearance Settings => Collapse Children Only.",
+        "The next comment button in the comment view can be hidden in Settings => Appearance => Comments => Show Scroll to Next Button.",
     },
     {
-      title: "Filter Subreddits Temporarily",
+      title: "Hide Popular & All",
       description:
-        'When on a mixed feed such as Home or Popular, long press a post and press "Filter Subreddit". You\'ll now have an option to filter for a day, a week, or forever.',
+        "The Popular and All buttons in the subreddit list can be hidden in Settings => Appearance => Subreddits => Show Popular / Show All.",
     },
     {
-      title: "Support for New Wikis",
+      title: "Disable Inbox Replies",
       description:
-        "Hydra previously only supported old.reddit.com wikis. New wikis are now supported and used by default.",
+        'When making a post, you\'ll now see a new "Send replies to my inbox" option. When disabled, you will no longer receive replies to that post in your inbox.',
     },
     {
-      title: "Swipe to Scrub Videos",
+      title: "Media Viewer Performance",
       description:
-        "When a video is full screen, you can swipe horizontally to scrub through it.",
+        "The media viewer has been optimized to reduce render cycles. Changing device orientation should no longer show a temporary blank screen.",
     },
     {
-      title: "Change Video Playback Rate",
+      title: "Deep Linking for Android",
       description:
-        "When a video is full screen, you can tap the playback rate button in the top left corner to change the playback rate.",
-    },
-    {
-      title: "Landscape Mode",
-      description:
-        "Rotate your device when in the media viewer or the in app browser to view content in landscape.",
-    },
-    {
-      title: "Media Collection Navigation Arrows",
-      description:
-        "When viewing a collection of images or videos, arrows appear to allow easier swiping between items.",
-    },
-    {
-      title: "Post Info in Media Viewer",
-      description:
-        "Post info is overlayed when tapping on content in the media viewer. Tap the title, subreddit, or author to quickly navigate to the relevant page.",
-    },
-    {
-      title: "Swipe to Dismiss Media",
-      description:
-        "The media viewer can be dismissed by swiping up or down. Previously, you could only swipe one way.",
-    },
-    {
-      title: "Media Viewer Optimizations",
-      description:
-        "Hydra is much smarter about picking the best image resolution to load, caching behavior has been improved, and background videos pause while a different video is in the foreground, granting faster load times and reduced memory usage.",
+        "On Android, Hydra can automatically open when you click links to Reddit's website. Go to Settings => General => Open in Hydra to enable this.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
       description:
-        "Music no longer randomly pauses while scrolling. I think I fixed this, but I haven't been able to consistently reproduce the bug, so if you experience this, a bug report would be appreciated.",
+        "The login page could sometimes freeze or report a browser error, causing login to fail.",
     },
     {
       description:
-        "Posts with a collection of videos only displayed the first video.",
+        "The audio track on videos could stutter after rotating the device.",
     },
     {
       description:
-        "Scrubbing while in gallery mode locks vertical scrolling for a smoother experience.",
+        "Pan gestures on zoomed in images would sometimes be counted as a tap by the media viewer overlay.",
     },
     {
       description:
-        "Links that are slow to respond to requests for metadata are skipped, resulting in much faster loads in the worst cases.",
+        "Text bodies in NSFW or spoiler posts would sometimes not be blurred correctly.",
     },
     {
       description:
-        "Android builds successfully. An official app is coming soon.",
-    },
-    {
-      description: "Fixed image posts momentarily showing the wrong image.",
+        "In certain cases, Hydra would fail to indicate when a user is banned.",
     },
     {
       description:
-        "Some link sources like Wikipedia would fail to show an image.",
-    },
-    {
-      description: "Fixed shadowbanned users being unable to log in.",
-    },
-    {
-      description:
-        "Text URLs containing backslashes that weren't marked as links in markdown were parsed incorrectly.",
-    },
-    {
-      description:
-        "Posts linking to other Reddit pages (e.g. /r/wowthissubexists) weren't rendering as links.",
-    },
-    {
-      description:
-        'Having a multireddit named "All" would cause the "All" button to disappear in the subreddit list.',
-    },
-    {
-      description:
-        "Hydra warns you when attempting to reply in a locked or archived post.",
+        "Certain gestures would cause Hydra to crash after backgrounding the app.",
     },
   ] as { description: string }[],
+  notes: [] as string[],
 };
 
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
   const { theme } = useContext(ThemeContext);
+  const { dispatch } = useURLNavigation();
 
   const exitUpdateInfo = () => {
     KeyStore.set(LAST_SEEN_UPDATE_KEY, updateInfo.updateKey);
@@ -162,7 +120,12 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           ]}
           onPress={() => exitUpdateInfo()}
         >
-          <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
+          <FontAwesome6
+            iconStyle="solid"
+            name="xmark"
+            size={16}
+            color={theme.subtleText}
+          />
         </Touchable>
         <View style={styles.versionBadge}>
           <TextWithRepairedHeight
@@ -221,7 +184,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                     style={[
                       styles.featureContainer,
                       {
-                        backgroundColor: theme.divider,
+                        backgroundColor: theme.background,
+                        borderColor: theme.divider,
                       },
                     ]}
                   >
@@ -331,6 +295,42 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               ))}
             </View>
           </View>
+          <TextWithRepairedHeight
+            style={[
+              styles.heading,
+              {
+                color: theme.text,
+              },
+            ]}
+          >
+            📝 Notes
+          </TextWithRepairedHeight>
+          <View style={styles.listContainer}>
+            <View
+              style={[
+                styles.featureContainer,
+                {
+                  backgroundColor: theme.background,
+                  borderColor: theme.divider,
+                  gap: 12,
+                },
+              ]}
+            >
+              {updateInfo.notes.map((note) => (
+                <TextWithRepairedHeight
+                  key={note}
+                  style={[
+                    styles.bugfixDescription,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  {note}
+                </TextWithRepairedHeight>
+              ))}
+            </View>
+          </View>
           <View style={styles.helpContainer}>
             <View style={styles.helpIcon}>
               <Image
@@ -366,7 +366,28 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               you can make a pull request at https://github.com/dmilin1/hydra
             </TextWithRepairedHeight>
           </View>
-          <GetHydraProButton onPress={() => exitUpdateInfo()} />
+          <View style={styles.getHydraProContainer}>
+            <GetHydraProButton onPress={() => exitUpdateInfo()} />
+          </View>
+          <Touchable
+            style={styles.tipJarContainer}
+            activeOpacity={0.5}
+            animationDuration={{ in: 0, out: 150 }}
+            onPress={() => {
+              dispatch(
+                StackActions.push("SettingsPage", {
+                  url: "hydra://settings/tipJar",
+                }),
+              );
+              exitUpdateInfo();
+            }}
+          >
+            <TextWithRepairedHeight
+              style={[styles.tipJarText, { color: theme.iconOrTextButton }]}
+            >
+              Leave a tip
+            </TextWithRepairedHeight>
+          </Touchable>
         </ScrollView>
       </View>
       <Touchable style={styles.background} onPress={() => exitUpdateInfo()} />
@@ -495,5 +516,18 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     gap: 15,
+  },
+  getHydraProContainer: {
+    marginTop: 10,
+  },
+  tipJarContainer: {
+    paddingTop: 10,
+    paddingBottom: 30,
+    marginHorizontal: 20,
+  },
+  tipJarText: {
+    fontSize: 16,
+    fontWeight: "500",
+    textAlign: "center",
   },
 });

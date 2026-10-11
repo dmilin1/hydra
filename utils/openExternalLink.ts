@@ -3,6 +3,7 @@ import * as Linking from "expo-linking";
 import KeyStore from "./KeyStore";
 import { Alert } from "react-native";
 import * as ExpoOrientation from "expo-screen-orientation";
+import { applyLinkScript } from "./linkScript";
 
 export type BrowserOption = keyof typeof BROWSER_CONFIGS;
 
@@ -38,9 +39,8 @@ export const BROWSER_CONFIGS = {
     value: "brave",
     label: "Brave",
     getURLScheme: (url: string) => {
-      const isHTTPS = url.startsWith("https://");
-      const cleanURL = url.replace(/^https?:\/\//, "");
-      return isHTTPS ? `braves://${cleanURL}` : `brave://${cleanURL}`;
+      const encodedURL = encodeURIComponent(url);
+      return `brave://open-url?url=${encodedURL}`;
     },
   },
   firefox: {
@@ -74,9 +74,11 @@ export const BROWSER_CONFIGS = {
 };
 
 export async function openExternalLink(
-  url: string,
+  originalURL: string,
   browserParams?: WebBrowser.WebBrowserOpenOptions,
 ) {
+  const url = applyLinkScript(originalURL);
+
   const browserSetting = (KeyStore.getString(EXTERNAL_LINK_BROWSER_KEY) ??
     EXTERNAL_LINK_BROWSER_DEFAULT) as BrowserOption;
 

@@ -1,15 +1,13 @@
-import {
-  AntDesign,
-  MaterialCommunityIcons,
-  MaterialIcons,
-  SimpleLineIcons,
-  Entypo,
-  FontAwesome,
-  Ionicons,
-} from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import SimpleLineIcons from "@react-native-vector-icons/simple-line-icons";
+import Entypo from "@react-native-vector-icons/entypo";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import Ionicons from "@react-native-vector-icons/ionicons";
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
-import { Share, StyleSheet, View, Alert, findNodeHandle } from "react-native";
+import { StyleSheet, View, Alert, findNodeHandle } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
 import { deleteUserContent, PostDetail } from "../../api/PostDetail";
@@ -17,9 +15,12 @@ import { blockUser, User } from "../../api/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
 import {
   makeCommentSubredditSortKey,
+  makePostMultiredditSortKey,
+  makePostMultiredditSortTopKey,
   makePostSubredditSortKey,
   makePostSubredditSortTopKey,
   REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+  REMEMBER_MULTIREDDIT_SORT_KEY,
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
 } from "../../constants/SettingsKeys";
 import { ModalContext } from "../../contexts/ModalContext";
@@ -31,10 +32,12 @@ import { useURLNavigation } from "../../utils/navigation";
 import { FlexibleNavigationProp } from "../../utils/navigationTypes";
 import useContextMenu from "../../utils/useContextMenu";
 import EditPost from "../Modals/EditPost";
-import NewMessage from "../Modals/NewMessage";
 import NewPost from "../Modals/NewPost";
 import SelectText from "../Modals/SelectText";
 import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
+import { shareURL } from "../../utils/sharing";
+import ShareAsImage from "../Modals/ShareAsImage/ShareAsImage";
+import { ToastContext } from "../../contexts/ToastContext";
 
 export type SortTypes =
   | "Best"
@@ -53,6 +56,8 @@ export type ContextTypes =
   | "Select Text"
   | "Subscribe"
   | "Unsubscribe"
+  | "Follow"
+  | "Unfollow"
   | "Favorite"
   | "Unfavorite"
   | "New Post"
@@ -66,7 +71,8 @@ export type ContextTypes =
   | "Hide Seen Posts"
   | "Sidebar"
   | "Wiki"
-  | "Open in Gallery Mode";
+  | "Open in Gallery Mode"
+  | "Share as Image";
 
 type SortAndContextProps = {
   route: RouteProp<StackParamsList, URLRoutes> | string;
@@ -88,6 +94,7 @@ export default function SortAndContext({
   const { subscribe, unsubscribe, toggleFavorite, multis, addSubToMulti } =
     useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
+  const { showToast } = useContext(ToastContext);
 
   const { replaceURL, pushURL, setParams, openGallery } = useURLNavigation();
 
@@ -117,6 +124,19 @@ export default function SortAndContext({
       if (sort === "top" && time) {
         KeyStore.set(
           makePostSubredditSortTopKey(subreddit),
+          time.toLowerCase(),
+        );
+      }
+    }
+    if (
+      pageType === PageType.MULTIREDDIT &&
+      KeyStore.getBoolean(REMEMBER_MULTIREDDIT_SORT_KEY)
+    ) {
+      const multiPath = redditUrl.getMultiredditPath();
+      KeyStore.set(makePostMultiredditSortKey(multiPath), sort.toLowerCase());
+      if (sort === "top" && time) {
+        KeyStore.set(
+          makePostMultiredditSortTopKey(multiPath),
           time.toLowerCase(),
         );
       }
@@ -273,7 +293,7 @@ export default function SortAndContext({
               anchor: findNodeHandle(contextButtonRef.current) ?? undefined,
             });
             if (result === "Share") {
-              Share.share({ url: new RedditURL(currentPath).toString() });
+              shareURL(new RedditURL(currentPath).toString());
             } else if (
               result === "Select Text" &&
               pageData?.type === "postDetail"
@@ -290,6 +310,10 @@ export default function SortAndContext({
               subscribe(new RedditURL(currentPath).getSubreddit());
             } else if (result === "Unsubscribe") {
               unsubscribe(new RedditURL(currentPath).getSubreddit());
+            } else if (result === "Follow" && pageData?.type === "user") {
+              subscribe(`u_${pageData.userName}`);
+            } else if (result === "Unfollow" && pageData?.type === "user") {
+              unsubscribe(`u_${pageData.userName}`);
             } else if (result === "Favorite" || result === "Unfavorite") {
               toggleFavorite(new RedditURL(currentPath).getSubreddit());
             } else if (result === "Add to Multireddit") {
@@ -318,18 +342,16 @@ export default function SortAndContext({
             } else if (result === "Delete" && pageData?.type === "postDetail") {
               try {
                 await deleteUserContent(pageData);
-                alert("Post deleted");
+                showToast({
+                  title: "Post deleted",
+                  body: "The post has been deleted successfully",
+                });
                 navigation.goBack();
               } catch (_e) {
                 alert("Failed to delete post");
               }
             } else if (result === "Message" && pageData?.type === "user") {
-              setModal(
-                <NewMessage
-                  recipient={pageData}
-                  contentSent={() => setModal(undefined)}
-                />,
-              );
+              pushURL(`https://www.reddit.com/chat/user/${pageData.id}`);
             } else if (result === "Block" && pageData?.type === "user") {
               Alert.alert(
                 "Block User",
@@ -367,6 +389,11 @@ export default function SortAndContext({
               pushURL(`https://www.reddit.com/r/${subreddit}/wiki/index`);
             } else if (result === "Open in Gallery Mode") {
               openGallery(currentPath);
+            } else if (
+              result === "Share as Image" &&
+              pageData?.type === "postDetail"
+            ) {
+              setModal(<ShareAsImage postDetail={pageData} />);
             }
           }}
         >

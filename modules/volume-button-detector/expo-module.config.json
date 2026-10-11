@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["VolumeButtonDetectorModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.volumebuttondetector.VolumeButtonDetectorModule"]
+  }
+}

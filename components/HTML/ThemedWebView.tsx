@@ -115,7 +115,6 @@ export default function ThemedWebView({ url }: { url: string }) {
       style={{ backgroundColor: theme.background }}
       // Injected js doesn't run unless you pass a function here even if it doesn't do anything. No idea why.
       onMessage={() => {}}
-      webviewDebuggingEnabled={true}
       onShouldStartLoadWithRequest={(e) => {
         if (!e.isTopFrame) return true;
         let currentURL = new URL(e.url).getBasePath().toString();

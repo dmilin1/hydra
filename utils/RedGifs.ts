@@ -1,3 +1,4 @@
+import { Post } from "../api/Posts";
 import KeyStore from "./KeyStore";
 import safeFetch from "./safeFetch";
 
@@ -108,28 +109,48 @@ type RedGifResponse = {
 const REDGIFS_TOKEN_STORAGE_KEY = "redgifsToken";
 
 export default class Redgifs {
-  static async getMediaURL(url: string, attemptsLeft = 1): Promise<string> {
+  static async getMedia(
+    url: string,
+    attemptsLeft = 1,
+  ): Promise<Post["videos"][number]> {
     const videoId = url.split(/watch\/|\?|#/)[1];
     let token = Redgifs.getStoredToken();
     if (!token) {
       token = await Redgifs.refreshStoredToken();
     }
     try {
-      return await safeFetch(`https://api.redgifs.com/v2/gifs/${videoId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "User-Agent": "Hydra",
+      const res = await safeFetch(
+        `https://api.redgifs.com/v2/gifs/${videoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "User-Agent": "Hydra",
+          },
         },
-      })
-        .then((res) => res.json() as Promise<RedGifResponse>)
-        .then((json) => json.gif.urls.hd ?? json.gif.urls.sd);
+      );
+      if (res.status === 410) {
+        return {
+          source: "",
+          hasAudio: false,
+          sourceLoadError: "Video has been deleted",
+        };
+      }
+      const json = (await res.json()) as RedGifResponse;
+      return {
+        source: json.gif.urls.hd ?? json.gif.urls.sd,
+        hasAudio: json.gif.hasAudio,
+      };
     } catch (_) {
       if (attemptsLeft > 0) {
         await Redgifs.refreshStoredToken();
-        return await Redgifs.getMediaURL(url, attemptsLeft - 1);
+        return await Redgifs.getMedia(url, attemptsLeft - 1);
       }
     }
-    return url;
+    return {
+      source: "",
+      hasAudio: false,
+      sourceLoadError: "Failed to load video from RedGifs",
+    };
   }
 
   static getStoredToken() {

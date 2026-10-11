@@ -5,7 +5,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useContext } from "react";
 import { useURLNavigation } from "../../utils/navigation";
-import { AntDesign } from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
 
 type SplitViewOptionsProps = {
   splitViewURL: string;

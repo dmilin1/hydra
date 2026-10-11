@@ -1,9 +1,7 @@
-import {
-  AntDesign,
-  Feather,
-  FontAwesome,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import AntDesign from "@react-native-vector-icons/ant-design";
+import Feather from "@react-native-vector-icons/feather";
+import FontAwesome from "@react-native-vector-icons/fontawesome";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext } from "react";
 
 import List from "../../../components/UI/List";
@@ -54,12 +52,6 @@ export default function GeneralRoot() {
             ),
             text: "App Startup",
             onPress: () => pushURL("hydra://settings/general/startup"),
-          },
-          {
-            key: "legal",
-            icon: <Feather name="file-text" size={24} color={theme.text} />,
-            text: "Legal",
-            onPress: () => pushURL("hydra://settings/general/legal"),
           },
           {
             key: "externalLinks",

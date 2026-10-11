@@ -1,4 +1,3 @@
-import "react-native-url-polyfill/auto";
 import {
   getAttributeValue,
   getElementById,

@@ -20,7 +20,7 @@ Hydra automatically detects your current connection type and applies the corresp
 
 When low data mode is active, Hydra defers loading media while you scroll. Content is still fully available — it just loads on demand when you tap on it.
 
-- **Videos** are not loaded while scrolling. A thumbnail with a "VIDEO" label is shown instead, and the video loads when you tap it.
+- **Videos** are not loaded while scrolling. A thumbnail with a play button is shown instead, and the video loads when you tap it.
 - **Images** show thumbnails while scrolling. Tap to view the full-resolution image.
 - **Link previews** do not load article preview images.
 - **Subreddit icons** are not loaded.

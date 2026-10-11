@@ -13,13 +13,13 @@ Enable "Swipe Anywhere to Navigate" in [Gestures settings](hydra://settings/gene
 
 ## Post Swipe Actions
 
-Configure four swipe actions for posts in [Gestures settings](hydra://settings/general/gestures). Available actions: Upvote, Downvote, Mark as Read, Bookmark, Share.
+Configure four swipe actions for posts in [Gestures settings](hydra://settings/general/gestures). Available actions: Upvote, Downvote, Mark as Read, Bookmark, Share, Disabled.
 
 Default configuration: Short Right (Upvote), Long Right (Downvote), Short Left (Mark as Read), Long Left (Bookmark).
 
 ## Comment Swipe Actions
 
-Configure four swipe actions for comments in [Gestures settings](hydra://settings/general/gestures). Available actions: Upvote, Downvote, Reply, Bookmark, Share, Collapse, Collapse Thread.
+Configure four swipe actions for comments in [Gestures settings](hydra://settings/general/gestures). Available actions: Upvote, Downvote, Reply, Bookmark, Share, Collapse, Collapse Thread, Disabled.
 
 Default configuration: Short Right (Upvote), Long Right (Downvote), Short Left (Reply), Long Left (Bookmark).
 
@@ -36,6 +36,8 @@ Default configuration: Short Right (Upvote), Long Right (Downvote), Short Left (
 **Reply** (comments only): Opens the reply composer immediately.
 
 **Collapse/Collapse Thread** (comments only): Collapse hides a single comment, while Collapse Thread collapses the entire thread.
+
+**Disabled**: Assign "Disabled" to a swipe direction to turn that swipe action off entirely.
 
 ## Gesture Feedback
 

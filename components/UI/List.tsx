@@ -1,4 +1,4 @@
-import { MaterialIcons } from "@expo/vector-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import React, { ReactNode, useContext } from "react";
 import { View, StyleSheet, Text, StyleProp, ViewStyle } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
@@ -12,6 +12,7 @@ type ListItem = {
   rightIcon?: ReactNode;
   text: string;
   onPress: () => void;
+  disabled?: boolean;
   hide?: boolean;
   renderCustomItem?: (item: ListItem) => ReactNode;
 };
@@ -43,6 +44,7 @@ export default function List({ items, title, containerStyle }: ListProps) {
             <Touchable
               key={item.key}
               onPress={item.onPress}
+              disabled={item.disabled}
               activeOpacity={0.5}
               animationDuration={{ in: 0, out: 150 }}
               style={[

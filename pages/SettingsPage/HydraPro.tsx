@@ -6,18 +6,21 @@ import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import Time from "../../utils/Time";
 import HydraProFeatureList from "../../components/UI/HydraProFeatureList";
+import { useURLNavigation } from "../../utils/navigation";
 
 export default function HydraPro() {
   const { theme } = useContext(ThemeContext);
+  const { pushURL } = useURLNavigation();
   const {
     isPro,
     buyPro,
     proOffering,
-    isLoadingOffering,
+    isLoadingProductsAndOfferings,
     purchasesInitialized,
     inGracePeriod,
     gracePeriodEndsAt,
     getCustomerInfo,
+    restorePurchases,
   } = useContext(SubscriptionsContext);
 
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -54,7 +57,7 @@ export default function HydraPro() {
         >
           Unlock the full potential of Hydra
         </Text>
-        {isLoadingOffering ? (
+        {isLoadingProductsAndOfferings ? (
           <ActivityIndicator
             size="small"
             color={theme.subtleText}
@@ -94,7 +97,7 @@ export default function HydraPro() {
             backgroundColor: theme.buttonBg,
           },
         ]}
-        disabled={isLoadingOffering || !purchasesInitialized}
+        disabled={isLoadingProductsAndOfferings || !purchasesInitialized}
       >
         <View style={styles.upgradeButtonContent}>
           <Text
@@ -105,7 +108,9 @@ export default function HydraPro() {
               },
             ]}
           >
-            {isLoadingOffering || !purchasesInitialized || isPurchasing ? (
+            {isLoadingProductsAndOfferings ||
+            !purchasesInitialized ||
+            isPurchasing ? (
               <ActivityIndicator size="small" color={theme.buttonText} />
             ) : inGracePeriod ? (
               "Renew Subscription"
@@ -117,7 +122,7 @@ export default function HydraPro() {
               "Upgrade to Pro"
             )}
           </Text>
-          {isLoadingOffering && (
+          {isLoadingProductsAndOfferings && (
             <ActivityIndicator
               size="small"
               color={theme.text}
@@ -132,6 +137,39 @@ export default function HydraPro() {
           {new Time(gracePeriodEndsAt).prettyTimeSince()}
         </Text>
       )}
+      <Touchable
+        onPress={async () => {
+          await restorePurchases();
+        }}
+        activeOpacity={0.5}
+        animationDuration={{ in: 0, out: 150 }}
+      >
+        <Text
+          style={[
+            styles.restorePurchasesText,
+            { color: theme.iconOrTextButton },
+          ]}
+        >
+          Restore Purchases
+        </Text>
+      </Touchable>
+      {!isPro ? (
+        <Touchable
+          onPress={() => pushURL("hydra://settings/tipJar")}
+          activeOpacity={0.5}
+          animationDuration={{ in: 0, out: 150 }}
+          style={styles.tipJarContainer}
+        >
+          <Text style={[styles.tipJarLeadText, { color: theme.subtleText }]}>
+            Not interested in these features?
+          </Text>
+          <Text
+            style={[styles.tipJarLinkText, { color: theme.iconOrTextButton }]}
+          >
+            You can still support Hydra in the Tip Jar
+          </Text>
+        </Touchable>
+      ) : null}
     </>
   );
 }
@@ -190,6 +228,26 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginHorizontal: 20,
     marginBottom: 20,
+    textAlign: "center",
+  },
+  restorePurchasesText: {
+    fontSize: 14,
+    marginTop: 4,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  tipJarContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 30,
+  },
+  tipJarLeadText: {
+    fontSize: 14,
+    textAlign: "center",
+  },
+  tipJarLinkText: {
+    fontSize: 14,
+    marginTop: 4,
     textAlign: "center",
   },
 });

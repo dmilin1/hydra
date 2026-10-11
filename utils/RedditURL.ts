@@ -2,12 +2,17 @@ import KeyStore from "./KeyStore";
 import URL from "./URL";
 import {
   DEFAULT_COMMENT_SORT_KEY,
+  DEFAULT_MULTIREDDIT_SORT_KEY,
+  DEFAULT_MULTIREDDIT_SORT_TOP_KEY,
   DEFAULT_POST_SORT_KEY,
   DEFAULT_POST_SORT_TOP_KEY,
   makeCommentSubredditSortKey,
+  makePostMultiredditSortKey,
+  makePostMultiredditSortTopKey,
   makePostSubredditSortKey,
   makePostSubredditSortTopKey,
   REMEMBER_COMMENT_SUBREDDIT_SORT_KEY,
+  REMEMBER_MULTIREDDIT_SORT_KEY,
   REMEMBER_POST_SUBREDDIT_SORT_KEY,
   SORT_HOME_PAGE,
 } from "../constants/SettingsKeys";
@@ -24,8 +29,7 @@ export enum PageType {
   INBOX,
   SIDEBAR,
   WIKI,
-
-  MESSAGES,
+  CHAT,
 
   ACCOUNTS,
   SETTINGS,
@@ -66,13 +70,14 @@ export default class RedditURL extends URL {
       this.url = `https://${url}`;
     } else if (url.startsWith("reddit.com")) {
       this.url = `https://www.${url}`;
-    } else if (url.startsWith("https://www.reddit.com/r/u_")) {
+    } else {
+      throw new Error(`Weird URL being passed ${url}`);
+    }
+    if (url.startsWith("https://www.reddit.com/r/u_")) {
       this.url = url.replace(
         "https://www.reddit.com/r/u_",
         "https://www.reddit.com/user/",
       );
-    } else {
-      throw new Error(`Weird URL being passed ${url}`);
     }
     if (
       !this.url.startsWith("hydra://") &&
@@ -178,6 +183,13 @@ export default class RedditURL extends URL {
     return this.url.split("/r/")[1]?.split(/\/|\?/)[0] ?? "";
   }
 
+  getMultiredditPath(): string {
+    const match = this.getRelativePath().match(
+      /\/(?:user|u)\/([^/]+)\/m\/([^/]+)/,
+    );
+    return match ? `${match[1]}/${match[2]}` : "";
+  }
+
   jsonify(): RedditURL {
     const base = this.getBasePath();
     const urlParams = this.getURLParams();
@@ -224,8 +236,8 @@ export default class RedditURL extends URL {
       return PageType.SUBREDDIT;
     } else if (relativePath.startsWith("/message/inbox")) {
       return PageType.INBOX;
-    } else if (relativePath.startsWith("/message/messages")) {
-      return PageType.MESSAGES;
+    } else if (relativePath.startsWith("/chat")) {
+      return PageType.CHAT;
     } else if (relativePath.match(/\/(user|u)\/.*\/m\/.*/)) {
       return PageType.MULTIREDDIT;
     } else if (
@@ -258,6 +270,8 @@ export default class RedditURL extends URL {
       name = "Sidebar";
     } else if (pageType === PageType.WIKI) {
       name = "Wiki";
+    } else if (pageType === PageType.CHAT) {
+      name = "Chat";
     } else if (pageType === PageType.SUBREDDIT) {
       name = this.getSubreddit();
     } else if (pageType === PageType.MULTIREDDIT) {
@@ -334,6 +348,34 @@ export default class RedditURL extends URL {
           time =
             subredditSpecificTime ??
             KeyStore.getString(DEFAULT_POST_SORT_TOP_KEY) ??
+            "all";
+        }
+        this.changeSort(preferredSort, time);
+      }
+    }
+
+    if (pageType === PageType.MULTIREDDIT) {
+      const multiPath = this.getMultiredditPath();
+      const multiSpecificSort = KeyStore.getBoolean(
+        REMEMBER_MULTIREDDIT_SORT_KEY,
+      )
+        ? KeyStore.getString(makePostMultiredditSortKey(multiPath))
+        : null;
+      const preferredSort =
+        multiSpecificSort ??
+        KeyStore.getString(DEFAULT_MULTIREDDIT_SORT_KEY) ??
+        "default";
+      if (preferredSort !== "default") {
+        let time = undefined;
+        if (preferredSort === "top") {
+          const multiSpecificTime = KeyStore.getBoolean(
+            REMEMBER_MULTIREDDIT_SORT_KEY,
+          )
+            ? KeyStore.getString(makePostMultiredditSortTopKey(multiPath))
+            : null;
+          time =
+            multiSpecificTime ??
+            KeyStore.getString(DEFAULT_MULTIREDDIT_SORT_TOP_KEY) ??
             "all";
         }
         this.changeSort(preferredSort, time);

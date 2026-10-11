@@ -1,4 +1,4 @@
-import { Entypo } from "@expo/vector-icons";
+import Entypo from "@react-native-vector-icons/entypo";
 import { openExternalLink } from "../utils/openExternalLink";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";

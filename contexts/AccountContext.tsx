@@ -80,6 +80,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const logOutContext = async () => {
     await RedditCookies.clearSessionCookies();
+    await RedditCookies.getLoggedOutCookies();
     KeyStore.remove("currentUser");
     setCurrentUser(null);
     Sentry.setUser(null);
@@ -117,13 +118,17 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const loadSavedData = async () => {
     const usernamesJSON = KeyStore.getString("usernames");
+    let currentUsername: string | null = null;
     if (usernamesJSON) {
       const usernames: string[] = JSON.parse(usernamesJSON);
       setAccounts(usernames);
-      const currentUsername = KeyStore.getString("currentUser");
+      currentUsername = KeyStore.getString("currentUser") ?? null;
       if (currentUsername) {
         await logInContext(currentUsername);
       }
+    }
+    if (!currentUsername) {
+      await logOutContext();
     }
     setLoginInitialized(true);
   };

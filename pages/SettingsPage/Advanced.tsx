@@ -1,4 +1,5 @@
-import { Entypo, Feather } from "@expo/vector-icons";
+import Entypo from "@react-native-vector-icons/entypo";
+import Feather from "@react-native-vector-icons/feather";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, Switch, View, StyleSheet, Text } from "react-native";
 import { Touchable } from "react-native-gesture-handler";

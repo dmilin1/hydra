@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
-import { FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -41,7 +41,12 @@ export default function GetHydraPro({ onExit }: GetHydraProProps) {
               ]}
               onPress={exit}
             >
-              <FontAwesome6 name="xmark" size={16} color={theme.subtleText} />
+              <FontAwesome6
+                iconStyle="solid"
+                name="xmark"
+                size={16}
+                color={theme.subtleText}
+              />
             </Touchable>
 
             <View style={styles.headerArea}>

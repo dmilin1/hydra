@@ -1,7 +1,15 @@
-import packageJson from './package.json';
+import { APP_ICON_PLUGIN_ICONS } from "./constants/appIcons";
+import packageJson from "./package.json";
 
 const projectId = "7e403d7f-7747-4daa-a3c9-4acb948f7a60";
-const IS_DEV = process.env.APP_VARIANT === 'development';
+const IS_DEV = process.env.APP_VARIANT === "development";
+
+const REDDIT_DEEP_LINK_HOSTS = [
+  "reddit.com",
+  "www.reddit.com",
+  "old.reddit.com",
+  "new.reddit.com",
+];
 
 module.exports = {
   expo: {
@@ -9,21 +17,15 @@ module.exports = {
     slug: "hydra",
     version: packageJson.version,
     runtimeVersion: {
-      policy: 'appVersion',
+      policy: "appVersion",
     },
     icon: "./assets/images/icon.png",
     scheme: "hydra",
     userInterfaceStyle: "automatic",
-    splash: {
-      image: "./assets/images/splash.png",
-      resizeMode: "contain",
-      backgroundColor: "#000000"
-    },
-    assetBundlePatterns: [
-      "**/*"
-    ],
+    assetBundlePatterns: ["**/*"],
     ios: {
-      appStoreUrl: "https://apps.apple.com/us/app/hydra-for-reddit/id6478089063",
+      appStoreUrl:
+        "https://apps.apple.com/us/app/hydra-for-reddit/id6478089063",
       supportsTablet: true,
       bundleIdentifier: "com.dmilin.hydra",
       infoPlist: {
@@ -33,78 +35,81 @@ module.exports = {
     android: {
       package: "com.dmilin.hydra",
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
-        backgroundColor: "#000000"
-      }
+        foregroundImage: "./assets/images/icon_android.png",
+        backgroundColor: "#000000",
+      },
+      intentFilters: [
+        {
+          action: "VIEW",
+          category: ["BROWSABLE", "DEFAULT"],
+          data: REDDIT_DEEP_LINK_HOSTS.flatMap((host) => [
+            { scheme: "https", host },
+            { scheme: "http", host },
+          ]),
+        },
+      ],
     },
     web: {
       bundler: "metro",
-      favicon: "./assets/images/favicon.png"
+      favicon: "./assets/images/favicon.png",
     },
     extra: {
       eas: {
         projectId,
-      }
+      },
     },
     owner: "dmilin",
     plugins: [
-      "expo-router",
       [
-        'expo-media-library', {
-          savePhotosPermission: 'Allow $(PRODUCT_NAME) to save photos and videos to your library.',
-        }
+        "expo-media-library",
+        {
+          savePhotosPermission:
+            "Allow $(PRODUCT_NAME) to save photos and videos to your library.",
+        },
       ],
       "@sentry/react-native/expo",
       [
-        'expo-image-picker', {
-          "photosPermission": "$(PRODUCT_NAME) accesses your photos to upload images.",
-        }
+        "expo-image-picker",
+        {
+          photosPermission:
+            "$(PRODUCT_NAME) accesses your photos to upload images.",
+        },
       ],
       "expo-notifications",
       [
-        "expo-alternate-app-icons",
-        [
-          {
-            "name": "cerberus",
-            "ios": "./assets/images/custom_icons/cerberus.png",
-            "android": {
-              "foregroundImage": "./assets/images/custom_icons/cerberus.png",
-              "backgroundColor": "#FFFFFF",
-            },
-          },
-          {
-            "name": "hail_hydra",
-            "ios": "./assets/images/custom_icons/hail_hydra.png",
-            "android": {
-              "foregroundImage": "./assets/images/custom_icons/hail_hydra.png",
-              "backgroundColor": "#FFFFFF",
-            },
-          },
-          {
-            "name": "hail_hydra_dark",
-            "ios": "./assets/images/custom_icons/hail_hydra_dark.png",
-            "android": {
-              "foregroundImage": "./assets/images/custom_icons/hail_hydra_dark.png",
-              "backgroundColor": "#000000",
-            },
-          },
-        ]
+        "./plugins/withAppIcons",
+        {
+          icons: APP_ICON_PLUGIN_ICONS,
+        },
       ],
       [
         "expo-sharing",
         {
-          "ios": {
-            "enabled": true,
-            "activationRule": {
-              "supportsWebUrlWithMaxCount": 1,
-            }
+          ios: {
+            enabled: true,
+            activationRule: {
+              supportsWebUrlWithMaxCount: 1,
+            },
           },
-        }
+          android: {
+            enabled: true,
+            singleShareMimeTypes: ["text/plain"],
+          },
+        },
       ],
       [
         "expo-screen-orientation",
         {
-          "initialOrientation": "DEFAULT"
+          initialOrientation: "DEFAULT",
+        },
+      ],
+      [
+        "expo-splash-screen",
+        {
+          image: "./assets/images/icon_transparent.png",
+          resizeMode: "contain",
+          backgroundColor: "#000000",
+          imageWidth: 150,
         }
       ],
       "expo-font",
@@ -113,10 +118,11 @@ module.exports = {
       "expo-sqlite",
       "expo-video",
       "expo-web-browser",
+      "expo-status-bar",
     ],
     updates: {
       url: `https://u.expo.dev/${projectId}`,
       fallbackToCacheTimeout: 5000,
-    }
-  }
-}
+    },
+  },
+};

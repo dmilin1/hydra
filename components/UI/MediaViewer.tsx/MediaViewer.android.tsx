@@ -1,11 +1,9 @@
-import { FontAwesome6 } from "@expo/vector-icons";
 import * as ExpoOrientation from "expo-screen-orientation";
 import { useEffect, useRef, useState } from "react";
-import { Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
 import {
   GestureDetector,
   GestureHandlerRootView,
-  Touchable,
   usePanGesture,
 } from "react-native-gesture-handler";
 import Animated, {
@@ -21,15 +19,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
-import {
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { MediaImage } from "./MediaImage.android";
-import PostOverlay from "./PostOverlay";
+import MediaOverlay, { MediaOverlayHandle } from "./Overlay/MediaOverlay";
 import { MediaItemRow, MediaViewerProps } from "./types";
 import MediaVideo from "./MediaVideo.android";
-import { AnimatedStyleHandle } from "react-native-reanimated/lib/typescript/hook/commonTypes";
 
 export type { MediaItemCollection } from "./types";
 
@@ -43,7 +37,6 @@ const PAGING_SPRING = {
   overshootClamping: true,
 };
 const CLOSE_TIMING = { duration: 200 };
-const OVERLAY_TIMING = { duration: 150 };
 
 function snapTarget(position: number, velocity: number, maxIndex: number) {
   "worklet";
@@ -72,12 +65,6 @@ export default function MediaViewer({
   onClose,
 }: MediaViewerProps) {
   const { width, height } = useSafeAreaFrame();
-  const {
-    top: safeAreaTop,
-    bottom: safeAreaBottom,
-    left: safeAreaLeft,
-    right: safeAreaRight,
-  } = useSafeAreaInsets();
 
   const [rowIndex, setRowIndex] = useState(startingRowIndex);
   const [columnIndex, setColumnIndex] = useState(startingColumnIndex);
@@ -97,9 +84,8 @@ export default function MediaViewer({
   const gestureBase = useSharedValue(0);
   const pagerEnabled = useSharedValue(true);
   const flickAway = useSharedValue(0);
-  const overlayProgress = useSharedValue(0);
 
-  const overlayShown = useRef(false);
+  const overlayRef = useRef<MediaOverlayHandle>(null);
   const overlayTapStart = useRef<{
     x: number;
     y: number;
@@ -126,14 +112,6 @@ export default function MediaViewer({
     flickAway.value = withTiming(150, CLOSE_TIMING, () => {
       runOnJS(onClose)();
     });
-  };
-
-  const toggleOverlay = () => {
-    overlayShown.current = !overlayShown.current;
-    overlayProgress.value = withTiming(
-      overlayShown.current ? 1 : 0,
-      OVERLAY_TIMING,
-    );
   };
 
   const scrollToColumn = (column: number) => {
@@ -308,14 +286,6 @@ export default function MediaViewer({
     ],
   }));
 
-  const overlayStyle = useAnimatedStyle(() => ({
-    opacity: overlayProgress.value,
-  }));
-
-  const rowDetailsStyle = useAnimatedStyle(() => ({
-    opacity: 1 - overlayProgress.value,
-  }));
-
   const verticalStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -scrollY.value }],
   }));
@@ -353,6 +323,8 @@ export default function MediaViewer({
 
   const currentPost = getCurrentPost?.(rowIndex);
 
+  const focusedItem = media.at(rowIndex)?.at(columnIndex);
+
   return (
     <Modal
       visible={true}
@@ -362,54 +334,6 @@ export default function MediaViewer({
     >
       <GestureHandlerRootView style={styles.flex}>
         <Animated.View style={[styles.background, backgroundStyle]} />
-        {currentRowSize > 1 && (
-          <Animated.View
-            style={[
-              styles.rowDetailsContainer,
-              {
-                bottom: safeAreaBottom + 10,
-                right: safeAreaRight + 10,
-              },
-              rowDetailsStyle,
-            ]}
-          >
-            <Touchable
-              activeOpacity={0.2}
-              animationDuration={{ in: 0, out: 150 }}
-              style={[
-                styles.rowNavigationButton,
-                {
-                  opacity: columnIndex === 0 ? 0.5 : 1,
-                },
-              ]}
-              disabled={columnIndex === 0}
-              onPress={() => handleTapToScrollRow("left")}
-              hitSlop={10}
-            >
-              <FontAwesome6 name="arrow-left" size={16} color="white" />
-            </Touchable>
-            <Touchable
-              activeOpacity={0.2}
-              animationDuration={{ in: 0, out: 150 }}
-              style={[
-                styles.rowNavigationButton,
-                {
-                  opacity: columnIndex === currentRowSize - 1 ? 0.5 : 1,
-                },
-              ]}
-              disabled={columnIndex === currentRowSize - 1}
-              onPress={() => handleTapToScrollRow("right")}
-              hitSlop={10}
-            >
-              <FontAwesome6 name="arrow-right" size={16} color="white" />
-            </Touchable>
-            <View style={styles.itemIndexContainer}>
-              <Text style={styles.itemIndexText}>
-                {columnIndex + 1} / {currentRowSize}
-              </Text>
-            </View>
-          </Animated.View>
-        )}
         <Animated.View
           style={[styles.flex, contentStyle]}
           onTouchStart={(e) =>
@@ -428,30 +352,19 @@ export default function MediaViewer({
               Math.abs(locationY - y) < 10 &&
               Date.now() - timestamp < 300
             ) {
-              toggleOverlay();
+              overlayRef.current?.toggle();
             }
           }}
         >
-          <Animated.View
-            style={[
-              styles.overlayContainer,
-              {
-                paddingTop: safeAreaTop,
-                paddingBottom: safeAreaBottom,
-                paddingLeft: safeAreaLeft,
-                paddingRight: safeAreaRight,
-              },
-              overlayStyle,
-            ]}
-          >
-            {currentPost && (
-              <PostOverlay
-                post={currentPost}
-                closeViewer={() => animateClose()}
-                columnIndex={columnIndex}
-              />
-            )}
-          </Animated.View>
+          <MediaOverlay
+            ref={overlayRef}
+            post={currentPost ?? null}
+            focusedItem={focusedItem}
+            albumIndex={columnIndex}
+            albumSize={currentRowSize}
+            onAlbumStep={handleTapToScrollRow}
+            closeViewer={() => animateClose()}
+          />
           <GestureDetector gesture={panGesture}>
             <Animated.View
               style={[styles.flex, verticalStyle]}
@@ -474,7 +387,6 @@ export default function MediaViewer({
                   scrollX={scrollX}
                   columns={columns}
                   pagerEnabled={pagerEnabled}
-                  overlayStyle={overlayStyle}
                 />
               ))}
             </Animated.View>
@@ -496,7 +408,6 @@ type RowStripProps = {
   scrollX: SharedValue<number>;
   columns: SharedValue<Record<number, number>>;
   pagerEnabled: SharedValue<boolean>;
-  overlayStyle: AnimatedStyleHandle<{ opacity: number }>;
 };
 
 function RowStrip({
@@ -510,7 +421,6 @@ function RowStrip({
   scrollX,
   columns,
   pagerEnabled,
-  overlayStyle,
 }: RowStripProps) {
   const horizontalStyle = useAnimatedStyle(() => ({
     transform: [
@@ -554,7 +464,6 @@ function RowStrip({
               <MediaVideo
                 source={item.source}
                 focused={centerColumn === column && isRowFocused}
-                overlayStyle={overlayStyle}
               />
             )}
           </View>
@@ -575,38 +484,5 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "black",
-  },
-  overlayContainer: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    justifyContent: "space-between",
-    zIndex: 1,
-    pointerEvents: "box-none",
-  },
-  rowDetailsContainer: {
-    position: "absolute",
-    flexDirection: "row",
-    right: 10,
-    zIndex: 1,
-    gap: 15,
-  },
-  rowNavigationButton: {
-    aspectRatio: 1,
-    borderRadius: 100,
-    padding: 10,
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemIndexContainer: {
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: "rgba(100, 100, 100, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemIndexText: {
-    color: "white",
   },
 });

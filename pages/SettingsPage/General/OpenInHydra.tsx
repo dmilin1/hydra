@@ -1,7 +1,8 @@
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import Feather from "@react-native-vector-icons/feather";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import * as Linking from "expo-linking";
 import React, { useContext } from "react";
-import { Switch, Text, StyleSheet } from "react-native";
+import { Switch, Text, StyleSheet, Platform } from "react-native";
 import { useMMKVBoolean } from "react-native-mmkv";
 
 import List from "../../../components/UI/List";
@@ -20,34 +21,73 @@ export default function OpenInHydra() {
 
   return (
     <>
-      <List
-        title="Hydra Shortcut"
-        items={[
-          {
-            key: "hydraShortcut",
-            icon: (
-              <MaterialIcons name="app-shortcut" size={24} color={theme.text} />
-            ),
-            text: "Get Hydra Shortcut",
-            onPress: () =>
-              Linking.openURL(
-                "https://www.icloud.com/shortcuts/f509e3f85f174526b6cabdc48e96b11c",
-              ),
-          },
-        ]}
-      />
-      <Text
-        style={[
-          styles.textDescription,
-          {
-            color: theme.text,
-          },
-        ]}
-      >
-        Setting up this shortcut will add an "Open in Hydra" option to the
-        bottom of the share sheet in other apps. This will allow you to open
-        Reddit links directly into Hydra.
-      </Text>
+      {Platform.OS === "android" && (
+        <>
+          <List
+            title="Reddit Links"
+            items={[
+              {
+                key: "openByDefault",
+                icon: <Feather name="link" size={24} color={theme.text} />,
+                text: "Open Hydra's App Settings",
+                onPress: () => Linking.openSettings(),
+              },
+            ]}
+          />
+          <Text
+            style={[
+              styles.textDescription,
+              {
+                color: theme.text,
+              },
+            ]}
+          >
+            Hydra can open Reddit links from other apps directly. Since Hydra is
+            not the official Reddit app, Android requires you to turn this on
+            manually.
+            {"\n\n"}
+            In Hydra's app settings, tap "Open by default", then "Add links",
+            and select all of the Reddit domains. On some devices this option is
+            called "Open supported links" or "Supported web addresses".
+          </Text>
+        </>
+      )}
+      {Platform.OS === "ios" && (
+        <>
+          <List
+            title="Hydra Shortcut"
+            items={[
+              {
+                key: "hydraShortcut",
+                icon: (
+                  <MaterialIcons
+                    name="app-shortcut"
+                    size={24}
+                    color={theme.text}
+                  />
+                ),
+                text: "Get Hydra Shortcut",
+                onPress: () =>
+                  Linking.openURL(
+                    "https://www.icloud.com/shortcuts/f509e3f85f174526b6cabdc48e96b11c",
+                  ),
+              },
+            ]}
+          />
+          <Text
+            style={[
+              styles.textDescription,
+              {
+                color: theme.text,
+              },
+            ]}
+          >
+            Setting up this shortcut will add an "Open in Hydra" option to the
+            bottom of the share sheet in other apps. This will allow you to open
+            Reddit links directly into Hydra.
+          </Text>
+        </>
+      )}
       <List
         title="Clipboard Links"
         items={[
@@ -80,10 +120,12 @@ export default function OpenInHydra() {
         Hydra can automatically detect Reddit links from your clipboard and
         prompt you to open them.
         {"\n\n"}
-        Enabling this will cause iOS to ask you each time if you want to allow
-        Hydra to read your clipboard. To disable the duplicate prompt, you can
-        go to Hydra in the iOS Settings app and change "Paste from Other Apps"
-        to "Allow".
+        {Platform.OS === "ios"
+          ? `Enabling this will cause iOS to ask you each time if you want to allow
+          Hydra to read your clipboard. To disable the duplicate prompt, you can
+          go to Hydra in the iOS Settings app and change "Paste from Other Apps"
+          to "Allow".`
+          : `Enabling this will cause Hydra to read from your clipboard every time you open the app.`}
       </Text>
     </>
   );

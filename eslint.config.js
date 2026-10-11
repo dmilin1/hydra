@@ -20,10 +20,11 @@ export default tseslint.config([
     },
     {
         rules: {
-            // Ensures props and state inside functions are always up-to-date
-            'react-hooks/exhaustive-deps': 'warn',
             'no-new': 'off',
             'react-hooks/exhaustive-deps': 'off',
+            'react-hooks/refs': 'off',
+            'react-hooks/set-state-in-effect': 'off',
+            'react-hooks/immutability': 'off',
             'react/no-unescaped-entities': 'off',
             'react/display-name': 'off',
             '@typescript-eslint/no-explicit-any': 'off',

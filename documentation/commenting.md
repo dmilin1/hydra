@@ -39,7 +39,7 @@ Select text before tapping a formatting button to wrap the selection. You can al
 
 ## Editing Comments
 
-Long-press one of your own comments and select **"Edit"** from the context menu. The editor opens pre-filled with your current text. Make your changes and tap **"Edit"** to save. Edited comments display an edited indicator that shows when the edit was made.
+Long-press one of your own comments and select **"Edit"** from the context menu. The editor opens pre-filled with your current text. Make your changes and tap **"Save"**. Edited comments display an edited indicator. Tap it to see exactly when the edit was made.
 
 ## Deleting Comments
 
@@ -53,7 +53,7 @@ You can also perform many of these actions using swipe gestures. See [Gestures a
 
 ## Troubleshooting
 
-If you can't comment, make sure you are logged in and that the post is not locked. Some subreddits have account age or karma requirements for commenting.
+If you can't comment, make sure you are logged in. Locked or archived posts show a lock icon next to the post details, and Hydra will warn you if you try to reply to one. Some subreddits have account age or karma requirements for commenting.
 
 ---
 

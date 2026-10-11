@@ -10,7 +10,6 @@ import AccountsScreen from "./AccountsScreen";
 import ErrorScreen from "./ErrorScreen";
 import HomeScreen from "./HomeScreen";
 import InboxScreen from "./InboxScreen";
-import MessagesScreen from "./MessagesScreen";
 import MultiredditScreen from "./MultiredditScreen";
 import PostDetailsScreen from "./PostDetailsScreen";
 import PostsScreen from "./PostsScreen";
@@ -28,6 +27,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SubredditSearchScreen from "./SubredditSearchScreen";
 import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
 import GalleryScreen from "./GalleryScreen";
+import ChatScreen from "./ChatScreen";
 
 export type StackParamsList = {
   Subreddits: undefined;
@@ -35,9 +35,6 @@ export type StackParamsList = {
     url: string;
   };
   InboxPage: undefined;
-  MessagesPage: {
-    url: string;
-  };
   PostsPage: {
     url: string;
   };
@@ -72,6 +69,9 @@ export type StackParamsList = {
   WebviewPage: {
     url: string;
   };
+  ChatPage: {
+    url: string;
+  };
   ErrorPage: {
     url?: string;
   };
@@ -89,13 +89,13 @@ export type URLRoutes =
   | "WebviewPage"
   | "SidebarPage"
   | "WikiPage"
-  | "GalleryPage";
+  | "GalleryPage"
+  | "ChatPage";
 
 const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   Subreddits: false,
   Home: true,
   InboxPage: true,
-  MessagesPage: false,
   PostsPage: true,
   SubredditSearchPage: true,
   PostDetailsPage: true,
@@ -103,6 +103,7 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   UserPage: true,
   Accounts: false,
   WikiPage: false,
+  ChatPage: false,
   GalleryPage: false,
   SidebarPage: false,
   SettingsPage: false,
@@ -129,7 +130,6 @@ export default function Stack() {
     SubredditsScreen,
     HomeScreen,
     InboxScreen,
-    MessagesScreen,
     PostsScreen,
     SubredditSearchScreen,
     PostDetailsScreen,
@@ -138,6 +138,7 @@ export default function Stack() {
     AccountsScreen,
     SidebarScreen,
     WikiScreen,
+    ChatScreen,
     GalleryScreen,
     SettingsScreen,
     SearchScreen,

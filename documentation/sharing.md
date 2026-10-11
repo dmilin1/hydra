@@ -5,11 +5,11 @@ description: How to share posts, comments, images, videos, and links from Hydra
 
 # Sharing
 
-Hydra uses the native iOS share sheet to share Reddit content with other apps. You can share posts, comments, images, videos, and subreddit links.
+Hydra uses your device's native share sheet to share Reddit content with other apps. You can share posts, comments, images, videos, and subreddit links.
 
 ## What Gets Shared
 
-**Posts and comments** are shared as direct Reddit links. **Images** are shared as image files, and **videos** are downloaded and shared as video files. **Subreddits and multireddits** are shared as links to the subreddit page.
+**Posts and comments** are shared as direct Reddit links. **Images** are shared as image files, and **videos** are downloaded and shared as video files. For Reddit-hosted videos, audio is included if you have [Hydra Pro](hydra://settings/guide/?doc=hydra_pro), otherwise Hydra offers to share the video without audio. **Subreddits and multireddits** are shared as links to the subreddit page.
 
 ## Ways to Share
 
@@ -21,9 +21,13 @@ On a post's detail page, tap the **share button** in the action bar.
 
 On a subreddit, multireddit, or post detail page, tap the **three-dot menu** and select **Share** to share the current page link.
 
-**Long press on an image or video** to share the media directly.
+**Long press on an image** to share it directly. For videos, tap to open the video full screen, then use the **share button** in the overlay.
 
 In full-screen gallery view, use the **share button** in the post overlay to share the image or video.
+
+## Sharing Links to Hydra
+
+Hydra also appears in other apps' share menus. Share a Reddit link from another app and select **Hydra** to open it directly in the app.
 
 ## Shared links are public
 

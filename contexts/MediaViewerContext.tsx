@@ -31,9 +31,11 @@ type VisibilityListener = (isShowing: boolean) => void;
 const initialMediaViewerContext = {
   displayMedia: (_displayMediaDataRequest: DisplayMediaDataRequest) => {},
   updateMedia: (_media: MediaItemCollection) => {},
+  closeMediaViewer: () => {},
   subscribeToVisibility:
     (_listener: VisibilityListener): (() => void) =>
     () => {},
+  getIsShowing: () => false,
 };
 
 export const MediaViewerContext = createContext(initialMediaViewerContext);
@@ -95,6 +97,9 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
               },
         );
       },
+      closeMediaViewer: () => {
+        setDisplayMediaData(null);
+      },
       subscribeToVisibility: (listener: VisibilityListener) => {
         visibilityListeners.current.add(listener);
         listener(isShowing.current);
@@ -102,6 +107,7 @@ export function MediaViewerProvider({ children }: React.PropsWithChildren) {
           visibilityListeners.current.delete(listener);
         };
       },
+      getIsShowing: () => isShowing.current,
     }),
     [],
   );

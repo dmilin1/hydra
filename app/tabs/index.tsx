@@ -1,15 +1,17 @@
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-  Entypo,
-  Feather,
-} from "@expo/vector-icons";
+import Ionicons from "@react-native-vector-icons/ionicons";
+import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
+import Entypo from "@react-native-vector-icons/entypo";
+import Feather from "@react-native-vector-icons/feather";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { SplashScreen, useNavigation } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { NavigationContainerRef, StackActions } from "@react-navigation/native";
+import {
+  NavigationContainerRef,
+  StackActions,
+  useNavigation,
+} from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 
 import LoadingSplash from "../../components/UI/LoadingSplash";

@@ -2,7 +2,11 @@ import React, { lazy, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 
 import Advanced from "./Advanced";
-import Appearance from "./Appearance";
+import AppearanceRoot from "./Appearance/AppearanceRoot";
+import CommentAppearance from "./Appearance/CommentAppearance";
+import PostAppearance from "./Appearance/PostAppearance";
+import SubredditsAppearance from "./Appearance/SubredditsAppearance";
+import TabAppearance from "./Appearance/TabAppearance";
 import DataUse from "./DataUse";
 import Filters from "./General/Filters";
 import GeneralRoot from "./General/GeneralRoot";
@@ -10,12 +14,14 @@ import HydraPro from "./HydraPro";
 import Legal from "./General/Legal";
 import OpenInHydra from "./General/OpenInHydra";
 import ExternalLinks from "./General/ExternalLinks";
+import ModifyLinks from "./General/ModifyLinks";
 import Privacy from "./Privacy";
 import Root from "./Root";
 import Sorting from "./General/Sorting";
 import Startup from "./General/Startup";
 import Theme from "./Theme";
 import ThemeMaker from "./ThemeMaker";
+import TipJar from "./TipJar";
 import { StackPageProps } from "../../app/stack";
 import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroller";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -68,10 +74,19 @@ export default function SettingsPage({
         {relativePath === "settings/general/startup" && <Startup />}
         {relativePath === "settings/general/legal" && <Legal />}
         {relativePath === "settings/general/externalLinks" && <ExternalLinks />}
+        {relativePath === "settings/general/modifyLinks" && <ModifyLinks />}
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/themeMaker" && <ThemeMaker />}
-        {relativePath === "settings/appearance" && <Appearance />}
+        {relativePath === "settings/appearance" && <AppearanceRoot />}
+        {relativePath === "settings/appearance/posts" && <PostAppearance />}
+        {relativePath === "settings/appearance/comments" && (
+          <CommentAppearance />
+        )}
+        {relativePath === "settings/appearance/tabs" && <TabAppearance />}
+        {relativePath === "settings/appearance/subreddits" && (
+          <SubredditsAppearance />
+        )}
 
         {relativePath === "settings/appIcon" && <AppIcon />}
         {relativePath.includes("settings/appIconDetails/") && (
@@ -83,6 +98,7 @@ export default function SettingsPage({
         {relativePath === "settings/privacy" && <Privacy />}
         {relativePath === "settings/advanced" && <Advanced />}
         {relativePath === "settings/hydraPro" && <HydraPro />}
+        {relativePath === "settings/tipJar" && <TipJar />}
       </KeyboardAvoidingScroller>
     </View>
   );

@@ -1,17 +1,17 @@
 ===METADATA===
 title: Troubleshooting
-description: Common problems and solutions, known limitations and workarounds, performance tips, when settings are hidden, getting help
+description: Common problems and solutions, known limitations and workarounds, when settings are hidden, getting help
 ===END METADATA===
 
 # Troubleshooting
 
-This guide covers common issues and their solutions. If your problem isn't listed here, check the [Getting Help](#getting-help) section at the bottom.
+This guide covers common issues and their solutions. If your problem isn't listed here, check the **Getting Help** section at the bottom.
 
 ## Common Problems
 
 ### App Won't Start or Crashes
 
-Force-quit the app and reopen it. If the problem persists, check that your device has available storage and that both iOS and Hydra are up to date. As a last resort, delete the app, restart your device, and reinstall the app.
+Force-quit the app and reopen it. If the problem persists, check that your device has available storage and that both your operating system and Hydra are up to date. As a last resort, delete the app, restart your device, and reinstall the app.
 
 ### Posts or Comments Not Loading
 
@@ -23,19 +23,19 @@ Make sure your username and password are correct. If you have two-factor authent
 
 ### Slow Performance
 
-Filters are the most common cause of slowdowns — each post is checked against every active filter, and AI filters require additional processing. Reduce the number of active filters or shorten AI filter descriptions to improve speed. Turning off video auto-play and clearing the image cache in [Advanced settings](hydra://settings/advanced) can also help. See [Performance Tips](#performance-tips) below for more.
+Filters are the most common cause of slowdowns — each post is checked against every active filter, and AI filters require additional processing. Reduce the number of active filters or shorten AI filter descriptions to improve speed. Turning off video auto-play and clearing the image and video caches in [Advanced settings](hydra://settings/advanced) can also help.
 
 ### Pro Features Not Working
 
-If Pro features aren't available after subscribing, verify your subscription is active in the App Store, then restart the app. Check your subscription status on the [Hydra Pro page](hydra://settings/hydraPro). For billing issues, contact Apple Support.
+If Pro features aren't available after subscribing, verify your subscription is active in the App Store (iOS) or Google Play (Android), then tap **Restore Purchases** on the [Hydra Pro page](hydra://settings/hydraPro) and restart the app. For billing issues, contact Apple Support or Google Play support.
 
 ## Hidden Settings
 
 Some settings only appear under certain conditions.
 
-**Pro features** — [AI Filters](hydra://settings/guide/?doc=ai_filters), [Stats](hydra://settings/guide/?doc=stats), [Post & Comment Summaries](hydra://settings/guide/?doc=ai_summaries), [Custom Theme saving](hydra://settings/guide/?doc=custom_themes), and [Inbox Alerts](hydra://settings/guide/?doc=inbox_alerts) require a [Hydra Pro](hydra://settings/hydraPro) subscription. The settings for these features are visible but disabled until you subscribe.
+**Pro features** — [AI Filters](hydra://settings/guide/?doc=ai_filters), [Stats](hydra://settings/guide/?doc=stats), [Post & Comment Summaries](hydra://settings/guide/?doc=ai_summaries), [Custom Themes](hydra://settings/guide/?doc=custom_themes) (keeping them applied beyond a 5-minute trial), and [Inbox Alerts](hydra://settings/guide/?doc=inbox_alerts) require a [Hydra Pro](hydra://settings/hydraPro) subscription. The settings for these features are visible but disabled until you subscribe.
 
-**Device-specific features** — [Split View](hydra://settings/guide/?doc=split_view) only appears on iPad. [App Icon](hydra://settings/guide/?doc=app_icons) only appears on devices that support alternate icons. These settings show up automatically when the device supports them.
+**Device-specific features** — [Split View](hydra://settings/guide/?doc=split_view) only appears on wide screen devices like tablets. [App Icon](hydra://settings/guide/?doc=app_icons) only appears on devices that support alternate icons. These settings show up automatically when the device supports them.
 
 ## Known Limitations
 
@@ -51,7 +51,7 @@ If you can't find a solution here, reach out through these channels:
 - **Discord** — [Hydra Discord](https://discord.gg/ypaD4KYJ3R)
 - **GitHub** — [Report issues](https://github.com/dmilin1/hydra)
 
-When reporting an issue, include your device model, iOS version, Hydra version, and steps to reproduce the problem. Screenshots and error messages are helpful.
+When reporting an issue, include your device model, OS version (iOS or Android), Hydra version, and steps to reproduce the problem. Screenshots and error messages are helpful.
 
 ---
 

@@ -7,11 +7,11 @@ description: Viewing posts, opening post details, scrolling feeds, and understan
 
 ## Viewing Your Feed
 
-Your home feed shows posts from subscribed subreddits. Open the Posts tab to see your feed. Posts load automatically as you scroll, and you can pull down to refresh at any time. Earlier posts remain accessible when scrolling back up. Enable compact mode in [Appearance settings](hydra://settings/appearance) for a denser layout showing more posts at once.
+Your home feed shows posts from subscribed subreddits. Open the Posts tab to see your feed. Posts load automatically as you scroll, and you can pull down to refresh at any time. Earlier posts remain accessible when scrolling back up. Enable compact mode in [Post Appearance settings](hydra://settings/appearance/posts) for a denser layout showing more posts at once.
 
 ## Opening Post Details
 
-Tap any post card to open it in detail view. Scroll down to see comments, then swipe right or tap back to return. Post details include full content, author info, subreddit name, media, vote counts, comments, and post actions. By default, tapping on the post content area collapses it — you can disable this with the "Tap to Collapse" toggle in [Appearance settings](hydra://settings/appearance).
+Tap any post card to open it in detail view. Scroll down to see comments, then swipe right or tap back to return. Post details include full content, author info, subreddit name, media, vote counts, comments, and post actions. By default, tapping on the post content area collapses it — you can disable this with the "Tap to Collapse" toggle in [Post Appearance settings](hydra://settings/appearance/posts).
 
 ## Post Interactions
 
@@ -28,11 +28,13 @@ Hydra supports the following post types:
 - **Poll posts** — Interactive polls
 - **Crossposts** — Shows the original post and subreddit
 
-NSFW and spoiler content is blurred by default. Tap to reveal, or configure in [Appearance settings](hydra://settings/appearance).
+NSFW and spoiler content is blurred by default. Tap to reveal, or configure in [Post Appearance settings](hydra://settings/appearance/posts). So that NSFW posts can load, Hydra automatically turns on the adult-content preference on your logged-in Reddit account. Blurring is handled in the app instead.
 
 ## Post Information
 
 Each post displays its title, subreddit, author, time posted, vote count, comment count, and flair (if enabled).
+
+Locked and archived posts show a lock icon with a "locked" or "archived" label next to the post details. Replying is disabled on these posts. Tapping the reply button shows a warning instead.
 
 ## Filtering and Sorting
 

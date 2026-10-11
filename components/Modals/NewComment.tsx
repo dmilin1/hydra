@@ -20,6 +20,7 @@ import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
 import RedditURL from "../../utils/RedditURL";
 import SelectableText from "../UI/SelectableText";
+import { ToastContext } from "../../contexts/ToastContext";
 
 type NewCommentProps = {
   contentSent: () => void;
@@ -31,6 +32,7 @@ const DRAFT_PREFIX = "newCommentDraft-";
 export default function NewComment({ contentSent, parent }: NewCommentProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
+  const { showToast } = useContext(ToastContext);
 
   const parentViewAvailable = !!parent.html;
 
@@ -50,6 +52,11 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
         contentSent();
         setModal(undefined);
         clearTextDraft();
+        showToast({
+          title: "Comment submitted successfully!",
+          body: "Waiting for Reddit to process it.",
+          delay: 5_000,
+        });
       } else {
         throw new Error(`Failed to submit comment`);
       }

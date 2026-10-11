@@ -23,7 +23,7 @@ In full-screen view:
 - **Swipe up/down** to move between different posts
 - **Pinch** to zoom in on images
 - **Tap** the screen to show or hide the post overlay
-- **Swipe down** from the top or tap the **X** button to close
+- **Pull or flick past the first or last item** to close, or tap the screen and then the **X** button
 
 The post overlay shows the title, a text preview, the subreddit, and the author. Tapping the overlay opens the full post. You can also share the image or video directly using the share button.
 
