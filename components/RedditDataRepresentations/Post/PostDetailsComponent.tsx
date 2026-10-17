@@ -221,8 +221,8 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
-            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            void voteOnPost(VoteOption.UpVote);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            voteOnPost(VoteOption.UpVote);
           }}
         >
           <Feather
@@ -248,8 +248,8 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
-            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            void voteOnPost(VoteOption.DownVote);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            voteOnPost(VoteOption.DownVote);
           }}
         >
           <Feather

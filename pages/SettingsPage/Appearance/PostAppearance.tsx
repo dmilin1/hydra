@@ -146,29 +146,29 @@ export default function PostAppearance() {
         },
         ...(postCompactMode
           ? [
-            {
-              key: "showThumbnailsOnRightSide",
-              icon: (
-                <MaterialCommunityIcons
-                  name="image-outline"
-                  size={24}
-                  color={theme.text}
-                />
-              ),
-              rightIcon: (
-                <Switch
-                  trackColor={{
-                    false: theme.iconSecondary,
-                    true: theme.iconPrimary,
-                  }}
-                  value={showThumbnailsOnRightSide}
-                  onValueChange={() => toggleShowThumbnailsOnRightSide()}
-                />
-              ),
-              text: "Show thumbnails on right",
-              onPress: () => toggleShowThumbnailsOnRightSide(),
-            },
-          ]
+              {
+                key: "showThumbnailsOnRightSide",
+                icon: (
+                  <MaterialCommunityIcons
+                    name="image-outline"
+                    size={24}
+                    color={theme.text}
+                  />
+                ),
+                rightIcon: (
+                  <Switch
+                    trackColor={{
+                      false: theme.iconSecondary,
+                      true: theme.iconPrimary,
+                    }}
+                    value={showThumbnailsOnRightSide}
+                    onValueChange={() => toggleShowThumbnailsOnRightSide()}
+                  />
+                ),
+                text: "Show thumbnails on right",
+                onPress: () => toggleShowThumbnailsOnRightSide(),
+              },
+            ]
           : []),
         {
           key: "splitViewEnabled",
@@ -346,25 +346,25 @@ export default function PostAppearance() {
         },
         ...(isPro && showPostSummary
           ? [
-            {
-              key: "collapsePostSummary",
-              icon: (
-                <Feather name="minimize-2" size={22} color={theme.text} />
-              ),
-              rightIcon: (
-                <Switch
-                  trackColor={{
-                    false: theme.iconSecondary,
-                    true: theme.iconPrimary,
-                  }}
-                  value={collapsePostSummary}
-                  onValueChange={() => toggleCollapsePostSummary()}
-                />
-              ),
-              text: "Start summary collapsed",
-              onPress: () => toggleCollapsePostSummary(),
-            },
-          ]
+              {
+                key: "collapsePostSummary",
+                icon: (
+                  <Feather name="minimize-2" size={22} color={theme.text} />
+                ),
+                rightIcon: (
+                  <Switch
+                    trackColor={{
+                      false: theme.iconSecondary,
+                      true: theme.iconPrimary,
+                    }}
+                    value={collapsePostSummary}
+                    onValueChange={() => toggleCollapsePostSummary()}
+                  />
+                ),
+                text: "Start summary collapsed",
+                onPress: () => toggleCollapsePostSummary(),
+              },
+            ]
           : []),
         {
           key: "autoPlayVideos",
@@ -386,29 +386,29 @@ export default function PostAppearance() {
         },
         ...(Platform.OS === "ios" || Platform.OS === "macos"
           ? [
-            {
-              key: "liveTextInteraction",
-              icon: (
-                <MaterialIcons
-                  name="document-scanner"
-                  size={24}
-                  color={theme.text}
-                />
-              ),
-              rightIcon: (
-                <Switch
-                  trackColor={{
-                    false: theme.iconSecondary,
-                    true: theme.iconPrimary,
-                  }}
-                  value={liveTextInteraction}
-                  onValueChange={() => toggleLiveTextInteraction()}
-                />
-              ),
-              text: "Live text",
-              onPress: () => toggleLiveTextInteraction(),
-            },
-          ]
+              {
+                key: "liveTextInteraction",
+                icon: (
+                  <MaterialIcons
+                    name="document-scanner"
+                    size={24}
+                    color={theme.text}
+                  />
+                ),
+                rightIcon: (
+                  <Switch
+                    trackColor={{
+                      false: theme.iconSecondary,
+                      true: theme.iconPrimary,
+                    }}
+                    value={liveTextInteraction}
+                    onValueChange={() => toggleLiveTextInteraction()}
+                  />
+                ),
+                text: "Live text",
+                onPress: () => toggleLiveTextInteraction(),
+              },
+            ]
           : []),
         {
           key: "muteVideosByDefault",

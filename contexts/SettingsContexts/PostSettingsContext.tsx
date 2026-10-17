@@ -88,8 +88,9 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
     useMMKVBoolean("showPostFlair");
   const showPostFlair = storedShowPostFlair ?? initialValues.showPostFlair;
 
-  const [storedShowFeedVoteButtons, setShowFeedVoteButtons] =
-    useMMKVBoolean("showFeedVoteButtons");
+  const [storedShowFeedVoteButtons, setShowFeedVoteButtons] = useMMKVBoolean(
+    "showFeedVoteButtons",
+  );
   const showFeedVoteButtons =
     storedShowFeedVoteButtons ?? initialValues.showFeedVoteButtons;
 

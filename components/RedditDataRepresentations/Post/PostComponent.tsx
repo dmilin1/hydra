@@ -311,10 +311,10 @@ export default function PostComponent({
             style={[
               styles.bodyContainer,
               postCompactMode &&
-              showFeedVoteButtons && {
-                flex: 1,
-                minWidth: 0,
-              },
+                showFeedVoteButtons && {
+                  flex: 1,
+                  minWidth: 0,
+                },
             ]}
           >
             {subredditAtTop && isOnMultiSubredditPage && (
@@ -471,7 +471,7 @@ export default function PostComponent({
                   <Feather
                     name={
                       !showFeedVoteButtons &&
-                        post.userVote === VoteOption.DownVote
+                      post.userVote === VoteOption.DownVote
                         ? "arrow-down"
                         : "arrow-up"
                     }
@@ -527,10 +527,8 @@ export default function PostComponent({
                     ]}
                     hitSlop={{ top: 3, bottom: 3, left: 3, right: 3 }}
                     onPress={() => {
-                      void Haptics.impactAsync(
-                        Haptics.ImpactFeedbackStyle.Light,
-                      );
-                      void voteOnPost(VoteOption.UpVote);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      voteOnPost(VoteOption.UpVote);
                     }}
                     accessibilityRole="button"
                     accessibilityLabel={
@@ -544,7 +542,7 @@ export default function PostComponent({
                   >
                     <Feather
                       name="arrow-up"
-                      size={postCompactMode ? 24 : 32}
+                      size={postCompactMode ? 24 : 28}
                       color={
                         post.userVote === VoteOption.UpVote
                           ? theme.text
@@ -563,10 +561,8 @@ export default function PostComponent({
                     ]}
                     hitSlop={{ top: 3, bottom: 3, left: 3, right: 3 }}
                     onPress={() => {
-                      void Haptics.impactAsync(
-                        Haptics.ImpactFeedbackStyle.Light,
-                      );
-                      void voteOnPost(VoteOption.DownVote);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      voteOnPost(VoteOption.DownVote);
                     }}
                     accessibilityRole="button"
                     accessibilityLabel={
@@ -580,7 +576,7 @@ export default function PostComponent({
                   >
                     <Feather
                       name="arrow-down"
-                      size={postCompactMode ? 24 : 32}
+                      size={postCompactMode ? 24 : 28}
                       color={
                         post.userVote === VoteOption.DownVote
                           ? theme.text
@@ -624,7 +620,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexShrink: 0,
-    gap: 10,
+    gap: 5,
   },
   feedVoteButton: {
     width: 38,
