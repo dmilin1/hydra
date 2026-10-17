@@ -146,10 +146,27 @@ export default function PostDetailsComponent({
                   styles.smallText,
                   {
                     color: theme.subtleText,
+                    marginRight: 12,
                   },
                 ]}
               >
                 {postDetail.upvotes}
+              </Text>
+              <Feather
+                name="message-square"
+                size={15}
+                color={theme.subtleText}
+              />
+              <Text
+                style={[
+                  styles.smallText,
+                  {
+                    color: theme.subtleText,
+                    marginLeft: 3,
+                  },
+                ]}
+              >
+                {postDetail.commentCount}
               </Text>
               <Text
                 style={[
