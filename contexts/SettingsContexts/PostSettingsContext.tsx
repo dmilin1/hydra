@@ -11,6 +11,7 @@ const initialValues = {
   postTextLength: 3,
   linkDescriptionLength: 10,
   showPostFlair: true,
+  showFeedVoteButtons: false,
   blurSpoilers: true,
   blurNSFW: true,
   showPostSummary: true,
@@ -33,6 +34,7 @@ const initialPostSettingsContext = {
   changePostTextLength: (_newValue: number) => {},
   changeLinkDescriptionLength: (_newValue: number) => {},
   toggleShowPostFlair: (_newValue?: boolean) => {},
+  toggleShowFeedVoteButtons: (_newValue?: boolean) => {},
   toggleBlurSpoilers: (_newValue?: boolean) => {},
   toggleBlurNSFW: (_newValue?: boolean) => {},
   toggleShowPostSummary: (_newValue?: boolean) => {},
@@ -85,6 +87,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
   const [storedShowPostFlair, setShowPostFlair] =
     useMMKVBoolean("showPostFlair");
   const showPostFlair = storedShowPostFlair ?? initialValues.showPostFlair;
+
+  const [storedShowFeedVoteButtons, setShowFeedVoteButtons] =
+    useMMKVBoolean("showFeedVoteButtons");
+  const showFeedVoteButtons =
+    storedShowFeedVoteButtons ?? initialValues.showFeedVoteButtons;
 
   const [storedBlurSpoilers, setBlurSpoilers] = useMMKVBoolean("blurSpoilers");
   const blurSpoilers = storedBlurSpoilers ?? initialValues.blurSpoilers;
@@ -171,6 +178,11 @@ export function PostSettingsProvider({ children }: React.PropsWithChildren) {
         showPostFlair: showPostFlair ?? initialValues.showPostFlair,
         toggleShowPostFlair: (newValue = !showPostFlair) =>
           setShowPostFlair(newValue),
+
+        showFeedVoteButtons:
+          showFeedVoteButtons ?? initialValues.showFeedVoteButtons,
+        toggleShowFeedVoteButtons: (newValue = !showFeedVoteButtons) =>
+          setShowFeedVoteButtons(newValue),
 
         blurSpoilers: blurSpoilers ?? initialValues.blurSpoilers,
         toggleBlurSpoilers: (newValue = !blurSpoilers) =>
