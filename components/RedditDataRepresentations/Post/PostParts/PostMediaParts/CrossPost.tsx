@@ -9,6 +9,7 @@ import PostMedia from "../PostMedia";
 import SubredditIcon from "../SubredditIcon";
 import { PostSettingsContext } from "../../../../../contexts/SettingsContexts/PostSettingsContext";
 import { Touchable } from "react-native-gesture-handler";
+import { textDirectionStyle } from "../../../../../utils/textDirection";
 
 type CrossPostProps = {
   post: Post;
@@ -24,7 +25,14 @@ export default function CrossPost({ post }: CrossPostProps) {
       onPress={() => pushURL(post.link)}
       style={[styles.container, { borderColor: theme.divider }]}
     >
-      <Text numberOfLines={2} style={[styles.title, { color: theme.text }]}>
+      <Text
+        numberOfLines={2}
+        style={[
+          styles.title,
+          { color: theme.text },
+          textDirectionStyle(post.title),
+        ]}
+      >
         {post.title}
       </Text>
 

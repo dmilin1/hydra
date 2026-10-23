@@ -25,6 +25,7 @@ import Time from "../../../utils/Time";
 import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { shareURL } from "../../../utils/sharing";
+import { textDirectionStyle } from "../../../utils/textDirection";
 
 type PostDetailsComponentProps = {
   postDetail: PostDetail;
@@ -73,6 +74,7 @@ export default function PostDetailsComponent({
               {
                 color: theme.text,
               },
+              textDirectionStyle(postDetail.title),
             ]}
           >
             {postDetail.title}

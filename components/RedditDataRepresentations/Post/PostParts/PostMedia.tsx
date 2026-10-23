@@ -17,6 +17,7 @@ import { extractThemeFromText } from "../../../../utils/colors";
 import ThemeImport from "../../../UI/Themes/ThemeImport";
 import { CustomTheme } from "../../../../constants/Themes";
 import { Touchable } from "react-native-gesture-handler";
+import { textDirectionStyle } from "../../../../utils/textDirection";
 
 type PostMediaProps = {
   post: Post | PostDetail;
@@ -112,6 +113,7 @@ export default function PostMedia({
                     {
                       color: theme.subtleText,
                     },
+                    textDirectionStyle(postText),
                   ]}
                 >
                   {postText.trim()}

@@ -31,6 +31,7 @@ import useContextMenu from "../../../utils/useContextMenu";
 import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { shareURL } from "../../../utils/sharing";
+import { textDirectionStyle } from "../../../utils/textDirection";
 
 type PostComponentProps = {
   post: Post;
@@ -343,10 +344,13 @@ export default function PostComponent({
             )}
             <Text
               numberOfLines={postTitleLength}
-              style={{
-                fontSize: postCompactMode ? 16 : 17,
-                color: theme.text,
-              }}
+              style={[
+                {
+                  fontSize: postCompactMode ? 16 : 17,
+                  color: theme.text,
+                },
+                textDirectionStyle(post.title),
+              ]}
             >
               {post.title.trim()}
             </Text>
