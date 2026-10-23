@@ -31,6 +31,7 @@ import {
 } from "react-native-gesture-handler";
 import AntDesign from "@react-native-vector-icons/ant-design";
 import { MediaViewerContext } from "../../contexts/MediaViewerContext";
+import { getTextDirection, TextDirection } from "../../utils/textDirection";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 type InheritedStyles = ViewStyle & TextStyle;
@@ -66,6 +67,33 @@ function makeChildNodeKey(node: AnyNode, index: number): string {
     ":" +
     (node.sourceCodeLocation?.endOffset?.toString() ?? "")
   );
+}
+
+const DIRECTIONAL_BLOCK_ELEMENTS = new Set([
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "li",
+  "blockquote",
+]);
+
+/**
+ * Like dir="auto" in HTML, a block's direction comes from its first strongly
+ * directional character. Walking stops as soon as one is found, so this is
+ * cheap even for long paragraphs.
+ */
+function getNodeDirection(node: AnyNode): TextDirection | null {
+  if (node instanceof TextNode) {
+    return getTextDirection(node.data);
+  }
+  if (node instanceof ElementNode) {
+    for (const child of node.children) {
+      const direction = getNodeDirection(child);
+      if (direction) return direction;
+    }
+  }
+  return null;
 }
 
 /**
@@ -279,6 +307,18 @@ function renderElement(
   let Wrapper = View as React.ElementType;
   const wrapperStyles: ViewStyle & TextStyle = {};
 
+  if (DIRECTIONAL_BLOCK_ELEMENTS.has(element.name) || element.attribs.header) {
+    const direction = getNodeDirection(element);
+    if (
+      direction &&
+      direction !== (inheritedStyles.writingDirection ?? "ltr")
+    ) {
+      inheritedStyles.writingDirection = direction;
+      inheritedStyles.textAlign = direction === "rtl" ? "right" : "left";
+    }
+  }
+  const isRTL = inheritedStyles.writingDirection === "rtl";
+
   if (element.attribs.class === "md-spoiler-text") {
     return (
       <SpoilerText
@@ -329,10 +369,17 @@ function renderElement(
   } else if (element.name === "blockquote") {
     Wrapper = View;
     wrapperStyles.backgroundColor = theme.tint;
-    wrapperStyles.marginLeft = 5;
-    wrapperStyles.borderLeftColor = theme.subtleText;
-    wrapperStyles.borderLeftWidth = 2;
-    wrapperStyles.paddingLeft = 8;
+    if (isRTL) {
+      wrapperStyles.marginRight = 5;
+      wrapperStyles.borderRightColor = theme.subtleText;
+      wrapperStyles.borderRightWidth = 2;
+      wrapperStyles.paddingRight = 8;
+    } else {
+      wrapperStyles.marginLeft = 5;
+      wrapperStyles.borderLeftColor = theme.subtleText;
+      wrapperStyles.borderLeftWidth = 2;
+      wrapperStyles.paddingLeft = 8;
+    }
     wrapperStyles.marginVertical = 2;
   } else if (element.name === "span") {
     Wrapper = Text;
@@ -426,10 +473,19 @@ function renderElement(
     Wrapper = View;
   } else if (element.name === "li") {
     return (
-      <View key={key} style={styles.liContainer}>
-        <View style={styles.liIconContainer}>
+      <View
+        key={key}
+        style={[styles.liContainer, isRTL && styles.liContainerRTL]}
+      >
+        <View
+          style={isRTL ? styles.liIconContainerRTL : styles.liIconContainer}
+        >
           <Text
-            style={{ fontSize: styles.basicText.fontSize, color: theme.text }}
+            style={{
+              fontSize: styles.basicText.fontSize,
+              color: theme.text,
+              writingDirection: inheritedStyles.writingDirection,
+            }}
           >
             {(element.parent as ElementNode | null)?.name === "ol"
               ? `${index + 1}. `
@@ -437,7 +493,14 @@ function renderElement(
           </Text>
         </View>
         <View style={styles.liChildrenContainer}>
-          <Text>{renderChildNodes(element, inheritedStyles, ctx)}</Text>
+          <Text
+            style={{
+              textAlign: inheritedStyles.textAlign,
+              writingDirection: inheritedStyles.writingDirection,
+            }}
+          >
+            {renderChildNodes(element, inheritedStyles, ctx)}
+          </Text>
         </View>
       </View>
     );
@@ -561,8 +624,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 3,
   },
+  liContainerRTL: {
+    flexDirection: "row-reverse",
+  },
   liIconContainer: {
     marginLeft: 5,
+  },
+  liIconContainerRTL: {
+    marginRight: 5,
   },
   liChildrenContainer: {
     flex: 1,

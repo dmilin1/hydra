@@ -6,6 +6,7 @@ import { PostDetail } from "../../../api/PostDetail";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import PostMedia from "../../RedditDataRepresentations/Post/PostParts/PostMedia";
 import SubredditIcon from "../../RedditDataRepresentations/Post/PostParts/SubredditIcon";
+import { textDirectionStyle } from "../../../utils/textDirection";
 
 type ShareablePostDetailsProps = {
   postDetail: PostDetail;
@@ -35,6 +36,7 @@ export default function ShareablePostDetails({
           {
             color: theme.text,
           },
+          textDirectionStyle(postDetail.title),
         ]}
       >
         {postDetail.title}
