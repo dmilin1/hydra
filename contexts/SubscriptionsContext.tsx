@@ -220,12 +220,12 @@ export function SubscriptionsProvider({ children }: React.PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    if (isPro && customerInfo) {
+    if (isPro && customerId) {
       registerCustomer({
-        customerId: customerInfo.originalAppUserId,
+        customerId,
       });
     }
-  }, [isPro]);
+  }, [isPro, customerId]);
 
   return (
     <SubscriptionsContext.Provider
