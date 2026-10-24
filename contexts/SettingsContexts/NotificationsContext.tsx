@@ -78,10 +78,10 @@ export function NotificationsProvider({ children }: React.PropsWithChildren) {
   };
 
   useEffect(() => {
-    if (isPro && notificationsEnabled) {
+    if (isPro && notificationsEnabled && customerId) {
       registerForPushNotifications();
     }
-  }, [isPro, notificationsEnabled, accounts]);
+  }, [isPro, notificationsEnabled, accounts, customerId]);
 
   return (
     <NotificationsContext.Provider
