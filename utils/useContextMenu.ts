@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { ActionSheetBgContext } from "../contexts/ActionSheetBgContext";
+import { showContextMenu } from "../components/UI/ContextMenuSheet";
 import { Platform } from "react-native";
 
 type OpenContextMenuFn = <Options extends string[]>(
@@ -20,6 +21,11 @@ export default function useContextMenu() {
 
   const openContextMenu: OpenContextMenuFn = (actionSheetOptions) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (Platform.OS === "android") {
+      return showContextMenu(actionSheetOptions).then((index) =>
+        index === undefined ? null : actionSheetOptions.options[index],
+      );
+    }
     setIsActionSheetShowing(true);
     return new Promise((resolve) => {
       const cancelButtonIndex = actionSheetOptions.options.length;
@@ -35,17 +41,7 @@ export default function useContextMenu() {
           if (buttonIndex === undefined || buttonIndex === cancelButtonIndex) {
             return resolve(null);
           }
-          if (Platform.OS === "android") {
-            /**
-             * Fixes a bug on Android where displaying 2 action sheets in a row
-             * causes the second action sheet to not be displayed.
-             */
-            requestAnimationFrame(() => {
-              resolve(actionSheetOptions.options[buttonIndex]);
-            });
-          } else {
-            resolve(actionSheetOptions.options[buttonIndex]);
-          }
+          resolve(actionSheetOptions.options[buttonIndex]);
         },
       );
     });
