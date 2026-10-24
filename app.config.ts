@@ -119,6 +119,14 @@ module.exports = {
       "expo-video",
       "expo-web-browser",
       "expo-status-bar",
+      [
+        "expo-build-properties",
+        {
+          ios: {
+            enableSceneSupport: true,
+          },
+        },
+      ],
     ],
     updates: {
       url: `https://u.expo.dev/${projectId}`,
