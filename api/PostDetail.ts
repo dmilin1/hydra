@@ -219,6 +219,7 @@ export async function vote(
     },
     {
       requireAuth: true,
+      throwOnHttpError: true,
       body: {
         id: item.name,
         dir,

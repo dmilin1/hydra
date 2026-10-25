@@ -13,6 +13,7 @@ type ApiOptions = {
   requireAuth?: boolean;
   body?: { [key: string]: any };
   dontJsonifyResponse?: boolean;
+  throwOnHttpError?: boolean;
 };
 
 export async function api(
@@ -39,6 +40,9 @@ export async function api(
   headers["User-Agent"] = USER_AGENT;
 
   const res = await safeFetch(url, { ...fetchOptions, headers });
+  if (apiOptions.throwOnHttpError && !res.ok) {
+    throw new Error(`Reddit API request failed (${res.status})`);
+  }
 
   /**
    * Reddit's session cookie doesn't set an expiration date meaning it expires

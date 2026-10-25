@@ -27,7 +27,7 @@ export default function SubredditSearchPage({
     data: posts,
     loadMoreData: loadMorePosts,
     refreshData: refreshPosts,
-    modifyData: modifyPosts,
+    updateData,
     fullyLoaded,
     hitFilterLimit,
   } = useRedditDataState<Post>({
@@ -82,9 +82,7 @@ export default function SubredditSearchPage({
         renderItem={({ item }) => (
           <PostComponent
             post={item}
-            setPost={(newPost) => {
-              modifyPosts([newPost]);
-            }}
+            updatePost={(update) => updateData(item, update)}
           />
         )}
       />

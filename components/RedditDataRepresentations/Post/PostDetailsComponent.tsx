@@ -2,9 +2,9 @@ import AntDesign from "@react-native-vector-icons/ant-design";
 import Feather from "@react-native-vector-icons/feather";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import Octicons from "@react-native-vector-icons/octicons";
-import React, { Dispatch, SetStateAction, useContext, useState } from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
+import { ToastContext } from "../../../contexts/ToastContext";
 import { View, Text, StyleSheet, Alert } from "react-native";
-
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
 import {
@@ -13,6 +13,11 @@ import {
   usePostSummaries,
 } from "./PostParts/Summaries";
 import { PostDetail, vote } from "../../../api/PostDetail";
+import {
+  adjustedScore,
+  createOptimisticVoteController,
+  type VoteValue,
+} from "../../../utils/optimisticVote";
 import { VoteOption } from "../../../api/Posts";
 import { saveItem } from "../../../api/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
@@ -24,8 +29,18 @@ import NewComment from "../../Modals/NewComment";
 import Time from "../../../utils/Time";
 import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { shareURL } from "../../../utils/sharing";
 import { textDirectionStyle } from "../../../utils/textDirection";
+
+const AnimatedTouchable = Animated.createAnimatedComponent(Touchable);
 
 type PostDetailsComponentProps = {
   postDetail: PostDetail;
@@ -46,19 +61,138 @@ export default function PostDetailsComponent({
   const { setModal } = useContext(ModalContext);
   const { tapToCollapsePost } = useContext(PostSettingsContext);
 
+  const [optimisticVote, setOptimisticVote] = useState<{
+    postId: string;
+    vote: VoteValue;
+  } | null>(null);
+
+  const displayedVote =
+    optimisticVote?.postId === postDetail.id
+      ? optimisticVote.vote
+      : (postDetail.userVote as VoteValue);
+
+  const displayedScore = adjustedScore(
+    postDetail.upvotes,
+    postDetail.userVote as VoteValue,
+    displayedVote,
+  );
+
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
+
+  const upvoteScale = useSharedValue(1);
+  const downvoteScale = useSharedValue(1);
+
+  const upvoteAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: upvoteScale.value }],
+  }));
+
+  const downvoteAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: downvoteScale.value }],
+  }));
+
+  const animateVote = (voteOption: VoteOption) => {
+    const scale =
+      voteOption === VoteOption.UpVote ? upvoteScale : downvoteScale;
+
+    cancelAnimation(scale);
+    scale.value = 1;
+
+    scale.value = withSequence(
+      withTiming(1.20, { duration: 75 }),
+      withSpring(1, {
+        stiffness: 500,
+        damping: 23,
+        mass: 0.7,
+        overshootClamping: false,
+      }),
+    );
+  };
+
   const { postSummary, commentsSummary } = usePostSummaries(postDetail);
 
   const contextDepth = Number(new RedditURL(url).getQueryParam("context") ?? 0);
 
-  const voteOnPost = async (voteOption: VoteOption) => {
-    const result = await vote(postDetail, voteOption);
-    setPostDetail({
-      ...postDetail,
-      upvotes: postDetail.upvotes - postDetail.userVote + result,
-      userVote: result,
-    });
+  const { showToast } = useContext(ToastContext);
+
+  const postDetailRef = useRef(postDetail);
+  const controllerRef = useRef<{
+    postId: string;
+    controller: ReturnType<typeof createOptimisticVoteController>;
+  } | null>(null);
+
+  postDetailRef.current = postDetail;
+
+  useEffect(() => {
+    return () => {
+      controllerRef.current?.controller.invalidate();
+      controllerRef.current = null;
+    };
+  }, [postDetail.id]);
+
+  const voteOnPost = (voteOption: VoteOption) => {
+    const existing = controllerRef.current;
+
+    if (existing?.postId !== postDetail.id) {
+      existing?.controller.invalidate();
+
+      const postId = postDetail.id;
+
+      const controller = createOptimisticVoteController(
+        postDetail.userVote as VoteValue,
+        async (confirmed, next) => {
+          const current = postDetailRef.current;
+
+          if (current.id !== postId) {
+            throw new Error("Vote controller no longer matches this post");
+          }
+
+          const result = await vote(
+            { ...current, userVote: confirmed as VoteOption },
+            next as VoteOption,
+          );
+
+          if (result !== next) {
+            throw new Error("Unexpected vote result");
+          }
+        },
+        (next) => {
+          if (controllerRef.current?.postId !== postId) return;
+
+          setOptimisticVote({ postId, vote: next });
+        },
+        () => {
+          if (controllerRef.current?.postId !== postId) return;
+
+          showToast({
+            title: "Vote couldn't be confirmed",
+            body: "Your vote wasn't saved. Please try again.",
+          });
+        },
+        (confirmed) => {
+          if (controllerRef.current?.postId !== postId) return;
+
+          setPostDetail((current) => {
+            if (!current || current.id !== postId) return current;
+
+            return {
+              ...current,
+              upvotes: adjustedScore(
+                current.upvotes,
+                current.userVote as VoteValue,
+                confirmed,
+              ),
+              userVote: confirmed as VoteOption,
+            };
+          });
+        },
+      );
+
+      controllerRef.current = { postId, controller };
+    }
+
+    controllerRef.current?.controller.press(voteOption);
   };
+
 
   return (
     <View>
@@ -152,7 +286,7 @@ export default function PostDetailsComponent({
                   },
                 ]}
               >
-                {postDetail.upvotes}
+                {displayedScore}
               </Text>
               <Feather
                 name="message-square"
@@ -227,12 +361,13 @@ export default function PostDetailsComponent({
           },
         ]}
       >
-        <Touchable
+        <AnimatedTouchable
           style={[
             styles.buttonsContainer,
+            upvoteAnimatedStyle,
             {
               backgroundColor:
-                postDetail.userVote === VoteOption.UpVote
+                displayedVote === VoteOption.UpVote
                   ? theme.upvote
                   : undefined,
             },
@@ -240,6 +375,7 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
+            animateVote(VoteOption.UpVote);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             voteOnPost(VoteOption.UpVote);
           }}
@@ -248,18 +384,19 @@ export default function PostDetailsComponent({
             name="arrow-up"
             size={32}
             color={
-              postDetail.userVote === VoteOption.UpVote
+              displayedVote === VoteOption.UpVote
                 ? theme.text
                 : theme.iconPrimary
             }
           />
-        </Touchable>
-        <Touchable
+        </AnimatedTouchable>
+        <AnimatedTouchable
           style={[
             styles.buttonsContainer,
+            downvoteAnimatedStyle,
             {
               backgroundColor:
-                postDetail.userVote === VoteOption.DownVote
+                displayedVote === VoteOption.DownVote
                   ? theme.downvote
                   : undefined,
             },
@@ -267,6 +404,7 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
+            animateVote(VoteOption.DownVote);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             voteOnPost(VoteOption.DownVote);
           }}
@@ -275,12 +413,12 @@ export default function PostDetailsComponent({
             name="arrow-down"
             size={32}
             color={
-              postDetail.userVote === VoteOption.DownVote
+              displayedVote === VoteOption.DownVote
                 ? theme.text
                 : theme.iconPrimary
             }
           />
-        </Touchable>
+        </AnimatedTouchable>
         <Touchable
           style={[
             styles.buttonsContainer,
@@ -291,11 +429,14 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={async () => {
-            await saveItem(postDetail, !postDetail.saved);
-            setPostDetail({
-              ...postDetail,
-              saved: !postDetail.saved,
-            });
+            const nextSaved = !postDetail.saved;
+            await saveItem(postDetail, nextSaved);
+
+            setPostDetail((current) =>
+              current?.id === postDetail.id
+                ? { ...current, saved: nextSaved }
+                : current,
+            );
           }}
         >
           <FontAwesome
