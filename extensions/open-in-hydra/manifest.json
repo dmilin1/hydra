@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Open in Hydra",
+  "version": "1.0.0",
+  "description": "Open Reddit links in Hydra.",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["links.js", "config.js", "content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ]
+}

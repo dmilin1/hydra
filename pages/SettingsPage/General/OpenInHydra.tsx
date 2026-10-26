@@ -54,6 +54,12 @@ export default function OpenInHydra() {
       )}
       {Platform.OS === "ios" && (
         <>
+          <Text style={[styles.textDescription, { color: theme.text }]}>
+            In Settings, open Safari → Extensions (or Apps → Safari → Extensions),
+            then select Open in Hydra. Enable the extension and allow access to
+            the websites where you want Reddit links to open in Hydra. You can
+            change website access at any time.
+          </Text>
           <List
             title="Hydra Shortcut"
             items={[

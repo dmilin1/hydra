@@ -1,9 +1,12 @@
+import Constants from "expo-constants";
 import * as Clipboard from "expo-clipboard";
 import * as Linking from "expo-linking";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Alert, AppState, Platform } from "react-native";
 
 import KeyStore from "./KeyStore";
+import { incomingLink } from "../extensions/open-in-hydra/links";
+import { MediaViewerContext } from "../contexts/MediaViewerContext";
 import RedditURL, { PageType } from "./RedditURL";
 import { PageTypeToNavName } from "./PageTypeToNavName";
 import {
@@ -22,15 +25,22 @@ import {
   clearSharedPayloads,
 } from "expo-sharing";
 
+const CUSTOM_SCHEME_PREFIX = "hydra://openurl?url=";
+
 export default function useHandleIncomingURLs() {
   const navigation = useNavigation<NavigationContainerRef<AppNavigationProp>>();
+  const { displayMedia } = useContext(MediaViewerContext);
   const isAsking = useRef(false);
-  const navigationReady = navigation.isReady();
+  const [navigationReady, setNavigationReady] = useState(false);
 
   const handleURL = (url: string) => {
     const pageType = RedditURL.getPageType(url);
     if (pageType === PageType.UNKNOWN) {
       Alert.alert("Unknown URL", `The URL ${url} cannot be handled by Hydra.`);
+      return;
+    }
+    if (pageType === PageType.IMAGE) {
+      displayMedia({ media: [[{ source: url, type: "image" }]] });
       return;
     }
     navigation.dispatch(TabActions.jumpTo("Posts"));
@@ -42,21 +52,24 @@ export default function useHandleIncomingURLs() {
   };
 
   const handleDeepLink = (deepLink: string) => {
-    if (
-      Platform.OS === "android" &&
-      !!deepLink &&
-      !deepLink.startsWith("hydra://")
-    ) {
+    if (!deepLink) return;
+    const redditLink = incomingLink(
+      deepLink,
+      Constants.expoConfig?.extra?.hydraLinkHost ?? "",
+    );
+    if (redditLink) {
+      handleURL(redditLink);
+      return;
+    }
+    if (Platform.OS === "android" && !deepLink.startsWith("hydra://")) {
       /**
        * Android deep links can deliver the tapped reddit URL directly.
        */
       handleURL(deepLink);
       return;
     }
-    if (!deepLink || !deepLink.toLowerCase().startsWith("hydra://openurl?url="))
-      return;
-    const url = deepLink.replace(/hydra:\/\/openurl\?url=/i, "");
-    handleURL(url);
+    if (!deepLink.toLowerCase().startsWith(CUSTOM_SCHEME_PREFIX)) return;
+    handleURL(deepLink.slice(CUSTOM_SCHEME_PREFIX.length));
   };
 
   const handleClipboardURL = async () => {
@@ -124,19 +137,32 @@ export default function useHandleIncomingURLs() {
   }, [navigationReady]);
 
   useEffect(() => {
-    const startupLinkHandler = () => {
-      const deepLink = Linking.getLinkingURL();
-      if (deepLink) {
-        handleDeepLink(deepLink);
-      }
+    let cancelled = false;
+    const pendingURLs: string[] = [];
+    const handleIncomingURL = (url: string) => {
+      if (navigation.isReady()) handleDeepLink(url);
+      else pendingURLs.push(url);
     };
-    navigation.addListener("ready", startupLinkHandler);
+    const handleReady = () => {
+      if (!navigation.isReady()) return;
+      setNavigationReady(true);
+      for (const url of pendingURLs.splice(0)) handleDeepLink(url);
+    };
+    const removeReadyListener = navigation.addListener("ready", handleReady);
     const subscription = Linking.addEventListener("url", (event) => {
-      handleDeepLink(event.url);
+      handleIncomingURL(event.url);
     });
+    Linking.getInitialURL().then(
+      (initialURL) => {
+        if (!cancelled && initialURL) handleIncomingURL(initialURL);
+      },
+      () => undefined,
+    );
+    handleReady();
     return () => {
+      cancelled = true;
+      removeReadyListener();
       subscription.remove();
-      navigation.removeListener("ready", startupLinkHandler);
     };
-  }, []);
+  }, [navigation]);
 }

@@ -61,6 +61,13 @@ module.exports = {
     owner: "dmilin",
     plugins: [
       [
+        "./plugins/withOpenInHydra",
+        {
+          // Reserved placeholder; the maintainer-owned host goes here.
+          host: "open.example.com",
+        },
+      ],
+      [
         "expo-media-library",
         {
           savePhotosPermission:
