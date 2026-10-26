@@ -77,6 +77,13 @@ export default function PostDetailsComponent({
     displayedVote,
   );
 
+  const currentVoteColor =
+    displayedVote === VoteOption.UpVote
+      ? theme.upvote
+      : displayedVote === VoteOption.DownVote
+        ? theme.downvote
+        : theme.subtleText;
+
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
 
   const upvoteScale = useSharedValue(1);
@@ -276,12 +283,12 @@ export default function PostDetailsComponent({
               </Touchable>
             </View>
             <View style={[styles.metadataRow, { marginTop: 5 }]}>
-              <Feather name="arrow-up" size={15} color={theme.subtleText} />
+              <Feather name="arrow-up" size={15} color={currentVoteColor} />
               <Text
                 style={[
                   styles.smallText,
                   {
-                    color: theme.subtleText,
+                    color: currentVoteColor,
                     marginRight: 12,
                   },
                 ]}
