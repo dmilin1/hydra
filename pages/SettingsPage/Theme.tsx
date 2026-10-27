@@ -32,7 +32,6 @@ export default function Theme() {
 
   const [colorScheme, setColorScheme] = useState<"light" | "dark">(() => {
     const scheme = Appearance.getColorScheme();
-    if (scheme === "unspecified") return "light";
     return scheme ?? "light";
   });
 

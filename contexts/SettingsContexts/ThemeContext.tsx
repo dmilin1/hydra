@@ -32,7 +32,7 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
   const { isPro, purchasesInitialized } = useContext(SubscriptionsContext);
 
   const scheme = useColorScheme();
-  const systemColorScheme = scheme === "unspecified" ? "light" : scheme;
+  const systemColorScheme = scheme ?? "light";
 
   const [storedCurrentTheme, setStoredTheme] = useMMKVString("theme");
   const [storedDarkTheme, setStoredDarkTheme] = useMMKVString("darkTheme");
@@ -88,9 +88,10 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
 
   const setCurrentTheme = (
     themeKey: string,
-    colorScheme: ColorSchemeName | undefined = useDifferentDarkTheme
-      ? systemColorScheme
-      : "unspecified",
+    colorScheme:
+      | ColorSchemeName
+      | "unspecified"
+      | undefined = useDifferentDarkTheme ? systemColorScheme : "unspecified",
   ) => {
     clearTemporaryTheme();
     if (cantUseTheme(themeKey)) {
