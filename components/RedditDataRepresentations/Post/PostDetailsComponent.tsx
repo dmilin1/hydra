@@ -171,8 +171,8 @@ export default function PostDetailsComponent({
           if (controllerRef.current?.postId !== postId) return;
 
           showToast({
-            title: "Vote couldn't be confirmed",
-            body: "Your vote wasn't saved. Please try again.",
+            title: "Vote failed",
+            body: "Your vote wasn't confirmed. Please try again.",
           });
         },
         (confirmed) => {
