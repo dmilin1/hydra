@@ -8,7 +8,6 @@ import { openExternalLink } from "../../../utils/openExternalLink";
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
-import { vote } from "../../../api/PostDetail";
 import { ToastContext } from "../../../contexts/ToastContext";
 import {
   adjustedScore,
@@ -16,8 +15,9 @@ import {
   displayOptimisticVote,
   type VoteValue,
 } from "../../../utils/optimisticVote";
+import { vote } from "../../../api/gql/Vote";
 import { Post, VoteOption } from "../../../api/Posts";
-import { saveItem } from "../../../api/Save";
+import { saveItem } from "../../../api/gql/Save";
 import { URLRoutes } from "../../../app/stack";
 import { PostInteractionProvider } from "../../../contexts/PostInteractionContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
@@ -47,6 +47,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import useWriteWithToast from "../../../utils/useWriteWithToast";
 
 type PostComponentProps = {
   post: Post;
@@ -67,9 +68,7 @@ export default function PostComponent({
   } | null>(null);
 
   const localVote =
-    optimisticVote?.postName === incomingPost.name
-      ? optimisticVote.vote
-      : null;
+    optimisticVote?.postName === incomingPost.name ? optimisticVote.vote : null;
 
   const displayed = displayOptimisticVote(
     incomingPost.upvotes,
@@ -81,13 +80,14 @@ export default function PostComponent({
     localVote === null
       ? incomingPost
       : {
-        ...incomingPost,
-        upvotes: displayed.score,
-        userVote: displayed.vote as VoteOption,
-      };
+          ...incomingPost,
+          upvotes: displayed.score,
+          userVote: displayed.vote as VoteOption,
+        };
   const { params } = useRoute<URLRoutes | "SearchPage">();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
+  const runWrite = useWriteWithToast();
   const {
     postCompactMode,
     subredditAtTop,
@@ -132,7 +132,7 @@ export default function PostComponent({
     scale.value = 1;
 
     scale.value = withSequence(
-      withTiming(1.20, { duration: 75 }),
+      withTiming(1.2, { duration: 75 }),
       withSpring(1, {
         stiffness: 500,
         damping: 23,
@@ -323,7 +323,11 @@ export default function PostComponent({
         const nextSaved = !post.saved;
         const postName = post.name;
 
-        await saveItem(post, nextSaved);
+        const saved = await runWrite(post.saved ? "unsave" : "save", () =>
+          saveItem(post, nextSaved),
+        );
+
+        if (!saved) return;
 
         updatePostRef.current((current) =>
           current.name === postName
@@ -478,10 +482,10 @@ export default function PostComponent({
             style={[
               styles.bodyContainer,
               postCompactMode &&
-              showFeedVoteButtons && {
-                flex: 1,
-                minWidth: 0,
-              },
+                showFeedVoteButtons && {
+                  flex: 1,
+                  minWidth: 0,
+                },
             ]}
           >
             {subredditAtTop && isOnMultiSubredditPage && (
@@ -641,7 +645,7 @@ export default function PostComponent({
                   <Feather
                     name={
                       !showFeedVoteButtons &&
-                        post.userVote === VoteOption.DownVote
+                      post.userVote === VoteOption.DownVote
                         ? "arrow-down"
                         : "arrow-up"
                     }

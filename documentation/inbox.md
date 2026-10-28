@@ -5,7 +5,7 @@ description: Viewing inbox, replies, managing inbox items, opening chat, and und
 
 # Inbox
 
-Your inbox is where you receive notifications about activity on your Reddit account. It shows replies to your comments and comments on your posts, and gives you quick access to [Chat](hydra://settings/guide/?doc=chat).
+Your inbox is where you receive notifications about activity on your Reddit account. It shows replies to your comments, comments on your posts, and comments that mention your username, and gives you quick access to [Chat](hydra://settings/guide/?doc=chat).
 
 ## Accessing Your Inbox
 
@@ -13,7 +13,7 @@ Tap the **Inbox** tab in the bottom tab bar to view your inbox. A badge on the t
 
 ## Replies
 
-Replies appear when someone responds to one of your comments or posts. Each reply shows the post title, subreddit, author, reply content, vote count, and how long ago it was sent. Tapping a reply opens it in context within the full discussion.
+Replies appear when someone responds to one of your comments or posts, or mentions your username in a comment. Each reply shows the post title, subreddit, author, reply content, vote count, and how long ago it was sent. Tapping a reply opens it in context within the full discussion.
 
 Unread items are highlighted so you can easily spot what's new.
 
@@ -26,11 +26,11 @@ Tap any inbox item to open the post or comment in context. Tapping an unread ite
 ### Swiping
 
 - **Swipe right** to upvote (short swipe) or downvote (longer swipe)
-- **Swipe left** to toggle read/unread status
+- **Swipe left** to mark an item as read
 
 ### Long Press
 
-Long pressing a reply gives you options to **Upvote**, **Downvote**, or **Mark as Read / Mark as Unread**.
+Long pressing a reply gives you options to **Upvote**, **Downvote**, or **Mark as Read** (for unread items). Reddit doesn't support marking items as unread again.
 
 ### Mark All Read
 

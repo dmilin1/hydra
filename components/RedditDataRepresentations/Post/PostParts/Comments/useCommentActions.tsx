@@ -1,15 +1,12 @@
 import { useContext } from "react";
 import { Alert } from "react-native";
 
-import {
-  Comment,
-  deleteUserContent,
-  PostDetail,
-  reloadComment,
-  vote,
-} from "../../../../../api/PostDetail";
+import { Comment, PostDetail } from "../../../../../api/PostDetail";
+import { deleteUserContent } from "../../../../../api/gql/UserContent";
+import { vote } from "../../../../../api/gql/Vote";
+import { reloadComment } from "../../../../../api/gql/PostDetail";
 import { VoteOption } from "../../../../../api/Posts";
-import { saveItem } from "../../../../../api/Save";
+import { saveItem } from "../../../../../api/gql/Save";
 import { AccountContext } from "../../../../../contexts/AccountContext";
 import { ModalContext } from "../../../../../contexts/ModalContext";
 import RedditURL from "../../../../../utils/RedditURL";
@@ -19,6 +16,7 @@ import EditComment from "../../../../Modals/EditComment";
 import NewComment from "../../../../Modals/NewComment";
 import SelectText from "../../../../Modals/SelectText";
 import ShareAsImage from "../../../../Modals/ShareAsImage/ShareAsImage";
+import useWriteWithToast from "../../../../../utils/useWriteWithToast";
 
 type UseCommentActionsParams = {
   comment: PostDetail | Comment;
@@ -41,6 +39,7 @@ export default function useCommentActions({
 }: UseCommentActionsParams) {
   const { setModal } = useContext(ModalContext);
   const { currentUser } = useContext(AccountContext);
+  const runWrite = useWriteWithToast();
   const showContextMenu = useContextMenu();
 
   const toggleCollapse = () => {
@@ -50,7 +49,8 @@ export default function useCommentActions({
 
   const voteOnComment = async (voteOption: VoteOption) => {
     if (comment.type !== "comment") return;
-    const result = await vote(comment, voteOption);
+    const result = await runWrite("vote", () => vote(comment, voteOption));
+    if (result === undefined) return;
     changeComment({
       ...comment,
       userVote: result,
@@ -60,13 +60,15 @@ export default function useCommentActions({
 
   const saveComment = async () => {
     if (comment.type !== "comment") return;
-    await saveItem(comment, !comment.saved);
-    changeComment({ ...comment, saved: !comment.saved });
+    const saved = await runWrite(comment.saved ? "unsave" : "save", () =>
+      saveItem(comment, !comment.saved),
+    );
+    if (saved) changeComment({ ...comment, saved: !comment.saved });
   };
 
-  // No comment type guard: replying to the PostDetail root is how you comment
-  // on the post itself.
+  // The post's own reply button opens NewComment itself.
   const replyToComment = () => {
+    if (comment.type !== "comment") return;
     if (interactionDisabledStatus) {
       Alert.alert(`This post has been ${interactionDisabledStatus}`);
       return;
@@ -116,8 +118,11 @@ export default function useCommentActions({
             try {
               await deleteUserContent(comment);
               deleteComment(comment);
-            } catch (_) {
-              alert("Failed to delete comment");
+            } catch (e) {
+              Alert.alert(
+                "Failed to delete comment",
+                e instanceof Error ? e.message : undefined,
+              );
             }
           },
         },

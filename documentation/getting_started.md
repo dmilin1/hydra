@@ -5,7 +5,7 @@ description: Introduction to Hydra, what it is, and basic navigation
 
 # Getting Started with Hydra
 
-Hydra is a native Reddit client for iPhone, iPad, and Android. No account or setup is required, just open the app and start browsing. Logging in with your Reddit account unlocks voting, commenting, posting, and access to your personalized content.
+Hydra is a native Reddit client for iPhone, iPad, and Android. Reddit no longer lets apps load content without an account, so log in with your Reddit account from the Accounts tab to start browsing.
 
 ## Basic Navigation
 

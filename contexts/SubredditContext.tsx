@@ -1,28 +1,40 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 import { AccountContext } from "./AccountContext";
+import { Multi } from "../api/Multireddit";
 import {
   addToMulti,
   getMyMultis,
-  Multi,
   removeFromMulti,
-} from "../api/Multireddit";
+} from "../api/gql/Multireddit";
 import {
   Subreddit,
   Subreddits as SubredditsObj,
-  getSubreddits,
-  getTrending,
-  setSubscriptionStatus,
+  SubredditListItem,
 } from "../api/Subreddits";
+import {
+  formatFollowedUser,
+  getSubreddits,
+  setSubscriptionStatus,
+  sortByName,
+} from "../api/gql/Subreddits";
+import { setFollowStatus } from "../api/gql/User";
+import { User } from "../api/User";
 import KeyStore from "../utils/KeyStore";
 import { ToastContext } from "./ToastContext";
+import useWriteWithToast from "../utils/useWriteWithToast";
 
 type SubredditContextType = {
   isLoadingSubreddits: boolean;
   subreddits: SubredditsObj;
   multis: Multi[];
-  subscribe: (subreddit: string) => Promise<void>;
-  unsubscribe: (subreddit: string) => Promise<void>;
+  isSubscribed: (name: string) => boolean;
+  isFavorite: (name: string) => boolean;
+  /** Resolves false if it failed (a toast already says why). */
+  subscribe: (subreddit: string) => Promise<boolean>;
+  unsubscribe: (subreddit: string) => Promise<boolean>;
+  follow: (user: User) => Promise<void>;
+  unfollow: (user: User) => Promise<void>;
   toggleFavorite: (subreddit: string) => Promise<void>;
   addSubToMulti: (
     multi: Multi,
@@ -30,7 +42,7 @@ type SubredditContextType = {
   ) => Promise<void>;
   deleteSubFromMulti: (
     multi: Multi,
-    subredditName: Subreddit["name"],
+    subreddit: SubredditListItem,
   ) => Promise<void>;
 };
 
@@ -40,11 +52,14 @@ const initialAccountContext: SubredditContextType = {
     favorites: [],
     moderator: [],
     subscriber: [],
-    trending: [],
   },
   multis: [],
-  subscribe: async () => {},
-  unsubscribe: async () => {},
+  isSubscribed: () => false,
+  isFavorite: () => false,
+  subscribe: async () => false,
+  unsubscribe: async () => false,
+  follow: async () => {},
+  unfollow: async () => {},
   toggleFavorite: async () => {},
   addSubToMulti: async () => {},
   deleteSubFromMulti: async () => {},
@@ -67,6 +82,7 @@ export class NeedsSubscriptionToFavorite extends Error {
 export function SubredditProvider({ children }: React.PropsWithChildren) {
   const { currentUser, loginInitialized } = useContext(AccountContext);
   const { showToast } = useContext(ToastContext);
+  const runWrite = useWriteWithToast();
 
   const [subreddits, setSubreddits] = useState(
     initialAccountContext.subreddits,
@@ -83,35 +99,39 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     return `favoriteSubreddits:${currentUser.id}`;
   };
 
-  const getFavoriteSubNames = async (): Promise<string[]> => {
+  const getFavoriteSubNames = (): string[] => {
     const favs = KeyStore.getString(getStorageKey());
     return favs ? JSON.parse(favs) : [];
   };
 
+  // Names from URLs keep the URL's casing (r/askreddit for AskReddit).
+  const byName = (name: string) => (sub: SubredditListItem) =>
+    sub.name.toLowerCase() === name.toLowerCase();
+
+  const isSubscribed = (name: string) =>
+    subreddits.subscriber.some(byName(name));
+
+  const isFavorite = (name: string) => subreddits.favorites.some(byName(name));
+
   const toggleFavorite = async (subredditName: string): Promise<void> => {
     try {
-      const subToFavorite = subreddits.subscriber.find(
-        (sub) => sub.name === subredditName,
-      );
+      const subToFavorite = subreddits.subscriber.find(byName(subredditName));
       if (!subToFavorite) {
         alert("You must be subscribed to a subreddit to favorite it");
         throw new NeedsSubscriptionToFavorite();
       }
+      const { name } = subToFavorite;
 
-      const currentFavorites = await getFavoriteSubNames();
-      const isFavorite = currentFavorites.includes(subredditName);
-
+      const currentFavorites = getFavoriteSubNames();
       let newFavorites: string[];
-      let newFavoriteSubs: Subreddit[];
-      if (isFavorite) {
-        newFavorites = currentFavorites.filter(
-          (name) => name !== subredditName,
-        );
+      let newFavoriteSubs: SubredditListItem[];
+      if (isFavorite(name)) {
+        newFavorites = currentFavorites.filter((fav) => fav !== name);
         newFavoriteSubs = subreddits.favorites.filter(
-          (fav) => fav.name !== subredditName,
+          (fav) => fav.name !== name,
         );
       } else {
-        newFavorites = [...currentFavorites, subredditName];
+        newFavorites = [...currentFavorites, name];
         newFavoriteSubs = [...subreddits.favorites, subToFavorite];
       }
 
@@ -128,61 +148,104 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
     }
   };
 
-  const loadSubreddits = async () => {
-    if (currentUser) {
-      const favoriteSubNames = await getFavoriteSubNames();
-      const subreddits = await getSubreddits();
-      const favorites = subreddits.subscriber.filter((sub) =>
-        favoriteSubNames.includes(sub.name),
-      );
-      setSubreddits({
-        ...subreddits,
-        favorites,
-      });
-    } else {
-      setSubreddits({
-        favorites: [],
-        moderator: [],
-        subscriber: [],
-        trending: await getTrending({ limit: "30" }),
-      });
-    }
-  };
-
-  const loadMultis = async () => {
-    if (currentUser) {
-      const multis = await getMyMultis();
-      setMultis(multis);
-    } else {
-      setMultis([]);
-    }
+  /**
+   * Updates the lists from the subscription change itself instead of
+   * reloading them, since Reddit can still return the old lists right after.
+   */
+  const updateSubscription = (
+    changed: SubredditListItem,
+    subscribed: boolean,
+  ) => {
+    const isChanged = byName(changed.name);
+    // Unsubscribing keeps a favorite's name saved, so it comes back with a
+    // re-subscribe, like it does when the lists load.
+    const restoreFavorite =
+      subscribed && getFavoriteSubNames().includes(changed.name);
+    setSubreddits((current) => {
+      const subscriber = current.subscriber.filter((sub) => !isChanged(sub));
+      const favorites = subscribed
+        ? current.favorites
+        : current.favorites.filter((sub) => !isChanged(sub));
+      return {
+        ...current,
+        subscriber: subscribed
+          ? [...subscriber, changed].sort(sortByName)
+          : subscriber,
+        favorites:
+          restoreFavorite && !favorites.some(isChanged)
+            ? [...favorites, changed].sort(sortByName)
+            : favorites,
+      };
+    });
   };
 
   const subscribe = async (subreddit: string) => {
-    await setSubscriptionStatus(subreddit, true);
-    loadSubreddits();
+    const changed = await runWrite("subscribe", () =>
+      setSubscriptionStatus(subreddit, true),
+    );
+    if (!changed) return false;
+    updateSubscription(changed.subreddit, changed.subscribed);
     showToast({
       title: "Subscribed!",
       body: "You've subscribed to " + subreddit,
     });
+    return true;
   };
 
   const unsubscribe = async (subreddit: string) => {
-    await setSubscriptionStatus(subreddit, false);
-    loadSubreddits();
+    const changed = await runWrite("unsubscribe", () =>
+      setSubscriptionStatus(subreddit, false),
+    );
+    if (!changed) return false;
+    updateSubscription(changed.subreddit, changed.subscribed);
     showToast({
       title: "Unsubscribed!",
       body: "You've unsubscribed from " + subreddit,
     });
+    return true;
   };
+
+  /**
+   * Followed users are listed among the subscriptions as u_<name>, so the
+   * lists update the same way as for a subscribe.
+   */
+  const setFollowing = async (user: User, following: boolean) => {
+    const done = await runWrite(following ? "follow" : "unfollow", () =>
+      setFollowStatus(user, following),
+    );
+    if (!done) return;
+    updateSubscription(formatFollowedUser(user.userName), following);
+    showToast({
+      title: following ? "Followed!" : "Unfollowed!",
+      body: `You've ${following ? "followed" : "unfollowed"} u/${user.userName}`,
+    });
+  };
+
+  const follow = async (user: User) => setFollowing(user, true);
+
+  const unfollow = async (user: User) => setFollowing(user, false);
+
+  // Not reloading the multis after a change: right after it, Reddit can return
+  // the old list.
+  const updateMulti = (
+    multi: Multi,
+    change: (subreddits: SubredditListItem[]) => SubredditListItem[],
+  ) =>
+    setMultis((current) =>
+      current.map((m) =>
+        m.url === multi.url ? { ...m, subreddits: change(m.subreddits) } : m,
+      ),
+    );
 
   const addSubToMulti = async (
     multi: Multi,
     subredditName: Subreddit["name"],
   ) => {
     try {
-      await addToMulti(multi, subredditName);
-      loadMultis();
+      const added = await addToMulti(multi, subredditName);
+      updateMulti(multi, (subs) =>
+        [...subs.filter((sub) => sub.id !== added.id), added].sort(sortByName),
+      );
       showToast({
         title: "Added to multi!",
         body: `${subredditName} has been added to ${multi.name}`,
@@ -194,25 +257,52 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
 
   const deleteSubFromMulti = async (
     multi: Multi,
-    subredditName: Subreddit["name"],
+    subreddit: SubredditListItem,
   ) => {
     try {
-      await removeFromMulti(multi, subredditName);
-      loadMultis();
+      await removeFromMulti(multi, subreddit);
+      updateMulti(multi, (subs) =>
+        subs.filter((sub) => sub.id !== subreddit.id),
+      );
       showToast({
         title: "Removed from multi!",
-        body: `${subredditName} has been removed from ${multi.name}`,
+        body: `${subreddit.name} has been removed from ${multi.name}`,
       });
     } catch (e) {
       alert("Something went wrong: " + e);
     }
   };
 
+  // A load for the previous account can finish after the account changes.
+  const latestLoad = useRef(0);
+
   const loadData = async () => {
+    const load = ++latestLoad.current;
+    const isLatest = () => load === latestLoad.current;
     setIsLoadingSubreddits(true);
-    await loadSubreddits();
-    await loadMultis();
-    setIsLoadingSubreddits(false);
+    if (!currentUser) {
+      setSubreddits({ favorites: [], moderator: [], subscriber: [] });
+      setMultis([]);
+      setIsLoadingSubreddits(false);
+      return;
+    }
+    try {
+      const favoriteSubNames = getFavoriteSubNames();
+      const lists = await getSubreddits();
+      if (!isLatest()) return;
+      setSubreddits({
+        ...lists,
+        favorites: lists.subscriber.filter((sub) =>
+          favoriteSubNames.includes(sub.name),
+        ),
+      });
+      const multis = await getMyMultis();
+      if (isLatest()) setMultis(multis);
+    } catch (e) {
+      if (isLatest()) throw e;
+    } finally {
+      if (isLatest()) setIsLoadingSubreddits(false);
+    }
   };
 
   useEffect(() => {
@@ -226,8 +316,12 @@ export function SubredditProvider({ children }: React.PropsWithChildren) {
         isLoadingSubreddits,
         subreddits,
         multis,
+        isSubscribed,
+        isFavorite,
         subscribe,
         unsubscribe,
+        follow,
+        unfollow,
         toggleFavorite,
         addSubToMulti,
         deleteSubFromMulti,

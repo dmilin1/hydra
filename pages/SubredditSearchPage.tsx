@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import { Post, searchSubredditPosts } from "../api/Posts";
+import { Post } from "../api/Posts";
+import { searchSubredditPosts } from "../api/gql/Search";
 
 import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
@@ -31,11 +32,7 @@ export default function SubredditSearchPage({
     fullyLoaded,
     hitFilterLimit,
   } = useRedditDataState<Post>({
-    loadData: async (after, limit) =>
-      await searchSubredditPosts(url, {
-        after,
-        limit,
-      }),
+    loadData: async (after) => await searchSubredditPosts(url, { after }),
     refreshDependencies: [searchText, sort, sortTime],
   });
 

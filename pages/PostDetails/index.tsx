@@ -21,6 +21,8 @@ import {
 import ScrollToNextButtonProvider from "../../contexts/ScrollToNextButtonProvider";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
+import AccessFailureComponent from "../../components/UI/AccessFailureComponent";
+import RedditURL from "../../utils/RedditURL";
 
 type PostDetailsProps =
   | StackPageProps<"PostDetailsPage">
@@ -40,6 +42,7 @@ function PostDetails(props: PostDetailsProps) {
   const {
     postDetail,
     setPostDetail,
+    loadError,
     refreshing,
     loadPostDetails,
     changeComment,
@@ -134,6 +137,11 @@ function PostDetails(props: PostDetailsProps) {
             </View>
           )}
         </ScrollView>
+      ) : loadError ? (
+        <AccessFailureComponent
+          accessFailure={loadError}
+          contentName={new RedditURL(url).getSubreddit()}
+        />
       ) : (
         <ActivityIndicator size="small" />
       )}

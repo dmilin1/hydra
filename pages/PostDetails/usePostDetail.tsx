@@ -1,17 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import {
   Comment,
-  getPostsDetail,
   LoadMoreCommentsFunc,
-  loadMoreComments as fetchMoreComments,
   PostDetail,
 } from "../../api/PostDetail";
+import {
+  getCommentSort,
+  getPostsDetail,
+  loadMoreComments as fetchMoreComments,
+} from "../../api/gql/PostDetail";
 import SortAndContext, {
   ContextTypes,
   SortTypes,
 } from "../../components/Navbar/SortAndContext";
 import { AccountContext } from "../../contexts/AccountContext";
+import { ToastContext } from "../../contexts/ToastContext";
 import { modifyStat, Stat } from "../../db/functions/Stats";
 import {
   applyCommentChange,
@@ -22,6 +26,7 @@ import {
 } from "../../utils/commentTree";
 import RedditURL from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
+import { isAccessFailure } from "../../utils/useRedditDataState";
 
 /**
  * Owns the postDetail state and every mutation of the comment tree. The tree
@@ -31,19 +36,48 @@ import { useURLNavigation } from "../../utils/navigation";
 export default function usePostDetail(url: string, isSplitView: boolean) {
   const navigation = useURLNavigation();
   const { currentUser } = useContext(AccountContext);
+  const { showToast } = useContext(ToastContext);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
+  const [loadError, setLoadError] = useState<Error | null>(null);
   const [refreshing, setRefreshing] = useState(true);
+  // Split view changes the url of a mounted page, so an earlier post can
+  // finish loading after a later one started.
+  const latestLoad = useRef(0);
 
   const loadPostDetails = async () => {
+    const load = ++latestLoad.current;
     setRefreshing(true);
+    setLoadError(null);
     if (isSplitView) {
       setPostDetail(undefined);
     }
-    const newPostDetail = await getPostsDetail(url);
-    if (!newPostDetail) return;
+    // A failed refresh keeps the post that's already shown.
+    const keepsPost = !isSplitView && !!postDetail;
+    let newPostDetail: PostDetail | undefined;
+    try {
+      newPostDetail = await getPostsDetail(url);
+    } catch (e) {
+      if (load !== latestLoad.current) return;
+      const error = e instanceof Error ? e : new Error(String(e));
+      if (keepsPost) {
+        showToast({ title: "Couldn't refresh", body: error.message });
+      } else {
+        setLoadError(error);
+      }
+      return;
+    } finally {
+      if (load === latestLoad.current) setRefreshing(false);
+    }
+    if (load !== latestLoad.current) return;
+    if (!newPostDetail) {
+      if (!keepsPost) {
+        setLoadError(new Error("the subreddit's warning was declined"));
+      }
+      return;
+    }
+    setLoadError(null);
     setPostDetail(newPostDetail);
-    setRefreshing(false);
 
     if (isSplitView) return;
     const contextOptions: ContextTypes[] = [
@@ -105,24 +139,34 @@ export default function usePostDetail(url: string, isSplitView: boolean) {
     rerender();
   };
 
-  const loadMoreComments: LoadMoreCommentsFunc = async (
-    commentIds,
-    commentPath,
-    childStartIndex,
-  ) => {
+  const loadMoreComments: LoadMoreCommentsFunc = async (commentPath) => {
     if (!postDetail) return;
-    const newComments = await fetchMoreComments(
-      postDetail.subreddit,
-      postDetail.id,
-      commentIds,
-      commentPath,
-      childStartIndex,
-    );
+    const parent = getCommentFromPath(postDetail, commentPath);
+    if (!parent?.loadMore) return;
+    // A refresh, sort change or reload of the parent replaces this array, and
+    // then the new comments' paths no longer fit.
+    const siblings = parent.comments;
+    let more: Awaited<ReturnType<typeof fetchMoreComments>>;
+    try {
+      more = await fetchMoreComments(
+        postDetail,
+        parent,
+        parent.loadMore.cursor,
+        getCommentSort(url),
+      );
+    } catch (e) {
+      showToast({
+        title: "Couldn't load replies",
+        body: e instanceof Error ? e.message : undefined,
+      });
+      return;
+    }
+    const { comments: newComments, loadMore } = more;
     setPostDetail((oldPostDetail) => {
       if (!oldPostDetail) return oldPostDetail;
-      const parent = getCommentFromPath(oldPostDetail, commentPath);
-      if (!parent) return oldPostDetail;
-      mergeMoreComments(parent, newComments, commentIds);
+      const current = getCommentFromPath(oldPostDetail, commentPath);
+      if (current?.comments !== siblings) return oldPostDetail;
+      mergeMoreComments(current, newComments, loadMore);
       markPathDirty(oldPostDetail, commentPath);
       return { ...oldPostDetail };
     });
@@ -135,9 +179,15 @@ export default function usePostDetail(url: string, isSplitView: boolean) {
     loadPostDetails();
   }, [url]);
 
+  // Like list pages: logging in or switching accounts may fix the error.
+  useEffect(() => {
+    if (isAccessFailure(loadError)) loadPostDetails();
+  }, [currentUser?.userName]);
+
   return {
     postDetail,
     setPostDetail,
+    loadError,
     refreshing,
     loadPostDetails,
     changeComment,

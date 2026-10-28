@@ -11,11 +11,11 @@ Hydra lets you search for posts, subreddits, and users across Reddit from the **
 
 At the top of the Search page, three tabs let you switch between result types: **Posts**, **Subreddits**, and **Users**. Type your query into the search bar, and results will appear below. Tap any result to open it.
 
-Posts and subreddits support infinite scrolling to load more results. User search is limited to a single page of results due to Reddit's limitations.
+All three support infinite scrolling to load more results.
 
-## Trending Subreddits
+## Discover Subreddits
 
-When you haven't entered a search query, the Search page displays a list of trending subreddits. This is a good way to discover popular communities you aren't already subscribed to.
+When you haven't entered a search query, the Search page shows a list of subreddits to discover, drawn from Reddit's recommendations for you, curated picks, popular communities and topics. Subreddits you're already subscribed to are left out, so it's a good way to find new communities.
 
 ## Searching Within a Subreddit
 

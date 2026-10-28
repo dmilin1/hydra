@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Image } from "expo-image";
 
-import { Subreddit } from "../../../api/Subreddits";
+import { SubredditListItem } from "../../../api/Subreddits";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../../../contexts/SubredditContext";
 import { useURLNavigation } from "../../../utils/navigation";
@@ -12,9 +12,9 @@ import { Touchable } from "react-native-gesture-handler";
 export default function SubredditCompactLink({
   subreddit,
 }: {
-  subreddit: Subreddit;
+  subreddit: SubredditListItem;
 }) {
-  const { subreddits, toggleFavorite } = useContext(SubredditContext);
+  const { isFavorite, toggleFavorite } = useContext(SubredditContext);
 
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
@@ -57,20 +57,8 @@ export default function SubredditCompactLink({
             hitSlop={10}
           >
             <FontAwesome
-              name={
-                subreddits["favorites"].find(
-                  (sub) => sub.name === subreddit.name,
-                )
-                  ? "star"
-                  : "star-o"
-              }
-              color={
-                subreddits["favorites"].find(
-                  (sub) => sub.name === subreddit.name,
-                )
-                  ? theme.text
-                  : theme.subtleText
-              }
+              name={isFavorite(subreddit.name) ? "star" : "star-o"}
+              color={isFavorite(subreddit.name) ? theme.text : theme.subtleText}
               style={styles.favoriteIcon}
             />
           </Touchable>

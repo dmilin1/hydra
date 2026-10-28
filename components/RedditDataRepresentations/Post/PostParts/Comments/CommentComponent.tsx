@@ -104,12 +104,11 @@ export default function CommentComponent({
   const onPressLoadMore = async () => {
     if (!comment.loadMore || !loadMoreComments) return;
     setLoadingMore(true);
-    await loadMoreComments(
-      comment.loadMore.childIds.slice(0, 10),
-      comment.path,
-      comment.comments.length,
-    );
-    setLoadingMore(false);
+    try {
+      await loadMoreComments(comment.path);
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   /**
@@ -126,7 +125,7 @@ export default function CommentComponent({
     () =>
       isFiltered ? null : (
         <View key={comment.id}>
-          {comment.depth >= 0 && (
+          {comment.type === "comment" && (
             <Slideable
               xScrollToEngage={15}
               options={buildCommentSwipeOptions(comment, theme, actions)}
@@ -251,14 +250,16 @@ export default function CommentComponent({
                   displayForImageShareSettings={displayForImageShareSettings}
                 />
               ))}
-              {comment.loadMore && comment.loadMore.childIds.length > 0 && (
+              {comment.loadMore && (
                 <MoreRepliesRow
                   depth={comment.depth}
                   theme={theme}
                   label={
                     loadingMore
                       ? "Loading..."
-                      : `${comment.loadMore.childIds.length} more replies`
+                      : comment.loadMore.count > 0
+                        ? `${comment.loadMore.count} more repl${comment.loadMore.count === 1 ? "y" : "ies"}`
+                        : "More replies"
                   }
                   onPress={onPressLoadMore}
                 />

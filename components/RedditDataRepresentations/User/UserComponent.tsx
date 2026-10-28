@@ -69,7 +69,7 @@ export default function UserComponent({ user }: { user: User }) {
                   },
                 ]}
               >
-                Friends: {user.friends ? "Yes" : "No"}
+                Following: {user.following ? "Yes" : "No"}
               </Text>
               <Feather name="clock" size={18} color={theme.subtleText} />
               <Text

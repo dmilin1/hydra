@@ -2,7 +2,14 @@ import AntDesign from "@react-native-vector-icons/ant-design";
 import Feather from "@react-native-vector-icons/feather";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import Octicons from "@react-native-vector-icons/octicons";
-import React, { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ToastContext } from "../../../contexts/ToastContext";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import PostMedia from "./PostParts/PostMedia";
@@ -12,14 +19,15 @@ import {
   PostSummary,
   usePostSummaries,
 } from "./PostParts/Summaries";
-import { PostDetail, vote } from "../../../api/PostDetail";
+import { PostDetail } from "../../../api/PostDetail";
+import { vote } from "../../../api/gql/Vote";
 import {
   adjustedScore,
   createOptimisticVoteController,
   type VoteValue,
 } from "../../../utils/optimisticVote";
 import { VoteOption } from "../../../api/Posts";
-import { saveItem } from "../../../api/Save";
+import { saveItem } from "../../../api/gql/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -39,6 +47,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { shareURL } from "../../../utils/sharing";
 import { textDirectionStyle } from "../../../utils/textDirection";
+import useWriteWithToast from "../../../utils/useWriteWithToast";
 
 const AnimatedTouchable = Animated.createAnimatedComponent(Touchable);
 
@@ -58,6 +67,7 @@ export default function PostDetailsComponent({
   const { pushURL } = useURLNavigation();
 
   const { theme } = useContext(ThemeContext);
+  const runWrite = useWriteWithToast();
   const { setModal } = useContext(ModalContext);
   const { tapToCollapsePost } = useContext(PostSettingsContext);
 
@@ -105,7 +115,7 @@ export default function PostDetailsComponent({
     scale.value = 1;
 
     scale.value = withSequence(
-      withTiming(1.20, { duration: 75 }),
+      withTiming(1.2, { duration: 75 }),
       withSpring(1, {
         stiffness: 500,
         damping: 23,
@@ -114,6 +124,11 @@ export default function PostDetailsComponent({
       }),
     );
   };
+
+  // Split view swaps this view for another post's and a sort change reloads
+  // it, either of which the reload after a reply would undo.
+  const replyReload = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(replyReload.current), [url]);
 
   const { postSummary, commentsSummary } = usePostSummaries(postDetail);
 
@@ -199,7 +214,6 @@ export default function PostDetailsComponent({
 
     controllerRef.current?.controller.press(voteOption);
   };
-
 
   return (
     <View>
@@ -374,9 +388,7 @@ export default function PostDetailsComponent({
             upvoteAnimatedStyle,
             {
               backgroundColor:
-                displayedVote === VoteOption.UpVote
-                  ? theme.upvote
-                  : undefined,
+                displayedVote === VoteOption.UpVote ? theme.upvote : undefined,
             },
           ]}
           activeOpacity={0.2}
@@ -437,10 +449,17 @@ export default function PostDetailsComponent({
           animationDuration={{ in: 0, out: 150 }}
           onPress={async () => {
             const nextSaved = !postDetail.saved;
-            await saveItem(postDetail, nextSaved);
+            const postId = postDetail.id;
+
+            const saved = await runWrite(
+              postDetail.saved ? "unsave" : "save",
+              () => saveItem(postDetail, nextSaved),
+            );
+
+            if (!saved) return;
 
             setPostDetail((current) =>
-              current?.id === postDetail.id
+              current?.id === postId
                 ? { ...current, saved: nextSaved }
                 : current,
             );
@@ -466,7 +485,12 @@ export default function PostDetailsComponent({
             setModal(
               <NewComment
                 parent={postDetail}
-                contentSent={() => setTimeout(() => loadPostDetails(), 5_000)}
+                contentSent={() => {
+                  replyReload.current = setTimeout(
+                    () => loadPostDetails(),
+                    5_000,
+                  );
+                }}
               />,
             );
           }}

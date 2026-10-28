@@ -73,8 +73,8 @@ export default class RedditURL extends URL {
     } else {
       throw new Error(`Weird URL being passed ${url}`);
     }
-    if (url.startsWith("https://www.reddit.com/r/u_")) {
-      this.url = url.replace(
+    if (this.url.startsWith("https://www.reddit.com/r/u_")) {
+      this.url = this.url.replace(
         "https://www.reddit.com/r/u_",
         "https://www.reddit.com/user/",
       );
@@ -188,13 +188,6 @@ export default class RedditURL extends URL {
       /\/(?:user|u)\/([^/]+)\/m\/([^/]+)/,
     );
     return match ? `${match[1]}/${match[2]}` : "";
-  }
-
-  jsonify(): RedditURL {
-    const base = this.getBasePath();
-    const urlParams = this.getURLParams();
-    this.url = `${base}.json?${urlParams}`;
-    return this;
   }
 
   getPageType(): PageType {

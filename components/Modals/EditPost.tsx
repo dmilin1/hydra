@@ -11,7 +11,8 @@ import {
 import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { editUserContent, PostDetail } from "../../api/PostDetail";
+import { PostDetail } from "../../api/PostDetail";
+import { editUserContent } from "../../api/gql/UserContent";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import * as Snudown from "../../external/snudown";
@@ -36,16 +37,15 @@ export default function EditPost({ contentSent, edit }: EditPostProps) {
   const submit = async () => {
     setIsSubmitting(true);
     try {
-      const success = await editUserContent(edit, text);
-      if (success) {
-        contentSent();
-        setModal(undefined);
-      } else {
-        throw new Error(`Failed to edit post`);
-      }
-    } catch {
+      await editUserContent(edit, text);
+      contentSent();
+      setModal(undefined);
+    } catch (e) {
       setIsSubmitting(false);
-      Alert.alert(`Failed to edit post`);
+      Alert.alert(
+        "Failed to edit post",
+        e instanceof Error ? e.message : undefined,
+      );
     }
   };
 

@@ -3,6 +3,7 @@ import FontAwesome5 from "@react-native-vector-icons/fontawesome5";
 import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
+import { Touchable } from "react-native-gesture-handler";
 
 import { User } from "../../../api/User";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -11,12 +12,18 @@ import Time from "../../../utils/Time";
 import { useURLNavigation } from "../../../utils/navigation";
 import List from "../../UI/List";
 
+export type UserContentType = "posts" | "comments";
+
 type UserDetailsComponentProps = {
   user: User;
+  contentType: UserContentType;
+  setContentType: (contentType: UserContentType) => void;
 };
 
 export default function UserDetailsComponent({
   user,
+  contentType,
+  setContentType,
 }: UserDetailsComponentProps) {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
@@ -154,6 +161,38 @@ export default function UserDetailsComponent({
           ]}
         />
       </View>
+      {/* Reddit has no mixed posts and comments feed, so pick one. */}
+      <View style={[styles.contentToggle, { backgroundColor: theme.tint }]}>
+        {(
+          [
+            { key: "posts", text: "Posts" },
+            { key: "comments", text: "Comments" },
+          ] as const
+        ).map((option) => {
+          const selected = contentType === option.key;
+          return (
+            <Touchable
+              key={option.key}
+              style={[
+                styles.contentToggleOption,
+                selected && { backgroundColor: theme.buttonBg },
+              ]}
+              onPress={() => setContentType(option.key)}
+              accessibilityRole="button"
+              accessibilityState={{ selected }}
+            >
+              <Text
+                style={[
+                  styles.contentToggleText,
+                  { color: selected ? theme.buttonText : theme.subtleText },
+                ]}
+              >
+                {option.text}
+              </Text>
+            </Touchable>
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -161,6 +200,23 @@ export default function UserDetailsComponent({
 const styles = StyleSheet.create({
   buttonsContainer: {
     marginBottom: 15,
+  },
+  contentToggle: {
+    flexDirection: "row",
+    marginHorizontal: 10,
+    marginBottom: 10,
+    padding: 3,
+    borderRadius: 10,
+  },
+  contentToggleOption: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  contentToggleText: {
+    fontSize: 15,
+    fontWeight: "500",
   },
   statsContainer: {
     flexDirection: "row",

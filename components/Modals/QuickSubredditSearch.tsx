@@ -12,9 +12,9 @@ import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
-import { getSearchResults } from "../../api/Search";
+import { getSearchResults } from "../../api/gql/Search";
 import { useDebouncedEffect } from "../../utils/debounce";
-import { Subreddit } from "../../api/Subreddits";
+import { Subreddit, SubredditListItem } from "../../api/Subreddits";
 import SubredditIcon from "../RedditDataRepresentations/Post/PostParts/SubredditIcon";
 import {
   NavigationContainerRef,
@@ -45,33 +45,42 @@ export default function QuickSubredditSearch({
   const [searchText, setSearchText] = useState("");
   const [subreddits, setSubreddits] = useState<Subreddit[]>([]);
   const [loading, setLoading] = useState(false);
+  const latestSearch = useRef("");
 
   const subredditsToShow = searchText
     ? subreddits
     : [...userSubs.favorites, ...userSubs.subscriber];
 
-  const navigateToSubreddit = (subreddit: Subreddit) => {
+  const navigateToSubreddit = (subreddit: SubredditListItem) => {
     onExit();
     setSearchText("");
     setSubreddits([]);
+    // Followed users are listed as u_<name>, with their user page's URL.
     navigation.dispatch(
-      StackActions.push("PostsPage", {
-        url: `https://www.reddit.com/r/${subreddit.name}`,
-      }),
+      StackActions.push(
+        subreddit.url.includes("/user/") ? "UserPage" : "PostsPage",
+        { url: subreddit.url },
+      ),
     );
   };
 
   const loadSearchResults = async (searchText: string) => {
-    if (!searchText.length) return;
+    latestSearch.current = searchText;
+    if (!searchText.length) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
-    const results = await getSearchResults<"subreddits">(
-      "subreddits",
-      searchText,
-      {
-        limit: "5",
-        sr_detail: "false",
-      },
-    );
+    let results: Subreddit[] = [];
+    try {
+      results = await getSearchResults<"subreddits">("subreddits", searchText, {
+        limit: 5,
+      });
+    } catch {
+      // Shown as no results.
+    }
+    // Typing on starts another search; only the latest one counts.
+    if (latestSearch.current !== searchText) return;
     setSubreddits(results);
     setLoading(false);
   };

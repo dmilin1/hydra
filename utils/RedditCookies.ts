@@ -1,24 +1,9 @@
 import CookieManager from "@preeternal/react-native-cookie-manager";
 import * as SecureStore from "expo-secure-store";
-import safeFetch from "./safeFetch";
-import { USER_AGENT } from "../api/UserAgent";
+
+import { getSessionAccount } from "../api/gql/WebToken";
 
 export default class RedditCookies {
-  static async getLoggedOutCookies() {
-    try {
-      const res = await safeFetch("https://old.reddit.com/", {
-        method: "HEAD",
-        headers: {
-          "User-Agent": USER_AGENT,
-        },
-      });
-      return res;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
-
   static async restoreSessionCookies(username: string) {
     const redditSession = await SecureStore.getItemAsync(
       `redditSession-${username}`,
@@ -50,21 +35,24 @@ export default class RedditCookies {
     }
   }
 
-  static async deleteSessionCookies(username: string) {
-    await SecureStore.deleteItemAsync(`redditSession-${username}`);
+  /** Saves the jar's session for `username` only if it's the same account's. */
+  static async saveRenewedSession(username: string) {
+    const current = (await CookieManager.get("https://www.reddit.com"))
+      ?.reddit_session;
+    const stored = await this.getSessionCookies(username);
+    if (!current?.value || !stored) return;
+    const account = getSessionAccount(current.value);
+    if (!account || account !== getSessionAccount(JSON.parse(stored).value)) {
+      return;
+    }
+    await SecureStore.setItemAsync(
+      `redditSession-${username}`,
+      JSON.stringify(current),
+    );
   }
 
-  static async persistSessionCookies() {
-    const cookies = await CookieManager.get("https://www.reddit.com");
-    if (cookies?.reddit_session && !cookies?.reddit_session?.expires) {
-      const newCookies = {
-        ...cookies.reddit_session,
-        expires: new Date(
-          Date.now() + 1000 * 60 * 60 * 24 * 10_000,
-        ).toISOString(),
-      };
-      await CookieManager.set("https://www.reddit.com", newCookies);
-    }
+  static async deleteSessionCookies(username: string) {
+    await SecureStore.deleteItemAsync(`redditSession-${username}`);
   }
 
   static async clearSessionCookies() {

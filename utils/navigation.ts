@@ -51,8 +51,8 @@ export function useURLNavigation<
 
   const openGallery = (url: string) => {
     /**
-     * Base user pages have both posts and comments, so we need to
-     * reroute these urls to the /submitted page for gallery mode
+     * Base user pages can be switched to comments, so gallery mode opens the
+     * /submitted page, which always shows posts.
      */
     const urlObject = new RedditURL(url);
     const basePath = urlObject.getBasePath();
@@ -60,8 +60,9 @@ export function useURLNavigation<
     const userSubPage = basePath.split("/").at(5);
     const userName = basePath.split("/").at(4);
     if (pageType === PageType.USER && !userSubPage) {
+      const params = urlObject.getURLParams();
       navigation.push("GalleryPage", {
-        url: `https://www.reddit.com/user/${userName}/submitted`,
+        url: `https://www.reddit.com/user/${userName}/submitted${params ? `?${params}` : ""}`,
       });
     } else {
       navigation.push("GalleryPage", { url });
