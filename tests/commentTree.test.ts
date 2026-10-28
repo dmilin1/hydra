@@ -104,18 +104,19 @@ describe("removeComment", () => {
 });
 
 describe("mergeMoreComments", () => {
-  test("appends new comments and prunes fetched ids, idempotently", () => {
+  test("appends new comments and moves to the next cursor, idempotently", () => {
     const { root, a, b, d } = makeTree();
-    a.loadMore = { depth: 1, childIds: ["x", "y", "z"] };
+    a.loadMore = { count: 3, cursor: "first" };
     const x = makeComment("x", [0, 2]);
     const y = makeComment("y", [0, 3]);
 
-    mergeMoreComments(a, [x, y], ["x", "y"]);
+    mergeMoreComments(a, [x, y], { count: 1, cursor: "second" });
     expect(a.comments).toEqual([b, d, x, y]);
-    expect(a.loadMore.childIds).toEqual(["z"]);
+    expect(a.loadMore).toEqual({ count: 1, cursor: "second" });
 
-    mergeMoreComments(a, [x, y], ["x", "y"]);
+    mergeMoreComments(a, [x, y], undefined);
     expect(a.comments).toEqual([b, d, x, y]);
+    expect(a.loadMore).toBeUndefined();
     expect(root.renderCount).toBe(0);
   });
 });

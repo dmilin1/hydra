@@ -17,7 +17,7 @@ The Subreddits page is your starting point for navigating communities. It is the
 - **Moderator** — subreddits you moderate
 - **Subscriber** — all subscribed subreddits, sorted alphabetically
 
-An A-Z scroller on the right side lets you quickly jump to subreddits by their first letter. When not logged in, trending subreddits are shown instead of subscriptions. The Popular and All shortcuts can be hidden in [Subreddits Page Appearance settings](hydra://settings/appearance/subreddits); Home is always shown.
+An A-Z scroller on the right side lets you quickly jump to subreddits by their first letter. The Popular and All shortcuts can be hidden in [Subreddits Page Appearance settings](hydra://settings/appearance/subreddits); Home is always shown.
 
 ## Browsing a Subreddit
 

@@ -19,8 +19,8 @@ import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Clipboard from "expo-clipboard";
 
-import { uploadImage } from "../../api/Media";
-import { CaptchaError, ParseableError, submitPost } from "../../api/PostDetail";
+import { uploadImage } from "../../api/gql/Media";
+import { CaptchaError, submitPost } from "../../api/gql/SubmitPost";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useDraftState } from "../../db/functions/Drafts";
@@ -28,10 +28,10 @@ import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
 import RedditURL from "../../utils/RedditURL";
-import { PostFlair, useAllowedPostFlairs } from "../../api/PostFlair";
+import { PostFlair } from "../../api/PostFlair";
+import { useAllowedPostFlairs } from "../../api/gql/PostFlair";
 import useContextMenu from "../../utils/useContextMenu";
 import WebView from "react-native-webview";
-import { ToastContext } from "../../contexts/ToastContext";
 import KeyStore from "../../utils/KeyStore";
 import { useMMKVBoolean } from "react-native-mmkv";
 
@@ -51,7 +51,6 @@ export default function NewPostEditor({
 }: NewPostProps) {
   const { theme } = useContext(ThemeContext);
   const { setModal } = useContext(ModalContext);
-  const { showToast } = useContext(ToastContext);
 
   const openContextMenu = useContextMenu();
 
@@ -100,18 +99,7 @@ export default function NewPostEditor({
         selectedFlair?.id,
         sendReplies,
       );
-      if (newPostUrl) {
-        contentSent(newPostUrl);
-      } else {
-        /**
-         * Image uploads don't return a URL. They do give a websocket, so there
-         * might be a way to get the URL from that. But that's a future problem.
-         */
-        showToast({
-          title: "Post submitted successfully",
-          body: "The post is being processed by Reddit",
-        });
-      }
+      contentSent(newPostUrl);
       clearTitleDraft();
       clearTextDraft();
       setModal(undefined);
@@ -139,15 +127,14 @@ export default function NewPostEditor({
             },
           ],
         );
-        setIsSubmitting(false);
-      } else if (e instanceof ParseableError) {
-        Alert.alert("Failed to submit post", e.message);
-        setIsSubmitting(false);
       } else {
-        setIsSubmitting(false);
-        Alert.alert(`Failed to submit post`, "Unknown error");
-        throw e;
+        Alert.alert(
+          "Failed to submit post",
+          e instanceof Error ? e.message : "Unknown error",
+        );
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -178,15 +165,14 @@ export default function NewPostEditor({
     const imageAsset = result.assets[0];
     setIsUploadingImg(true);
     try {
-      const imgURL = await uploadImage(imageAsset);
-      if (imgURL) {
-        setText(imgURL);
-        setLocalImgUrl(imageAsset.uri);
-      } else {
-        throw new Error("Failed to upload image");
-      }
-    } catch (_e) {
-      Alert.alert("Failed to upload image", "Please try again later.");
+      setText(await uploadImage(imageAsset));
+      setLocalImgUrl(imageAsset.uri);
+    } catch (e) {
+      console.error("Image upload failed", e);
+      Alert.alert(
+        "Failed to upload image",
+        e instanceof Error ? e.message : "Please try again later.",
+      );
     } finally {
       setIsUploadingImg(false);
     }

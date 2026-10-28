@@ -90,7 +90,8 @@ export default function Login() {
     loginFinished.current = true;
     setModal(null);
     const loginSuccess = await logIn();
-    if (!loginSuccess) {
+    // null: the user picked another account meanwhile, so don't restore one.
+    if (loginSuccess === false) {
       handleLoginFailed();
     } else {
       resolver.current?.(false);

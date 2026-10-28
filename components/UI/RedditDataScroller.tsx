@@ -10,7 +10,7 @@ import {
   ColorValue,
 } from "react-native";
 
-import { RedditDataObject } from "../../api/RedditApi";
+import { RedditDataObject } from "../../api/RedditData";
 import {
   ScrollerContext,
   ScrollerProvider,
@@ -39,7 +39,6 @@ type OverridableFlashListProps<T> = Omit<
 >;
 
 type RedditDataScrollerProps<T> = OverridableFlashListProps<T> & {
-  scrollViewRef?: React.RefObject<typeof FlashList<T>>;
   showInitialLoader?: boolean;
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -66,13 +65,16 @@ function RedditDataScroller<T extends RedditDataObject>(
   const loadMoreData = async (refresh = false) => {
     if (props.fullyLoaded && !refresh) return;
     setIsLoadingMore(true);
-    if (refresh) {
-      await props.refresh();
-      setRefreshing(false);
-    } else {
-      await props.loadMore();
+    try {
+      if (refresh) {
+        await props.refresh();
+      } else {
+        await props.loadMore();
+      }
+    } finally {
+      if (refresh) setRefreshing(false);
+      setIsLoadingMore(false);
     }
-    setIsLoadingMore(false);
   };
 
   /**

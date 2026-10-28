@@ -1,8 +1,8 @@
 import { useIsFocused } from "@react-navigation/native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { getInboxItems } from "../api/Inbox";
+import { getInboxItems } from "../api/gql/Inbox";
 import CommentReplyComponent from "../components/RedditDataRepresentations/InboxItem/CommentReplyComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
@@ -13,7 +13,7 @@ import useRedditDataState from "../utils/useRedditDataState";
 export default function InboxPage() {
   const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
-  const { inboxCount } = useContext(InboxContext);
+  const { inboxCount, allReadCount } = useContext(InboxContext);
 
   const isFocused = useIsFocused();
 
@@ -29,12 +29,32 @@ export default function InboxPage() {
       if (!currentUser) return [];
       return await getInboxItems({ after });
     },
+    refreshDependencies: [currentUser?.userName],
   });
 
+  /**
+   * Reload when coming back to the inbox and when new replies arrive. Not on
+   * the first focus (useRedditDataState already loads), and not when replies
+   * are marked read (they update in place).
+   */
+  const previous = useRef({ count: inboxCount, focused: false, shown: false });
   useEffect(() => {
-    if (!isFocused) return;
-    refreshInboxItems();
+    const { count, focused, shown } = previous.current;
+    previous.current = {
+      count: inboxCount,
+      focused: isFocused,
+      shown: shown || isFocused,
+    };
+    if (!isFocused || !shown) return;
+    if (!focused || inboxCount > count) {
+      refreshInboxItems();
+    }
   }, [inboxCount, isFocused]);
+
+  useEffect(() => {
+    if (!allReadCount) return;
+    modifyInboxItems(inboxItems.map((item) => ({ ...item, new: false })));
+  }, [allReadCount]);
 
   return (
     <View

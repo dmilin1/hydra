@@ -1,18 +1,22 @@
 import * as Sentry from "@sentry/react-native";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 
 import { UserAuth } from "../api/Authentication";
-import { User, getUser } from "../api/User";
+import { User } from "../api/User";
+import { resetGqlSessionState } from "../api/gql/Session";
+import { getCurrentUser } from "../api/gql/User";
+import { changeSessionCookies } from "../api/gql/WebToken";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
 import { Alert } from "react-native";
-import { fixIncompatibleAccountSettings } from "../api/AccountSettings";
+import { fixIncompatibleAccountSettings } from "../api/gql/AccountSettings";
 
 type AccountContextType = {
   loginInitialized: boolean;
   currentUser: User | null;
   accounts: string[];
-  logIn: (username?: string) => Promise<boolean>;
+  /** null when a later login or logout superseded this one. */
+  logIn: (username?: string) => Promise<boolean | null>;
   logOut: () => Promise<void>;
   removeUser: (username: string) => Promise<void>;
   doWithTempLogout: (fn: () => Promise<boolean>) => Promise<void>;
@@ -35,32 +39,66 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   const [currentUser, setCurrentUser] =
     useState<AccountContextType["currentUser"]>(null);
   const [accounts, setAccounts] = useState<AccountContextType["accounts"]>([]);
+  // Bumped by every login and logout. A login that another one superseded
+  // backs off: the jar no longer holds its session.
+  const sessionAttempt = useRef(0);
 
-  const logInContext = async (username?: string): Promise<boolean> => {
+  // Every request can renew reddit_session (it slides 6 months), but only a
+  // login saves it, so keep the stored account's renewed one before the jar
+  // changes.
+  const swapSessionCookies = (change: () => Promise<void>) =>
+    changeSessionCookies(async () => {
+      const stored = KeyStore.getString("currentUser");
+      if (stored) await RedditCookies.saveRenewedSession(stored);
+      await change();
+    });
+
+  const logInContext = async (username?: string): Promise<boolean | null> => {
+    const attempt = ++sessionAttempt.current;
     try {
+      resetGqlSessionState();
       if (username) {
-        await RedditCookies.restoreSessionCookies(username);
+        await swapSessionCookies(() =>
+          RedditCookies.restoreSessionCookies(username),
+        );
       }
-      const user = await getUser("/user/me", { allowSuspended: true });
+      const user = await getCurrentUser();
+      if (attempt !== sessionAttempt.current) return null;
       if (username && user.userName !== username) {
         throw new Error("Authenticated session out of sync");
       }
-      if (!user.modhash) {
-        throw new Error("Failed to get modhash");
-      }
-      UserAuth.modhash = user.modhash;
+      UserAuth.isLoggedIn = true;
       KeyStore.set("currentUser", user.userName);
       setCurrentUser(user);
       Sentry.setUser({ username: user.userName });
       await RedditCookies.saveSessionCookies(user.userName);
-      await fixIncompatibleAccountSettings();
       await addUser(user.userName);
+      // Best effort: a failure here shouldn't log the user out.
+      fixIncompatibleAccountSettings().catch((e) => Sentry.captureException(e));
       return true;
-    } catch (_e) {
-      Alert.alert(
-        "Login Session Expired",
-        "You can login again by pressing the + button in the top right corner of the Account tab.",
-      );
+    } catch (e) {
+      if (attempt !== sessionAttempt.current) return null;
+      // safeFetch's network errors and timeouts. The session may be fine, so
+      // the next launch tries the stored account again.
+      if (
+        username &&
+        e instanceof TypeError &&
+        e.message.startsWith("Network request")
+      ) {
+        Alert.alert(
+          "Couldn't reach Reddit",
+          "Check your connection, then choose your account in the Account tab.",
+        );
+        await logOutContext({ forget: false });
+        return false;
+      }
+      // A new login (no username) reports its own failure.
+      if (username) {
+        Alert.alert(
+          "Login Session Expired",
+          "You can login again by pressing the + button in the top right corner of the Account tab.",
+        );
+      }
       await logOutContext();
       return false;
     }
@@ -68,23 +106,30 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const doWithTempLogout = async (fn: () => Promise<boolean>) => {
     const currentUser = KeyStore.getString("currentUser");
-    const currentUserModhash = UserAuth.modhash;
-    await RedditCookies.clearSessionCookies();
-    UserAuth.modhash = undefined;
+    const wasLoggedIn = UserAuth.isLoggedIn;
+    UserAuth.isLoggedIn = false;
+    await swapSessionCookies(() => RedditCookies.clearSessionCookies());
     const shouldRestore = await fn();
-    if (shouldRestore && currentUser && currentUserModhash) {
-      await RedditCookies.restoreSessionCookies(currentUser);
-      UserAuth.modhash = currentUserModhash;
+    if (!shouldRestore || !currentUser || !wasLoggedIn) return;
+    if (KeyStore.getString("currentUser") === currentUser) {
+      await swapSessionCookies(() =>
+        RedditCookies.restoreSessionCookies(currentUser),
+      );
+      UserAuth.isLoggedIn = true;
+    } else {
+      // A failed login logged out, so the state has to come back too.
+      await logInContext(currentUser);
     }
   };
 
-  const logOutContext = async () => {
-    await RedditCookies.clearSessionCookies();
-    await RedditCookies.getLoggedOutCookies();
-    KeyStore.remove("currentUser");
+  const logOutContext = async ({ forget = true } = {}) => {
+    sessionAttempt.current++;
+    UserAuth.isLoggedIn = false;
+    await swapSessionCookies(() => RedditCookies.clearSessionCookies());
+    if (forget) KeyStore.remove("currentUser");
     setCurrentUser(null);
     Sentry.setUser(null);
-    UserAuth.modhash = undefined;
+    resetGqlSessionState();
   };
 
   const addUser = async (username: string) => {
@@ -103,7 +148,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
 
   const removeUser = async (username: string) => {
     const accs = accounts.filter((acc) => acc !== username);
-    if (currentUser?.userName === username) {
+    if (KeyStore.getString("currentUser") === username) {
       await logOutContext();
     }
     // remove from saved data

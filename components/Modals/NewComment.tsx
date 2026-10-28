@@ -11,7 +11,8 @@ import {
 import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Comment, PostDetail, submitComment } from "../../api/PostDetail";
+import { Comment, PostDetail } from "../../api/PostDetail";
+import { submitComment } from "../../api/gql/UserContent";
 import { ModalContext } from "../../contexts/ModalContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useDraftState } from "../../db/functions/Drafts";
@@ -47,22 +48,21 @@ export default function NewComment({ contentSent, parent }: NewCommentProps) {
   const submit = async () => {
     setIsSubmitting(true);
     try {
-      const success = await submitComment(parent, text);
-      if (success) {
-        contentSent();
-        setModal(undefined);
-        clearTextDraft();
-        showToast({
-          title: "Comment submitted successfully!",
-          body: "Waiting for Reddit to process it.",
-          delay: 5_000,
-        });
-      } else {
-        throw new Error(`Failed to submit comment`);
-      }
-    } catch {
+      await submitComment(parent, text);
+      contentSent();
+      setModal(undefined);
+      clearTextDraft();
+      showToast({
+        title: "Comment submitted successfully!",
+        body: "Waiting for Reddit to process it.",
+        delay: 5_000,
+      });
+    } catch (e) {
       setIsSubmitting(false);
-      Alert.alert(`Failed to submit comment`);
+      Alert.alert(
+        "Failed to submit comment",
+        e instanceof Error ? e.message : undefined,
+      );
     }
   };
 

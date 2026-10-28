@@ -1,126 +1,27 @@
-import { api } from "./RedditApi";
-import Time from "../utils/Time";
-import { decode } from "html-entities";
-
 export type Subreddit = {
   id: string;
   type: "subreddit";
   name: string;
   url: string;
-  moderating: boolean;
-  subscribed: boolean;
   description?: string;
   iconURL?: string;
   subscribers: number;
-  timeSinceCreation: string;
+  weeklyVisitors?: number;
   after: string;
 };
 
-export type Subreddits = {
-  favorites: Subreddit[];
-  moderator: Subreddit[];
-  subscriber: Subreddit[];
-  trending: Subreddit[];
-};
-
-type GetSubredditsOptions = {
-  limit?: string;
-  after?: string;
-};
-
-type GetTrendingOptions = {
-  limit?: string;
-  after?: string;
-};
-
-export function formatSubredditData(child: any): Subreddit {
-  return {
-    id: child.data.id ?? child.data.name?.split("_")?.[1],
-    type: "subreddit",
-    name: child.data.display_name,
-    url: `https://www.reddit.com${child.data.url}`,
-    moderating: child.data.user_is_moderator,
-    subscribed: child.data.user_is_subscriber,
-    description: child.data.public_description,
-    iconURL: child.data.community_icon
-      ? decode(child.data.community_icon)
-      : child.data.icon_img,
-    subscribers: child.data.subscribers,
-    timeSinceCreation:
-      new Time(child.data.created_utc * 1000).prettyTimeSince() + " old",
-    after: child.data.name,
-  };
-}
-
-export async function getSubreddits(
-  options: GetSubredditsOptions = {},
-): Promise<Omit<Subreddits, "favorites">> {
-  const searchParams = new URLSearchParams(options);
-  const subredditsPromise = api(
-    `https://www.reddit.com/subreddits/mine.json?limit=100&${searchParams.toString()}`,
-    {},
-    { depaginate: true },
-  );
-  const moderatorsPromise = api(
-    `https://www.reddit.com/subreddits/mine/moderator.json?limit=100&${searchParams.toString()}`,
-    {},
-    { depaginate: true },
-  );
-  const [subredditsData, moderatorsData] = await Promise.all([
-    subredditsPromise,
-    moderatorsPromise,
-  ]);
-
-  const sorter = (a: Subreddit, b: Subreddit) => a.name.localeCompare(b.name);
-
-  const subreddits = {
-    moderator: moderatorsData
-      .map((child: any) => formatSubredditData(child))
-      .sort(sorter),
-    subscriber: subredditsData
-      .map((child: any) => formatSubredditData(child))
-      .sort(sorter),
-    trending: [],
-  };
-  return subreddits;
-}
-
-export async function getTrending(
-  options: GetTrendingOptions = { limit: "10" },
-): Promise<Subreddit[]> {
-  const searchParams = new URLSearchParams(options);
-  const data = await api(
-    `https://www.reddit.com/subreddits.json?${searchParams.toString()}`,
-  );
-  return data.data.children.map((child: any) => formatSubredditData(child));
-}
-
 /**
- * Reddit doesn't provide a way to get trending random subreddits,
- * but loading from /r/all/rising and deduplicating is a good way
- * to approximate it.
+ * A subreddit in the user's subscribed or moderated list, or in a
+ * multireddit. Reddit returns those lists without descriptions or subscriber
+ * counts.
  */
-export async function getTrendingRandom(): Promise<Subreddit[]> {
-  const data = await api(
-    `https://www.reddit.com/r/all/rising/.json?sr_detail=true&limit=10`,
-  );
-  const subreddits: Subreddit[] = data.data.children.map((child: any) =>
-    formatSubredditData({ data: child.data.sr_detail }),
-  );
-  return [...new Map(subreddits.map((sub) => [sub.id, sub])).values()];
-}
+export type SubredditListItem = Pick<
+  Subreddit,
+  "id" | "type" | "name" | "url" | "iconURL"
+>;
 
-export async function setSubscriptionStatus(
-  subreddit: string,
-  subscribe: boolean,
-): Promise<void> {
-  const searchParams = new URLSearchParams({
-    sr_name: subreddit,
-    action: subscribe ? "sub" : "unsub",
-  });
-  await api(
-    `https://www.reddit.com/api/subscribe.json?${searchParams.toString()}`,
-    { method: "POST" },
-    { requireAuth: true },
-  );
-}
+export type Subreddits = {
+  favorites: SubredditListItem[];
+  moderator: SubredditListItem[];
+  subscriber: SubredditListItem[];
+};

@@ -2,8 +2,9 @@ import Feather from "@react-native-vector-icons/feather";
 import React, { useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 
-import { CommentReply, setInboxItemNewStatus } from "../../../api/Inbox";
-import { vote } from "../../../api/PostDetail";
+import { CommentReply } from "../../../api/Inbox";
+import { markInboxItemRead } from "../../../api/gql/Inbox";
+import { vote } from "../../../api/gql/Vote";
 import { VoteOption } from "../../../api/Posts";
 import { InboxContext } from "../../../contexts/InboxContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -11,6 +12,7 @@ import { useURLNavigation } from "../../../utils/navigation";
 import RenderHtml from "../../HTML/RenderHTML";
 import Slideable from "../../UI/Slideable";
 import useContextMenu from "../../../utils/useContextMenu";
+import useWriteWithToast from "../../../utils/useWriteWithToast";
 import { Touchable } from "react-native-gesture-handler";
 
 type CommentReplyComponentProps = {
@@ -24,7 +26,8 @@ export default function CommentReplyComponent({
 }: CommentReplyComponentProps) {
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
-  const { inboxCount, setInboxCount } = useContext(InboxContext);
+  const runWrite = useWriteWithToast();
+  const { setInboxCount } = useContext(InboxContext);
   const openContextMenu = useContextMenu();
 
   const currentVoteColor =
@@ -35,7 +38,8 @@ export default function CommentReplyComponent({
         : theme.subtleText;
 
   const voteOnItem = async (voteOption: VoteOption) => {
-    const result = await vote(commentReply, voteOption);
+    const result = await runWrite("vote", () => vote(commentReply, voteOption));
+    if (result === undefined) return;
     setInboxItem({
       ...commentReply,
       upvotes: commentReply.upvotes - commentReply.userVote + result,
@@ -43,12 +47,18 @@ export default function CommentReplyComponent({
     });
   };
 
-  const toggleSeen = async () => {
-    await setInboxItemNewStatus(commentReply, !commentReply.new);
-    setInboxCount(inboxCount + (commentReply.new ? -1 : 1));
+  // Reddit can't mark notifications unread.
+  const markRead = async () => {
+    if (!commentReply.new) return;
+    const marked = await runWrite("mark as read", () =>
+      markInboxItemRead(commentReply),
+    );
+    if (!marked) return;
+    // The badge only counts the first page, so this item may not be in it.
+    setInboxCount((count) => Math.max(0, count - 1));
     setInboxItem({
       ...commentReply,
-      new: !commentReply.new,
+      new: false,
     });
   };
 
@@ -71,7 +81,7 @@ export default function CommentReplyComponent({
           name: "markAsRead",
           icon: <Feather name="mail" size={18} color={theme.subtleText} />,
           color: theme.showHide,
-          action: () => toggleSeen(),
+          action: () => markRead(),
         },
       ]}
       shortLeftName="upvote"
@@ -86,14 +96,7 @@ export default function CommentReplyComponent({
           },
         ]}
         onPress={() => {
-          if (commentReply.new) {
-            setInboxItemNewStatus(commentReply, false);
-            setInboxCount(inboxCount - 1);
-            setInboxItem({
-              ...commentReply,
-              new: false,
-            });
-          }
+          markRead();
           pushURL(commentReply.contextLink);
         }}
         onLongPress={async () => {
@@ -101,15 +104,15 @@ export default function CommentReplyComponent({
             options: [
               "Upvote",
               "Downvote",
-              ...(commentReply.new ? ["Mark as Read"] : ["Mark as Unread"]),
+              ...(commentReply.new ? ["Mark as Read"] : []),
             ],
           });
           if (result === "Upvote") {
             await voteOnItem(VoteOption.UpVote);
           } else if (result === "Downvote") {
             await voteOnItem(VoteOption.DownVote);
-          } else if (result === "Mark as Unread" || result === "Mark as Read") {
-            toggleSeen();
+          } else if (result === "Mark as Read") {
+            markRead();
           }
         }}
       >

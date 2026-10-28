@@ -9,19 +9,16 @@ import {
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
-import {
-  SearchResult,
-  SearchType,
-  SearchTypes,
-  getSearchResults,
-} from "../api/Search";
-import { Subreddit, getTrendingRandom } from "../api/Subreddits";
+import { SearchResult, SearchType, SearchTypes } from "../api/Search";
+import { Subreddit } from "../api/Subreddits";
+import { getDiscoverSubreddits, getSearchResults } from "../api/gql/Search";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import SubredditComponent from "../components/RedditDataRepresentations/Subreddit/SubredditComponent";
 import UserComponent from "../components/RedditDataRepresentations/User/UserComponent";
 import List from "../components/UI/List";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
+import { AccountContext } from "../contexts/AccountContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { useURLNavigation } from "../utils/navigation";
 import useRedditDataState from "../utils/useRedditDataState";
@@ -30,8 +27,9 @@ import { useFocusEffect } from "@react-navigation/native";
 export default function SearchPage() {
   const { theme } = useContext(ThemeContext);
   const { pushURL } = useURLNavigation();
+  const { currentUser } = useContext(AccountContext);
 
-  const [trending, setTrending] = useState<Subreddit[]>([]);
+  const [discover, setDiscover] = useState<Subreddit[]>([]);
   const search = useRef<string>("");
   const searchBarRef = useRef<TextInput | null>(null);
   const [searchType, setSearchType] = useState<SearchType>("posts");
@@ -53,34 +51,33 @@ export default function SearchPage() {
         }
         return [];
       }
-      if (after && searchType === "users") {
-        // API only allows 1 page of search for users
-        return [];
-      }
       setLoading(true);
-      const newResults = await getSearchResults(searchType, search.current, {
-        after,
-      });
-      setLoading(false);
-      return newResults;
+      try {
+        return await getSearchResults(searchType, search.current, { after });
+      } finally {
+        setLoading(false);
+      }
     },
   });
-
-  const loadTrending = async () => {
-    const newTrending = await getTrendingRandom();
-    setTrending(
-      newTrending.filter((sub) => !sub.subscribed && sub.name !== "Home"),
-    );
-  };
 
   useFocusEffect(() => {
     if (search.current) return;
     searchBarRef.current?.focus();
   });
 
+  // Recommendations are personal, so reload them for each account.
   useEffect(() => {
-    loadTrending();
-  }, []);
+    setDiscover([]);
+    if (!currentUser) return;
+    let cancelled = false;
+    getDiscoverSubreddits()
+      .then((subreddits) => !cancelled && setDiscover(subreddits))
+      // Leave the list empty; it's only suggestions.
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUser]);
 
   useEffect(() => {
     refreshSearchResults();
@@ -158,15 +155,11 @@ export default function SearchPage() {
             </View>
           ) : (
             <List
-              title="Trending Subreddits"
-              items={trending.map((sub) => ({
+              title="Discover Subreddits"
+              items={discover.map((sub) => ({
                 key: sub.id,
                 icon: (
-                  <Feather
-                    name="trending-up"
-                    size={22}
-                    color={theme.iconPrimary}
-                  />
+                  <Feather name="compass" size={22} color={theme.iconPrimary} />
                 ),
                 text: sub.name,
                 onPress: () => pushURL(sub.url),
@@ -217,11 +210,5 @@ const styles = StyleSheet.create({
   },
   loaderContainer: {
     marginTop: 20,
-  },
-  trendingContainer: {
-    flex: 1,
-    marginHorizontal: 5,
-    paddingHorizontal: 5,
-    borderRadius: 10,
   },
 });

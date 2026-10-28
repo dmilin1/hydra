@@ -2,7 +2,14 @@ import AntDesign from "@react-native-vector-icons/ant-design";
 import Feather from "@react-native-vector-icons/feather";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import Octicons from "@react-native-vector-icons/octicons";
-import React, { Dispatch, SetStateAction, useContext, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 
 import PostMedia from "./PostParts/PostMedia";
@@ -12,9 +19,10 @@ import {
   PostSummary,
   usePostSummaries,
 } from "./PostParts/Summaries";
-import { PostDetail, vote } from "../../../api/PostDetail";
+import { PostDetail } from "../../../api/PostDetail";
+import { vote } from "../../../api/gql/Vote";
 import { VoteOption } from "../../../api/Posts";
-import { saveItem } from "../../../api/Save";
+import { saveItem } from "../../../api/gql/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -26,6 +34,7 @@ import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { shareURL } from "../../../utils/sharing";
 import { textDirectionStyle } from "../../../utils/textDirection";
+import useWriteWithToast from "../../../utils/useWriteWithToast";
 
 type PostDetailsComponentProps = {
   postDetail: PostDetail;
@@ -43,16 +52,22 @@ export default function PostDetailsComponent({
   const { pushURL } = useURLNavigation();
 
   const { theme } = useContext(ThemeContext);
+  const runWrite = useWriteWithToast();
   const { setModal } = useContext(ModalContext);
   const { tapToCollapsePost } = useContext(PostSettingsContext);
 
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
+  // Split view swaps this view for another post's and a sort change reloads
+  // it, either of which the reload after a reply would undo.
+  const replyReload = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(replyReload.current), [url]);
   const { postSummary, commentsSummary } = usePostSummaries(postDetail);
 
   const contextDepth = Number(new RedditURL(url).getQueryParam("context") ?? 0);
 
   const voteOnPost = async (voteOption: VoteOption) => {
-    const result = await vote(postDetail, voteOption);
+    const result = await runWrite("vote", () => vote(postDetail, voteOption));
+    if (result === undefined) return;
     setPostDetail({
       ...postDetail,
       upvotes: postDetail.upvotes - postDetail.userVote + result,
@@ -291,7 +306,11 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={async () => {
-            await saveItem(postDetail, !postDetail.saved);
+            const saved = await runWrite(
+              postDetail.saved ? "unsave" : "save",
+              () => saveItem(postDetail, !postDetail.saved),
+            );
+            if (!saved) return;
             setPostDetail({
               ...postDetail,
               saved: !postDetail.saved,
@@ -318,7 +337,12 @@ export default function PostDetailsComponent({
             setModal(
               <NewComment
                 parent={postDetail}
-                contentSent={() => setTimeout(() => loadPostDetails(), 5_000)}
+                contentSent={() => {
+                  replyReload.current = setTimeout(
+                    () => loadPostDetails(),
+                    5_000,
+                  );
+                }}
               />,
             );
           }}

@@ -9,24 +9,34 @@ import {
 import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
-import { getRules, getSidebar, Rule, Sidebar } from "../api/SubredditDetails";
+import { Rule, Sidebar } from "../api/SubredditDetails";
+import { getRules, getSidebar } from "../api/gql/SubredditDetails";
 import { URLRoutes } from "../app/stack";
 import { useRoute } from "../utils/navigation";
 import RedditURL from "../utils/RedditURL";
 import RenderHtml from "../components/HTML/RenderHTML";
+import Numbers from "../utils/Numbers";
+import AccessFailureComponent from "../components/UI/AccessFailureComponent";
 
 export default function SidebarPage() {
   const { params } = useRoute<URLRoutes>();
   const { theme } = useContext(ThemeContext);
   const [sidebar, setSidebar] = useState<Sidebar | null>(null);
   const [rules, setRules] = useState<Rule[] | null>(null);
+  const [loadError, setLoadError] = useState<Error | null>(null);
   const [expandedRules, setExpandedRules] = useState<Set<string>>(new Set());
 
   const subreddit = new RedditURL(params.url).getSubreddit();
 
   useEffect(() => {
-    getSidebar(subreddit).then(setSidebar);
-    getRules(subreddit).then(setRules);
+    Promise.all([getSidebar(subreddit), getRules(subreddit)])
+      .then(([sidebar, rules]) => {
+        setSidebar(sidebar);
+        setRules(rules);
+      })
+      .catch((e) =>
+        setLoadError(e instanceof Error ? e : new Error(String(e))),
+      );
   }, [subreddit]);
 
   const toggleRule = (ruleName: string) => {
@@ -61,34 +71,42 @@ export default function SidebarPage() {
             ]}
           >
             {[
+              { label: "Subscribers", value: sidebar.subscribers },
+              { label: "Weekly Visitors", value: sidebar.weeklyVisitors },
               {
-                label: "Subscribers",
-                value: sidebar.subscribers.toLocaleString(),
+                label: "Weekly Contributions",
+                value: sidebar.weeklyContributions,
               },
-            ].map((stat) => (
-              <View style={styles.statItem} key={stat.label}>
-                <Text
-                  style={[
-                    styles.statLabel,
-                    {
-                      color: theme.subtleText,
-                    },
-                  ]}
-                >
-                  {stat.label}
-                </Text>
-                <Text
-                  style={[
-                    styles.statText,
-                    {
-                      color: theme.text,
-                    },
-                  ]}
-                >
-                  {stat.value}
-                </Text>
-              </View>
-            ))}
+            ]
+              .filter((stat) => stat.value !== undefined)
+              .map((stat) => ({
+                ...stat,
+                value: new Numbers(stat.value ?? 0).prettyNum(),
+              }))
+              .map((stat) => (
+                <View style={styles.statItem} key={stat.label}>
+                  <Text
+                    style={[
+                      styles.statLabel,
+                      {
+                        color: theme.subtleText,
+                      },
+                    ]}
+                  >
+                    {stat.label}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.statText,
+                      {
+                        color: theme.text,
+                      },
+                    ]}
+                  >
+                    {stat.value}
+                  </Text>
+                </View>
+              ))}
           </View>
           <View style={styles.rulesContainer}>
             <Text
@@ -148,6 +166,11 @@ export default function SidebarPage() {
             <RenderHtml html={sidebar.descriptionHTML} />
           </View>
         </ScrollView>
+      ) : loadError ? (
+        <AccessFailureComponent
+          accessFailure={loadError}
+          contentName={subreddit}
+        />
       ) : (
         <ActivityIndicator color={theme.text} />
       )}
@@ -173,12 +196,17 @@ const styles = StyleSheet.create({
   statItem: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 5,
   },
   statLabel: {
-    fontSize: 16,
+    fontSize: 13,
+    textAlign: "center",
   },
   statText: {
     fontSize: 16,
+    fontWeight: "600",
+    marginTop: 2,
   },
   rulesContainer: {
     marginBottom: 20,

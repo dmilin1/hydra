@@ -8,9 +8,9 @@ import { openExternalLink } from "../../../utils/openExternalLink";
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
-import { vote } from "../../../api/PostDetail";
+import { vote } from "../../../api/gql/Vote";
 import { Post, VoteOption } from "../../../api/Posts";
-import { saveItem } from "../../../api/Save";
+import { saveItem } from "../../../api/gql/Save";
 import { URLRoutes } from "../../../app/stack";
 import { PostInteractionProvider } from "../../../contexts/PostInteractionContext";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
@@ -32,6 +32,7 @@ import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { shareURL } from "../../../utils/sharing";
 import { textDirectionStyle } from "../../../utils/textDirection";
+import useWriteWithToast from "../../../utils/useWriteWithToast";
 
 type PostComponentProps = {
   post: Post;
@@ -49,6 +50,7 @@ export default function PostComponent({
   const { params } = useRoute<URLRoutes | "SearchPage">();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
+  const runWrite = useWriteWithToast();
   const {
     postCompactMode,
     subredditAtTop,
@@ -157,8 +159,10 @@ export default function PostComponent({
     {
       label: post.saved ? "Unsave" : "Save",
       handle: async () => {
-        await saveItem(post, !post.saved);
-        setPost({ ...post, saved: !post.saved });
+        const saved = await runWrite(post.saved ? "unsave" : "save", () =>
+          saveItem(post, !post.saved),
+        );
+        if (saved) setPost({ ...post, saved: !post.saved });
       },
     },
     {
@@ -186,7 +190,8 @@ export default function PostComponent({
   };
 
   const voteOnPost = async (voteOption: VoteOption) => {
-    const result = await vote(post, voteOption);
+    const result = await runWrite("vote", () => vote(post, voteOption));
+    if (result === undefined) return;
     setPost({
       ...post,
       upvotes: post.upvotes - post.userVote + result,

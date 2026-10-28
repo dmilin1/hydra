@@ -17,7 +17,7 @@ import { SubredditContext } from "../../contexts/SubredditContext";
 export default function SubscribeToHydra() {
   const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
-  const { subreddits, subscribe, isLoadingSubreddits } =
+  const { subreddits, isSubscribed, subscribe, isLoadingSubreddits } =
     useContext(SubredditContext);
 
   const [lastAskedAt, setLastAskedAt] = useMMKVNumber(
@@ -32,9 +32,7 @@ export default function SubscribeToHydra() {
     (lastAskedAt ?? 0) + 1000 * 60 * 60 * 24 * 365 < now &&
     !isLoadingSubreddits &&
     subreddits.subscriber.length &&
-    !subreddits.subscriber.find(
-      (sub) => sub.name.toLowerCase() === "hydraclient",
-    )
+    !isSubscribed("hydraclient")
   );
 
   const answeredModal = () => {
@@ -44,9 +42,11 @@ export default function SubscribeToHydra() {
   const subscribeToHydra = async () => {
     if (isSubcribing) return;
     setIsSubscribing(true);
-    await subscribe("hydraclient");
+    const subscribed = await subscribe("hydraclient");
     setIsSubscribing(false);
-    setLastAskedAt(Date.now());
+    if (subscribed) {
+      setLastAskedAt(Date.now());
+    }
   };
 
   return (

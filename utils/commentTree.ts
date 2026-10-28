@@ -64,18 +64,18 @@ function reindexSubtree(comment: Comment, pathLevel: number, index: number) {
   }
 }
 
+/**
+ * Appends comments loaded from parent.loadMore and replaces it with the next
+ * "more" entry (undefined once everything is loaded).
+ */
 export function mergeMoreComments(
   parent: PostDetail | Comment,
   newComments: Comment[],
-  fetchedIds: string[],
+  nextLoadMore: Comment["loadMore"],
 ) {
   const existingIds = new Set(parent.comments.map((c) => c.id));
   parent.comments.push(
     ...newComments.filter((comment) => !existingIds.has(comment.id)),
   );
-  if (parent.loadMore) {
-    parent.loadMore.childIds = parent.loadMore.childIds.filter(
-      (id) => !fetchedIds.includes(id),
-    );
-  }
+  parent.loadMore = nextLoadMore;
 }

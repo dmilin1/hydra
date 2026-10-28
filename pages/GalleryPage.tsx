@@ -1,6 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import { getPosts, Post } from "../api/Posts";
+import { Post } from "../api/Posts";
+import { getPosts } from "../api/gql/Posts";
+import { getUserContent } from "../api/gql/User";
 
 import { StackPageProps } from "../app/stack";
 import { FiltersContext } from "../contexts/SettingsContexts/FiltersContext";
@@ -30,7 +32,7 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
   const isCombinedSubredditFeed = redditURL.isCombinedSubredditFeed();
 
   const { theme } = useContext(ThemeContext);
-  const { subreddits } = useContext(SubredditContext);
+  const { subreddits, isSubscribed, isFavorite } = useContext(SubredditContext);
 
   const { filterPostsByText, filterPostsBySubreddit, getHideSeenURLStatus } =
     useContext(FiltersContext);
@@ -44,15 +46,22 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
     hitFilterLimit,
     accessFailure,
   } = useRedditDataState<Post>({
-    loadData: async (after, limit) => await getPosts(url, { after, limit }),
+    loadData: async (after) =>
+      // User galleries open on /user/<name>/submitted.
+      new RedditURL(url).getPageType() === PageType.USER
+        ? (await getUserContent(url, { after })).filter(
+            (item): item is Post => item.type === "post",
+          )
+        : await getPosts(url, { after }),
     filterRules: [
       filterNonMediaItems,
       ...(shouldFilterSeen ? [filterSeenItems] : []),
       filterPostsByText,
       ...(isCombinedSubredditFeed ? [filterPostsBySubreddit] : []),
     ],
-    limitRampUp: [10, 30, 50],
-    filterRetries: 3,
+    // Posts without media are filtered out, so text-heavy feeds need a few
+    // pages. Reddit's feed pages are small (6 posts, then 24).
+    filterRetries: 4,
     refreshDependencies: [sort, sortTime],
   });
 
@@ -69,12 +78,8 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
     } else if (pageType === PageType.SUBREDDIT) {
       contextOptions = [
         "New Post",
-        subreddits.subscriber.find((sub) => sub.name === subreddit)
-          ? "Unsubscribe"
-          : "Subscribe",
-        subreddits.favorites.find((sub) => sub.name === subreddit)
-          ? "Unfavorite"
-          : "Favorite",
+        isSubscribed(subreddit) ? "Unsubscribe" : "Subscribe",
+        isFavorite(subreddit) ? "Unfavorite" : "Favorite",
         "Add to Multireddit",
         shouldFilterSeen ? "Show Seen Posts" : "Hide Seen Posts",
         "Sidebar",
@@ -111,7 +116,11 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
     >
       <AccessFailureComponent
         accessFailure={accessFailure}
-        contentName={subreddit}
+        contentName={
+          redditURL.getPageType() === PageType.USER
+            ? redditURL.getPageName()
+            : subreddit
+        }
       >
         <GalleryComponent
           posts={posts}
@@ -128,12 +137,5 @@ const styles = StyleSheet.create({
   postsContainer: {
     flex: 1,
     justifyContent: "center",
-  },
-  accessFailureText: {
-    fontSize: 16,
-    textAlign: "center",
-    alignSelf: "center",
-    maxWidth: 320,
-    marginBottom: 150,
   },
 });

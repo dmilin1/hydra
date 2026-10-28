@@ -39,7 +39,7 @@ Some settings only appear under certain conditions.
 
 ## Known Limitations
 
-**Search** — Reddit's search finds posts, not individual comments. Deleted or removed posts won't appear in results. User search is limited to one page of results. For more, see the [Search guide](hydra://settings/guide/?doc=search).
+**Search** — Reddit's search finds posts, not individual comments. Deleted or removed posts won't appear in results. For more, see the [Search guide](hydra://settings/guide/?doc=search).
 
 **Filters** — Text filters use literal whole-word matching and can't understand context or scan images. Filters apply to home and subreddit feeds but not to search results or user profiles. For smarter filtering, use [AI Filters](hydra://settings/guide/?doc=ai_filters) (Pro).
 

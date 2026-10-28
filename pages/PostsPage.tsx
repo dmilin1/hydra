@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { getPosts, Post } from "../api/Posts";
+import { Post } from "../api/Posts";
 
 import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
@@ -24,6 +24,7 @@ import useOfferGalleryMode from "../utils/useOfferGalleryMode";
 import PostDetails from "./PostDetails";
 import SplitViewOptions from "../components/UI/SplitViewOptions";
 import { useSplitViewSupport } from "../utils/useSplitViewSupport";
+import { getPosts } from "../api/gql/Posts";
 
 export default function PostsPage({
   route,
@@ -42,7 +43,7 @@ export default function PostsPage({
   const isCombinedSubredditFeed = redditURL.isCombinedSubredditFeed();
 
   const { theme } = useContext(ThemeContext);
-  const { subreddits } = useContext(SubredditContext);
+  const { subreddits, isSubscribed, isFavorite } = useContext(SubredditContext);
 
   const {
     filterPostsByText,
@@ -70,15 +71,17 @@ export default function PostsPage({
     fullyLoaded,
     hitFilterLimit,
     accessFailure,
-  } = useRedditDataState<Post, "postLoadingError">({
-    loadData: async (after, limit) => await getPosts(url, { after, limit }),
+  } = useRedditDataState<Post>({
+    loadData: async (after) => await getPosts(url, { after }),
     filterRules: [
       ...(shouldFilterSeen ? [filterSeenItems] : []),
       filterPostsByText,
       filterPostsByAI,
       ...(isCombinedSubredditFeed ? [filterPostsBySubreddit] : []),
     ],
-    limitRampUp: [10, 20, 40, 70, 100],
+    // Reddit's feed pages are small (6 posts, then 24), so filters that remove
+    // whole pages need a few more tries to find something to show.
+    filterRetries: 8,
     refreshDependencies: [searchText, sort, sortTime],
   });
 
@@ -112,12 +115,8 @@ export default function PostsPage({
       contextOptions = [
         "Open in Gallery Mode",
         "New Post",
-        subreddits.subscriber.find((sub) => sub.name === subreddit)
-          ? "Unsubscribe"
-          : "Subscribe",
-        subreddits.favorites.find((sub) => sub.name === subreddit)
-          ? "Unfavorite"
-          : "Favorite",
+        isSubscribed(subreddit) ? "Unsubscribe" : "Subscribe",
+        isFavorite(subreddit) ? "Unfavorite" : "Favorite",
         "Add to Multireddit",
         shouldFilterSeen ? "Show Seen Posts" : "Hide Seen Posts",
         "Sidebar",
@@ -247,12 +246,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     flexDirection: "row",
-  },
-  accessFailureText: {
-    fontSize: 16,
-    textAlign: "center",
-    alignSelf: "center",
-    maxWidth: 320,
-    marginBottom: 150,
   },
 });

@@ -1,14 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-import {
-  BannedUserError,
-  User,
-  UserContent,
-  UserDoesNotExistError,
-  getUser,
-  getUserContent,
-} from "../api/User";
+import { User, UserContent } from "../api/User";
+import { getUser, getUserContent, parseUserURL } from "../api/gql/User";
 import { StackPageProps } from "../app/stack";
 import SortAndContext, {
   ContextTypes,
@@ -16,12 +10,13 @@ import SortAndContext, {
 } from "../components/Navbar/SortAndContext";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import { CommentComponent } from "../components/RedditDataRepresentations/Post/PostParts/Comments";
-import UserDetailsComponent from "../components/RedditDataRepresentations/User/UserDetailsComponent";
+import UserDetailsComponent, {
+  UserContentType,
+} from "../components/RedditDataRepresentations/User/UserDetailsComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
-import URL from "../utils/URL";
 import { useURLNavigation } from "../utils/navigation";
 import useRedditDataState from "../utils/useRedditDataState";
 import AccessFailureComponent from "../components/UI/AccessFailureComponent";
@@ -33,13 +28,15 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
 
   const navigation = useURLNavigation();
 
-  const section = new RedditURL(url).getRelativePath().split("/")[3];
+  const { userName, section, savedType } = parseUserURL(url);
 
   const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
-  const { subreddits } = useContext(SubredditContext);
+  const { subreddits, isSubscribed } = useContext(SubredditContext);
 
   const [user, setUser] = useState<User>();
+  // What the base user page shows. Reddit has no mixed posts and comments feed.
+  const [contentType, setContentType] = useState<UserContentType>("posts");
 
   const {
     data: userContent,
@@ -50,67 +47,48 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     fullyLoaded,
     hitFilterLimit,
     accessFailure,
-  } = useRedditDataState<UserContent, "userLoadingError">({
-    loadData: async (after) => await getUserContent(url, { after }),
-    refreshDependencies: [sort, sortTime],
+  } = useRedditDataState<UserContent>({
+    loadData: async (after) =>
+      await getUserContent(url, { after, type: contentType }),
+    refreshDependencies: [sort, sortTime, contentType],
   });
 
-  const urlObject = new URL(url);
-  const userSubPage = urlObject.getBasePath().split("/")[5];
-  const savedType = urlObject.getQueryParam("type");
-
-  const isDeepPath = !!userSubPage; // More than just /user/username like /user/username/comments
+  const isDeepPath = !!section;
 
   const supportsGalleryMode =
     /**
-     * Base user pages have both posts and comments, so we reroute base user pages
-     * to the /submitted page when gallery mode is requested. This happens in
+     * Base user pages can be switched to comments, so gallery mode opens the
+     * /submitted page instead, which always shows posts. This happens in
      * navigation.ts's openGallery function.
      */
-    !userSubPage ||
-    userSubPage === "submitted" ||
-    userSubPage === "upvoted" ||
-    userSubPage === "downvoted" ||
+    !section ||
+    section === "submitted" ||
+    section === "upvoted" ||
+    section === "downvoted" ||
     savedType === "links";
 
-  const loadUser = async () => {
-    const userUrl = new RedditURL(url)
-      .getRelativePath()
-      .split("/")
-      .slice(0, 3)
-      .join("/");
-    try {
-      const userData = await getUser(`https://www.reddit.com${userUrl}`, {
-        allowSuspended: currentUser?.userName === user?.userName,
-      });
-      setUser(userData);
-    } catch (e) {
-      if (e instanceof BannedUserError || e instanceof UserDoesNotExistError) {
-        // The useRedditDataState hook will also get this error and handle it for us
-        return;
-      }
-      throw e;
-    }
-  };
+  // The content list loads the same profile and shows why it failed.
+  const loadUser = () =>
+    getUser(url)
+      .then(setUser)
+      .catch(() => setUser(undefined));
 
   useEffect(() => {
     loadUser();
-  }, []);
+  }, [currentUser?.userName]);
 
   useEffect(() => {
     const contextOptions: ContextTypes[] = ["Share"];
     if (currentUser?.userName !== user?.userName) {
       contextOptions.unshift("Block");
-      const isFollowing = subreddits.subscriber.some(
-        (sub) => sub.name === `u_${user?.userName}`,
-      );
+      const isFollowing = isSubscribed(`u_${user?.userName}`);
       contextOptions.unshift(isFollowing ? "Unfollow" : "Follow", "Message");
     }
     if (supportsGalleryMode) {
       contextOptions.unshift("Open in Gallery Mode");
     }
     const sortOptions: SortTypes[] | undefined =
-      section === "submitted" || section === "comments"
+      !section || section === "submitted" || section === "comments"
         ? ["New", "Hot", "Top"]
         : undefined;
     navigation.setOptions({
@@ -139,16 +117,24 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     >
       <AccessFailureComponent
         accessFailure={accessFailure}
-        contentName={
-          new RedditURL(url).getRelativePath().split("/")[2] ?? "User"
-        }
+        contentName={userName || "User"}
       >
         <RedditDataScroller<UserContent>
           ListHeaderComponent={() =>
-            !isDeepPath && user && <UserDetailsComponent user={user} />
+            !isDeepPath &&
+            user && (
+              <UserDetailsComponent
+                user={user}
+                contentType={contentType}
+                setContentType={setContentType}
+              />
+            )
           }
           loadMore={loadMoreUserContent}
-          refresh={refreshUserContent}
+          refresh={() => {
+            if (!user) loadUser();
+            return refreshUserContent();
+          }}
           fullyLoaded={fullyLoaded}
           hitFilterLimit={hitFilterLimit}
           data={userContent}

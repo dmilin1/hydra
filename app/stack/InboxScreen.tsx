@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { Alert, View } from "react-native";
 
 import { StackParamsList } from "./index";
-import { markAllInboxItemsRead } from "../../api/Inbox";
+import { markAllInboxItemsRead } from "../../api/gql/Inbox";
 import IconButton from "../../components/Navbar/IconButton";
 import { InboxContext } from "../../contexts/InboxContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -22,18 +22,15 @@ type InboxScreenProps = {
 
 export default function InboxScreen({ StackNavigator }: InboxScreenProps) {
   const { theme } = useContext(ThemeContext);
-  const { checkForInboxItems } = useContext(InboxContext);
+  const { markedAllRead } = useContext(InboxContext);
   const { showToast } = useContext(ToastContext);
   const { currentUser } = useContext(AccountContext);
 
   const markAllItemsRead = async () => {
     try {
       await markAllInboxItemsRead();
-      showToast({
-        title: "Marking all items as read",
-        body: "This may take a moment to update...",
-      });
-      setTimeout(() => checkForInboxItems(), 1000);
+      markedAllRead();
+      showToast({ title: "Marked all items as read" });
     } catch (_e) {
       Alert.alert("Error", "Failed to mark all items as read.");
     }

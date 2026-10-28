@@ -9,7 +9,7 @@ Gallery Mode transforms your feed into a media-focused grid, filtering out text-
 
 ## Opening Gallery Mode
 
-To open Gallery Mode, tap the **"..."** menu button in the top-right corner and select **"Open in Gallery Mode"**. This option is available on subreddit pages, the home feed, and multireddit pages.
+To open Gallery Mode, tap the **"..."** menu button in the top-right corner and select **"Open in Gallery Mode"**. This option is available on subreddit pages, the home feed, multireddit pages, and user profiles.
 
 Hydra may also suggest Gallery Mode automatically if it detects that a feed is mostly images and videos.
 

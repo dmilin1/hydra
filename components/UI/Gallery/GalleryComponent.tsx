@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -67,23 +67,29 @@ export default function GalleryComponent({
   );
   getCurrentPostRef.current = (rowIndex: number) => posts[rowIndex];
 
-  const galleryMedia: GalleryItem[] = posts.flatMap((post) => {
-    if (post.videos.length > 0) {
-      return post.videos.map((video) => ({
-        type: "video",
-        source: video,
-        mediaAspectRatio: post.mediaAspectRatio,
-      }));
-    } else if (post.images.length > 0) {
-      return post.images.map((image) => ({
-        type: "image",
-        source: image,
-        mediaAspectRatio: post.mediaAspectRatio,
-      }));
-    } else {
-      return [] as GalleryItem[];
-    }
-  });
+  // A new array on every render would make FlashList ask for more again
+  // after each load, retrying failed loads forever.
+  const galleryMedia = useMemo(
+    () =>
+      posts.flatMap((post): GalleryItem[] => {
+        if (post.videos.length > 0) {
+          return post.videos.map((video) => ({
+            type: "video",
+            source: video,
+            mediaAspectRatio: post.mediaAspectRatio,
+          }));
+        } else if (post.images.length > 0) {
+          return post.images.map((image) => ({
+            type: "image",
+            source: image,
+            mediaAspectRatio: post.mediaAspectRatio,
+          }));
+        } else {
+          return [];
+        }
+      }),
+    [posts],
+  );
 
   const viewerMedia = posts.map((post) => {
     if (post.videos.length > 0) {

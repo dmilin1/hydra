@@ -10,8 +10,10 @@ import React, { useContext, useRef } from "react";
 import { StyleSheet, View, Alert, findNodeHandle } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
-import { deleteUserContent, PostDetail } from "../../api/PostDetail";
-import { blockUser, User } from "../../api/User";
+import { PostDetail } from "../../api/PostDetail";
+import { deleteUserContent } from "../../api/gql/UserContent";
+import { User } from "../../api/User";
+import { blockUser } from "../../api/gql/User";
 import { StackParamsList, URLRoutes } from "../../app/stack";
 import {
   makeCommentSubredditSortKey,
@@ -38,6 +40,7 @@ import { FiltersContext } from "../../contexts/SettingsContexts/FiltersContext";
 import { shareURL } from "../../utils/sharing";
 import ShareAsImage from "../Modals/ShareAsImage/ShareAsImage";
 import { ToastContext } from "../../contexts/ToastContext";
+import useWriteWithToast from "../../utils/useWriteWithToast";
 
 export type SortTypes =
   | "Best"
@@ -90,9 +93,17 @@ export default function SortAndContext({
   pageData,
 }: SortAndContextProps) {
   const { theme } = useContext(ThemeContext);
+  const runWrite = useWriteWithToast();
   const { setModal } = useContext(ModalContext);
-  const { subscribe, unsubscribe, toggleFavorite, multis, addSubToMulti } =
-    useContext(SubredditContext);
+  const {
+    subscribe,
+    unsubscribe,
+    follow,
+    unfollow,
+    toggleFavorite,
+    multis,
+    addSubToMulti,
+  } = useContext(SubredditContext);
   const { toggleHideSeenURL } = useContext(FiltersContext);
   const { showToast } = useContext(ToastContext);
 
@@ -311,9 +322,9 @@ export default function SortAndContext({
             } else if (result === "Unsubscribe") {
               unsubscribe(new RedditURL(currentPath).getSubreddit());
             } else if (result === "Follow" && pageData?.type === "user") {
-              subscribe(`u_${pageData.userName}`);
+              follow(pageData);
             } else if (result === "Unfollow" && pageData?.type === "user") {
-              unsubscribe(`u_${pageData.userName}`);
+              unfollow(pageData);
             } else if (result === "Favorite" || result === "Unfavorite") {
               toggleFavorite(new RedditURL(currentPath).getSubreddit());
             } else if (result === "Add to Multireddit") {
@@ -347,8 +358,11 @@ export default function SortAndContext({
                   body: "The post has been deleted successfully",
                 });
                 navigation.goBack();
-              } catch (_e) {
-                alert("Failed to delete post");
+              } catch (e) {
+                Alert.alert(
+                  "Failed to delete post",
+                  e instanceof Error ? e.message : undefined,
+                );
               }
             } else if (result === "Message" && pageData?.type === "user") {
               pushURL(`https://www.reddit.com/chat/user/${pageData.id}`);
@@ -364,7 +378,10 @@ export default function SortAndContext({
                   {
                     text: "Block",
                     onPress: async () => {
-                      await blockUser(pageData);
+                      const blocked = await runWrite("block user", () =>
+                        blockUser(pageData),
+                      );
+                      if (!blocked) return;
                       Alert.alert(
                         "User Blocked",
                         "Content from this user will be hidden",

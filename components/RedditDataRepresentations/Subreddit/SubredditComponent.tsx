@@ -6,6 +6,7 @@ import { StyleSheet, View, Text } from "react-native";
 
 import { Subreddit } from "../../../api/Subreddits";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
+import { SubredditContext } from "../../../contexts/SubredditContext";
 import Numbers from "../../../utils/Numbers";
 import { useURLNavigation } from "../../../utils/navigation";
 import { Touchable } from "react-native-gesture-handler";
@@ -17,6 +18,10 @@ export default function SubredditComponent({
 }) {
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
+  const { isSubscribed } = useContext(SubredditContext);
+
+  // Search results don't say whether the user is subscribed.
+  const subscribed = isSubscribed(subreddit.name);
 
   return (
     <View>
@@ -83,19 +88,23 @@ export default function SubredditComponent({
                   },
                 ]}
               >
-                {subreddit.subscribed ? "Joined" : "Not Subscribed"}
+                {subscribed ? "Joined" : "Not Subscribed"}
               </Text>
-              <Feather name="clock" size={18} color={theme.subtleText} />
-              <Text
-                style={[
-                  styles.metadataText,
-                  {
-                    color: theme.subtleText,
-                  },
-                ]}
-              >
-                {subreddit.timeSinceCreation}
-              </Text>
+              {subreddit.weeklyVisitors !== undefined && (
+                <>
+                  <Feather name="eye" size={18} color={theme.subtleText} />
+                  <Text
+                    style={[
+                      styles.metadataText,
+                      {
+                        color: theme.subtleText,
+                      },
+                    ]}
+                  >
+                    {new Numbers(subreddit.weeklyVisitors).prettyNum()} weekly
+                  </Text>
+                </>
+              )}
             </View>
           </View>
           <View style={styles.footerRight} />

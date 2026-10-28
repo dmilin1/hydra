@@ -5,7 +5,7 @@ description: How to create and login to Reddit accounts, account management
 
 # Accounts and Login
 
-Hydra allows you to manage multiple Reddit accounts and easily switch between them. You can browse Reddit without an account, but logging in unlocks the ability to vote, comment, post, and access your personalized content.
+Hydra allows you to manage multiple Reddit accounts and easily switch between them. Reddit no longer lets apps load content without an account, so you need to log in to browse.
 
 When you are logged out, the center tab will display as an "Accounts" tab. When you are logged in, the center tab will display your username and take you to your user profile page.
 
@@ -51,23 +51,15 @@ Once you've added at least one account, you can also **long press the center acc
 2. Tap **"Accounts"** in the top left corner
 3. Swipe left on the account you want to remove and tap the **delete** icon or long press the account and select **"Delete"**
 
-### Using Reddit logged out
+### Logging out
 
 1. Go to your user profile tab
 2. Tap **"Accounts"** in the top left corner
 3. Tap **"Logged Out"**
-4. You will now be in logged out mode
 
 ## Browsing Without an Account
 
-You can use Hydra without logging in to:
-
-- Browse public subreddits
-- View posts and comments
-- Search Reddit
-- Read content
-
-However, you won't be able to interact with content (vote, comment, post) or access personalized features.
+Reddit no longer lets apps load content without an account, so Hydra needs you to be logged in to browse subreddits, view posts and comments, or search. While logged out, pages show a prompt to log in instead.
 
 ## Troubleshooting Login Issues
 

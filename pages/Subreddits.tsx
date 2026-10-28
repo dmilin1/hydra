@@ -17,7 +17,7 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
 import { useURLNavigation } from "../utils/navigation";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
-import { Subreddit } from "../api/Subreddits";
+import { SubredditListItem } from "../api/Subreddits";
 import { Multi } from "../api/Multireddit";
 
 export const SHOW_POPULAR_BUTTON_STORAGE_KEY = "showSubredditsPopularButton";
@@ -39,7 +39,7 @@ type SectionDividerItem = {
 
 type SubredditItem = {
   type: "subreddit";
-  subreddit: Subreddit;
+  subreddit: SubredditListItem;
   category: string;
 };
 
@@ -334,26 +334,12 @@ export default function Subreddits() {
     );
   }
 
-  if (subreddits["trending"].length > 0) {
-    scrollItems.push({
-      type: "sectionDivider",
-      title: "trending",
-    });
-    scrollItems.push(
-      ...subreddits["trending"].map((sub) => ({
-        type: "subreddit" as const,
-        subreddit: sub,
-        category: "trending",
-      })),
-    );
-  }
-
   const letterMap = "abcdefghijklmnopqrstuvwxyz".split("").reduce(
     (acc, letter) => {
       acc[letter] = scrollItems.findIndex(
         (item) =>
           item.type === "subreddit" &&
-          ["subscriber", "trending"].includes(item.category) &&
+          item.category === "subscriber" &&
           item.subreddit.name.charAt(0).toLowerCase() === letter,
       );
       return acc;

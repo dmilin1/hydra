@@ -78,7 +78,7 @@ export default function MultiredditLink({ multi }: { multi: Multi }) {
                   options: ["Delete From Multireddit", "Share"],
                 });
                 if (result === "Delete From Multireddit") {
-                  deleteSubFromMulti(multi, subreddit.name);
+                  deleteSubFromMulti(multi, subreddit);
                 }
                 if (result === "Share") {
                   shareURL(subreddit.url);

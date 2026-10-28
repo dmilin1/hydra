@@ -4,13 +4,13 @@ import { Image } from "expo-image";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
-import { Comment, PostDetail } from "../../../../../api/PostDetail";
+import { Comment } from "../../../../../api/PostDetail";
 import { VoteOption } from "../../../../../api/Posts";
 import { Theme } from "../../../../../constants/Themes";
 import Time from "../../../../../utils/Time";
 
 type CommentTopBarProps = {
-  comment: PostDetail | Comment;
+  comment: Comment;
   theme: Theme;
   showFlair: boolean;
   bodyHidden: boolean;
