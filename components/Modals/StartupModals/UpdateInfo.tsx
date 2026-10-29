@@ -14,79 +14,114 @@ import { StackActions } from "@react-navigation/native";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v4.3.0",
+  updateKey: "v4.4.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Mute Videos by Default",
+      title: "New Data Loading System",
       description:
-        "Pressing a volume button or the unmute button in the media viewer will unmute videos for the rest of the session. Videos will be muted again when you leave the app. You can disable this in Settings => Appearance => Posts => Mute Videos by Default.",
+        "Hydra loads data in a new way, enabling me to build out new features that wern't previously possible. It also fixes some issues like r/all and search breaking. This only works with an account, so you'll need to be logged in to browse. Most of Hydra had to be rewritten for this, so please report anything that seems off.",
     },
     {
-      title: "Chat",
+      title: "Login Buttons",
       description:
-        'Open Chat by pressing the chat icon in the top right corner of the Inbox tab. When viewing a user\'s profile, press the "Message" button in the ... menu to open a chat with the user.',
+        "When you're logged out, pages now show buttons to log in or create an account.",
     },
     {
-      title: "Smarter Trending Subreddits",
+      title: "Vote Buttons in Feeds",
       description:
-        "The algorithm for loading trending subreddits in the Search tab has been improved to give more relevant results.",
+        "Add upvote and downvote buttons to posts in your feeds. Enable this in Settings => Appearance => Posts => Show Vote Buttons in Feed. Tapping a post's vote buttons now also gives haptic feedback.",
     },
     {
-      title: "Hide Next Comment Button",
+      title: "Comment Count on Posts",
       description:
-        "The next comment button in the comment view can be hidden in Settings => Appearance => Comments => Show Scroll to Next Button.",
+        "A post's comment count now shows next to its score when you open it.",
     },
     {
-      title: "Hide Popular & All",
+      title: "Right to Left Languages",
       description:
-        "The Popular and All buttons in the subreddit list can be hidden in Settings => Appearance => Subreddits => Show Popular / Show All.",
+        "Posts, titles, and comments in languages like Hebrew, Arabic, and Persian are now right aligned and laid out right to left.",
     },
     {
-      title: "Disable Inbox Replies",
+      title: "Discover Subreddits",
       description:
-        'When making a post, you\'ll now see a new "Send replies to my inbox" option. When disabled, you will no longer receive replies to that post in your inbox.',
+        "The trending subreddits list in the Search tab has been replaced with Reddit's subreddit recommendations, including ones picked for your account.",
     },
     {
-      title: "Media Viewer Performance",
+      title: "Profile Posts & Comments",
       description:
-        "The media viewer has been optimized to reduce render cycles. Changing device orientation should no longer show a temporary blank screen.",
+        "User profiles now have a toggle to switch between posts and comments, and can be sorted by New, Hot, or Top.",
     },
     {
-      title: "Deep Linking for Android",
+      title: "Subreddit Activity",
       description:
-        "On Android, Hydra can automatically open when you click links to Reddit's website. Go to Settings => General => Open in Hydra to enable this.",
+        "The sidebar now shows a subreddit's weekly visitors and weekly contributions next to its subscriber count. Subreddit search results show weekly visitors too.",
+    },
+    {
+      title: "Endless User Search",
+      description:
+        "User search results now keep loading as you scroll instead of stopping after the first page.",
+    },
+    {
+      title: "Clearer Errors",
+      description:
+        "If a vote, save, subscribe, or similar action fails, Hydra now tells you why instead of failing silently. Failed comments and edits also show the reason Reddit gave.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description:
-        "The login page could sometimes freeze or report a browser error, causing login to fail.",
+      description: "Image posts would fail to upload.",
     },
     {
       description:
-        "The audio track on videos could stutter after rotating the device.",
+        "Opening Hydra without an internet connection would log you out.",
     },
     {
       description:
-        "Pan gestures on zoomed in images would sometimes be counted as a tap by the media viewer overlay.",
+        "A failed login would show two different alerts and could leave Hydra using your previous account while showing you as logged out.",
     },
     {
       description:
-        "Text bodies in NSFW or spoiler posts would sometimes not be blurred correctly.",
+        "Quickly switching between accounts could break the saved login for one of them.",
     },
     {
       description:
-        "In certain cases, Hydra would fail to indicate when a user is banned.",
+        "Posts that failed to load would show a loading spinner forever.",
     },
     {
       description:
-        "Certain gestures would cause Hydra to crash after backgrounding the app.",
+        "Feeds, searches, and sidebars that failed to load could leave a loading spinner stuck on screen.",
+    },
+    {
+      description:
+        "Loading more comments would get stuck if the request failed.",
+    },
+    {
+      description:
+        "In split view, selecting a post while another one was still loading could show the wrong post.",
+    },
+    {
+      description:
+        "Changing the sort while posts were loading could show posts from the previous sort.",
+    },
+    {
+      description:
+        "Votes and saves made while more posts were loading could appear to be undone.",
+    },
+    {
+      description:
+        "The filter limit message could get stuck after refreshing, stopping more posts from loading.",
+    },
+    {
+      description:
+        "Subreddits opened from a link with different capitalization, like r/askreddit, would show Subscribe instead of Unsubscribe and couldn't be favorited.",
     },
   ] as { description: string }[],
-  notes: [] as string[],
+  notes: [
+    "iPhone Duo support is coming soon! You can expect it in the next update.",
+  ] as string[],
 };
 
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
@@ -295,42 +330,46 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               ))}
             </View>
           </View>
-          <TextWithRepairedHeight
-            style={[
-              styles.heading,
-              {
-                color: theme.text,
-              },
-            ]}
-          >
-            📝 Notes
-          </TextWithRepairedHeight>
-          <View style={styles.listContainer}>
-            <View
-              style={[
-                styles.featureContainer,
-                {
-                  backgroundColor: theme.background,
-                  borderColor: theme.divider,
-                  gap: 12,
-                },
-              ]}
-            >
-              {updateInfo.notes.map((note) => (
-                <TextWithRepairedHeight
-                  key={note}
+          {updateInfo.notes.length > 0 && (
+            <>
+              <TextWithRepairedHeight
+                style={[
+                  styles.heading,
+                  {
+                    color: theme.text,
+                  },
+                ]}
+              >
+                📝 Notes
+              </TextWithRepairedHeight>
+              <View style={styles.listContainer}>
+                <View
                   style={[
-                    styles.bugfixDescription,
+                    styles.featureContainer,
                     {
-                      color: theme.text,
+                      backgroundColor: theme.background,
+                      borderColor: theme.divider,
+                      gap: 12,
                     },
                   ]}
                 >
-                  {note}
-                </TextWithRepairedHeight>
-              ))}
-            </View>
-          </View>
+                  {updateInfo.notes.map((note) => (
+                    <TextWithRepairedHeight
+                      key={note}
+                      style={[
+                        styles.bugfixDescription,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
+                    >
+                      {note}
+                    </TextWithRepairedHeight>
+                  ))}
+                </View>
+              </View>
+            </>
+          )}
           <View style={styles.helpContainer}>
             <View style={styles.helpIcon}>
               <Image
