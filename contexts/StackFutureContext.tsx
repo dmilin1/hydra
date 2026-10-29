@@ -62,7 +62,8 @@ export function StackFutureProvider({
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
       "change",
-      (event) => (windowWidth.current = event.window.width),
+      // We shouldn't have to type this as any. For some reason, the React Native library removed the types for this event
+      (event: any) => (windowWidth.current = event.window.width),
     );
     return () => subscription.remove();
   }, []);

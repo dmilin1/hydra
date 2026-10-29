@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollViewInstance, ViewInstance } from "react-native";
 
 import { Comment, PostDetail } from "../../api/PostDetail";
 import { CommentsHandle } from "../../components/RedditDataRepresentations/Post/PostParts/Comments";
@@ -49,7 +49,7 @@ type MeasureInWindowFunc = (
 
 // React Native's ScrollView type doesn't declare the measure methods even
 // though the instance has them at runtime.
-type MeasurableScrollView = ScrollView & {
+type MeasurableScrollView = ScrollViewInstance & {
   measure: MeasureFunc;
   measureInWindow: MeasureInWindowFunc;
 };
@@ -63,7 +63,7 @@ export default function useCommentScrolling(
   );
 
   const scrollView = useRef<MeasurableScrollView>(null);
-  const topOfScroll = useRef<View>(null);
+  const topOfScroll = useRef<ViewInstance>(null);
   const commentsHandle = useRef<CommentsHandle>(null);
 
   /**

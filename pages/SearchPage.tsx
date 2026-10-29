@@ -5,7 +5,7 @@ import {
   View,
   Text,
   ActivityIndicator,
-  TextInput,
+  TextInputInstance,
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
@@ -31,7 +31,7 @@ export default function SearchPage() {
 
   const [discover, setDiscover] = useState<Subreddit[]>([]);
   const search = useRef<string>("");
-  const searchBarRef = useRef<TextInput | null>(null);
+  const searchBarRef = useRef<TextInputInstance | null>(null);
   const [searchType, setSearchType] = useState<SearchType>("posts");
   const [loading, setLoading] = useState(false);
 

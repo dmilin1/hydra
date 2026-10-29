@@ -1,7 +1,7 @@
 import Feather from "@react-native-vector-icons/feather";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import { forwardRef, useContext, useRef, useState } from "react";
-import { View, StyleSheet, TextInput } from "react-native";
+import { View, StyleSheet, TextInput, TextInputInstance } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
@@ -15,103 +15,105 @@ type SearchBarProps = {
   autoCorrect?: boolean;
 };
 
-const SearchBar = forwardRef<TextInput, SearchBarProps>(function SearchBar(
-  {
-    initialSearch,
-    clearOnSearch,
-    onSearch,
-    searchOnBlur = true,
-    placeholder,
-    autoCorrect = false,
-  },
-  ref,
-) {
-  const { theme } = useContext(ThemeContext);
-  const search = useRef<string>("");
-  const prevSearch = useRef<string>("");
-  const textInputRef = useRef<TextInput | null>(null);
-  const [showX, setShowX] = useState(!!initialSearch);
+const SearchBar = forwardRef<TextInputInstance, SearchBarProps>(
+  function SearchBar(
+    {
+      initialSearch,
+      clearOnSearch,
+      onSearch,
+      searchOnBlur = true,
+      placeholder,
+      autoCorrect = false,
+    },
+    ref,
+  ) {
+    const { theme } = useContext(ThemeContext);
+    const search = useRef<string>("");
+    const prevSearch = useRef<string>("");
+    const textInputRef = useRef<TextInputInstance | null>(null);
+    const [showX, setShowX] = useState(!!initialSearch);
 
-  const doSearch = () => {
-    if (search.current !== prevSearch.current) {
-      onSearch(search.current);
-      prevSearch.current = search.current;
-    }
-    if (clearOnSearch) {
-      search.current = "";
-      textInputRef.current?.clear();
-      setShowX(false);
-      prevSearch.current = "";
-    }
-  };
+    const doSearch = () => {
+      if (search.current !== prevSearch.current) {
+        onSearch(search.current);
+        prevSearch.current = search.current;
+      }
+      if (clearOnSearch) {
+        search.current = "";
+        textInputRef.current?.clear();
+        setShowX(false);
+        prevSearch.current = "";
+      }
+    };
 
-  return (
-    <View
-      style={[
-        styles.searchBarContainer,
-        {
-          backgroundColor: theme.tint,
-        },
-      ]}
-    >
-      <Feather
-        name="search"
-        size={18}
-        color={theme.text}
-        style={styles.searchBarIcon}
-      />
-      <TextInput
-        defaultValue={initialSearch}
-        ref={(node) => {
-          textInputRef.current = node;
-          if (typeof ref === "function") {
-            ref(node);
-          } else if (ref) {
-            ref.current = node;
-          }
-        }}
+    return (
+      <View
         style={[
-          styles.searchBar,
+          styles.searchBarContainer,
           {
-            color: theme.text,
+            backgroundColor: theme.tint,
           },
         ]}
-        returnKeyType="search"
-        onChangeText={(text) => {
-          search.current = text;
-          setShowX(!!text);
-        }}
-        onSubmitEditing={() => doSearch()}
-        onBlur={() => {
-          if (!searchOnBlur) return;
-          doSearch();
-        }}
-        placeholder={placeholder}
-        autoCorrect={autoCorrect}
-      />
-      {showX && (
-        <Touchable
-          onPress={() => {
-            search.current = "";
-            textInputRef.current?.clear();
-            setShowX(false);
+      >
+        <Feather
+          name="search"
+          size={18}
+          color={theme.text}
+          style={styles.searchBarIcon}
+        />
+        <TextInput
+          defaultValue={initialSearch}
+          ref={(node) => {
+            textInputRef.current = node;
+            if (typeof ref === "function") {
+              ref(node);
+            } else if (ref) {
+              ref.current = node;
+            }
+          }}
+          style={[
+            styles.searchBar,
+            {
+              color: theme.text,
+            },
+          ]}
+          returnKeyType="search"
+          onChangeText={(text) => {
+            search.current = text;
+            setShowX(!!text);
+          }}
+          onSubmitEditing={() => doSearch()}
+          onBlur={() => {
+            if (!searchOnBlur) return;
             doSearch();
           }}
-          activeOpacity={0.2}
-          animationDuration={{ in: 0, out: 150 }}
-          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
-        >
-          <FontAwesome6
-            name="circle-xmark"
-            size={18}
-            color={theme.text}
-            style={styles.xIcon}
-          />
-        </Touchable>
-      )}
-    </View>
-  );
-});
+          placeholder={placeholder}
+          autoCorrect={autoCorrect}
+        />
+        {showX && (
+          <Touchable
+            onPress={() => {
+              search.current = "";
+              textInputRef.current?.clear();
+              setShowX(false);
+              doSearch();
+            }}
+            activeOpacity={0.2}
+            animationDuration={{ in: 0, out: 150 }}
+            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+          >
+            <FontAwesome6
+              name="circle-xmark"
+              size={18}
+              color={theme.text}
+              style={styles.xIcon}
+            />
+          </Touchable>
+        )}
+      </View>
+    );
+  },
+);
 
 export default SearchBar;
 

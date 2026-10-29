@@ -16,7 +16,8 @@ export function useSplitViewSupport() {
   const splitViewEnabled = storedSplitViewEnabled ?? deviceSupportsSplitView;
 
   useEffect(() => {
-    const subscription = Dimensions.addEventListener("change", (event) => {
+    // We shouldn't have to type this as any. For some reason, the React Native library removed the types for this event
+    const subscription = Dimensions.addEventListener("change", (event: any) => {
       const newWindowSupportsSplitView = event.window.width >= MIN_WIDTH;
       if (newWindowSupportsSplitView !== windowSupportsSplitView) {
         setWindowSupportsSplitView(newWindowSupportsSplitView);

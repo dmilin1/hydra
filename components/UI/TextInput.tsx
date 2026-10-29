@@ -2,6 +2,7 @@ import { useContext, useRef } from "react";
 import {
   TextInputProps as RNTextInputProps,
   TextInput as RNTextInput,
+  TextInputInstance,
 } from "react-native";
 
 import { KeyboardAvoidingScrollerContext } from "./KeyboardAvoidingScroller";
@@ -9,7 +10,7 @@ import { KeyboardAvoidingScrollerContext } from "./KeyboardAvoidingScroller";
 type TextInputProps = RNTextInputProps;
 
 export default function TextInput(props: TextInputProps) {
-  const textInputRef = useRef<RNTextInput>(null);
+  const textInputRef = useRef<TextInputInstance>(null);
   const { setCurrentInput } = useContext(KeyboardAvoidingScrollerContext);
 
   return (

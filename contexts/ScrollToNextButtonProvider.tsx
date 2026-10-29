@@ -253,6 +253,7 @@ export default function ScrollToNextButtonProvider({
           },
         ]}
         onLayout={(event) => {
+          if (typeof event.target !== "object") return;
           event.target.measure((_x, _y, width, height, pageX, pageY) => {
             setContainerVerticalOffset(pageY);
             setContainerHorizontalOffset(pageX);

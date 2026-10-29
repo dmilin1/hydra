@@ -34,7 +34,11 @@ import { MediaViewerContext } from "../../contexts/MediaViewerContext";
 import { getTextDirection, TextDirection } from "../../utils/textDirection";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
-type InheritedStyles = ViewStyle & TextStyle;
+// RN 0.88 style types are readonly; these styles are built up by mutation.
+type MutableStyles = {
+  -readonly [K in keyof (ViewStyle & TextStyle)]: (ViewStyle & TextStyle)[K];
+};
+type InheritedStyles = MutableStyles;
 
 /**
  * Large documents can exceed 1,000 nodes, so the tree is built by plain
@@ -305,7 +309,7 @@ function renderElement(
   const { theme } = ctx;
 
   let Wrapper = View as React.ElementType;
-  const wrapperStyles: ViewStyle & TextStyle = {};
+  const wrapperStyles: MutableStyles = {};
 
   if (DIRECTIONAL_BLOCK_ELEMENTS.has(element.name) || element.attribs.header) {
     const direction = getNodeDirection(element);

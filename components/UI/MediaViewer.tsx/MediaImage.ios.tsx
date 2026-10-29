@@ -1,6 +1,6 @@
 import { Image, ImageSource } from "expo-image";
 import { useRef, useState, useContext, useLayoutEffect } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, ScrollViewInstance } from "react-native";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { PostSettingsContext } from "../../../contexts/SettingsContexts/PostSettingsContext";
 
@@ -19,7 +19,7 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
 
   const { width, height } = useSafeAreaFrame();
 
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
   const previousTouchStart = useRef<{
     x: number;
     y: number;
@@ -109,6 +109,7 @@ export function MediaImage({ item, setIsScrollLocked }: MediaImageProps) {
       }}
       onScroll={(event) => {
         const { zoomScale } = event.nativeEvent;
+        if (!zoomScale) return;
         const newIsZoomed = zoomScale > 1;
         if (newIsZoomed !== isZoomed) {
           setIsZoomed(newIsZoomed);

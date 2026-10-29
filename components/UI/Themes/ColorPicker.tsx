@@ -140,7 +140,7 @@ export default function ColorPicker({
                       backgroundColor: baseTheme.background,
                     },
                   ]}
-                  value={hexInput.toString()}
+                  value={hexInput?.toString() ?? ""}
                   onChangeText={handleHexInputChange}
                   placeholder="#000000"
                   placeholderTextColor={baseTheme.verySubtleText}

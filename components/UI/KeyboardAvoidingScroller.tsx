@@ -4,16 +4,17 @@ import {
   Keyboard,
   Platform,
   ScrollView,
+  ScrollViewInstance,
   ScrollViewProps,
-  TextInput,
+  TextInputInstance,
 } from "react-native";
 
 type KeyboardAvoidingScrollerProps = ScrollViewProps;
 
 type KeyboardAvoidingScrollerContextType = {
-  scrollViewRef: React.RefObject<ScrollView | null>;
-  currentInput: TextInput | null;
-  setCurrentInput: (input: TextInput) => void;
+  scrollViewRef: React.RefObject<ScrollViewInstance | null>;
+  currentInput: TextInputInstance | null;
+  setCurrentInput: (input: TextInputInstance) => void;
 };
 
 const measureAsync = (elem: any) => {
@@ -52,8 +53,10 @@ const SCROLL_OFFSET = 100;
 export default function KeyboardAvoidingScroller(
   props: KeyboardAvoidingScrollerProps,
 ) {
-  const scrollViewRef = useRef<ScrollView>(null);
-  const [currentInput, setCurrentInput] = useState<TextInput | null>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
+  const [currentInput, setCurrentInput] = useState<TextInputInstance | null>(
+    null,
+  );
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const focusInput = async () => {
