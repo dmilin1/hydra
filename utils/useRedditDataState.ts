@@ -197,6 +197,19 @@ export default function useRedditDataState<T extends RedditDataObject>({
     });
   };
 
+  const updateData = (
+    target: Pick<T, "id" | "type">,
+    update: (current: T) => T,
+  ) => {
+    setData((data) =>
+      data.map((item) =>
+        item.id === target.id && item.type === target.type
+          ? update(item)
+          : item,
+      ),
+    );
+  };
+
   const deleteData = (deletedData?: T[]) => {
     if (!deletedData) {
       setData([]);
@@ -243,6 +256,7 @@ export default function useRedditDataState<T extends RedditDataObject>({
     loadMoreData,
     refreshData,
     modifyData,
+    updateData,
     deleteData,
     fullyLoaded,
     hitFilterLimit,

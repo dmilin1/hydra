@@ -10,8 +10,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { ToastContext } from "../../../contexts/ToastContext";
 import { View, Text, StyleSheet, Alert } from "react-native";
-
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
 import {
@@ -21,6 +21,11 @@ import {
 } from "./PostParts/Summaries";
 import { PostDetail } from "../../../api/PostDetail";
 import { vote } from "../../../api/gql/Vote";
+import {
+  adjustedScore,
+  createOptimisticVoteController,
+  type VoteValue,
+} from "../../../utils/optimisticVote";
 import { VoteOption } from "../../../api/Posts";
 import { saveItem } from "../../../api/gql/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
@@ -32,9 +37,19 @@ import NewComment from "../../Modals/NewComment";
 import Time from "../../../utils/Time";
 import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import { shareURL } from "../../../utils/sharing";
 import { textDirectionStyle } from "../../../utils/textDirection";
 import useWriteWithToast from "../../../utils/useWriteWithToast";
+
+const AnimatedTouchable = Animated.createAnimatedComponent(Touchable);
 
 type PostDetailsComponentProps = {
   postDetail: PostDetail;
@@ -56,23 +71,148 @@ export default function PostDetailsComponent({
   const { setModal } = useContext(ModalContext);
   const { tapToCollapsePost } = useContext(PostSettingsContext);
 
+  const [optimisticVote, setOptimisticVote] = useState<{
+    postId: string;
+    vote: VoteValue;
+  } | null>(null);
+
+  const displayedVote =
+    optimisticVote?.postId === postDetail.id
+      ? optimisticVote.vote
+      : (postDetail.userVote as VoteValue);
+
+  const displayedScore = adjustedScore(
+    postDetail.upvotes,
+    postDetail.userVote as VoteValue,
+    displayedVote,
+  );
+
+  const currentVoteColor =
+    displayedVote === VoteOption.UpVote
+      ? theme.upvote
+      : displayedVote === VoteOption.DownVote
+        ? theme.downvote
+        : theme.subtleText;
+
   const [mediaCollapsed, setMediaCollapsed] = useState(false);
+
+  const upvoteScale = useSharedValue(1);
+  const downvoteScale = useSharedValue(1);
+
+  const upvoteAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: upvoteScale.value }],
+  }));
+
+  const downvoteAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: downvoteScale.value }],
+  }));
+
+  const animateVote = (voteOption: VoteOption) => {
+    const scale =
+      voteOption === VoteOption.UpVote ? upvoteScale : downvoteScale;
+
+    cancelAnimation(scale);
+    scale.value = 1;
+
+    scale.value = withSequence(
+      withTiming(1.2, { duration: 75 }),
+      withSpring(1, {
+        stiffness: 500,
+        damping: 23,
+        mass: 0.7,
+        overshootClamping: false,
+      }),
+    );
+  };
+
   // Split view swaps this view for another post's and a sort change reloads
   // it, either of which the reload after a reply would undo.
   const replyReload = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(replyReload.current), [url]);
+
   const { postSummary, commentsSummary } = usePostSummaries(postDetail);
 
   const contextDepth = Number(new RedditURL(url).getQueryParam("context") ?? 0);
 
-  const voteOnPost = async (voteOption: VoteOption) => {
-    const result = await runWrite("vote", () => vote(postDetail, voteOption));
-    if (result === undefined) return;
-    setPostDetail({
-      ...postDetail,
-      upvotes: postDetail.upvotes - postDetail.userVote + result,
-      userVote: result,
-    });
+  const { showToast } = useContext(ToastContext);
+
+  const postDetailRef = useRef(postDetail);
+  const controllerRef = useRef<{
+    postId: string;
+    controller: ReturnType<typeof createOptimisticVoteController>;
+  } | null>(null);
+
+  postDetailRef.current = postDetail;
+
+  useEffect(() => {
+    return () => {
+      controllerRef.current?.controller.invalidate();
+      controllerRef.current = null;
+    };
+  }, [postDetail.id]);
+
+  const voteOnPost = (voteOption: VoteOption) => {
+    const existing = controllerRef.current;
+
+    if (existing?.postId !== postDetail.id) {
+      existing?.controller.invalidate();
+
+      const postId = postDetail.id;
+
+      const controller = createOptimisticVoteController(
+        postDetail.userVote as VoteValue,
+        async (confirmed, next) => {
+          const current = postDetailRef.current;
+
+          if (current.id !== postId) {
+            throw new Error("Vote controller no longer matches this post");
+          }
+
+          const result = await vote(
+            { ...current, userVote: confirmed as VoteOption },
+            next as VoteOption,
+          );
+
+          if (result !== next) {
+            throw new Error("Unexpected vote result");
+          }
+        },
+        (next) => {
+          if (controllerRef.current?.postId !== postId) return;
+
+          setOptimisticVote({ postId, vote: next });
+        },
+        () => {
+          if (controllerRef.current?.postId !== postId) return;
+
+          showToast({
+            title: "Vote failed",
+            body: "Your vote wasn't confirmed. Please try again.",
+          });
+        },
+        (confirmed) => {
+          if (controllerRef.current?.postId !== postId) return;
+
+          setPostDetail((current) => {
+            if (!current || current.id !== postId) return current;
+
+            return {
+              ...current,
+              upvotes: adjustedScore(
+                current.upvotes,
+                current.userVote as VoteValue,
+                confirmed,
+              ),
+              userVote: confirmed as VoteOption,
+            };
+          });
+        },
+      );
+
+      controllerRef.current = { postId, controller };
+    }
+
+    controllerRef.current?.controller.press(voteOption);
   };
 
   return (
@@ -157,17 +297,17 @@ export default function PostDetailsComponent({
               </Touchable>
             </View>
             <View style={[styles.metadataRow, { marginTop: 5 }]}>
-              <Feather name="arrow-up" size={15} color={theme.subtleText} />
+              <Feather name="arrow-up" size={15} color={currentVoteColor} />
               <Text
                 style={[
                   styles.smallText,
                   {
-                    color: theme.subtleText,
+                    color: currentVoteColor,
                     marginRight: 12,
                   },
                 ]}
               >
-                {postDetail.upvotes}
+                {displayedScore}
               </Text>
               <Feather
                 name="message-square"
@@ -242,19 +382,19 @@ export default function PostDetailsComponent({
           },
         ]}
       >
-        <Touchable
+        <AnimatedTouchable
           style={[
             styles.buttonsContainer,
+            upvoteAnimatedStyle,
             {
               backgroundColor:
-                postDetail.userVote === VoteOption.UpVote
-                  ? theme.upvote
-                  : undefined,
+                displayedVote === VoteOption.UpVote ? theme.upvote : undefined,
             },
           ]}
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
+            animateVote(VoteOption.UpVote);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             voteOnPost(VoteOption.UpVote);
           }}
@@ -263,18 +403,19 @@ export default function PostDetailsComponent({
             name="arrow-up"
             size={32}
             color={
-              postDetail.userVote === VoteOption.UpVote
+              displayedVote === VoteOption.UpVote
                 ? theme.text
                 : theme.iconPrimary
             }
           />
-        </Touchable>
-        <Touchable
+        </AnimatedTouchable>
+        <AnimatedTouchable
           style={[
             styles.buttonsContainer,
+            downvoteAnimatedStyle,
             {
               backgroundColor:
-                postDetail.userVote === VoteOption.DownVote
+                displayedVote === VoteOption.DownVote
                   ? theme.downvote
                   : undefined,
             },
@@ -282,6 +423,7 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={() => {
+            animateVote(VoteOption.DownVote);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             voteOnPost(VoteOption.DownVote);
           }}
@@ -290,12 +432,12 @@ export default function PostDetailsComponent({
             name="arrow-down"
             size={32}
             color={
-              postDetail.userVote === VoteOption.DownVote
+              displayedVote === VoteOption.DownVote
                 ? theme.text
                 : theme.iconPrimary
             }
           />
-        </Touchable>
+        </AnimatedTouchable>
         <Touchable
           style={[
             styles.buttonsContainer,
@@ -306,15 +448,21 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={async () => {
+            const nextSaved = !postDetail.saved;
+            const postId = postDetail.id;
+
             const saved = await runWrite(
               postDetail.saved ? "unsave" : "save",
-              () => saveItem(postDetail, !postDetail.saved),
+              () => saveItem(postDetail, nextSaved),
             );
+
             if (!saved) return;
-            setPostDetail({
-              ...postDetail,
-              saved: !postDetail.saved,
-            });
+
+            setPostDetail((current) =>
+              current?.id === postId
+                ? { ...current, saved: nextSaved }
+                : current,
+            );
           }}
         >
           <FontAwesome

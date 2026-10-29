@@ -43,6 +43,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     loadMoreData: loadMoreUserContent,
     refreshData: refreshUserContent,
     modifyData: modifyUserContent,
+    updateData,
     deleteData: deleteUserContent,
     fullyLoaded,
     hitFilterLimit,
@@ -144,7 +145,11 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
               return (
                 <PostComponent
                   post={content}
-                  setPost={(newPost) => modifyUserContent([newPost])}
+                  updatePost={(update) =>
+                    updateData(content, (current) =>
+                      current.type === "post" ? update(current) : current,
+                    )
+                  }
                 />
               );
             }
