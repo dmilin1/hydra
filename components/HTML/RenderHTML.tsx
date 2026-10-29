@@ -450,8 +450,13 @@ function renderElement(
     return <InlineVideo key={key} videoId={videoId ?? ""} />;
   } else if (
     element.name === "a" &&
-    element.children[0]?.type === ElementType.Text
+    element.children[0]?.type === ElementType.Tag &&
+    element.children[0]?.name === "img"
   ) {
+    Wrapper = View;
+    wrapperStyles.minWidth = "100%";
+  } else if (element.name === "a") {
+    // Reddit and Snudown nest formatting inside links: <a><strong>..</strong></a>
     return (
       <RedditLink
         key={key}
@@ -459,13 +464,6 @@ function renderElement(
         inheritedStyles={inheritedStyles}
       />
     );
-  } else if (
-    element.name === "a" &&
-    element.children[0]?.type === ElementType.Tag &&
-    element.children[0]?.name === "img"
-  ) {
-    Wrapper = View;
-    wrapperStyles.minWidth = "100%";
   } else if (element.name === "em") {
     Wrapper = Text;
     inheritedStyles.fontStyle = "italic";
