@@ -1,14 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  ActivityIndicator,
-  ScrollView,
-  Text,
-} from "react-native";
+import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import { TabBarScrollView } from "../contexts/TabBarInsetsContext";
 import { Rule, Sidebar } from "../api/SubredditDetails";
 import { getRules, getSidebar } from "../api/gql/SubredditDetails";
 import { URLRoutes } from "../app/stack";
@@ -61,7 +56,7 @@ export default function SidebarPage() {
       ]}
     >
       {sidebar && rules ? (
-        <ScrollView style={styles.scrollView}>
+        <TabBarScrollView style={styles.scrollView}>
           <View
             style={[
               styles.statsContainer,
@@ -165,7 +160,7 @@ export default function SidebarPage() {
           <View style={styles.descriptionContainer}>
             <RenderHtml html={sidebar.descriptionHTML} />
           </View>
-        </ScrollView>
+        </TabBarScrollView>
       ) : loadError ? (
         <AccessFailureComponent
           accessFailure={loadError}

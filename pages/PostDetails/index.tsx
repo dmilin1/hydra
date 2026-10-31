@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   ColorValue,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -21,6 +20,10 @@ import {
 import ScrollToNextButtonProvider from "../../contexts/ScrollToNextButtonProvider";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
+import {
+  TabBarScrollView,
+  TabBarSpacer,
+} from "../../contexts/TabBarInsetsContext";
 import AccessFailureComponent from "../../components/UI/AccessFailureComponent";
 import RedditURL from "../../utils/RedditURL";
 
@@ -84,7 +87,7 @@ function PostDetails(props: PostDetailsProps) {
       ]}
     >
       {postDetail ? (
-        <ScrollView
+        <TabBarScrollView
           ref={scrollView}
           refreshControl={
             <RefreshControl
@@ -96,7 +99,8 @@ function PostDetails(props: PostDetailsProps) {
           scrollEnabled={!scrollDisabled}
           onScroll={(e) => handleScrollForTabBar(e)}
           contentContainerStyle={{
-            paddingBottom: 100,
+            // Room for the scroll-to-next button; TabBarSpacer clears the tab bar
+            paddingBottom: 60,
           }}
         >
           <View ref={topOfScroll} />
@@ -136,7 +140,8 @@ function PostDetails(props: PostDetailsProps) {
               </Text>
             </View>
           )}
-        </ScrollView>
+          <TabBarSpacer />
+        </TabBarScrollView>
       ) : loadError ? (
         <AccessFailureComponent
           accessFailure={loadError}

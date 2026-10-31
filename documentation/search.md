@@ -31,7 +31,7 @@ Subreddit search includes sort options accessible from the header:
 
 ## Quick Subreddit Search
 
-Long-pressing the **Search** tab opens a quick search overlay. Before you type anything, your favorite and subscribed subreddits are listed for one-tap access. Type a subreddit name to search all of Reddit, then tap a result to jump directly to it. Tap outside the overlay to dismiss it.
+Tapping the **Search** tab while you are already at the top of it opens a quick search overlay. Before you type anything, your favorite and subscribed subreddits are listed for one-tap access. Type a subreddit name to search all of Reddit, then tap a result to jump directly to it. Tap outside the overlay to dismiss it.
 
 ## Search Operators
 

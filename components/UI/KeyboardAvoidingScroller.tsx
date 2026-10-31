@@ -3,11 +3,12 @@ import {
   Dimensions,
   Keyboard,
   Platform,
-  ScrollView,
   ScrollViewInstance,
   ScrollViewProps,
   TextInputInstance,
 } from "react-native";
+
+import { TabBarScrollView } from "../../contexts/TabBarInsetsContext";
 
 type KeyboardAvoidingScrollerProps = ScrollViewProps;
 
@@ -103,7 +104,7 @@ export default function KeyboardAvoidingScroller(
         setCurrentInput,
       }}
     >
-      <ScrollView
+      <TabBarScrollView
         ref={scrollViewRef}
         automaticallyAdjustKeyboardInsets
         {...props}

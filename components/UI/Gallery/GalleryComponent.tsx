@@ -10,6 +10,7 @@ import { Touchable } from "react-native-gesture-handler";
 import { Post } from "../../../api/Posts";
 import { Image, ImageSource } from "expo-image";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
+import { TabBarScrollView } from "../../../contexts/TabBarInsetsContext";
 import Video from "./Video";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../GetHydraProButton";
@@ -134,6 +135,7 @@ export default function GalleryComponent({
     >
       <FlashList
         ref={flashListRef}
+        renderScrollComponent={TabBarScrollView}
         data={galleryMedia}
         renderItem={({ item, index }) => (
           <Touchable

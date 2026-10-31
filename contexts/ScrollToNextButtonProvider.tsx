@@ -17,8 +17,7 @@ import { CommentSettingsContext } from "./SettingsContexts/CommentSettingsContex
 import AntDesign from "@react-native-vector-icons/ant-design";
 import { useMMKVString } from "react-native-mmkv";
 import { ScrollToNextButtonContext } from "./ScrollToNextButtonContext";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../constants/TabBarPadding";
+import { useTabBarInsets } from "./TabBarInsetsContext";
 
 const BUTTON_SIZE = 40;
 const EDGE_PADDING = 20;
@@ -29,7 +28,7 @@ export default function ScrollToNextButtonProvider({
   const { theme } = useContext(ThemeContext);
   const { showScrollToNextButton } = useContext(CommentSettingsContext);
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarInsets = useTabBarInsets();
 
   const scrollToNext = useRef<(() => void) | null>(null);
   const scrollToPrevious = useRef<(() => void) | null>(null);
@@ -248,7 +247,7 @@ export default function ScrollToNextButtonProvider({
           styles.overlay,
           {
             opacity: overlayOpacity,
-            bottom: tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+            bottom: tabBarInsets.bottom,
             pointerEvents: "none",
           },
         ]}

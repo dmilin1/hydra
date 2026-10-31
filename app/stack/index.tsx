@@ -23,9 +23,9 @@ import { StackFutureProvider } from "../../contexts/StackFutureContext";
 import SidebarScreen from "./SidebarScreen";
 import WikiScreen from "./WikiScreen";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SubredditSearchScreen from "./SubredditSearchScreen";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
+import { useTabBarInsets } from "../../contexts/TabBarInsetsContext";
+import { USES_NATIVE_TAB_BAR_MINIMIZE } from "../../contexts/TabScrollContext";
 import GalleryScreen from "./GalleryScreen";
 import ChatScreen from "./ChatScreen";
 
@@ -92,8 +92,9 @@ export type URLRoutes =
   | "GalleryPage"
   | "ChatPage";
 
+// On iOS 26 these scroll under the glass bar via TabBarScrollView too
 const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
-  Subreddits: false,
+  Subreddits: USES_NATIVE_TAB_BAR_MINIMIZE,
   Home: true,
   InboxPage: true,
   PostsPage: true,
@@ -104,9 +105,9 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   Accounts: false,
   WikiPage: false,
   ChatPage: false,
-  GalleryPage: false,
-  SidebarPage: false,
-  SettingsPage: false,
+  GalleryPage: USES_NATIVE_TAB_BAR_MINIMIZE,
+  SidebarPage: USES_NATIVE_TAB_BAR_MINIMIZE,
+  SettingsPage: USES_NATIVE_TAB_BAR_MINIMIZE,
   SearchPage: true,
   WebviewPage: false,
   ErrorPage: false,
@@ -120,7 +121,7 @@ export default function Stack() {
   const { theme } = useContext(ThemeContext);
   const { swipeAnywhereToNavigate } = useContext(GesturesContext);
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarInsets = useTabBarInsets();
 
   const futureRoutes = useRef<
     NavigationRoute<StackParamsList, keyof StackParamsList>[]
@@ -166,7 +167,9 @@ export default function Stack() {
           contentStyle: {
             paddingBottom: SHOWS_BENEATH_TABS[route.name]
               ? 0
-              : tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+              : tabBarInsets.bottom,
+            paddingLeft: tabBarInsets.left,
+            paddingRight: tabBarInsets.right,
             backgroundColor: theme.background,
           },
         })}

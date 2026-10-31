@@ -174,6 +174,15 @@ export default function NavigationProvider({ children }: PropsWithChildren) {
       theme={{
         ...DefaultTheme,
         dark: theme.systemModeStyle === "dark",
+        // Native tabs paint their containers and Android bar from these
+        colors: {
+          ...DefaultTheme.colors,
+          primary: theme.iconPrimary as string,
+          background: theme.background as string,
+          card: theme.background as string,
+          text: theme.text as string,
+          border: theme.divider as string,
+        },
       }}
       onReady={() => {
         setNavigationReady(true);

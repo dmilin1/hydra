@@ -3,7 +3,6 @@ import { openExternalLink } from "../../utils/openExternalLink";
 import { parseDocument, ElementType } from "htmlparser2";
 import React, { useContext, useMemo, useState } from "react";
 import {
-  Dimensions,
   Platform,
   ScrollView,
   ScrollViewProps,
@@ -30,9 +29,9 @@ import {
   VirtualGestureDetector,
 } from "react-native-gesture-handler";
 import AntDesign from "@react-native-vector-icons/ant-design";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { MediaViewerContext } from "../../contexts/MediaViewerContext";
 import { getTextDirection, TextDirection } from "../../utils/textDirection";
-const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 // RN 0.88 style types are readonly; these styles are built up by mutation.
 type MutableStyles = {
@@ -202,6 +201,21 @@ function PreBlock(props: ScrollViewProps) {
   );
 }
 
+// Only table cells subscribe to the frame, so a resize doesn't re-render every comment.
+function TableCell({
+  siblingCount,
+  style,
+  children,
+}: React.PropsWithChildren<{ siblingCount: number; style: ViewStyle }>) {
+  const { width } = useSafeAreaFrame();
+  const availableWidth = (width - 30) /* padding */ / siblingCount;
+  return (
+    <View style={[style, { width: siblingCount < 4 ? availableWidth : 100 }]}>
+      {children}
+    </View>
+  );
+}
+
 function TableBlock(props: ScrollViewProps) {
   return (
     <ScrollView
@@ -309,6 +323,7 @@ function renderElement(
   const { theme } = ctx;
 
   let Wrapper = View as React.ElementType;
+  let wrapperProps = {};
   const wrapperStyles: MutableStyles = {};
 
   if (DIRECTIONAL_BLOCK_ELEMENTS.has(element.name) || element.attribs.header) {
@@ -401,12 +416,12 @@ function renderElement(
     Wrapper = View;
     wrapperStyles.flexDirection = "row";
   } else if (["th", "td"].includes(element.name)) {
-    Wrapper = View;
-    const siblingCount =
-      element.parent?.children?.filter((c) => c.type !== "text")?.length ?? 1;
-    const availableWidth = (SCREEN_WIDTH - 30) /* padding */ / siblingCount;
+    Wrapper = TableCell;
+    wrapperProps = {
+      siblingCount:
+        element.parent?.children?.filter((c) => c.type !== "text")?.length ?? 1,
+    };
     wrapperStyles.flexDirection = "column";
-    wrapperStyles.width = siblingCount < 4 ? availableWidth : 100;
     wrapperStyles.borderColor = theme.tint;
     wrapperStyles.borderWidth = 1;
     wrapperStyles.padding = 2;
@@ -521,6 +536,7 @@ function renderElement(
   return (
     <Wrapper
       key={key}
+      {...wrapperProps}
       style={{
         ...inheritedStyles,
         ...wrapperStyles,

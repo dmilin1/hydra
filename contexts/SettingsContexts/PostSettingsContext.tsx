@@ -1,9 +1,10 @@
 import { createContext } from "react";
 import { useMMKVBoolean, useMMKVNumber } from "react-native-mmkv";
-import { deviceSupportsSplitView } from "../../utils/useSplitViewSupport";
+import { Dimensions } from "react-native";
+import { SPLIT_VIEW_MIN_WIDTH } from "../../utils/useSplitViewSupport";
 
 const initialValues = {
-  postCompactMode: deviceSupportsSplitView,
+  postCompactMode: Dimensions.get("screen").width >= SPLIT_VIEW_MIN_WIDTH,
   showThumbnailsOnRightSide: false,
   subredditAtTop: false,
   showSubredditIcon: true,

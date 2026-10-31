@@ -17,6 +17,7 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
 import { useURLNavigation } from "../utils/navigation";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
+import { TabBarScrollView } from "../contexts/TabBarInsetsContext";
 import { SubredditListItem } from "../api/Subreddits";
 import { Multi } from "../api/Multireddit";
 
@@ -361,6 +362,7 @@ export default function Subreddits() {
     <View style={styles.subredditsContainer}>
       <FlashList
         ref={flashListRef}
+        renderScrollComponent={TabBarScrollView}
         data={scrollItems}
         renderItem={({ item }) =>
           item.type === "topButton" ? (
