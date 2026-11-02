@@ -1,10 +1,9 @@
 import { StyleSheet, View } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { useContext } from "react";
 import { useURLNavigation } from "../../utils/navigation";
+import { useTabBarInsets } from "../../contexts/TabBarInsetsContext";
 import AntDesign from "@react-native-vector-icons/ant-design";
 
 type SplitViewOptionsProps = {
@@ -17,7 +16,7 @@ export default function SplitViewOptions({
   setSplitViewURL,
 }: SplitViewOptionsProps) {
   const { theme } = useContext(ThemeContext);
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarInsets = useTabBarInsets();
 
   const navigation = useURLNavigation();
 
@@ -26,7 +25,7 @@ export default function SplitViewOptions({
       style={[
         styles.splitViewOptionsContainer,
         {
-          bottom: tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+          bottom: tabBarInsets.bottom,
         },
       ]}
     >

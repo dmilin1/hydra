@@ -1,58 +1,72 @@
-import { createContext, useContext, useRef } from "react";
 import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Animated,
-} from "react-native";
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { TabSettingsContext } from "./SettingsContexts/TabSettingsContext";
+import { IS_LIQUID_GLASS } from "../utils/liquidGlass";
 
-const initialTabScrollContext = {
-  tabBarTranslateY: new Animated.Value(0),
+/**
+ * iOS 26+ minimizes the Liquid Glass tab bar natively on scroll, so the JS
+ * hide is only needed on Android and older iOS.
+ */
+export const USES_NATIVE_TAB_BAR_MINIMIZE = IS_LIQUID_GLASS;
+
+export const TabScrollContext = createContext({
   handleScrollForTabBar: (_: NativeSyntheticEvent<NativeScrollEvent>) => {},
-};
+  showTabBar: () => {},
+});
 
-export const TabScrollContext = createContext(initialTabScrollContext);
+// Separate so toggling the bar doesn't re-render every scroller.
+export const TabBarHiddenContext = createContext(false);
 
 export function TabScrollProvider({ children }: React.PropsWithChildren) {
   const { hideTabsOnScroll } = useContext(TabSettingsContext);
 
   const lastScrollY = useRef(0);
-  const tabBarTranslateY = useRef(new Animated.Value(0)).current;
-  const isAnimating = useRef(false);
+  const hiddenRef = useRef(false);
+  const [tabBarHidden, setTabBarHidden] = useState(false);
 
-  const handleScrollForTabBar = (
-    e: NativeSyntheticEvent<NativeScrollEvent>,
-  ) => {
-    if (!hideTabsOnScroll) return;
+  const handleScrollForTabBar = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (!hideTabsOnScroll || USES_NATIVE_TAB_BAR_MINIMIZE) return;
 
-    const currentScrollY = e.nativeEvent.contentOffset.y;
-    const scrollDelta = currentScrollY - lastScrollY.current;
-    const scrollDirection =
-      scrollDelta > 0 && currentScrollY > 50 ? "down" : "up";
+      const currentScrollY = e.nativeEvent.contentOffset.y;
+      if (Number.isNaN(lastScrollY.current)) {
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+      const scrollDelta = currentScrollY - lastScrollY.current;
+      if (Math.abs(scrollDelta) < 5) return;
+      lastScrollY.current = currentScrollY;
 
-    if (Math.abs(scrollDelta) < 5 || isAnimating.current) return;
-
-    isAnimating.current = true;
-
-    Animated.timing(tabBarTranslateY, {
-      toValue: scrollDirection === "down" ? 1 : 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      isAnimating.current = false;
-    });
-
-    lastScrollY.current = currentScrollY;
-  };
+      const shouldHide = scrollDelta > 0 && currentScrollY > 50;
+      if (shouldHide === hiddenRef.current) return;
+      hiddenRef.current = shouldHide;
+      setTabBarHidden(shouldHide);
+    },
+    [hideTabsOnScroll],
+  );
+  const showTabBar = useCallback(() => {
+    // The next scroll may come from another tab's list, so start a fresh baseline
+    lastScrollY.current = NaN;
+    hiddenRef.current = false;
+    setTabBarHidden(false);
+  }, []);
+  const scrollContextValue = useMemo(
+    () => ({ handleScrollForTabBar, showTabBar }),
+    [handleScrollForTabBar, showTabBar],
+  );
 
   return (
-    <TabScrollContext.Provider
-      value={{
-        tabBarTranslateY,
-        handleScrollForTabBar,
-      }}
-    >
-      {children}
+    <TabScrollContext.Provider value={scrollContextValue}>
+      <TabBarHiddenContext.Provider value={hideTabsOnScroll && tabBarHidden}>
+        {children}
+      </TabBarHiddenContext.Provider>
     </TabScrollContext.Provider>
   );
 }

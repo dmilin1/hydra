@@ -17,8 +17,8 @@ import { CommentSettingsContext } from "./SettingsContexts/CommentSettingsContex
 import AntDesign from "@react-native-vector-icons/ant-design";
 import { useMMKVString } from "react-native-mmkv";
 import { ScrollToNextButtonContext } from "./ScrollToNextButtonContext";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../constants/TabBarPadding";
+import { useTabBarInsets } from "./TabBarInsetsContext";
+import { useGlassHeaderInset } from "../utils/liquidGlass";
 
 const BUTTON_SIZE = 40;
 const EDGE_PADDING = 20;
@@ -29,7 +29,8 @@ export default function ScrollToNextButtonProvider({
   const { theme } = useContext(ThemeContext);
   const { showScrollToNextButton } = useContext(CommentSettingsContext);
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarInsets = useTabBarInsets();
+  const headerInset = useGlassHeaderInset();
 
   const scrollToNext = useRef<(() => void) | null>(null);
   const scrollToPrevious = useRef<(() => void) | null>(null);
@@ -165,12 +166,15 @@ export default function ScrollToNextButtonProvider({
 
   return (
     <ScrollToNextButtonContext.Provider value={value}>
+      {/* First, so the list stays on the path UIKit follows to find the scroll view for header minimize */}
+      {children}
       {showScrollToNextButton && containerHeight > 0 && containerWidth > 0 && (
         <Animated.View
           style={[
             styles.skipToNextButton,
             {
-              top: 0,
+              // Same origin as the overlay, which the locked positions are measured in
+              top: headerInset,
               left: 0,
               transform: [
                 { translateX: position.x },
@@ -248,7 +252,8 @@ export default function ScrollToNextButtonProvider({
           styles.overlay,
           {
             opacity: overlayOpacity,
-            bottom: tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+            top: headerInset,
+            bottom: tabBarInsets.bottom,
             pointerEvents: "none",
           },
         ]}
@@ -276,7 +281,6 @@ export default function ScrollToNextButtonProvider({
           />
         ))}
       </Animated.View>
-      {children}
     </ScrollToNextButtonContext.Provider>
   );
 }

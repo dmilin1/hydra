@@ -16,6 +16,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { useVerticalBarEdgeIOS } from "expo-status-bar";
 import { Animated, Dimensions } from "react-native";
 
 import { StackParamsList } from "../app/stack";
@@ -58,6 +59,39 @@ export function StackFutureProvider({
       navigation.removeListener("beforeRemove", handleBeforeRemove);
     };
   }, [navigation]);
+
+  const goForward = () => {
+    const popped = futureRoutes.current.pop();
+    if (!popped) return false;
+    navigation.push(popped.name as any, popped.params as any);
+    return true;
+  };
+
+  /**
+   * The iPhone Duo's vertical bar covers the screen edge the forward swipe
+   * starts from, but it does host native header items next to the back button.
+   */
+  const verticalBarEdge = useVerticalBarEdgeIOS();
+  useEffect(() => {
+    const updateForwardButton = () => {
+      const showForward = !!verticalBarEdge && futureRoutes.current.length > 0;
+      navigation.setOptions({
+        headerBackVisible: showForward || undefined,
+        unstable_headerLeftItems: showForward
+          ? () => [
+              {
+                type: "button",
+                label: "Forward",
+                icon: { type: "sfSymbol", name: "chevron.forward" },
+                onPress: goForward,
+              },
+            ]
+          : undefined,
+      });
+    };
+    updateForwardButton();
+    return navigation.addListener("focus", updateForwardButton);
+  }, [navigation, verticalBarEdge]);
 
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
@@ -103,9 +137,7 @@ export function StackFutureProvider({
             return false;
           }
           if (deltaX > 15 && angleDegrees < 15) {
-            const popped = futureRoutes.current.pop();
-            if (!popped) return false;
-            navigation.push(popped.name as any, popped.params as any);
+            if (!goForward()) return false;
             gestureStart.current = null;
             return true;
           }

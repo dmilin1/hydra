@@ -1,13 +1,12 @@
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import React, { useContext } from "react";
-import { View, StyleSheet, ScrollView, Image } from "react-native";
+import { View, StyleSheet, ScrollView, Image, Text } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../../UI/GetHydraProButton";
 import KeyStore from "../../../utils/KeyStore";
-import { TextWithRepairedHeight } from "../../Other/TextWithRepairedHeight";
 import { useURLNavigation } from "../../../utils/navigation";
 import { StackActions } from "@react-navigation/native";
 
@@ -163,14 +162,14 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           />
         </Touchable>
         <View style={styles.versionBadge}>
-          <TextWithRepairedHeight
+          <Text
             style={[
               styles.versionBadgeText,
               { color: theme.iconPrimary, opacity: 1 },
             ]}
           >
             {updateInfo.updateKey}
-          </TextWithRepairedHeight>
+          </Text>
           <View
             style={[
               styles.versionBadgeBackground,
@@ -178,7 +177,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             ]}
           />
         </View>
-        <TextWithRepairedHeight
+        <Text
           style={[
             styles.title,
             {
@@ -187,8 +186,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           ]}
         >
           {updateInfo.title}
-        </TextWithRepairedHeight>
-        <TextWithRepairedHeight
+        </Text>
+        <Text
           style={[
             styles.subtitle,
             {
@@ -197,12 +196,12 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           ]}
         >
           {updateInfo.subtitle}
-        </TextWithRepairedHeight>
+        </Text>
         <ScrollView>
           <View style={{ marginTop: -20 }} />
           {updateInfo.proFeatures.length > 0 && (
             <>
-              <TextWithRepairedHeight
+              <Text
                 style={[
                   styles.heading,
                   {
@@ -211,7 +210,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                 ]}
               >
                 👑 Pro Features
-              </TextWithRepairedHeight>
+              </Text>
               <View style={styles.listContainer}>
                 {updateInfo.proFeatures.map((feature) => (
                   <View
@@ -224,7 +223,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       },
                     ]}
                   >
-                    <TextWithRepairedHeight
+                    <Text
                       style={[
                         styles.featureTitle,
                         {
@@ -233,8 +232,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       ]}
                     >
                       {feature.title}
-                    </TextWithRepairedHeight>
-                    <TextWithRepairedHeight
+                    </Text>
+                    <Text
                       style={[
                         styles.featureDescription,
                         {
@@ -243,13 +242,13 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       ]}
                     >
                       {feature.description}
-                    </TextWithRepairedHeight>
+                    </Text>
                   </View>
                 ))}
               </View>
             </>
           )}
-          <TextWithRepairedHeight
+          <Text
             style={[
               styles.heading,
               {
@@ -258,7 +257,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             ]}
           >
             🚀 Features
-          </TextWithRepairedHeight>
+          </Text>
           <View style={styles.listContainer}>
             {updateInfo.features.map((feature) => (
               <View
@@ -271,7 +270,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   },
                 ]}
               >
-                <TextWithRepairedHeight
+                <Text
                   style={[
                     styles.featureTitle,
                     {
@@ -280,8 +279,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   {feature.title}
-                </TextWithRepairedHeight>
-                <TextWithRepairedHeight
+                </Text>
+                <Text
                   style={[
                     styles.featureDescription,
                     {
@@ -290,11 +289,11 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   {feature.description}
-                </TextWithRepairedHeight>
+                </Text>
               </View>
             ))}
           </View>
-          <TextWithRepairedHeight
+          <Text
             style={[
               styles.heading,
               {
@@ -303,7 +302,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             ]}
           >
             🐛 Bugfixes
-          </TextWithRepairedHeight>
+          </Text>
           <View style={styles.listContainer}>
             <View
               style={[
@@ -316,7 +315,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               ]}
             >
               {updateInfo.bugfixes.map((bugfix) => (
-                <TextWithRepairedHeight
+                <Text
                   key={bugfix.description}
                   style={[
                     styles.bugfixDescription,
@@ -326,13 +325,13 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   - {bugfix.description}
-                </TextWithRepairedHeight>
+                </Text>
               ))}
             </View>
           </View>
           {updateInfo.notes.length > 0 && (
             <>
-              <TextWithRepairedHeight
+              <Text
                 style={[
                   styles.heading,
                   {
@@ -341,7 +340,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                 ]}
               >
                 📝 Notes
-              </TextWithRepairedHeight>
+              </Text>
               <View style={styles.listContainer}>
                 <View
                   style={[
@@ -354,7 +353,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   {updateInfo.notes.map((note) => (
-                    <TextWithRepairedHeight
+                    <Text
                       key={note}
                       style={[
                         styles.bugfixDescription,
@@ -364,7 +363,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       ]}
                     >
                       {note}
-                    </TextWithRepairedHeight>
+                    </Text>
                   ))}
                 </View>
               </View>
@@ -377,7 +376,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                 style={{ width: 30, height: 30 }}
               />
             </View>
-            <TextWithRepairedHeight
+            <Text
               style={[
                 styles.helpItem,
                 {
@@ -387,13 +386,13 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             >
               If you have any feature requests, you can submit them on
               /r/HydraFeatureRequest which can be found in the settings tab
-            </TextWithRepairedHeight>
+            </Text>
           </View>
           <View style={styles.helpContainer}>
             <View style={styles.helpIcon}>
               <FontAwesome name="github" size={22} color={theme.text} />
             </View>
-            <TextWithRepairedHeight
+            <Text
               style={[
                 styles.helpItem,
                 {
@@ -403,7 +402,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             >
               If you have any familiarity with React Native and want to help,
               you can make a pull request at https://github.com/dmilin1/hydra
-            </TextWithRepairedHeight>
+            </Text>
           </View>
           <View style={styles.getHydraProContainer}>
             <GetHydraProButton onPress={() => exitUpdateInfo()} />
@@ -421,11 +420,11 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               exitUpdateInfo();
             }}
           >
-            <TextWithRepairedHeight
+            <Text
               style={[styles.tipJarText, { color: theme.iconOrTextButton }]}
             >
               Leave a tip
-            </TextWithRepairedHeight>
+            </Text>
           </Touchable>
         </ScrollView>
       </View>

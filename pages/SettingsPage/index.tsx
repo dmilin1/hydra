@@ -1,4 +1,4 @@
-import React, { lazy, useContext } from "react";
+import React, { lazy } from "react";
 import { StyleSheet, View } from "react-native";
 
 import Advanced from "./Advanced";
@@ -24,7 +24,6 @@ import ThemeMaker from "./ThemeMaker";
 import TipJar from "./TipJar";
 import { StackPageProps } from "../../app/stack";
 import KeyboardAvoidingScroller from "../../components/UI/KeyboardAvoidingScroller";
-import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import URL from "../../utils/URL";
 import Gestures from "./General/Gestures";
 import Stats from "./Stats";
@@ -42,19 +41,10 @@ export default function SettingsPage({
 }: StackPageProps<"SettingsPage">) {
   const url = route.params.url;
 
-  const { theme } = useContext(ThemeContext);
-
   const relativePath = new URL(url).getRelativePath();
 
   return (
-    <View
-      style={[
-        styles.settingsContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.settingsContainer}>
       <KeyboardAvoidingScroller
         style={styles.scrollView}
         contentContainerStyle={{

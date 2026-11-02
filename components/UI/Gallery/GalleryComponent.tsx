@@ -10,6 +10,8 @@ import { Touchable } from "react-native-gesture-handler";
 import { Post } from "../../../api/Posts";
 import { Image, ImageSource } from "expo-image";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
+import { TabBarScrollView } from "../../../contexts/TabBarInsetsContext";
+import { useGlassHeaderInset } from "../../../utils/liquidGlass";
 import Video from "./Video";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../GetHydraProButton";
@@ -56,6 +58,7 @@ export default function GalleryComponent({
   const [hitFreeLimit, setHitFreeLimit] = useState(false);
 
   const flashListRef = useRef<FlashListRef<GalleryItem>>(null);
+  const headerInset = useGlassHeaderInset();
 
   /**
    * This looks weird, but it's because we need to be able to fetch the post data
@@ -123,17 +126,17 @@ export default function GalleryComponent({
   }, [viewerMedia.length]);
 
   return (
-    <View
-      style={styles.container}
-      onLayout={({ nativeEvent }) => {
-        setContentDimensions({
-          width: nativeEvent.layout.width,
-          height: nativeEvent.layout.height,
-        });
-      }}
-    >
+    <View style={styles.container}>
       <FlashList
         ref={flashListRef}
+        // On the list rather than the wrapper so the wrapper flattens away; see TabBarScrollView
+        onLayout={({ nativeEvent }) => {
+          setContentDimensions({
+            width: nativeEvent.layout.width,
+            height: nativeEvent.layout.height,
+          });
+        }}
+        renderScrollComponent={TabBarScrollView}
         data={galleryMedia}
         renderItem={({ item, index }) => (
           <Touchable
@@ -145,6 +148,7 @@ export default function GalleryComponent({
                 onFocusedItemChange: (index) =>
                   flashListRef.current?.scrollToIndex({
                     index,
+                    viewOffset: -headerInset,
                   }),
               })
             }

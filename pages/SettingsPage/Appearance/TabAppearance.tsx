@@ -6,6 +6,7 @@ import { Switch } from "react-native";
 import List from "../../../components/UI/List";
 import { TabSettingsContext } from "../../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
+import { USES_NATIVE_TAB_BAR_MINIMIZE } from "../../../contexts/TabScrollContext";
 
 export default function TabAppearance() {
   const { theme } = useContext(ThemeContext);
@@ -50,7 +51,9 @@ export default function TabAppearance() {
               onValueChange={() => toggleHideTabsOnScroll()}
             />
           ),
-          text: "Hide on infinite scroll",
+          text: USES_NATIVE_TAB_BAR_MINIMIZE
+            ? "Minimize on scroll"
+            : "Hide on infinite scroll",
           onPress: () => toggleHideTabsOnScroll(),
         },
       ]}

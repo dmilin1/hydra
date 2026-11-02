@@ -1,6 +1,6 @@
 ===METADATA===
 title: Appearance Settings
-description: Post appearance (compact mode, thumbnails on right, split view, subreddit display, text lengths, flairs, blur options, summaries, start summary collapsed, auto-play, default video mute, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, start summary collapsed, tap to collapse, collapse children only, scroll to next button), tab appearance (username, hide on scroll), subreddits page appearance (show Popular, show All)
+description: Post appearance (compact mode, thumbnails on right, split view, subreddit display, text lengths, flairs, blur options, summaries, start summary collapsed, auto-play, default video mute, live text, tap to collapse), comment appearance (vote indicators, AutoModerator, flairs, summaries, start summary collapsed, tap to collapse, collapse children only, scroll to next button), tab appearance (username, hide or minimize on scroll), subreddits page appearance (show Popular, show All)
 ===END METADATA===
 
 # Appearance Settings
@@ -71,7 +71,7 @@ Configure in [Tab Appearance settings](hydra://settings/appearance/tabs).
 
 **Show Username**: Displays your username in the bottom tab bar.
 
-**Hide on Infinite Scroll**: Hides the tab bar while scrolling for more screen space.
+**Hide on Infinite Scroll** (called **Minimize on Scroll** on iOS 26 and later): Hides the tab bar while scrolling down for more screen space. On iOS 26 and later, the tab bar shrinks to a compact Liquid Glass bar instead of disappearing.
 
 ## Subreddits Page Appearance
 

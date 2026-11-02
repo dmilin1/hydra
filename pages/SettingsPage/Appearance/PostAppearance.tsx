@@ -22,7 +22,7 @@ export default function PostAppearance() {
 
   const { pushURL } = useURLNavigation();
 
-  const { deviceSupportsSplitView, splitViewEnabled, setSplitViewEnabled } =
+  const { windowSupportsSplitView, splitViewEnabled, setSplitViewEnabled } =
     useSplitViewSupport();
 
   const {
@@ -172,7 +172,7 @@ export default function PostAppearance() {
           : []),
         {
           key: "splitViewEnabled",
-          hide: !deviceSupportsSplitView,
+          hide: !windowSupportsSplitView,
           icon: <AntDesign name="split-cells" size={24} color={theme.text} />,
           rightIcon: (
             <Switch

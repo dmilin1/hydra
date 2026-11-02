@@ -9,7 +9,7 @@ export const validateHex = (color: any) => {
   return (
     typeof color === "string" &&
     color.startsWith("#") &&
-    RegExp(/^#([0-9A-F]{3})|([0-9A-F]{6})|([0-9A-F]{8})$/i).test(color)
+    /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color)
   );
 };
 

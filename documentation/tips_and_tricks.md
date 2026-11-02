@@ -11,9 +11,9 @@ These are lesser-known features and techniques that can significantly improve yo
 
 **Tap the active tab** to go back one level in the navigation stack, instead of reaching for the back button.
 
-**Long press the Search tab** to instantly open a quick subreddit search overlay. This is faster than navigating to the Search tab and typing. Long press and your favorite and subscribed subreddits appear instantly, or type any part of a name to search.
+**Tap the Search tab again** while it is open to instantly bring up a quick subreddit search overlay. This is faster than typing in the Search page. Your favorite and subscribed subreddits appear instantly, or type any part of a name to search.
 
-**Long press the Account tab** to open a quick account switcher and instantly swap between your logged-in accounts.
+**Tap the Account tab again** while on your profile to open a quick account switcher and instantly swap between your logged-in accounts.
 
 **Long press** on posts, comments, and images to access context menus with quick actions like save, share, copy, reply, and more. On subreddit and user pages, tap the "..." button for similar options.
 

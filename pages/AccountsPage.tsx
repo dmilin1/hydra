@@ -13,9 +13,9 @@ export default function AccountsPage() {
   useEffect(() => {
     if (accounts.length > 1) {
       oneTimeAlert(
-        "quickAccountSwapGuideAlert",
+        "quickAccountSwapRetapGuideAlert",
         "Did you know?",
-        "You can quick swap accounts by long pressing the account tab.",
+        "You can quick swap accounts by tapping the account tab while on your profile.",
       );
     }
   }, [accounts.length]);
