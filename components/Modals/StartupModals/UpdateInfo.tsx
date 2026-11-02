@@ -13,114 +13,61 @@ import { StackActions } from "@react-navigation/native";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v4.4.0",
+  updateKey: "v4.5.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "New Data Loading System",
+      title: "Liquid Glass Tab Bar",
       description:
-        "Hydra loads data in a new way, enabling me to build out new features that wern't previously possible. It also fixes some issues like r/all and search breaking. This only works with an account, so you'll need to be logged in to browse. Most of Hydra had to be rewritten for this, so please report anything that seems off.",
+        "On iOS 26+, the tab bar now uses Liquid Glass. Hide on Infinite Scroll is now called Minimize on Scroll and shrinks the tab bar down instead of hiding it. You can enable this in Settings => Appearance => Tabs => Minimize on Scroll.",
     },
     {
-      title: "Login Buttons",
+      title: "iPhone Duo Support",
       description:
-        "When you're logged out, pages now show buttons to log in or create an account.",
+        "Hydra now supports the iPhone Duo and adjusts its layout as you fold and unfold it. Since the Duo's side bar covers the edge you'd swipe from to go forward, a forward button now shows next to the back button when there's a page to go forward to.",
     },
     {
-      title: "Vote Buttons in Feeds",
+      title: "Split View Follows Window Size",
       description:
-        "Add upvote and downvote buttons to posts in your feeds. Enable this in Settings => Appearance => Posts => Show Vote Buttons in Feed. Tapping a post's vote buttons now also gives haptic feedback.",
+        "Split view now turns on and off as Hydra's window changes size, like when unfolding an iPhone Duo or resizing Hydra with iPad multitasking.",
     },
     {
-      title: "Comment Count on Posts",
+      title: "Quick Search & Account Swap",
       description:
-        "A post's comment count now shows next to its score when you open it.",
+        "The new tab bar doesn't support long presses, so these have moved. Tap the Search tab while you're already at the top of it to open quick subreddit search, and tap the Account tab while on your profile to quick swap accounts. I'll be working on a better way to trigger these shortcuts in a future update.",
     },
     {
-      title: "Right to Left Languages",
+      title: "Add Users to Multireddits",
       description:
-        "Posts, titles, and comments in languages like Hebrew, Arabic, and Persian are now right aligned and laid out right to left.",
-    },
-    {
-      title: "Discover Subreddits",
-      description:
-        "The trending subreddits list in the Search tab has been replaced with Reddit's subreddit recommendations, including ones picked for your account.",
-    },
-    {
-      title: "Profile Posts & Comments",
-      description:
-        "User profiles now have a toggle to switch between posts and comments, and can be sorted by New, Hot, or Top.",
-    },
-    {
-      title: "Subreddit Activity",
-      description:
-        "The sidebar now shows a subreddit's weekly visitors and weekly contributions next to its subscriber count. Subreddit search results show weekly visitors too.",
-    },
-    {
-      title: "Endless User Search",
-      description:
-        "User search results now keep loading as you scroll instead of stopping after the first page.",
-    },
-    {
-      title: "Clearer Errors",
-      description:
-        "If a vote, save, subscribe, or similar action fails, Hydra now tells you why instead of failing silently. Failed comments and edits also show the reason Reddit gave.",
+        'User profiles can now be added to a multireddit with the "Add to Multireddit" option in the ... menu on their page.',
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description: "Image posts would fail to upload.",
+      description:
+        "The home feed could show posts from subreddits you aren't subscribed to.",
+    },
+    {
+      description: "RedGifs videos would load without sound.",
+    },
+    {
+      description: "Sign in with Apple wouldn't work on the login page.",
+    },
+    {
+      description: "Blurred spoiler media would sometimes not blur properly.",
     },
     {
       description:
-        "Opening Hydra without an internet connection would log you out.",
+        "Text would sometimes overflow its container, especially after changing device orientation.",
     },
     {
       description:
-        "A failed login would show two different alerts and could leave Hydra using your previous account while showing you as logged out.",
-    },
-    {
-      description:
-        "Quickly switching between accounts could break the saved login for one of them.",
-    },
-    {
-      description:
-        "Posts that failed to load would show a loading spinner forever.",
-    },
-    {
-      description:
-        "Feeds, searches, and sidebars that failed to load could leave a loading spinner stuck on screen.",
-    },
-    {
-      description:
-        "Loading more comments would get stuck if the request failed.",
-    },
-    {
-      description:
-        "In split view, selecting a post while another one was still loading could show the wrong post.",
-    },
-    {
-      description:
-        "Changing the sort while posts were loading could show posts from the previous sort.",
-    },
-    {
-      description:
-        "Votes and saves made while more posts were loading could appear to be undone.",
-    },
-    {
-      description:
-        "The filter limit message could get stuck after refreshing, stopping more posts from loading.",
-    },
-    {
-      description:
-        "Subreddits opened from a link with different capitalization, like r/askreddit, would show Subscribe instead of Unsubscribe and couldn't be favorited.",
+        "Links with bold, italic, or other formatting could render incorrectly in posts, comments, and message previews.",
     },
   ] as { description: string }[],
-  notes: [
-    "iPhone Duo support is coming soon! You can expect it in the next update.",
-  ] as string[],
+  notes: [] as string[],
 };
 
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
