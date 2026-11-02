@@ -207,12 +207,44 @@ export async function getUser(url: string): Promise<User> {
   );
 }
 
+export type CurrentUser = User & {
+  /** Why Reddit won't let the account post, comment or vote, if it won't. */
+  restriction?: {
+    title: string;
+    body: string;
+    /** The user can lift it themselves, so it's worth interrupting them. */
+    isActionable: boolean;
+  };
+};
+
+function getRestriction(identity: any): CurrentUser["restriction"] {
+  const name = `u/${identity.redditor.name}`;
+  // Reddit also reports this lock as a permanent suspension, so it goes first.
+  if (identity.isForcePasswordReset) {
+    return {
+      title: `Reddit locked ${name}`,
+      body: "Reddit flagged unusual activity on this account, which things like VPNs can trigger. Reset your password on reddit.com to unlock it.",
+      isActionable: true,
+    };
+  }
+  if (identity.isSuspended) {
+    const until = identity.suspensionExpiresAt
+      ? `Until ${new Date(parseTime(identity.suspensionExpiresAt) * 1000).toLocaleDateString()}.`
+      : "Permanently.";
+    return {
+      title: `Reddit suspended ${name}`,
+      body: `${until} You can browse, but not post, comment or vote.`,
+      isActionable: false,
+    };
+  }
+}
+
 /**
  * The logged in user, like Reddit's app's GetAccount. Throws
  * NotLoggedInError (from the token refresh) when the session cookie is
  * missing, and an error when Reddit rejects it.
  */
-export async function getCurrentUser(): Promise<User> {
+export async function getCurrentUser(): Promise<CurrentUser> {
   const data = await gql(GetAccount, {
     includePremiumAvatarTreatment: false,
     includeBrandToolsStatus: false,
@@ -225,11 +257,14 @@ export async function getCurrentUser(): Promise<User> {
   if (!identity?.redditor?.name) {
     throw new Error("Reddit did not return the logged in account");
   }
-  return formatUser(
-    identity.redditor,
-    identity.createdAt ?? identity.redditor.profileInfo?.createdAt,
-    true,
-  );
+  return {
+    ...formatUser(
+      identity.redditor,
+      identity.createdAt ?? identity.redditor.profileInfo?.createdAt,
+      true,
+    ),
+    restriction: getRestriction(identity),
+  };
 }
 
 /** The sort variables for a user page URL (?sort=, ?t=). */

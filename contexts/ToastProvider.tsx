@@ -157,7 +157,11 @@ export function ToastProvider({ children }: React.PropsWithChildren) {
         <Animated.View
           style={[
             styles.toastContainer,
-            { paddingTop: Math.max(insets.top, 12) },
+            {
+              paddingTop: Math.max(insets.top, 12),
+              paddingLeft: 20 + insets.left,
+              paddingRight: 20 + insets.right,
+            },
             animatedStyle,
           ]}
           onLayout={onToastLayout}
@@ -208,7 +212,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    paddingHorizontal: 20,
     alignItems: "center",
     pointerEvents: "box-none",
   },

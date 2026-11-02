@@ -2,9 +2,8 @@ import * as Sentry from "@sentry/react-native";
 import { createContext, useEffect, useRef, useState } from "react";
 
 import { UserAuth } from "../api/Authentication";
-import { User } from "../api/User";
 import { resetGqlSessionState } from "../api/gql/Session";
-import { getCurrentUser } from "../api/gql/User";
+import { CurrentUser, getCurrentUser } from "../api/gql/User";
 import { changeSessionCookies } from "../api/gql/WebToken";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
@@ -13,7 +12,7 @@ import { fixIncompatibleAccountSettings } from "../api/gql/AccountSettings";
 
 type AccountContextType = {
   loginInitialized: boolean;
-  currentUser: User | null;
+  currentUser: CurrentUser | null;
   accounts: string[];
   /** null when a later login or logout superseded this one. */
   logIn: (username?: string) => Promise<boolean | null>;

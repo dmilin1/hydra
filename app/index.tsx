@@ -18,6 +18,7 @@ import * as ExpoOrientation from "expo-screen-orientation";
 
 import Tabs from "./tabs";
 import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
+import AccountRestrictionNotice from "../components/Other/AccountRestrictionNotice";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { MediaViewerProvider } from "../contexts/MediaViewerContext";
@@ -131,6 +132,7 @@ function RootLayout() {
                               <SubredditProvider>
                                 <StartupModalProvider>
                                   <SubscribeToHydra />
+                                  <AccountRestrictionNotice />
                                   <Tabs />
                                 </StartupModalProvider>
                               </SubredditProvider>
