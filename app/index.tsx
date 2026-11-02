@@ -37,7 +37,6 @@ import { TabScrollProvider } from "../contexts/TabScrollContext";
 import { StartupModalProvider } from "../contexts/StartupModalContext";
 import { ToastProvider } from "../contexts/ToastProvider";
 import { modifyStat, Stat } from "../db/functions/Stats";
-import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
 import VideoCache from "../utils/VideoCache";
 
 LogBox.ignoreLogs([
@@ -126,20 +125,18 @@ function RootLayout() {
                   <TabScrollProvider>
                     <NavigationProvider>
                       <ActionSheetProvider>
-                        <ActionSheetBgProvider>
-                          <InboxProvider>
-                            <ModalProvider>
-                              <MediaViewerProvider>
-                                <SubredditProvider>
-                                  <StartupModalProvider>
-                                    <SubscribeToHydra />
-                                    <Tabs />
-                                  </StartupModalProvider>
-                                </SubredditProvider>
-                              </MediaViewerProvider>
-                            </ModalProvider>
-                          </InboxProvider>
-                        </ActionSheetBgProvider>
+                        <InboxProvider>
+                          <ModalProvider>
+                            <MediaViewerProvider>
+                              <SubredditProvider>
+                                <StartupModalProvider>
+                                  <SubscribeToHydra />
+                                  <Tabs />
+                                </StartupModalProvider>
+                              </SubredditProvider>
+                            </MediaViewerProvider>
+                          </ModalProvider>
+                        </InboxProvider>
                       </ActionSheetProvider>
                     </NavigationProvider>
                   </TabScrollProvider>
