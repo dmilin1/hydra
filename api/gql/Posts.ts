@@ -213,8 +213,19 @@ function formatImages(post: any): ImageSource[][] {
 
 async function formatVideos(post: any): Promise<Post["videos"]> {
   const streaming = post.media?.streaming;
-  if (streaming?.hlsUrl) {
-    return [{ source: streaming.hlsUrl, hasAudio: !streaming.isGif }];
+  const redditCopy = streaming?.hlsUrl
+    ? { source: streaming.hlsUrl, hasAudio: !streaming.isGif }
+    : undefined;
+  const { url, isValid } = RedditURL.getURLIfValid(post.url ?? "");
+  // Reddit streams a silent copy of RedGifs videos, so the original comes
+  // first for its audio. The copy still beats no video when RedGifs can't
+  // serve it (e.g. deleted).
+  if (!isValid && url.includes("redgifs.com")) {
+    const media = await Redgifs.getMedia(url);
+    return [media.sourceLoadError && redditCopy ? redditCopy : media];
+  }
+  if (redditCopy) {
+    return [redditCopy];
   }
   const animated = post.media?.animated;
   const mp4 = animated?.mp4_source ?? animated?.mp4_xxxlarge;
@@ -222,7 +233,6 @@ async function formatVideos(post: any): Promise<Post["videos"]> {
     return [{ source: mp4.url, hasAudio: false }];
   }
   // Videos hosted outside Reddit.
-  const { url, isValid } = RedditURL.getURLIfValid(post.url ?? "");
   if (!isValid) {
     if (url.includes("imgur.com") && url.endsWith(".gifv")) {
       return [{ source: url.replace(".gifv", ".mp4"), hasAudio: false }];
@@ -233,8 +243,6 @@ async function formatVideos(post: any): Promise<Post["videos"]> {
           hasAudio: false,
         },
       ];
-    } else if (url.includes("redgifs.com")) {
-      return [await Redgifs.getMedia(url)];
     }
   }
   return [];
