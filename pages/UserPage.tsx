@@ -76,7 +76,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
   }, [currentUser?.userName]);
 
   useEffect(() => {
-    const contextOptions: ContextTypes[] = ["Share"];
+    const contextOptions: ContextTypes[] = ["Add to Multireddit", "Share"];
     if (currentUser?.userName !== user?.userName) {
       contextOptions.unshift("Block");
       const isFollowing = isSubscribed(`u_${user?.userName}`);

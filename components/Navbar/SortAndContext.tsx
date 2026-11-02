@@ -344,9 +344,13 @@ export default function SortAndContext({
               });
               const selectedMulti = multis.find((m) => m.name === multi);
               if (selectedMulti) {
+                const url = new RedditURL(currentPath);
+                // Users go in as their profile subreddit, u_<name>.
                 addSubToMulti(
                   selectedMulti,
-                  new RedditURL(currentPath).getSubreddit(),
+                  url.getPageType() === PageType.USER
+                    ? `u_${url.getPageName()}`
+                    : url.getSubreddit(),
                 );
               }
             } else if (result === "Edit" && pageData?.type === "postDetail") {
