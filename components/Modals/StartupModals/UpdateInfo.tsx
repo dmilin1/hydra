@@ -3,6 +3,7 @@ import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import React, { useContext } from "react";
 import { View, StyleSheet, ScrollView, Image, Text } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../../UI/GetHydraProButton";
@@ -73,6 +74,7 @@ export const updateInfo = {
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
   const { theme } = useContext(ThemeContext);
   const { dispatch } = useURLNavigation();
+  const { left, right } = useSafeAreaInsets();
 
   const exitUpdateInfo = () => {
     KeyStore.set(LAST_SEEN_UPDATE_KEY, updateInfo.updateKey);
@@ -87,6 +89,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           {
             backgroundColor: theme.tint,
             borderColor: theme.divider,
+            marginLeft: 20 + left,
+            marginRight: 20 + right,
           },
         ]}
       >
@@ -393,7 +397,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "12.5%",
     maxHeight: "75%",
-    marginHorizontal: 20,
     zIndex: 2,
     flex: 1,
     justifyContent: "center",
