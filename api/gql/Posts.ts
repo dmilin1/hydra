@@ -418,7 +418,15 @@ function getFeedQuery(redditURL: RedditURL): FeedQuery {
 
   switch (redditURL.getPageType()) {
     case PageType.HOME:
-      return { operation: HomeFeedSdui, variables: sortVariables("best") };
+      return {
+        operation: HomeFeedSdui,
+        variables: {
+          ...sortVariables("best"),
+          // Accounts in Reddit's For You / Following split otherwise get For
+          // You, which mixes in subreddits the user isn't subscribed to.
+          feedContextInput: { homeVariant: "FOLLOWING" },
+        },
+      };
     case PageType.SUBREDDIT: {
       const subreddit = redditURL.getSubreddit();
       if (subreddit.toLowerCase() === "popular") {
