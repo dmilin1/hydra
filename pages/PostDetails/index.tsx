@@ -78,14 +78,7 @@ function PostDetails(props: PostDetailsProps) {
   }, []);
 
   return (
-    <View
-      style={[
-        styles.postDetailsOuterContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.postDetailsOuterContainer}>
       {postDetail ? (
         <TabBarScrollView
           ref={scrollView}

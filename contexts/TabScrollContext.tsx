@@ -6,19 +6,15 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Platform,
-} from "react-native";
+import { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { TabSettingsContext } from "./SettingsContexts/TabSettingsContext";
+import { IS_LIQUID_GLASS } from "../utils/liquidGlass";
 
 /**
  * iOS 26+ minimizes the Liquid Glass tab bar natively on scroll, so the JS
  * hide is only needed on Android and older iOS.
  */
-export const USES_NATIVE_TAB_BAR_MINIMIZE =
-  Platform.OS === "ios" && parseInt(String(Platform.Version), 10) >= 26;
+export const USES_NATIVE_TAB_BAR_MINIMIZE = IS_LIQUID_GLASS;
 
 export const TabScrollContext = createContext({
   handleScrollForTabBar: (_: NativeSyntheticEvent<NativeScrollEvent>) => {},

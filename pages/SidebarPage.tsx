@@ -47,14 +47,7 @@ export default function SidebarPage() {
   };
 
   return (
-    <View
-      style={[
-        styles.sidebarContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.sidebarContainer}>
       {sidebar && rules ? (
         <TabBarScrollView style={styles.scrollView}>
           <View

@@ -21,7 +21,6 @@ import ImageViewer from "../RedditDataRepresentations/Post/PostParts/PostMediaPa
 import ThemeImport from "../UI/Themes/ThemeImport";
 import { extractThemeFromText } from "../../utils/colors";
 import URL from "../../utils/URL";
-import { TextWithRepairedHeight } from "../Other/TextWithRepairedHeight";
 import {
   InterceptingGestureDetector,
   Touchable,
@@ -366,7 +365,7 @@ function renderElement(
       </View>
     );
   } else if (element.name === "p") {
-    Wrapper = TextWithRepairedHeight;
+    Wrapper = Text;
     wrapperStyles.marginVertical = 5;
   } else if (element.name === "hr") {
     Wrapper = View;

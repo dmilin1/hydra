@@ -141,14 +141,7 @@ export default function PostsPage({
   }, [subreddits, shouldFilterSeen, sort, sortTime]);
 
   return (
-    <View
-      style={[
-        styles.postsContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.postsContainer}>
       <AccessFailureComponent
         accessFailure={accessFailure}
         contentName={subreddit}

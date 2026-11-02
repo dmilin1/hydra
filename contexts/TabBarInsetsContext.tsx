@@ -97,8 +97,8 @@ export function TabBarInsetsProvider({ children }: PropsWithChildren) {
     lastInsets = next;
     setInsets((prev) =>
       prev.bottom === next.bottom &&
-        prev.left === next.left &&
-        prev.right === next.right
+      prev.left === next.left &&
+      prev.right === next.right
         ? prev
         : next,
     );
@@ -139,10 +139,14 @@ export function TabBarSpacer() {
 
 /**
  * Main scroll view of a screen that draws beneath the tab bar. On iOS 26 the
- * marker tells UIKit which list drives minimize-on-scroll (its own lookup
- * misses lists on pushed screens), and UIKit insets the content for the glass
- * bar, tracking the bar as it minimizes. Plain function, no hooks: FlashList
- * calls renderScrollComponent directly.
+ * marker tells the tab bar which list drives minimize-on-scroll, and UIKit
+ * insets the content for the glass bars, tracking them as they minimize. Plain
+ * function, no hooks: FlashList calls renderScrollComponent directly.
+ *
+ * The marker doesn't reach the iOS 27 header minimize: UIKit finds that list
+ * itself and only searches a few levels down the first-subview chain. Keep the
+ * views above this one layout-only (no background, onLayout, borders...) so
+ * Fabric flattens them, and render it before any overlay siblings.
  */
 export function TabBarScrollView({
   ref,

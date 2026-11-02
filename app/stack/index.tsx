@@ -26,6 +26,11 @@ import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext
 import SubredditSearchScreen from "./SubredditSearchScreen";
 import { useTabBarInsets } from "../../contexts/TabBarInsetsContext";
 import { USES_NATIVE_TAB_BAR_MINIMIZE } from "../../contexts/TabScrollContext";
+import {
+  GlassHeaderInsetProvider,
+  IS_LIQUID_GLASS,
+  StatusBarTapShield,
+} from "../../utils/liquidGlass";
 import GalleryScreen from "./GalleryScreen";
 import ChatScreen from "./ChatScreen";
 
@@ -113,6 +118,21 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   ErrorPage: false,
 };
 
+// Main content is a TabBarScrollView with nothing fixed above it, so it can scroll under a glass header
+const GLASS_HEADER_ROUTES = new Set<keyof StackParamsList>([
+  "Subreddits",
+  "Home",
+  "InboxPage",
+  "PostsPage",
+  "SubredditSearchPage",
+  "PostDetailsPage",
+  "MultiredditPage",
+  "UserPage",
+  "GalleryPage",
+  "SidebarPage",
+  "SettingsPage",
+]);
+
 export type StackPageProps<Pages extends keyof StackParamsList> =
   NativeStackScreenProps<StackParamsList, Pages>;
 
@@ -157,9 +177,12 @@ export default function Stack() {
         screenOptions={({ route }) => ({
           headerTintColor: theme.iconOrTextButton.toString(),
           navigationBarColor: theme.background.toString(),
-          headerStyle: {
-            backgroundColor: theme.background.toString(),
-          },
+          headerTransparent:
+            IS_LIQUID_GLASS && GLASS_HEADER_ROUTES.has(route.name),
+          headerStyle:
+            IS_LIQUID_GLASS && GLASS_HEADER_ROUTES.has(route.name)
+              ? undefined
+              : { backgroundColor: theme.background.toString() },
           headerTitleStyle: {
             color: theme.text.toString(),
           },
@@ -170,12 +193,18 @@ export default function Stack() {
               : tabBarInsets.bottom,
             paddingLeft: tabBarInsets.left,
             paddingRight: tabBarInsets.right,
+            // Pages rely on this instead of their own root background; see TabBarScrollView
             backgroundColor: theme.background,
           },
         })}
-        screenLayout={({ children }) => (
+        screenLayout={({ route, children }) => (
           <StackFutureProvider futureRoutes={futureRoutes}>
-            {children}
+            <GlassHeaderInsetProvider>
+              {children}
+              {IS_LIQUID_GLASS && GLASS_HEADER_ROUTES.has(route.name) ? (
+                <StatusBarTapShield />
+              ) : null}
+            </GlassHeaderInsetProvider>
           </StackFutureProvider>
         )}
       >

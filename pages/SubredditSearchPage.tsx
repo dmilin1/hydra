@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { Post } from "../api/Posts";
 import { searchSubredditPosts } from "../api/gql/Search";
@@ -7,7 +7,6 @@ import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
-import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import useRedditDataState from "../utils/useRedditDataState";
 import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
@@ -21,8 +20,6 @@ export default function SubredditSearchPage({
 
   const [sort, sortTime] = new RedditURL(url).getSort();
   const searchText = new RedditURL(url).getQueryParam("q");
-
-  const { theme } = useContext(ThemeContext);
 
   const {
     data: posts,
@@ -50,14 +47,7 @@ export default function SubredditSearchPage({
   }, [searchText, sort, sortTime]);
 
   return (
-    <View
-      style={[
-        styles.postsContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.postsContainer}>
       <RedditDataScroller<Post>
         ListHeaderComponent={
           <SearchBar

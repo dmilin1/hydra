@@ -6,7 +6,6 @@ import { getUserContent } from "../api/gql/User";
 
 import { StackPageProps } from "../app/stack";
 import { FiltersContext } from "../contexts/SettingsContexts/FiltersContext";
-import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { filterSeenItems } from "../utils/filters/filterSeenItems";
 import useRedditDataState from "../utils/useRedditDataState";
 import RedditURL, { PageType } from "../utils/RedditURL";
@@ -31,7 +30,6 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
 
   const isCombinedSubredditFeed = redditURL.isCombinedSubredditFeed();
 
-  const { theme } = useContext(ThemeContext);
   const { subreddits, isSubscribed, isFavorite } = useContext(SubredditContext);
 
   const { filterPostsByText, filterPostsBySubreddit, getHideSeenURLStatus } =
@@ -106,14 +104,7 @@ export default function GalleryPage({ route }: StackPageProps<"GalleryPage">) {
   }, [subreddits, shouldFilterSeen, sort, sortTime]);
 
   return (
-    <View
-      style={[
-        styles.postsContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.postsContainer}>
       <AccessFailureComponent
         accessFailure={accessFailure}
         contentName={

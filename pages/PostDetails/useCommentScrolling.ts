@@ -5,6 +5,7 @@ import { Comment, PostDetail } from "../../api/PostDetail";
 import { CommentsHandle } from "../../components/RedditDataRepresentations/Post/PostParts/Comments";
 import { ScrollToNextButtonContext } from "../../contexts/ScrollToNextButtonContext";
 import { getCommentFromPath } from "../../utils/commentTree";
+import { useGlassHeaderInset } from "../../utils/liquidGlass";
 
 const FUZZY_DISTANCE = 5;
 
@@ -61,6 +62,10 @@ export default function useCommentScrolling(
   const { setScrollToNext, setScrollToPrevious } = useContext(
     ScrollToNextButtonContext,
   );
+  // The visible top is below a glass header, which the scroll view sits under
+  const topInset = useGlassHeaderInset();
+  const topInsetRef = useRef(topInset);
+  topInsetRef.current = topInset;
 
   const scrollView = useRef<MeasurableScrollView>(null);
   const topOfScroll = useRef<ViewInstance>(null);
@@ -73,12 +78,14 @@ export default function useCommentScrolling(
   const scrollChange = async (changeY: number) => {
     const scrollRef = scrollView.current;
     if (!scrollRef) return;
-    const scrollWindowTop = await measurePageY(scrollRef);
-    if (scrollWindowTop === null || changeY >= scrollWindowTop) return;
+    const scrollPageY = await measurePageY(scrollRef);
+    if (scrollPageY === null) return;
+    const visibleTop = scrollPageY + topInsetRef.current;
+    if (changeY >= visibleTop) return;
     const scrollDepth = await measurePageY(topOfScroll.current);
     if (scrollDepth === null) return;
     scrollRef.scrollTo({
-      y: scrollWindowTop - scrollDepth + (changeY - scrollWindowTop),
+      y: changeY - scrollDepth - topInsetRef.current,
       animated: true,
     });
   };
@@ -87,11 +94,12 @@ export default function useCommentScrolling(
     const handle = commentsHandle.current;
     const scrollRef = scrollView.current;
     if (!handle || !scrollRef) return;
-    const [scrollY, topY] = await Promise.all([
+    const [scrollWindowY, topY] = await Promise.all([
       measureWindowY(scrollRef),
       measureWindowY(topOfScroll.current),
     ]);
-    if (scrollY === null || topY === null) return;
+    if (scrollWindowY === null || topY === null) return;
+    const scrollY = scrollWindowY + topInsetRef.current;
     const commentYs = await Promise.all(
       handle.getTopLevelNodes().map(({ node }) => measureWindowY(node)),
     );
@@ -104,7 +112,7 @@ export default function useCommentScrolling(
         !(Math.abs(commentY - scrollY) < FUZZY_DISTANCE)
       ) {
         scrollRef.scrollTo({
-          y: goPrevious ? prevDelta : delta,
+          y: (goPrevious ? prevDelta : delta) - topInsetRef.current,
           animated: true,
         });
         break;
@@ -127,7 +135,10 @@ export default function useCommentScrolling(
       measureWindowY(topOfScroll.current),
     ]);
     if (threadY !== null && topY !== null) {
-      scrollView.current?.scrollTo({ y: threadY - topY, animated: true });
+      scrollView.current?.scrollTo({
+        y: threadY - topY - topInsetRef.current,
+        animated: true,
+      });
     }
     changeComment({ ...topOfThread, collapsed: true });
   };

@@ -17,7 +17,11 @@ import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { SubredditContext } from "../contexts/SubredditContext";
 import { useURLNavigation } from "../utils/navigation";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
-import { TabBarScrollView } from "../contexts/TabBarInsetsContext";
+import {
+  TabBarScrollView,
+  useTabBarInsets,
+} from "../contexts/TabBarInsetsContext";
+import { IS_LIQUID_GLASS, useGlassHeaderInset } from "../utils/liquidGlass";
 import { SubredditListItem } from "../api/Subreddits";
 import { Multi } from "../api/Multireddit";
 
@@ -235,6 +239,8 @@ export default function Subreddits() {
   const { theme } = useContext(ThemeContext);
   const { subreddits, multis } = useContext(SubredditContext);
   const flashListRef = useRef<FlashListRef<ScrollItem>>(null);
+  const headerInset = useGlassHeaderInset();
+  const tabBarInsets = useTabBarInsets();
   const [showPopular] = useMMKVBoolean(SHOW_POPULAR_BUTTON_STORAGE_KEY);
   const [showAll] = useMMKVBoolean(SHOW_ALL_BUTTON_STORAGE_KEY);
 
@@ -354,6 +360,7 @@ export default function Subreddits() {
       flashListRef.current?.scrollToIndex({
         index: targetItem,
         animated: false,
+        viewOffset: -headerInset,
       });
     }
   };
@@ -389,7 +396,19 @@ export default function Subreddits() {
           return "";
         }}
       />
-      <AlphabetScroller onLetterPress={scrollToLetter} />
+      {/* Keeps the scroller's percentage layout within the area between the glass bars */}
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            top: headerInset,
+            bottom: IS_LIQUID_GLASS ? tabBarInsets.bottom : 0,
+          },
+        ]}
+        pointerEvents="box-none"
+      >
+        <AlphabetScroller onLetterPress={scrollToLetter} />
+      </View>
     </View>
   );
 }
