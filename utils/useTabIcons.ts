@@ -41,10 +41,10 @@ async function loadAndroidIcons(): Promise<TabIcons> {
       Feather.getImageSource("search", GLYPH_OPTIONS),
       Ionicons.getImageSource("settings-sharp", GLYPH_OPTIONS),
     ])
-  ).map(
-    (source): TabIcon =>
-      () => ({ type: "image", source: source as ImageSourcePropType }),
-  );
+  ).map((source): TabIcon => () => ({
+    type: "image",
+    source: source as ImageSourcePropType,
+  }));
   return { Posts, Inbox, Account, Search, Settings };
 }
 

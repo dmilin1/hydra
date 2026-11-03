@@ -45,6 +45,7 @@ export default function Stats() {
 
   const { pushURL } = useURLNavigation();
 
+  const [now] = useState(() => Date.now());
   const [installTime, setInstallTime] = useState<number | null>(null);
 
   const startedTrackingTime = Math.max(
@@ -196,8 +197,7 @@ export default function Stats() {
       title: "Opens per Day",
       value: prettyNum(
         (stats[Stat.APP_FOREGROUNDS] ?? 0) /
-          ((new Date().getTime() - startedTrackingTime) /
-            (1000 * 60 * 60 * 24)),
+          ((now - startedTrackingTime) / (1000 * 60 * 60 * 24)),
         2,
       ),
       icon: (

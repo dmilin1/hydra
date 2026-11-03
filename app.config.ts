@@ -116,7 +116,7 @@ module.exports = {
           resizeMode: "contain",
           backgroundColor: "#000000",
           imageWidth: 150,
-        }
+        },
       ],
       "expo-font",
       "expo-image",
