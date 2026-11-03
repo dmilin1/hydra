@@ -48,7 +48,12 @@ export function StackFutureProvider({
   const windowWidth = useRef(Dimensions.get("window").width);
   const gestureStart = useRef<{ x: number; y: number } | null>(null);
 
-  const handleBeforeRemove: HandleBeforeRemoveType = () => {
+  const handleBeforeRemove: HandleBeforeRemoveType = (e) => {
+    // A reset replaces the stack, so its removed routes aren't somewhere to go forward to
+    if (e.data.action.type === "RESET") {
+      futureRoutes.current = [];
+      return;
+    }
     const popped = navigation.getState().routes.slice(-1)[0];
     futureRoutes.current.push(popped);
   };
