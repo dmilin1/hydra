@@ -136,6 +136,55 @@ function getDocumentationFiles(): string[] {
   return files.filter((file) => file.endsWith(".md"));
 }
 
+function readDocumentationFile(file: string) {
+  const filePath = path.join(DOCUMENTATION_DIR, file);
+  // Normalize CRLF so Windows checkouts produce the same text as CI
+  const rawContent = fs
+    .readFileSync(filePath, "utf-8")
+    .replace(/\r\n/g, "\n")
+    .trim();
+  return { name: path.basename(file, ".md"), ...parseMetadata(rawContent) };
+}
+
+// Verifies constants/documentation.ts matches the markdown without calling
+// OpenAI, so CI can run it on fork PRs that have no access to secrets.
+async function checkDocumentation() {
+  const { DOCUMENTATION } = await import(OUTPUT_FILE);
+  const generated: Documentation = DOCUMENTATION;
+  const files = getDocumentationFiles();
+  const problems: string[] = [];
+
+  for (const file of files) {
+    const { name, metadata, text } = readDocumentationFile(file);
+    const entry = generated[name];
+    if (!entry) {
+      problems.push(`${name}: missing from generated documentation`);
+    } else if (
+      entry.title !== metadata.title ||
+      entry.description !== metadata.description ||
+      entry.text !== text
+    ) {
+      problems.push(`${name}: generated documentation is out of date`);
+    } else if (!entry.vector?.length) {
+      problems.push(`${name}: missing embedding vector`);
+    }
+  }
+
+  const names = new Set(files.map((file) => path.basename(file, ".md")));
+  for (const name of Object.keys(generated)) {
+    if (!names.has(name)) {
+      problems.push(`${name}: generated but has no markdown file`);
+    }
+  }
+
+  if (problems.length > 0) {
+    console.error(problems.join("\n"));
+    console.error("\nRun `npm run generate-docs` and commit the result.");
+    process.exit(1);
+  }
+  console.log(`✓ Generated documentation matches ${files.length} files`);
+}
+
 function escapeString(str: string): string {
   return str
     .replace(/\\/g, "\\\\")
@@ -153,10 +202,7 @@ async function processBatch(
 ): Promise<{ name: string; entry: DocumentationEntry }[]> {
   const batch = files.slice(startIndex, startIndex + batchSize);
   const promises = batch.map(async (file) => {
-    const filePath = path.join(DOCUMENTATION_DIR, file);
-    const rawContent = fs.readFileSync(filePath, "utf-8").trim();
-    const name = path.basename(file, ".md");
-    const { metadata, text } = parseMetadata(rawContent);
+    const { name, metadata, text } = readDocumentationFile(file);
 
     try {
       const vector = await getEmbedding(text, apiKey);
@@ -240,7 +286,9 @@ async function main() {
   console.log("Done!");
 }
 
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+(process.argv.includes("--check") ? checkDocumentation() : main()).catch(
+  (error) => {
+    console.error("Fatal error:", error);
+    process.exit(1);
+  },
+);

@@ -13,6 +13,7 @@
     "format:check": "oxfmt --check",
     "tsc": "tsc --noEmit",
     "generate-docs": "bun run generateDocumentation.ts",
+    "check-docs": "bun run generateDocumentation.ts --check",
     "test": "bun test"
   },
   "jest": {
