@@ -7,7 +7,9 @@ import {
   SubredditDoesNotExistError,
 } from "../api/Posts";
 import { BannedUserError, UserDoesNotExistError } from "../api/User";
-import { NotLoggedInError } from "../api/gql/WebToken";
+import { NotLoggedInError, isWebSessionCurrent } from "../api/gql/WebToken";
+import { usePostVotes, usePostVoteSession } from "../contexts/PostVoteContext";
+import { applyPostVote } from "./postVotes";
 import { AccountContext } from "../contexts/AccountContext";
 import { ToastContext } from "../contexts/ToastContext";
 
@@ -18,6 +20,7 @@ export type FilterFunction<T extends RedditDataObject> = (
 
 type UseRedditDataStateProps<T extends RedditDataObject> = {
   loadData: (after: string | undefined) => Promise<T[]>;
+  syncPostVotes?: boolean;
   filterRules?: FilterFunction<T>[];
   /**
    * How many more pages to load when filters remove everything on a page,
@@ -68,12 +71,16 @@ type FilteredPage<T> = {
 
 export default function useRedditDataState<T extends RedditDataObject>({
   loadData,
+  syncPostVotes = false,
   filterRules = [],
   filterRetries = 5,
   refreshDependencies = [],
 }: UseRedditDataStateProps<T>) {
   const { currentUser } = useContext(AccountContext);
   const { showToast } = useContext(ToastContext);
+  const votes = usePostVotes();
+  const session = usePostVoteSession();
+  const loadedSession = useRef(session);
   const unfilteredAfter = useRef<string | undefined>(undefined);
   // Bumped by every refresh, so loads started before it are dropped instead
   // of landing in the new list (e.g. after a sort change).
@@ -88,6 +95,24 @@ export default function useRedditDataState<T extends RedditDataObject>({
   const [accessFailure, setAccessFailure] = useState<AccessFailure | null>(
     null,
   );
+
+  useEffect(() => {
+    if (!syncPostVotes || !session) return;
+    return votes.subscribe(session, (change) => {
+      setData((items) => {
+        if (loadedSession.current !== session || !isWebSessionCurrent(session))
+          return items;
+        let updated = items;
+        items.forEach((item, index) => {
+          const next = applyPostVote(item, change);
+          if (next === item) return;
+          if (updated === items) updated = [...items];
+          updated[index] = next;
+        });
+        return updated;
+      });
+    });
+  }, [votes, session, syncPostVotes]);
 
   const applyFilters = async (newData: T[], filters: FilterFunction<T>[]) =>
     filters.reduce(
@@ -138,31 +163,47 @@ export default function useRedditDataState<T extends RedditDataObject>({
     track(refresh(options));
 
   const loadNextPage = async () => {
-    if (hitFilterLimit) return;
+    if (hitFilterLimit || (syncPostVotes && !session)) return;
     const started = generation.current;
+    const voteLoad =
+      syncPostVotes && session ? votes.beginLoad(session) : undefined;
     try {
       const page = await loadFilteredPage(unfilteredAfter.current, [
         filterExisting,
         ...filterRules,
       ]);
-      if (started !== generation.current) return;
+      if (
+        started !== generation.current ||
+        (syncPostVotes && (!session || !isWebSessionCurrent(session)))
+      )
+        return;
       unfilteredAfter.current = page.cursor;
       if (page.accessFailure) setAccessFailure(page.accessFailure);
       if (page.data === null) {
         setFullyLoaded(true);
       } else if (page.data.length > 0) {
-        const newData = page.data;
+        const newData = page.data.map((item) => voteLoad?.apply(item) ?? item);
+        loadedSession.current = session;
         setData((current) => [...current, ...newData]);
       } else {
         setHitFilterLimit(true);
       }
     } catch (e) {
-      if (started === generation.current) showLoadError(e);
+      if (
+        started === generation.current &&
+        (!syncPostVotes || (session && isWebSessionCurrent(session)))
+      )
+        showLoadError(e);
+    } finally {
+      voteLoad?.finish();
     }
   };
 
   const refresh = async ({ clearBeforeLoading = false }) => {
+    if (syncPostVotes && !session) return;
     const started = ++generation.current;
+    const voteLoad =
+      syncPostVotes && session ? votes.beginLoad(session) : undefined;
     if (clearBeforeLoading) {
       setData([]);
     }
@@ -171,14 +212,28 @@ export default function useRedditDataState<T extends RedditDataObject>({
     setHitFilterLimit(false);
     try {
       const page = await loadFilteredPage(undefined, filterRules);
-      if (started !== generation.current) return;
+      if (
+        started !== generation.current ||
+        (syncPostVotes && (!session || !isWebSessionCurrent(session)))
+      )
+        return;
       unfilteredAfter.current = page.cursor;
       if (page.accessFailure) setAccessFailure(page.accessFailure);
       setHitFilterLimit(page.data?.length === 0);
       setFullyLoaded(page.data === null);
-      setData(page.data ?? []);
+      const newData = (page.data ?? []).map(
+        (item) => voteLoad?.apply(item) ?? item,
+      );
+      loadedSession.current = session;
+      setData(newData);
     } catch (e) {
-      if (started === generation.current) showLoadError(e);
+      if (
+        started === generation.current &&
+        (!syncPostVotes || (session && isWebSessionCurrent(session)))
+      )
+        showLoadError(e);
+    } finally {
+      voteLoad?.finish();
     }
   };
 
@@ -195,6 +250,19 @@ export default function useRedditDataState<T extends RedditDataObject>({
       });
       return newData;
     });
+  };
+
+  const updateData = (
+    target: Pick<T, "id" | "type">,
+    update: (item: T) => T,
+  ) => {
+    setData((items) =>
+      items.map((item) =>
+        item.id === target.id && item.type === target.type
+          ? update(item)
+          : item,
+      ),
+    );
   };
 
   const deleteData = (deletedData?: T[]) => {
@@ -225,24 +293,31 @@ export default function useRedditDataState<T extends RedditDataObject>({
 
   /**
    * A page that failed because of the account (logged out, private or banned
-   * subreddit) may load for the next one. Pages that loaded keep what they
-   * show, so a switch doesn't reload every open page at once.
+   * subreddit) may load for the next one. Vote-bearing pages reload because
+   * the previous account's selection cannot initialize the next account's vote.
    */
   const account = currentUser?.userName;
   const lastAccount = useRef(account);
+  const lastVoteSession = useRef(session);
   useEffect(() => {
-    if (lastAccount.current === account) return;
+    if (
+      lastAccount.current === account &&
+      (!syncPostVotes || lastVoteSession.current === session)
+    )
+      return;
     lastAccount.current = account;
-    if (accessFailure) {
+    lastVoteSession.current = session;
+    if (syncPostVotes ? session : accessFailure) {
       refreshData({ clearBeforeLoading: true });
     }
-  }, [account]);
+  }, [account, session]);
 
   return {
-    data,
+    data: syncPostVotes && loadedSession.current !== session ? [] : data,
     loadMoreData,
     refreshData,
     modifyData,
+    updateData,
     deleteData,
     fullyLoaded,
     hitFilterLimit,

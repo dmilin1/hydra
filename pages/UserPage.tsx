@@ -41,11 +41,13 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     loadMoreData: loadMoreUserContent,
     refreshData: refreshUserContent,
     modifyData: modifyUserContent,
+    updateData,
     deleteData: deleteUserContent,
     fullyLoaded,
     hitFilterLimit,
     accessFailure,
   } = useRedditDataState<UserContent>({
+    syncPostVotes: true,
     loadData: async (after) =>
       await getUserContent(url, { after, type: contentType }),
     refreshDependencies: [sort, sortTime, contentType],
@@ -135,7 +137,11 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
               return (
                 <PostComponent
                   post={content}
-                  setPost={(newPost) => modifyUserContent([newPost])}
+                  updatePost={(change) =>
+                    updateData(content, (current) =>
+                      current.type === "post" ? change(current) : current,
+                    )
+                  }
                 />
               );
             }

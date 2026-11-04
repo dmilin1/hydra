@@ -25,10 +25,11 @@ export default function SubredditSearchPage({
     data: posts,
     loadMoreData: loadMorePosts,
     refreshData: refreshPosts,
-    modifyData: modifyPosts,
+    updateData,
     fullyLoaded,
     hitFilterLimit,
   } = useRedditDataState<Post>({
+    syncPostVotes: true,
     loadData: async (after) => await searchSubredditPosts(url, { after }),
     refreshDependencies: [searchText, sort, sortTime],
   });
@@ -69,9 +70,7 @@ export default function SubredditSearchPage({
         renderItem={({ item }) => (
           <PostComponent
             post={item}
-            setPost={(newPost) => {
-              modifyPosts([newPost]);
-            }}
+            updatePost={(change) => updateData(item, change)}
           />
         )}
       />

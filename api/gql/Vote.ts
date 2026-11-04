@@ -2,6 +2,7 @@ import { assertOk, defineOperation, gql } from "./GqlApi";
 import { VoteOption } from "../Posts";
 import { UserContent } from "../User";
 import { modifyStat, Stat } from "../../db/functions/Stats";
+import type { WebSession } from "./WebToken";
 
 const UpdatePostVoteState = defineOperation(
   "UpdatePostVoteState",
@@ -27,14 +28,27 @@ export async function vote(
   item: UserContent,
   voteOption: VoteOption,
 ): Promise<VoteOption> {
-  const dir = item.userVote === voteOption ? VoteOption.NoVote : voteOption;
+  return setVote(
+    item,
+    item.userVote === voteOption ? VoteOption.NoVote : voteOption,
+  );
+}
+
+/** Sends an absolute vote; interaction handlers decide when to toggle it. */
+export async function setVote(
+  item: Pick<UserContent, "name">,
+  dir: VoteOption,
+  session?: WebSession,
+): Promise<VoteOption> {
   const isPost = item.name.startsWith("t3_");
   const [operation, field, idKey] = isPost
     ? [UpdatePostVoteState, "updatePostVoteState", "postId"]
     : [UpdateCommentVoteState, "updateCommentVoteState", "commentId"];
-  const data = await gql(operation, {
-    input: { [idKey]: item.name, voteState: VOTE_STATES[dir] },
-  });
+  const data = await gql(
+    operation,
+    { input: { [idKey]: item.name, voteState: VOTE_STATES[dir] } },
+    session,
+  );
   assertOk(data[field], "Failed to vote");
 
   if (dir === VoteOption.UpVote) {
