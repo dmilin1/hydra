@@ -20,7 +20,9 @@ import {
   usePostSummaries,
 } from "./PostParts/Summaries";
 import { PostDetail } from "../../../api/PostDetail";
-import { vote } from "../../../api/gql/Vote";
+import usePostVote from "../../../utils/usePostVote";
+import useVoteBounce from "../../../utils/useVoteBounce";
+import Animated from "react-native-reanimated";
 import { VoteOption } from "../../../api/Posts";
 import { saveItem } from "../../../api/gql/Save";
 import { ModalContext } from "../../../contexts/ModalContext";
@@ -35,6 +37,8 @@ import * as Haptics from "expo-haptics";
 import { shareURL } from "../../../utils/sharing";
 import { textDirectionStyle } from "../../../utils/textDirection";
 import useWriteWithToast from "../../../utils/useWriteWithToast";
+
+const AnimatedTouchable = Animated.createAnimatedComponent(Touchable);
 
 type PostDetailsComponentProps = {
   postDetail: PostDetail;
@@ -52,6 +56,12 @@ export default function PostDetailsComponent({
   const { pushURL } = useURLNavigation();
 
   const { theme } = useContext(ThemeContext);
+  const currentVoteColor =
+    postDetail.userVote === VoteOption.UpVote
+      ? theme.upvote
+      : postDetail.userVote === VoteOption.DownVote
+        ? theme.downvote
+        : theme.subtleText;
   const runWrite = useWriteWithToast();
   const { setModal } = useContext(ModalContext);
   const { tapToCollapsePost } = useContext(PostSettingsContext);
@@ -65,14 +75,12 @@ export default function PostDetailsComponent({
 
   const contextDepth = Number(new RedditURL(url).getQueryParam("context") ?? 0);
 
-  const voteOnPost = async (voteOption: VoteOption) => {
-    const result = await runWrite("vote", () => vote(postDetail, voteOption));
-    if (result === undefined) return;
-    setPostDetail({
-      ...postDetail,
-      upvotes: postDetail.upvotes - postDetail.userVote + result,
-      userVote: result,
-    });
+  const pressVote = usePostVote(postDetail);
+  const upBounce = useVoteBounce();
+  const downBounce = useVoteBounce();
+  const voteOnPost = (direction: VoteOption) => {
+    (direction === VoteOption.UpVote ? upBounce : downBounce).bounce();
+    pressVote(direction);
   };
 
   return (
@@ -157,12 +165,12 @@ export default function PostDetailsComponent({
               </Touchable>
             </View>
             <View style={[styles.metadataRow, { marginTop: 5 }]}>
-              <Feather name="arrow-up" size={15} color={theme.subtleText} />
+              <Feather name="arrow-up" size={15} color={currentVoteColor} />
               <Text
                 style={[
                   styles.smallText,
                   {
-                    color: theme.subtleText,
+                    color: currentVoteColor,
                     marginRight: 12,
                   },
                 ]}
@@ -242,9 +250,10 @@ export default function PostDetailsComponent({
           },
         ]}
       >
-        <Touchable
+        <AnimatedTouchable
           style={[
             styles.buttonsContainer,
+            upBounce.style,
             {
               backgroundColor:
                 postDetail.userVote === VoteOption.UpVote
@@ -268,10 +277,11 @@ export default function PostDetailsComponent({
                 : theme.iconPrimary
             }
           />
-        </Touchable>
-        <Touchable
+        </AnimatedTouchable>
+        <AnimatedTouchable
           style={[
             styles.buttonsContainer,
+            downBounce.style,
             {
               backgroundColor:
                 postDetail.userVote === VoteOption.DownVote
@@ -295,7 +305,7 @@ export default function PostDetailsComponent({
                 : theme.iconPrimary
             }
           />
-        </Touchable>
+        </AnimatedTouchable>
         <Touchable
           style={[
             styles.buttonsContainer,
@@ -306,15 +316,17 @@ export default function PostDetailsComponent({
           activeOpacity={0.2}
           animationDuration={{ in: 0, out: 150 }}
           onPress={async () => {
+            const nextSaved = !postDetail.saved;
             const saved = await runWrite(
               postDetail.saved ? "unsave" : "save",
-              () => saveItem(postDetail, !postDetail.saved),
+              () => saveItem(postDetail, nextSaved),
             );
             if (!saved) return;
-            setPostDetail({
-              ...postDetail,
-              saved: !postDetail.saved,
-            });
+            setPostDetail((current) =>
+              current?.name === postDetail.name
+                ? { ...current, saved: nextSaved }
+                : current,
+            );
           }}
         >
           <FontAwesome

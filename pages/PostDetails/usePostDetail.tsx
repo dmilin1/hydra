@@ -14,6 +14,12 @@ import SortAndContext, {
   ContextTypes,
   SortTypes,
 } from "../../components/Navbar/SortAndContext";
+import {
+  usePostVotes,
+  usePostVoteSession,
+} from "../../contexts/PostVoteContext";
+import { isWebSessionCurrent } from "../../api/gql/WebToken";
+import { applyPostVote } from "../../utils/postVotes";
 import { AccountContext } from "../../contexts/AccountContext";
 import { ToastContext } from "../../contexts/ToastContext";
 import { modifyStat, Stat } from "../../db/functions/Stats";
@@ -26,7 +32,6 @@ import {
 } from "../../utils/commentTree";
 import RedditURL from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
-import { isAccessFailure } from "../../utils/useRedditDataState";
 
 /**
  * Owns the postDetail state and every mutation of the comment tree. The tree
@@ -37,6 +42,9 @@ export default function usePostDetail(url: string, isSplitView: boolean) {
   const navigation = useURLNavigation();
   const { currentUser } = useContext(AccountContext);
   const { showToast } = useContext(ToastContext);
+  const votes = usePostVotes();
+  const session = usePostVoteSession();
+  const loadedSession = useRef(session);
 
   const [postDetail, setPostDetail] = useState<PostDetail>();
   const [loadError, setLoadError] = useState<Error | null>(null);
@@ -45,20 +53,36 @@ export default function usePostDetail(url: string, isSplitView: boolean) {
   // finish loading after a later one started.
   const latestLoad = useRef(0);
 
+  useEffect(() => {
+    if (!session) return;
+    return votes.subscribe(session, (change) => {
+      setPostDetail((current) =>
+        current &&
+        loadedSession.current === session &&
+        isWebSessionCurrent(session)
+          ? applyPostVote(current, change)
+          : current,
+      );
+    });
+  }, [votes, session]);
+
   const loadPostDetails = async () => {
+    if (!session) return;
     const load = ++latestLoad.current;
+    const voteLoad = votes.beginLoad(session);
     setRefreshing(true);
     setLoadError(null);
     if (isSplitView) {
       setPostDetail(undefined);
     }
     // A failed refresh keeps the post that's already shown.
-    const keepsPost = !isSplitView && !!postDetail;
+    const keepsPost =
+      !isSplitView && !!postDetail && loadedSession.current === session;
     let newPostDetail: PostDetail | undefined;
     try {
       newPostDetail = await getPostsDetail(url);
     } catch (e) {
-      if (load !== latestLoad.current) return;
+      if (load !== latestLoad.current || !isWebSessionCurrent(session)) return;
       const error = e instanceof Error ? e : new Error(String(e));
       if (keepsPost) {
         showToast({ title: "Couldn't refresh", body: error.message });
@@ -67,15 +91,19 @@ export default function usePostDetail(url: string, isSplitView: boolean) {
       }
       return;
     } finally {
-      if (load === latestLoad.current) setRefreshing(false);
+      voteLoad.finish();
+      if (load === latestLoad.current && isWebSessionCurrent(session))
+        setRefreshing(false);
     }
-    if (load !== latestLoad.current) return;
+    if (load !== latestLoad.current || !isWebSessionCurrent(session)) return;
     if (!newPostDetail) {
       if (!keepsPost) {
         setLoadError(new Error("the subreddit's warning was declined"));
       }
       return;
     }
+    newPostDetail = voteLoad.apply(newPostDetail);
+    loadedSession.current = session;
     setLoadError(null);
     setPostDetail(newPostDetail);
 
@@ -179,13 +207,16 @@ export default function usePostDetail(url: string, isSplitView: boolean) {
     loadPostDetails();
   }, [url]);
 
-  // Like list pages: logging in or switching accounts may fix the error.
+  const lastSession = useRef(session);
+  // Reload vote ownership when accounts change; stale selections must not seed a vote.
   useEffect(() => {
-    if (isAccessFailure(loadError)) loadPostDetails();
-  }, [currentUser?.userName]);
+    if (lastSession.current === session) return;
+    lastSession.current = session;
+    loadPostDetails();
+  }, [session]);
 
   return {
-    postDetail,
+    postDetail: loadedSession.current === session ? postDetail : undefined,
     setPostDetail,
     loadError,
     refreshing,

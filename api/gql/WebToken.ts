@@ -29,6 +29,42 @@ const EXPIRY_MARGIN_MS = 5 * 60 * 1000;
 const MIN_TOKEN_AGE_FOR_REFRESH_MS = 60 * 1000;
 
 let pendingRefresh: Promise<string> | null = null;
+let sessionGeneration = 0;
+
+export type WebSession = { accountId: string; generation: number };
+
+/** Capture the UI's account, not whichever account a later token lookup finds. */
+export function captureWebSession(accountId: string): WebSession {
+  return {
+    accountId: accountId.startsWith("t2_") ? accountId : `t2_${accountId}`,
+    generation: sessionGeneration,
+  };
+}
+
+export function invalidateWebSession() {
+  sessionGeneration++;
+}
+
+export function isWebSessionCurrent(session: WebSession): boolean {
+  return session.generation === sessionGeneration;
+}
+
+export class WebSessionChangedError extends Error {
+  constructor() {
+    super("The authenticated session changed");
+    this.name = "WebSessionChangedError";
+  }
+}
+
+/** Check the exact bearer token immediately before sending, without an await. */
+export function assertWebSession(session: WebSession, token?: string) {
+  if (
+    !isWebSessionCurrent(session) ||
+    (token !== undefined && getClaims(token)?.lid !== session.accountId)
+  ) {
+    throw new WebSessionChangedError();
+  }
+}
 
 /**
  * The token the last refresh got, and the session cookie it was for. It's

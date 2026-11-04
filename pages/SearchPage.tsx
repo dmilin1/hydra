@@ -39,11 +39,12 @@ export default function SearchPage() {
     data: searchResults,
     loadMoreData: loadMoreSearchResults,
     refreshData: refreshSearchResults,
-    modifyData: modifySearchResults,
+    updateData,
     deleteData: deleteSearchResults,
     fullyLoaded,
     hitFilterLimit,
   } = useRedditDataState<SearchResult>({
+    syncPostVotes: true,
     loadData: async (after) => {
       if (!search.current) {
         if (searchResults.length) {
@@ -140,7 +141,11 @@ export default function SearchPage() {
             return (
               <PostComponent
                 post={item}
-                setPost={(newPost) => modifySearchResults([newPost])}
+                updatePost={(change) =>
+                  updateData(item, (current) =>
+                    current.type === "post" ? change(current) : current,
+                  )
+                }
               />
             );
           if (item.type === "subreddit")

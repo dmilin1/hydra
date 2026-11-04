@@ -3,9 +3,11 @@ import * as Sentry from "@sentry/react-native";
 import { USER_AGENT } from "../UserAgent";
 import safeFetch from "../../utils/safeFetch";
 import {
+  assertWebSession,
   getWebToken,
   RecentTokenRejectedError,
   refreshWebToken,
+  WebSession,
 } from "./WebToken";
 
 const GQL_URL = "https://cf.gql-fed.reddit.com/";
@@ -54,7 +56,9 @@ async function send(
   operation: GqlOperation,
   variables: Record<string, any>,
   token: string,
+  session?: WebSession,
 ) {
+  if (session) assertWebSession(session, token);
   return await safeFetch(GQL_URL, {
     method: "POST",
     cache: "no-store",
@@ -84,10 +88,13 @@ async function send(
 export async function gql(
   operation: GqlOperation,
   variables: Record<string, any> = {},
+  session?: WebSession,
 ): Promise<any> {
+  if (session) assertWebSession(session);
   const token = await getWebToken();
-  let res = await send(operation, variables, token);
+  let res = await send(operation, variables, token, session);
   if (res.status === 401 || res.status === 403) {
+    if (session) assertWebSession(session);
     // Reddit's edge rejects invalid or revoked tokens with a 403 HTML page
     // (401 means no token at all). Retry once with a new token, unless this
     // one was only just issued: then the rejection is about something else,
@@ -96,7 +103,7 @@ export async function gql(
       if (e instanceof RecentTokenRejectedError) return null;
       throw e;
     });
-    if (newToken) res = await send(operation, variables, newToken);
+    if (newToken) res = await send(operation, variables, newToken, session);
   }
 
   let json: GqlResponse;
