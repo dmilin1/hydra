@@ -30,6 +30,8 @@ module.exports = {
       bundleIdentifier: "com.dmilin.hydra",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        // iPad rotates freely; the portrait default below is for iPhones only
+        "EXDefaultScreenOrientationMask~ipad": "UIInterfaceOrientationMaskAll",
       },
     },
     android: {
@@ -76,6 +78,7 @@ module.exports = {
         },
       ],
       "expo-notifications",
+      "./plugins/withScreensGamma",
       [
         "./plugins/withAppIcons",
         {
@@ -100,7 +103,10 @@ module.exports = {
       [
         "expo-screen-orientation",
         {
-          initialOrientation: "DEFAULT",
+          // A passive default, not a lockAsync request: iOS keeps an accepted
+          // request after an iPhone Duo unfolds, but ignores this default on
+          // the inner display, so the app rotates unfolded and locks folded.
+          initialOrientation: "PORTRAIT_UP",
         },
       ],
       [
@@ -110,7 +116,7 @@ module.exports = {
           resizeMode: "contain",
           backgroundColor: "#000000",
           imageWidth: 150,
-        }
+        },
       ],
       "expo-font",
       "expo-image",

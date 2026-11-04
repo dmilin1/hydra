@@ -19,6 +19,11 @@ const AddSubredditsToMultireddit = defineOperation(
   "3dbe9de6840b240e9e45480e384fdc52dd3ea633afd18b1984a8d3dc0381fb3e",
 );
 
+const GetProfilePostFlairTemplates = defineOperation(
+  "GetProfilePostFlairTemplates",
+  "2802ebddb0635b51e36e2b6e49002f184e78df0fd5c433105a0070859d71c239",
+);
+
 function formatMulti(node: any): Multi {
   return {
     id: node.name,
@@ -63,22 +68,44 @@ export async function getMyMultis(): Promise<Multi[]> {
 }
 
 /**
- * Adds a subreddit to one of the user's multireddits. Returns the added
- * subreddit, so callers can update their copy of the multireddit: right after
- * the change, Reddit can still return the old list.
+ * A user's profile as a multireddit entry. Profiles are subreddits named
+ * u_<name>, but SubredditInfoByName doesn't find them; this is the cheapest
+ * of the app's queries that returns a profile's id by username.
+ */
+async function getProfileListItem(userName: string) {
+  const data = await gql(GetProfilePostFlairTemplates, {
+    username: userName,
+    range: "ALL",
+  });
+  const profile = data.redditorInfoByName?.profileInfo;
+  if (!profile?.id) {
+    throw new Error(`u/${userName} does not exist`);
+  }
+  return formatFollowedUser(userName, profile);
+}
+
+/**
+ * Adds a subreddit, or a user's profile (u_<name>), to one of the user's
+ * multireddits. Returns the added item, so callers can update their copy of
+ * the multireddit: right after the change, Reddit can still return the old
+ * list.
  */
 export async function addToMulti(
   multi: Multi,
   subredditName: string,
 ): Promise<SubredditListItem> {
-  const info = await getAvailableSubreddit(subredditName);
+  // Subreddit names can't start with u_, so these are always users.
+  const userName = subredditName.match(/^u_(.+)$/)?.[1];
+  const added = userName
+    ? await getProfileListItem(userName)
+    : formatSubredditBase(await getAvailableSubreddit(subredditName));
   const data = await gql(AddSubredditsToMultireddit, {
     // multiLabel is the multireddit's path, not its name.
-    input: { multiLabel: multi.url, subredditIds: [info.id] },
+    input: { multiLabel: multi.url, subredditIds: [`t5_${added.id}`] },
   });
   const result = data.addSubredditsToMultireddit;
   assertOk(result, "Failed to add to multireddit");
-  return formatSubredditBase(info);
+  return added;
 }
 
 /**

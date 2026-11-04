@@ -59,17 +59,14 @@ export default function PostMedia({
   return post.crossPost ? (
     <CrossPost post={post.crossPost} />
   ) : (
-    <>
+    /**
+     * Must not be flattened. Otherwise the blur cover gets inserted directly into the post's RNGH
+     * Touchable, whose iOS underlay sublayer at index 0 shifts later inserts below their siblings,
+     * drawing the post contents on top of the blur cover in recycled cells.
+     */
+    <View collapsable={false}>
       {/* On Android, the blur cover becomes see-thru when the post has been read. Making the contents invisible fixes this problem. */}
-      <View
-        style={{ opacity: Platform.OS === "android" && blur ? 0 : 1 }}
-        /**
-         * Fabric does some magic view flattening behind the scenes that causes this view to sometimes
-         * not be rendered. This causes the text on posts to not get blurred. Setting collapsable to
-         * false hits to Fabric not to do the flattening optimization.
-         */
-        collapsable={false}
-      >
+      <View style={{ opacity: Platform.OS === "android" && blur ? 0 : 1 }}>
         {post.videos.length > 0 && !post.crossCommentLink ? (
           <View style={styles.videoContainer}>
             <VideoPlayer post={post} />
@@ -158,7 +155,7 @@ export default function PostMedia({
           </View>
         </Touchable>
       )}
-    </>
+    </View>
   );
 }
 

@@ -1,16 +1,21 @@
 import { useState, ReactNode, useRef, useEffect, useMemo } from "react";
-import { Animated, Dimensions, StyleSheet } from "react-native";
+import { Animated, StyleSheet } from "react-native";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { ModalContext } from "./ModalContext";
 
 export function ModalProvider({ children }: React.PropsWithChildren) {
   const [modal, setModal] = useState<ReactNode>(null);
-  const modalPosition = useRef(
-    new Animated.Value(Dimensions.get("window").height),
-  ).current;
+  const { height } = useSafeAreaFrame();
+  const modalPosition = useRef(new Animated.Value(height)).current;
+
+  useEffect(() => {
+    // Keeps the closed sheet off-screen when the window resizes (iPhone Duo fold)
+    if (!modal) modalPosition.setValue(height);
+  }, [height]);
 
   useEffect(() => {
     Animated.spring(modalPosition, {
-      toValue: modal ? 0 : Dimensions.get("window").height,
+      toValue: modal ? 0 : height,
       bounciness: 2,
       useNativeDriver: true,
     }).start();

@@ -1,12 +1,7 @@
-import Ionicons from "@react-native-vector-icons/ionicons";
-import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
-import MaterialIcons from "@react-native-vector-icons/material-icons";
-import Entypo from "@react-native-vector-icons/entypo";
-import Feather from "@react-native-vector-icons/feather";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeBottomTabNavigator } from "@react-navigation/bottom-tabs/unstable";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useContext, useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View } from "react-native";
 import {
   NavigationContainerRef,
   StackActions,
@@ -20,10 +15,15 @@ import { InboxContext } from "../../contexts/InboxContext";
 import { TabSettingsContext } from "../../contexts/SettingsContexts/TabSettingsContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import Stack from "../stack";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
-import { TabScrollContext } from "../../contexts/TabScrollContext";
+import {
+  TabBarHiddenContext,
+  TabScrollContext,
+  USES_NATIVE_TAB_BAR_MINIMIZE,
+} from "../../contexts/TabScrollContext";
+import { TabBarInsetsProvider } from "../../contexts/TabBarInsetsContext";
 import useHandleIncomingURLs from "../../utils/useHandleIncomingURLs";
 import { AppNavigationProp } from "../../utils/navigationTypes";
+import useTabIcons from "../../utils/useTabIcons";
 import { expoDb } from "../../db";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import QuickAccountSwap from "../../components/Modals/QuickAccountSwap";
@@ -38,9 +38,14 @@ export type TabParamsList = {
   Settings: undefined;
 };
 
-const Tab = createBottomTabNavigator();
+const Tab = createNativeBottomTabNavigator<TabParamsList>();
 
-const TAB_BAR_HEIGHT = 90;
+// Glass tab items grow with their title; keep a long username from widening the Account tab
+const MAX_TAB_LABEL_LENGTH = 10;
+const shortLabel = (label: string) =>
+  label.length > MAX_TAB_LABEL_LENGTH
+    ? `${label.slice(0, MAX_TAB_LABEL_LENGTH - 1)}…`
+    : label;
 
 export default function Tabs() {
   if (__DEV__) {
@@ -56,8 +61,10 @@ export default function Tabs() {
   const { loginInitialized, currentUser, accounts } =
     useContext(AccountContext);
   const { inboxCount } = useContext(InboxContext);
-  const { showUsername } = useContext(TabSettingsContext);
-  const { tabBarTranslateY } = useContext(TabScrollContext);
+  const { showUsername, hideTabsOnScroll } = useContext(TabSettingsContext);
+  const tabBarHidden = useContext(TabBarHiddenContext);
+  const { showTabBar } = useContext(TabScrollContext);
+  const tabIcons = useTabIcons();
 
   const [showSubredditSearch, setShowSubredditSearch] = useState(false);
   const [showAccountSwap, setShowAccountSwap] = useState(false);
@@ -71,10 +78,7 @@ export default function Tabs() {
   }, [loginInitialized]);
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: theme.background }}
-      edges={["right", "left"]}
-    >
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <QuickSubredditSearch
         show={showSubredditSearch}
         onExit={() => setShowSubredditSearch(false)}
@@ -83,51 +87,57 @@ export default function Tabs() {
         show={showAccountSwap}
         onExit={() => setShowAccountSwap(false)}
       />
-      {loginInitialized ? (
+      {loginInitialized && tabIcons ? (
         <Tab.Navigator
           screenOptions={{
+            lazy: true,
+            tabBarActiveTintColor: theme.iconPrimary as string,
+            tabBarInactiveTintColor: theme.subtleText as string,
+            // Explicit so native tabs don't parse the tint with color.js, which throws on malformed custom theme colors
+            tabBarActiveIndicatorColor: theme.tint,
+            tabBarLabelVisibilityMode: "labeled",
             tabBarStyle: {
-              position: "absolute",
-              paddingHorizontal: 10,
-              bottom: -TAB_BAR_REMOVED_PADDING_BOTTOM,
               backgroundColor: theme.background,
-              borderTopWidth: 0,
-              transform: [
-                {
-                  translateY: tabBarTranslateY.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, TAB_BAR_HEIGHT],
-                  }),
-                },
-              ],
-              opacity: tabBarTranslateY.interpolate({
-                inputRange: [0, 1],
-                outputRange: [1, 0],
-              }),
+              display: tabBarHidden ? "none" : "flex",
             },
-            // This is broken in the latest version of react-navigation:
-            // https://github.com/react-navigation/react-navigation/issues/12755
-            // animation: 'fade',
+            tabBarMinimizeBehavior: USES_NATIVE_TAB_BAR_MINIMIZE
+              ? hideTabsOnScroll
+                ? "onScrollDown"
+                : "none"
+              : undefined,
+            // Re-taps are handled in tabPress below
+            tabBarRepeatedPressBehavior: {
+              popToTop: false,
+              scrollToTop: false,
+            },
+            // Screens pad themselves from TabBarInsetsContext instead
+            overrideScrollViewContentInsetAdjustmentBehavior: false,
           }}
+          screenLayout={({ children }) => (
+            <TabBarInsetsProvider>{children}</TabBarInsetsProvider>
+          )}
           screenListeners={() => ({
+            // A hidden bar would otherwise stay hidden on a tab it was never scrolled away on
+            focus: showTabBar,
             tabPress: (e) => {
+              // Fires before the switch, so state still holds the previous tab
               const state = navigation.getState();
               const stackItem = state.routes[state.index];
-              const isCurrentTab = stackItem.key === e.target;
-              const stackHeight = stackItem.state?.index;
-              if (isCurrentTab && stackHeight && stackHeight > 0) {
+              if (stackItem.key !== e.target) {
+                if (e.target?.startsWith("Search")) {
+                  oneTimeAlert(
+                    "quickSearchRetapGuideAlert",
+                    "Did you know?",
+                    "You can quick search for subreddits by tapping the search tab again.",
+                  );
+                }
+                return;
+              }
+              if ((stackItem.state?.index ?? 0) > 0) {
                 navigation.dispatch(StackActions.pop());
-                e.preventDefault();
+                return;
               }
-              if (e.target?.startsWith("Search")) {
-                oneTimeAlert(
-                  "quickSearchGuideAlert",
-                  "Did you know?",
-                  "You can quick search for subreddits by long pressing the search tab.",
-                );
-              }
-            },
-            tabLongPress: (e) => {
+              // Native tabs have no long press, so re-tapping a tab at its root opens its shortcut
               if (e.target?.startsWith("Search")) {
                 setShowSubredditSearch(true);
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -143,16 +153,7 @@ export default function Tabs() {
             name="Posts"
             options={{
               title: "Posts",
-              headerShown: false,
-              tabBarIcon: ({ focused, size }) => (
-                <MaterialCommunityIcons
-                  name="post"
-                  size={size}
-                  color={focused ? theme.iconPrimary : theme.subtleText}
-                />
-              ),
-              tabBarActiveTintColor: theme.iconOrTextButton as string,
-              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarIcon: tabIcons.Posts,
               tabBarLabel: "Posts",
             }}
             component={Stack}
@@ -161,16 +162,7 @@ export default function Tabs() {
             name="Inbox"
             options={{
               title: "Inbox",
-              headerShown: false,
-              tabBarIcon: ({ focused, size }) => (
-                <Entypo
-                  name="mail"
-                  size={size}
-                  color={focused ? theme.iconPrimary : theme.subtleText}
-                />
-              ),
-              tabBarActiveTintColor: theme.iconOrTextButton as string,
-              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarIcon: tabIcons.Inbox,
               tabBarLabel: "Inbox",
               tabBarBadge: inboxCount > 0 ? inboxCount : undefined,
             }}
@@ -180,18 +172,9 @@ export default function Tabs() {
             name="Account"
             options={{
               title: currentUser?.userName ?? "Accounts",
-              headerShown: false,
-              tabBarIcon: ({ focused, size }) => (
-                <MaterialIcons
-                  name="account-circle"
-                  size={size}
-                  color={focused ? theme.iconPrimary : theme.subtleText}
-                />
-              ),
-              tabBarActiveTintColor: theme.iconOrTextButton as string,
-              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarIcon: tabIcons.Account,
               tabBarLabel: showUsername
-                ? (currentUser?.userName ?? "Account")
+                ? shortLabel(currentUser?.userName ?? "Account")
                 : "Account",
             }}
             component={Stack}
@@ -200,16 +183,7 @@ export default function Tabs() {
             name="Search"
             options={{
               title: "Search",
-              headerShown: false,
-              tabBarIcon: ({ focused, size }) => (
-                <Feather
-                  name="search"
-                  size={size}
-                  color={focused ? theme.iconPrimary : theme.subtleText}
-                />
-              ),
-              tabBarActiveTintColor: theme.iconOrTextButton as string,
-              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarIcon: tabIcons.Search,
               tabBarLabel: "Search",
             }}
             component={Stack}
@@ -218,16 +192,7 @@ export default function Tabs() {
             name="Settings"
             options={{
               title: "Settings",
-              headerShown: false,
-              tabBarIcon: ({ focused, size }) => (
-                <Ionicons
-                  name="settings-sharp"
-                  size={size}
-                  color={focused ? theme.iconPrimary : theme.subtleText}
-                />
-              ),
-              tabBarActiveTintColor: theme.iconOrTextButton as string,
-              tabBarInactiveTintColor: theme.subtleText as string,
+              tabBarIcon: tabIcons.Settings,
               tabBarLabel: "Settings",
             }}
             component={Stack}
@@ -236,6 +201,6 @@ export default function Tabs() {
       ) : (
         <LoadingSplash />
       )}
-    </SafeAreaView>
+    </View>
   );
 }

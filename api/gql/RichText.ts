@@ -139,8 +139,6 @@ function renderInline(
         case "text":
           return renderFormatted(node, escape);
         case "link":
-          // Formats go outside the link: RenderHTML only makes <a> tappable
-          // when its first child is text.
           return renderFormatted(
             node,
             (text) => `<a href="${escape(node.u ?? "")}">${escape(text)}</a>`,

@@ -23,9 +23,14 @@ import { StackFutureProvider } from "../../contexts/StackFutureContext";
 import SidebarScreen from "./SidebarScreen";
 import WikiScreen from "./WikiScreen";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import SubredditSearchScreen from "./SubredditSearchScreen";
-import { TAB_BAR_REMOVED_PADDING_BOTTOM } from "../../constants/TabBarPadding";
+import { useTabBarInsets } from "../../contexts/TabBarInsetsContext";
+import { USES_NATIVE_TAB_BAR_MINIMIZE } from "../../contexts/TabScrollContext";
+import {
+  GlassHeaderInsetProvider,
+  IS_LIQUID_GLASS,
+  StatusBarTapShield,
+} from "../../utils/liquidGlass";
 import GalleryScreen from "./GalleryScreen";
 import ChatScreen from "./ChatScreen";
 
@@ -92,8 +97,9 @@ export type URLRoutes =
   | "GalleryPage"
   | "ChatPage";
 
+// On iOS 26 these scroll under the glass bar via TabBarScrollView too
 const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
-  Subreddits: false,
+  Subreddits: USES_NATIVE_TAB_BAR_MINIMIZE,
   Home: true,
   InboxPage: true,
   PostsPage: true,
@@ -104,13 +110,28 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   Accounts: false,
   WikiPage: false,
   ChatPage: false,
-  GalleryPage: false,
-  SidebarPage: false,
-  SettingsPage: false,
+  GalleryPage: USES_NATIVE_TAB_BAR_MINIMIZE,
+  SidebarPage: USES_NATIVE_TAB_BAR_MINIMIZE,
+  SettingsPage: USES_NATIVE_TAB_BAR_MINIMIZE,
   SearchPage: true,
   WebviewPage: false,
   ErrorPage: false,
 };
+
+// Main content is a TabBarScrollView with nothing fixed above it, so it can scroll under a glass header
+const GLASS_HEADER_ROUTES = new Set<keyof StackParamsList>([
+  "Subreddits",
+  "Home",
+  "InboxPage",
+  "PostsPage",
+  "SubredditSearchPage",
+  "PostDetailsPage",
+  "MultiredditPage",
+  "UserPage",
+  "GalleryPage",
+  "SidebarPage",
+  "SettingsPage",
+]);
 
 export type StackPageProps<Pages extends keyof StackParamsList> =
   NativeStackScreenProps<StackParamsList, Pages>;
@@ -120,7 +141,7 @@ export default function Stack() {
   const { theme } = useContext(ThemeContext);
   const { swipeAnywhereToNavigate } = useContext(GesturesContext);
 
-  const tabBarHeight = useBottomTabBarHeight();
+  const tabBarInsets = useTabBarInsets();
 
   const futureRoutes = useRef<
     NavigationRoute<StackParamsList, keyof StackParamsList>[]
@@ -156,9 +177,12 @@ export default function Stack() {
         screenOptions={({ route }) => ({
           headerTintColor: theme.iconOrTextButton.toString(),
           navigationBarColor: theme.background.toString(),
-          headerStyle: {
-            backgroundColor: theme.background.toString(),
-          },
+          headerTransparent:
+            IS_LIQUID_GLASS && GLASS_HEADER_ROUTES.has(route.name),
+          headerStyle:
+            IS_LIQUID_GLASS && GLASS_HEADER_ROUTES.has(route.name)
+              ? undefined
+              : { backgroundColor: theme.background.toString() },
           headerTitleStyle: {
             color: theme.text.toString(),
           },
@@ -166,13 +190,21 @@ export default function Stack() {
           contentStyle: {
             paddingBottom: SHOWS_BENEATH_TABS[route.name]
               ? 0
-              : tabBarHeight - TAB_BAR_REMOVED_PADDING_BOTTOM,
+              : tabBarInsets.bottom,
+            paddingLeft: tabBarInsets.left,
+            paddingRight: tabBarInsets.right,
+            // Pages rely on this instead of their own root background; see TabBarScrollView
             backgroundColor: theme.background,
           },
         })}
-        screenLayout={({ children }) => (
+        screenLayout={({ route, children }) => (
           <StackFutureProvider futureRoutes={futureRoutes}>
-            {children}
+            <GlassHeaderInsetProvider>
+              {children}
+              {IS_LIQUID_GLASS && GLASS_HEADER_ROUTES.has(route.name) ? (
+                <StatusBarTapShield />
+              ) : null}
+            </GlassHeaderInsetProvider>
           </StackFutureProvider>
         )}
       >

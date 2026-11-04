@@ -1,6 +1,8 @@
 {
     "editor.formatOnSave": true,
-    "javascript.format.enable": true,
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.oxc": "explicit"
+    },
     "debug.javascript.terminalOptions": {},
-    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
 }

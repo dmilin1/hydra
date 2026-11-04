@@ -17,6 +17,10 @@ import {
 } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
+import {
+  TabBarScrollView,
+  TabBarSpacer,
+} from "../../contexts/TabBarInsetsContext";
 import { modifyStat, Stat } from "../../db/functions/Stats";
 
 /**
@@ -91,6 +95,7 @@ function RedditDataScroller<T extends RedditDataObject>(
 
   return (
     <FlashList<T>
+      renderScrollComponent={TabBarScrollView}
       {...props}
       contentContainerStyle={{
         minHeight: "100%",
@@ -127,48 +132,51 @@ function RedditDataScroller<T extends RedditDataObject>(
       data={props.data}
       keyExtractor={(item) => `${item.type}-${item.id}`}
       ListFooterComponent={
-        <View style={styles.endOfListContainer}>
-          {isLoadingMore && !props.fullyLoaded && (
-            <ActivityIndicator size="small" />
-          )}
-          {props.fullyLoaded && !props.data.length && (
-            <Text
-              style={[
-                styles.endOfListText,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              {props.noDataFoundMessage ?? `There's nothing here.`}
-            </Text>
-          )}
-          {!isLoadingMore && props.fullyLoaded && !!props.data.length && (
-            <Text
-              style={[
-                styles.endOfListText,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              Wow. You've reached the bottom.
-            </Text>
-          )}
-          {!isLoadingMore && props.hitFilterLimit && (
-            <Text
-              style={[
-                styles.endOfListText,
-                {
-                  color: theme.text,
-                },
-              ]}
-            >
-              The filter limit has been reached. Your filters may be too strict
-              to show anything.
-            </Text>
-          )}
-        </View>
+        <>
+          <View style={styles.endOfListContainer}>
+            {isLoadingMore && !props.fullyLoaded && (
+              <ActivityIndicator size="small" />
+            )}
+            {props.fullyLoaded && !props.data.length && (
+              <Text
+                style={[
+                  styles.endOfListText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
+              >
+                {props.noDataFoundMessage ?? `There's nothing here.`}
+              </Text>
+            )}
+            {!isLoadingMore && props.fullyLoaded && !!props.data.length && (
+              <Text
+                style={[
+                  styles.endOfListText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
+              >
+                Wow. You've reached the bottom.
+              </Text>
+            )}
+            {!isLoadingMore && props.hitFilterLimit && (
+              <Text
+                style={[
+                  styles.endOfListText,
+                  {
+                    color: theme.text,
+                  },
+                ]}
+              >
+                The filter limit has been reached. Your filters may be too
+                strict to show anything.
+              </Text>
+            )}
+          </View>
+          <TabBarSpacer />
+        </>
       }
     />
   );

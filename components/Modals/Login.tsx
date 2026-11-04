@@ -58,6 +58,54 @@ const INJECTED_JAVASCRIPT = `
   );
 `;
 
+/**
+ * Sign in with Apple JS opens a popup and waits for it to postMessage back to
+ * window.opener. WebView can't create real popups, so hand Apple JS a fake
+ * window and show the URL in a second WebView whose messages get relayed here.
+ */
+const REDDIT_APPLE_POPUP_SHIM = `
+  (() => {
+    const post = (msg) => window.ReactNativeWebView.postMessage(JSON.stringify(msg));
+    const nativeOpen = window.open;
+    let popup = null;
+    window.open = function (url, ...rest) {
+      if (typeof url === 'string' && url.startsWith('https://appleid.apple.com/')) {
+        popup = {
+          closed: false,
+          close() {
+            if (this.closed) return;
+            this.closed = true;
+            post({ type: 'appleClose' });
+          },
+        };
+        post({ type: 'appleOpen', url });
+        return popup;
+      }
+      return nativeOpen.call(window, url, ...rest);
+    };
+    window.__hydraApple = {
+      message: (data) => window.dispatchEvent(
+        new MessageEvent('message', { data, origin: 'https://appleid.apple.com' }),
+      ),
+      // Apple JS polls popup.closed to detect the user backing out.
+      closed: () => { if (popup) popup.closed = true; },
+    };
+  })();
+  true;
+`;
+
+const APPLE_OPENER_SHIM = `
+  (() => {
+    const post = (msg) => window.ReactNativeWebView.postMessage(JSON.stringify(msg));
+    Object.defineProperty(window, 'opener', {
+      configurable: true,
+      get: () => ({ closed: false, postMessage: (data) => post({ type: 'appleMessage', data }) }),
+    });
+    window.close = () => post({ type: 'appleClose' });
+  })();
+  true;
+`;
+
 const ALLOWED_URLS = [
   "reddit.com/login",
   "redditinc.com/policies/user-agreement",
@@ -68,12 +116,21 @@ const ALLOWED_URLS = [
 
 export default function Login() {
   const { theme } = useContext(ThemeContext);
-  const { logIn, doWithTempLogout } = useContext(AccountContext);
+  const { currentUser, logIn, doWithTempLogout } = useContext(AccountContext);
   const { setModal } = useContext(ModalContext);
   const [canShow, setCanShow] = useState(false);
+  const [appleUrl, setAppleUrl] = useState<string | null>(null);
 
   const loginFinished = useRef(false);
   const resolver = useRef<((value: boolean) => void) | null>(null);
+  const redditWebView = useRef<WebView<object>>(null);
+
+  const closeApplePopup = () => {
+    setAppleUrl(null);
+    redditWebView.current?.injectJavaScript(
+      "window.__hydraApple?.closed(); true;",
+    );
+  };
 
   const handleLoginCanceled = () => {
     resolver.current?.(true);
@@ -89,9 +146,11 @@ export default function Login() {
     if (loginFinished.current) return;
     loginFinished.current = true;
     setModal(null);
+    const previousAccount = currentUser?.userName;
     const loginSuccess = await logIn();
     // null: the user picked another account meanwhile, so don't restore one.
     if (loginSuccess === false) {
+      if (previousAccount) await logIn(previousAccount);
       handleLoginFailed();
     } else {
       resolver.current?.(false);
@@ -129,12 +188,16 @@ export default function Login() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.navbar}>
           <View style={styles.navbarTitleContainer}>
-            <Text style={styles.navbarText}>Login</Text>
+            <Text style={styles.navbarText}>
+              {appleUrl ? "Sign in with Apple" : "Login"}
+            </Text>
           </View>
           <Touchable
             activeOpacity={0.2}
             animationDuration={{ in: 0, out: 150 }}
-            onPress={() => handleLoginCanceled()}
+            onPress={() =>
+              appleUrl ? closeApplePopup() : handleLoginCanceled()
+            }
             style={styles.closeButton}
             hitSlop={15}
           >
@@ -146,6 +209,7 @@ export default function Login() {
             <ActivityIndicator size="small" color={theme.text} />
           ) : (
             <WebView
+              ref={redditWebView}
               source={{
                 uri: "https://www.reddit.com/login?dest=https://www.reddit.com/r/HydraClient",
               }}
@@ -163,10 +227,35 @@ export default function Login() {
               }}
               userAgent={USER_AGENT}
               injectedJavaScript={INJECTED_JAVASCRIPT}
-              // Injected js doesn't run unless you pass a function here even if it doesn't do anything. No idea why.
-              onMessage={() => {}}
+              injectedJavaScriptBeforeContentLoaded={REDDIT_APPLE_POPUP_SHIM}
+              // Injected js doesn't run unless you pass a function here.
+              onMessage={(event) => {
+                const message = JSON.parse(event.nativeEvent.data);
+                if (message.type === "appleOpen") setAppleUrl(message.url);
+                if (message.type === "appleClose") closeApplePopup();
+              }}
             />
           )}
+          {appleUrl ? (
+            <WebView
+              source={{ uri: appleUrl }}
+              // style only reaches the inner native view; the wrapper is flex: 1.
+              containerStyle={styles.applePopup}
+              sharedCookiesEnabled={true}
+              thirdPartyCookiesEnabled={true}
+              userAgent={USER_AGENT}
+              injectedJavaScriptBeforeContentLoaded={APPLE_OPENER_SHIM}
+              onMessage={(event) => {
+                const message = JSON.parse(event.nativeEvent.data);
+                if (message.type === "appleMessage") {
+                  redditWebView.current?.injectJavaScript(
+                    `window.__hydraApple?.message(${JSON.stringify(message.data)}); true;`,
+                  );
+                }
+                if (message.type === "appleClose") closeApplePopup();
+              }}
+            />
+          ) : null}
         </View>
       </SafeAreaView>
     </View>
@@ -221,5 +310,12 @@ const styles = StyleSheet.create({
   },
   webView: {
     flex: 1,
+  },
+  applePopup: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });

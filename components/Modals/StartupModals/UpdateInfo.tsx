@@ -1,89 +1,71 @@
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import FontAwesome6 from "@react-native-vector-icons/fontawesome6";
 import React, { useContext } from "react";
-import { View, StyleSheet, ScrollView, Image } from "react-native";
+import { View, StyleSheet, ScrollView, Image, Text } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
 import GetHydraProButton from "../../UI/GetHydraProButton";
 import KeyStore from "../../../utils/KeyStore";
-import { TextWithRepairedHeight } from "../../Other/TextWithRepairedHeight";
 import { useURLNavigation } from "../../../utils/navigation";
 import { StackActions } from "@react-navigation/native";
 
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v4.3.0",
+  updateKey: "v4.5.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
   proFeatures: [] as { title: string; description: string }[],
   features: [
     {
-      title: "Mute Videos by Default",
+      title: "Liquid Glass Tab Bar",
       description:
-        "Pressing a volume button or the unmute button in the media viewer will unmute videos for the rest of the session. Videos will be muted again when you leave the app. You can disable this in Settings => Appearance => Posts => Mute Videos by Default.",
+        "On iOS 26+, the tab bar now uses Liquid Glass. Hide on Infinite Scroll is now called Minimize on Scroll and shrinks the tab bar down instead of hiding it. You can enable this in Settings => Appearance => Tabs => Minimize on Scroll.",
     },
     {
-      title: "Chat",
+      title: "iPhone Duo Support",
       description:
-        'Open Chat by pressing the chat icon in the top right corner of the Inbox tab. When viewing a user\'s profile, press the "Message" button in the ... menu to open a chat with the user.',
+        "Hydra now supports the iPhone Duo and adjusts its layout as you fold and unfold it. Since the Duo's side bar covers the edge you'd swipe from to go forward, a forward button now shows next to the back button when there's a page to go forward to.",
     },
     {
-      title: "Smarter Trending Subreddits",
+      title: "Split View Follows Window Size",
       description:
-        "The algorithm for loading trending subreddits in the Search tab has been improved to give more relevant results.",
+        "Split view now turns on and off as Hydra's window changes size, like when unfolding an iPhone Duo or resizing Hydra with iPad multitasking.",
     },
     {
-      title: "Hide Next Comment Button",
+      title: "Quick Search & Account Swap",
       description:
-        "The next comment button in the comment view can be hidden in Settings => Appearance => Comments => Show Scroll to Next Button.",
+        "The new tab bar doesn't support long presses, so these have moved. Tap the Search tab while you're already at the top of it to open quick subreddit search, and tap the Account tab while on your profile to quick swap accounts. I'll be working on a better way to trigger these shortcuts in a future update.",
     },
     {
-      title: "Hide Popular & All",
+      title: "Add Users to Multireddits",
       description:
-        "The Popular and All buttons in the subreddit list can be hidden in Settings => Appearance => Subreddits => Show Popular / Show All.",
-    },
-    {
-      title: "Disable Inbox Replies",
-      description:
-        'When making a post, you\'ll now see a new "Send replies to my inbox" option. When disabled, you will no longer receive replies to that post in your inbox.',
-    },
-    {
-      title: "Media Viewer Performance",
-      description:
-        "The media viewer has been optimized to reduce render cycles. Changing device orientation should no longer show a temporary blank screen.",
-    },
-    {
-      title: "Deep Linking for Android",
-      description:
-        "On Android, Hydra can automatically open when you click links to Reddit's website. Go to Settings => General => Open in Hydra to enable this.",
+        'User profiles can now be added to a multireddit with the "Add to Multireddit" option in the ... menu on their page.',
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
       description:
-        "The login page could sometimes freeze or report a browser error, causing login to fail.",
+        "The home feed could show posts from subreddits you aren't subscribed to.",
+    },
+    {
+      description: "RedGifs videos would load without sound.",
+    },
+    {
+      description: "Sign in with Apple wouldn't work on the login page.",
+    },
+    {
+      description: "Blurred spoiler media would sometimes not blur properly.",
     },
     {
       description:
-        "The audio track on videos could stutter after rotating the device.",
+        "Text would sometimes overflow its container, especially after changing device orientation.",
     },
     {
       description:
-        "Pan gestures on zoomed in images would sometimes be counted as a tap by the media viewer overlay.",
-    },
-    {
-      description:
-        "Text bodies in NSFW or spoiler posts would sometimes not be blurred correctly.",
-    },
-    {
-      description:
-        "In certain cases, Hydra would fail to indicate when a user is banned.",
-    },
-    {
-      description:
-        "Certain gestures would cause Hydra to crash after backgrounding the app.",
+        "Links with bold, italic, or other formatting could render incorrectly in posts, comments, and message previews.",
     },
   ] as { description: string }[],
   notes: [] as string[],
@@ -92,6 +74,7 @@ export const updateInfo = {
 export default function UpdateInfo({ onExit }: { onExit: () => void }) {
   const { theme } = useContext(ThemeContext);
   const { dispatch } = useURLNavigation();
+  const { left, right } = useSafeAreaInsets();
 
   const exitUpdateInfo = () => {
     KeyStore.set(LAST_SEEN_UPDATE_KEY, updateInfo.updateKey);
@@ -106,6 +89,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           {
             backgroundColor: theme.tint,
             borderColor: theme.divider,
+            marginLeft: 20 + left,
+            marginRight: 20 + right,
           },
         ]}
       >
@@ -128,14 +113,14 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           />
         </Touchable>
         <View style={styles.versionBadge}>
-          <TextWithRepairedHeight
+          <Text
             style={[
               styles.versionBadgeText,
               { color: theme.iconPrimary, opacity: 1 },
             ]}
           >
             {updateInfo.updateKey}
-          </TextWithRepairedHeight>
+          </Text>
           <View
             style={[
               styles.versionBadgeBackground,
@@ -143,7 +128,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             ]}
           />
         </View>
-        <TextWithRepairedHeight
+        <Text
           style={[
             styles.title,
             {
@@ -152,8 +137,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           ]}
         >
           {updateInfo.title}
-        </TextWithRepairedHeight>
-        <TextWithRepairedHeight
+        </Text>
+        <Text
           style={[
             styles.subtitle,
             {
@@ -162,12 +147,12 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
           ]}
         >
           {updateInfo.subtitle}
-        </TextWithRepairedHeight>
+        </Text>
         <ScrollView>
           <View style={{ marginTop: -20 }} />
           {updateInfo.proFeatures.length > 0 && (
             <>
-              <TextWithRepairedHeight
+              <Text
                 style={[
                   styles.heading,
                   {
@@ -176,7 +161,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                 ]}
               >
                 👑 Pro Features
-              </TextWithRepairedHeight>
+              </Text>
               <View style={styles.listContainer}>
                 {updateInfo.proFeatures.map((feature) => (
                   <View
@@ -189,7 +174,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       },
                     ]}
                   >
-                    <TextWithRepairedHeight
+                    <Text
                       style={[
                         styles.featureTitle,
                         {
@@ -198,8 +183,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       ]}
                     >
                       {feature.title}
-                    </TextWithRepairedHeight>
-                    <TextWithRepairedHeight
+                    </Text>
+                    <Text
                       style={[
                         styles.featureDescription,
                         {
@@ -208,13 +193,13 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                       ]}
                     >
                       {feature.description}
-                    </TextWithRepairedHeight>
+                    </Text>
                   </View>
                 ))}
               </View>
             </>
           )}
-          <TextWithRepairedHeight
+          <Text
             style={[
               styles.heading,
               {
@@ -223,7 +208,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             ]}
           >
             🚀 Features
-          </TextWithRepairedHeight>
+          </Text>
           <View style={styles.listContainer}>
             {updateInfo.features.map((feature) => (
               <View
@@ -236,7 +221,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   },
                 ]}
               >
-                <TextWithRepairedHeight
+                <Text
                   style={[
                     styles.featureTitle,
                     {
@@ -245,8 +230,8 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   {feature.title}
-                </TextWithRepairedHeight>
-                <TextWithRepairedHeight
+                </Text>
+                <Text
                   style={[
                     styles.featureDescription,
                     {
@@ -255,11 +240,11 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   {feature.description}
-                </TextWithRepairedHeight>
+                </Text>
               </View>
             ))}
           </View>
-          <TextWithRepairedHeight
+          <Text
             style={[
               styles.heading,
               {
@@ -268,7 +253,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             ]}
           >
             🐛 Bugfixes
-          </TextWithRepairedHeight>
+          </Text>
           <View style={styles.listContainer}>
             <View
               style={[
@@ -281,7 +266,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               ]}
             >
               {updateInfo.bugfixes.map((bugfix) => (
-                <TextWithRepairedHeight
+                <Text
                   key={bugfix.description}
                   style={[
                     styles.bugfixDescription,
@@ -291,46 +276,50 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                   ]}
                 >
                   - {bugfix.description}
-                </TextWithRepairedHeight>
+                </Text>
               ))}
             </View>
           </View>
-          <TextWithRepairedHeight
-            style={[
-              styles.heading,
-              {
-                color: theme.text,
-              },
-            ]}
-          >
-            📝 Notes
-          </TextWithRepairedHeight>
-          <View style={styles.listContainer}>
-            <View
-              style={[
-                styles.featureContainer,
-                {
-                  backgroundColor: theme.background,
-                  borderColor: theme.divider,
-                  gap: 12,
-                },
-              ]}
-            >
-              {updateInfo.notes.map((note) => (
-                <TextWithRepairedHeight
-                  key={note}
+          {updateInfo.notes.length > 0 && (
+            <>
+              <Text
+                style={[
+                  styles.heading,
+                  {
+                    color: theme.text,
+                  },
+                ]}
+              >
+                📝 Notes
+              </Text>
+              <View style={styles.listContainer}>
+                <View
                   style={[
-                    styles.bugfixDescription,
+                    styles.featureContainer,
                     {
-                      color: theme.text,
+                      backgroundColor: theme.background,
+                      borderColor: theme.divider,
+                      gap: 12,
                     },
                   ]}
                 >
-                  {note}
-                </TextWithRepairedHeight>
-              ))}
-            </View>
-          </View>
+                  {updateInfo.notes.map((note) => (
+                    <Text
+                      key={note}
+                      style={[
+                        styles.bugfixDescription,
+                        {
+                          color: theme.text,
+                        },
+                      ]}
+                    >
+                      {note}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+            </>
+          )}
           <View style={styles.helpContainer}>
             <View style={styles.helpIcon}>
               <Image
@@ -338,7 +327,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
                 style={{ width: 30, height: 30 }}
               />
             </View>
-            <TextWithRepairedHeight
+            <Text
               style={[
                 styles.helpItem,
                 {
@@ -348,13 +337,13 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             >
               If you have any feature requests, you can submit them on
               /r/HydraFeatureRequest which can be found in the settings tab
-            </TextWithRepairedHeight>
+            </Text>
           </View>
           <View style={styles.helpContainer}>
             <View style={styles.helpIcon}>
               <FontAwesome name="github" size={22} color={theme.text} />
             </View>
-            <TextWithRepairedHeight
+            <Text
               style={[
                 styles.helpItem,
                 {
@@ -364,7 +353,7 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
             >
               If you have any familiarity with React Native and want to help,
               you can make a pull request at https://github.com/dmilin1/hydra
-            </TextWithRepairedHeight>
+            </Text>
           </View>
           <View style={styles.getHydraProContainer}>
             <GetHydraProButton onPress={() => exitUpdateInfo()} />
@@ -382,11 +371,11 @@ export default function UpdateInfo({ onExit }: { onExit: () => void }) {
               exitUpdateInfo();
             }}
           >
-            <TextWithRepairedHeight
+            <Text
               style={[styles.tipJarText, { color: theme.iconOrTextButton }]}
             >
               Leave a tip
-            </TextWithRepairedHeight>
+            </Text>
           </Touchable>
         </ScrollView>
       </View>
@@ -408,7 +397,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "12.5%",
     maxHeight: "75%",
-    marginHorizontal: 20,
     zIndex: 2,
     flex: 1,
     justifyContent: "center",

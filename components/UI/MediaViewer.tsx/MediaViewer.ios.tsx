@@ -13,6 +13,7 @@ import {
   Modal,
   NativeScrollEvent,
   ScrollView,
+  ScrollViewInstance,
   StyleSheet,
   View,
 } from "react-native";
@@ -54,7 +55,7 @@ const flungPastEnd = (
 function usePager(page: number, horizontal: boolean) {
   const { width, height } = useSafeAreaFrame();
   const size = horizontal ? width : height;
-  const ref = useRef<ScrollView>(null);
+  const ref = useRef<ScrollViewInstance>(null);
   const [initialOffset] = useState(() =>
     horizontal ? { x: page * size, y: 0 } : { x: 0, y: page * size },
   );

@@ -43,7 +43,7 @@ Hydra does not support creating Reddit accounts in-app. To create a new account:
 3. Tap the account you want to use
 4. The app will log you in to that account
 
-Once you've added at least one account, you can also **long press the center account tab** from anywhere in the app to open a quick account switcher. Tap an account (or **"Logged Out"**) to switch to it instantly, or tap outside the overlay to dismiss it.
+Once you've added at least one account, you can also **tap the center account tab while on your profile** to open a quick account switcher. Tap an account (or **"Logged Out"**) to switch to it instantly, or tap outside the overlay to dismiss it.
 
 ### Removing an Account
 
@@ -59,7 +59,11 @@ Once you've added at least one account, you can also **long press the center acc
 
 ## Browsing Without an Account
 
-Reddit no longer lets apps load content without an account, so Hydra needs you to be logged in to browse subreddits, view posts and comments, or search. While logged out, pages show a prompt to log in instead.
+Reddit no longer lets apps load content without an account, so Hydra needs you to be logged in to browse subreddits, view posts and comments, or search. While logged out, pages show a prompt to log in instead, with buttons to:
+
+- **Log in** - Opens Reddit's login page
+- **Create Account** - Opens Reddit's sign up page in your browser (shown when you haven't added any accounts yet)
+- **Manage Accounts** - Takes you to the Accounts tab to pick a saved account (shown when you've added at least one account)
 
 ## Troubleshooting Login Issues
 

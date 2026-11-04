@@ -7,11 +7,9 @@ import CommentReplyComponent from "../components/RedditDataRepresentations/Inbox
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
 import { InboxContext } from "../contexts/InboxContext";
-import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import useRedditDataState from "../utils/useRedditDataState";
 
 export default function InboxPage() {
-  const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
   const { inboxCount, allReadCount } = useContext(InboxContext);
 
@@ -57,14 +55,7 @@ export default function InboxPage() {
   }, [allReadCount]);
 
   return (
-    <View
-      style={[
-        styles.postsContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.postsContainer}>
       <RedditDataScroller
         loadMore={loadMoreInboxItems}
         refresh={refreshInboxItems}

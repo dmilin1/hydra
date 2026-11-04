@@ -72,6 +72,7 @@ export default function PostsPage({
     hitFilterLimit,
     accessFailure,
   } = useRedditDataState<Post>({
+    syncPostVotes: true,
     loadData: async (after) => await getPosts(url, { after }),
     filterRules: [
       ...(shouldFilterSeen ? [filterSeenItems] : []),
@@ -141,14 +142,7 @@ export default function PostsPage({
   }, [subreddits, shouldFilterSeen, sort, sortTime]);
 
   return (
-    <View
-      style={[
-        styles.postsContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.postsContainer}>
       <AccessFailureComponent
         accessFailure={accessFailure}
         contentName={subreddit}
@@ -180,9 +174,7 @@ export default function PostsPage({
           renderItem={({ item }) => (
             <PostComponent
               post={item}
-              updatePost={(update) => {
-                updateData(item, update);
-              }}
+              updatePost={(change) => updateData(item, change)}
               deletePost={() => {
                 deletePosts([item]);
               }}

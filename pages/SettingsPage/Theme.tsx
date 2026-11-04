@@ -30,11 +30,9 @@ export default function Theme() {
   const { pushURL } = useURLNavigation();
   const setTheme = useSetTheme();
 
-  const [colorScheme, setColorScheme] = useState<"light" | "dark">(() => {
-    const scheme = Appearance.getColorScheme();
-    if (scheme === "unspecified") return "light";
-    return scheme ?? "light";
-  });
+  const [colorScheme, setColorScheme] = useState<"light" | "dark">(
+    () => Appearance.getColorScheme() ?? "light",
+  );
 
   return (
     <>

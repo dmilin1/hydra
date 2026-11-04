@@ -2,10 +2,14 @@ import * as Sentry from "@sentry/react-native";
 import { createContext, useEffect, useRef, useState } from "react";
 
 import { UserAuth } from "../api/Authentication";
-import { User } from "../api/User";
 import { resetGqlSessionState } from "../api/gql/Session";
-import { getCurrentUser } from "../api/gql/User";
-import { changeSessionCookies } from "../api/gql/WebToken";
+import { CurrentUser, getCurrentUser } from "../api/gql/User";
+import {
+  captureWebSession,
+  changeSessionCookies,
+  invalidateWebSession,
+  type WebSession,
+} from "../api/gql/WebToken";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
 import { Alert } from "react-native";
@@ -13,7 +17,9 @@ import { fixIncompatibleAccountSettings } from "../api/gql/AccountSettings";
 
 type AccountContextType = {
   loginInitialized: boolean;
-  currentUser: User | null;
+  currentUser: CurrentUser | null;
+  /** null while credentials are changing; anonymous sessions still load error UI. */
+  webSession: WebSession | null;
   accounts: string[];
   /** null when a later login or logout superseded this one. */
   logIn: (username?: string) => Promise<boolean | null>;
@@ -25,6 +31,7 @@ type AccountContextType = {
 const initialAccountContext: AccountContextType = {
   loginInitialized: false,
   currentUser: null,
+  webSession: null,
   accounts: [],
   logIn: async () => false,
   logOut: async () => {},
@@ -39,6 +46,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   const [currentUser, setCurrentUser] =
     useState<AccountContextType["currentUser"]>(null);
   const [accounts, setAccounts] = useState<AccountContextType["accounts"]>([]);
+  const [webSession, setWebSession] = useState<WebSession | null>(null);
   // Bumped by every login and logout. A login that another one superseded
   // backs off: the jar no longer holds its session.
   const sessionAttempt = useRef(0);
@@ -54,6 +62,8 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     });
 
   const logInContext = async (username?: string): Promise<boolean | null> => {
+    invalidateWebSession();
+    setWebSession(null);
     const attempt = ++sessionAttempt.current;
     try {
       resetGqlSessionState();
@@ -70,6 +80,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       UserAuth.isLoggedIn = true;
       KeyStore.set("currentUser", user.userName);
       setCurrentUser(user);
+      setWebSession(captureWebSession(user.id));
       Sentry.setUser({ username: user.userName });
       await RedditCookies.saveSessionCookies(user.userName);
       await addUser(user.userName);
@@ -105,29 +116,37 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   };
 
   const doWithTempLogout = async (fn: () => Promise<boolean>) => {
-    const currentUser = KeyStore.getString("currentUser");
+    const attempt = ++sessionAttempt.current;
+    invalidateWebSession();
+    setWebSession(null);
+    const username = KeyStore.getString("currentUser");
     const wasLoggedIn = UserAuth.isLoggedIn;
     UserAuth.isLoggedIn = false;
     await swapSessionCookies(() => RedditCookies.clearSessionCookies());
+    if (attempt !== sessionAttempt.current) return;
     const shouldRestore = await fn();
-    if (!shouldRestore || !currentUser || !wasLoggedIn) return;
-    if (KeyStore.getString("currentUser") === currentUser) {
-      await swapSessionCookies(() =>
-        RedditCookies.restoreSessionCookies(currentUser),
-      );
-      UserAuth.isLoggedIn = true;
-    } else {
-      // A failed login logged out, so the state has to come back too.
-      await logInContext(currentUser);
+    if (!shouldRestore || attempt !== sessionAttempt.current) return;
+    if (!username || !wasLoggedIn) {
+      setWebSession(captureWebSession(""));
+      return;
     }
+    await swapSessionCookies(() =>
+      RedditCookies.restoreSessionCookies(username),
+    );
+    if (attempt !== sessionAttempt.current) return;
+    UserAuth.isLoggedIn = true;
+    setWebSession(captureWebSession(currentUser?.id ?? ""));
   };
 
   const logOutContext = async ({ forget = true } = {}) => {
+    invalidateWebSession();
+    setWebSession(null);
     sessionAttempt.current++;
     UserAuth.isLoggedIn = false;
     await swapSessionCookies(() => RedditCookies.clearSessionCookies());
     if (forget) KeyStore.remove("currentUser");
     setCurrentUser(null);
+    setWebSession(captureWebSession(""));
     Sentry.setUser(null);
     resetGqlSessionState();
   };
@@ -187,6 +206,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       value={{
         loginInitialized,
         currentUser,
+        webSession,
         accounts,
         logIn: logInContext,
         logOut: logOutContext,

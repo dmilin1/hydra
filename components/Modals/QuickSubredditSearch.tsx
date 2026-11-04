@@ -3,10 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
+  TextInputInstance,
   Animated,
   useAnimatedValue,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -40,7 +41,7 @@ export default function QuickSubredditSearch({
   const { theme } = useContext(ThemeContext);
   const { subreddits: userSubs } = useContext(SubredditContext);
 
-  const textInputRef = useRef<TextInput>(null);
+  const textInputRef = useRef<TextInputInstance>(null);
   const opacity = useAnimatedValue(0);
   const [searchText, setSearchText] = useState("");
   const [subreddits, setSubreddits] = useState<Subreddit[]>([]);

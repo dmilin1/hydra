@@ -1,21 +1,16 @@
 import AntDesign from "@react-native-vector-icons/ant-design";
 import Feather from "@react-native-vector-icons/feather";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { StyleSheet, View, Text, AccessibilityInfo } from "react-native";
 import { openExternalLink } from "../../../utils/openExternalLink";
 
 import CompactPostMedia from "./PostParts/CompactPostMedia";
 import PostMedia from "./PostParts/PostMedia";
 import SubredditIcon from "./PostParts/SubredditIcon";
-import { ToastContext } from "../../../contexts/ToastContext";
-import {
-  adjustedScore,
-  createOptimisticVoteController,
-  displayOptimisticVote,
-  type VoteValue,
-} from "../../../utils/optimisticVote";
-import { vote } from "../../../api/gql/Vote";
+import usePostVote from "../../../utils/usePostVote";
+import useVoteBounce from "../../../utils/useVoteBounce";
+import Animated from "react-native-reanimated";
 import { Post, VoteOption } from "../../../api/Posts";
 import { saveItem } from "../../../api/gql/Save";
 import { URLRoutes } from "../../../app/stack";
@@ -39,51 +34,21 @@ import { Touchable } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { shareURL } from "../../../utils/sharing";
 import { textDirectionStyle } from "../../../utils/textDirection";
-import Animated, {
-  cancelAnimation,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
 import useWriteWithToast from "../../../utils/useWriteWithToast";
 
 type PostComponentProps = {
   post: Post;
-  updatePost: (update: (current: Post) => Post) => void;
+  updatePost: (change: (current: Post) => Post) => void;
   deletePost?: () => void;
   onPostOpen?: (url: string) => void;
 };
 
 export default function PostComponent({
-  post: incomingPost,
+  post,
   updatePost,
   deletePost,
   onPostOpen,
 }: PostComponentProps) {
-  const [optimisticVote, setOptimisticVote] = useState<{
-    postName: string;
-    vote: VoteValue;
-  } | null>(null);
-
-  const localVote =
-    optimisticVote?.postName === incomingPost.name ? optimisticVote.vote : null;
-
-  const displayed = displayOptimisticVote(
-    incomingPost.upvotes,
-    incomingPost.userVote as VoteValue,
-    localVote,
-  );
-
-  const post =
-    localVote === null
-      ? incomingPost
-      : {
-          ...incomingPost,
-          upvotes: displayed.score,
-          userVote: displayed.vote as VoteOption,
-        };
   const { params } = useRoute<URLRoutes | "SearchPage">();
   const { pushURL } = useURLNavigation();
   const { theme } = useContext(ThemeContext);
@@ -112,129 +77,12 @@ export default function PostComponent({
   const seen = isPostSeen(post);
 
   const [_, rerender] = useState(0);
-
-  const upvoteScale = useSharedValue(1);
-  const downvoteScale = useSharedValue(1);
-
-  const upvoteAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: upvoteScale.value }],
-  }));
-
-  const downvoteAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: downvoteScale.value }],
-  }));
-
-  const animateVote = (voteOption: VoteOption) => {
-    const scale =
-      voteOption === VoteOption.UpVote ? upvoteScale : downvoteScale;
-
-    cancelAnimation(scale);
-    scale.value = 1;
-
-    scale.value = withSequence(
-      withTiming(1.2, { duration: 75 }),
-      withSpring(1, {
-        stiffness: 500,
-        damping: 23,
-        mass: 0.7,
-        overshootClamping: false,
-      }),
-    );
-  };
-
-  const { showToast } = useContext(ToastContext);
-
-  const updatePostRef = useRef(updatePost);
-  const showToastRef = useRef(showToast);
-
-  updatePostRef.current = updatePost;
-  showToastRef.current = showToast;
-
-  // Keep the latest post available to asynchronous vote requests.
-  const latestPostRef = useRef(incomingPost);
-  latestPostRef.current = incomingPost;
-
-  const voteControllerRef = useRef<{
-    postName: string;
-    controller: ReturnType<typeof createOptimisticVoteController>;
-  } | null>(null);
-
-  // Cleanup prevents queued requests and callbacks from an old post.
-  useEffect(() => {
-    return () => {
-      if (voteControllerRef.current?.postName === incomingPost.name) {
-        voteControllerRef.current.controller.invalidate();
-        voteControllerRef.current = null;
-      }
-    };
-  }, [incomingPost.name]);
-
-  const getOrCreateVoteController = () => {
-    const existing = voteControllerRef.current;
-
-    if (existing?.postName === incomingPost.name) {
-      return existing.controller;
-    }
-
-    existing?.controller.invalidate();
-
-    const postName = incomingPost.name;
-
-    const controller = createOptimisticVoteController(
-      latestPostRef.current.userVote as VoteValue,
-      async (confirmed, next) => {
-        const current = latestPostRef.current;
-
-        if (current.name !== postName) {
-          throw new Error("Vote controller no longer matches this post");
-        }
-
-        const result = await vote(
-          { ...current, userVote: confirmed as VoteOption },
-          next as VoteOption,
-        );
-
-        if (result !== next) {
-          throw new Error("Unexpected vote result");
-        }
-      },
-      (next) => {
-        if (voteControllerRef.current?.postName !== postName) return;
-
-        setOptimisticVote({
-          postName,
-          vote: next,
-        });
-      },
-      () => {
-        if (voteControllerRef.current?.postName !== postName) return;
-
-        showToastRef.current({
-          title: "Vote failed",
-          body: "Your vote wasn't confirmed. Please try again.",
-        });
-      },
-      (confirmed) => {
-        if (voteControllerRef.current?.postName !== postName) return;
-
-        updatePostRef.current((current) => {
-          if (current.name !== postName) return current;
-
-          return {
-            ...current,
-            upvotes: adjustedScore(
-              current.upvotes,
-              current.userVote as VoteValue,
-              confirmed,
-            ),
-            userVote: confirmed as VoteOption,
-          };
-        });
-      },
-    );
-
-    voteControllerRef.current = { postName, controller };
-    return controller;
+  const pressVote = usePostVote(post);
+  const upBounce = useVoteBounce();
+  const downBounce = useVoteBounce();
+  const voteOnPost = (direction: VoteOption) => {
+    (direction === VoteOption.UpVote ? upBounce : downBounce).bounce();
+    pressVote(direction);
   };
 
   const {
@@ -321,19 +169,10 @@ export default function PostComponent({
       label: post.saved ? "Unsave" : "Save",
       handle: async () => {
         const nextSaved = !post.saved;
-        const postName = post.name;
-
         const saved = await runWrite(post.saved ? "unsave" : "save", () =>
           saveItem(post, nextSaved),
         );
-
-        if (!saved) return;
-
-        updatePostRef.current((current) =>
-          current.name === postName
-            ? { ...current, saved: nextSaved }
-            : current,
-        );
+        if (saved) updatePost((current) => ({ ...current, saved: nextSaved }));
       },
     },
     {
@@ -358,10 +197,6 @@ export default function PostComponent({
       await markPostUnseen(post);
     }
     rerender((prev) => prev + 1);
-  };
-
-  const voteOnPost = (voteOption: VoteOption) => {
-    getOrCreateVoteController().press(voteOption);
   };
 
   const accessibilityLabel = useMemo(() => {
@@ -691,7 +526,7 @@ export default function PostComponent({
               </View>
               {showFeedVoteButtons && (
                 <View style={styles.feedVoteButtons}>
-                  <Animated.View style={upvoteAnimatedStyle}>
+                  <Animated.View style={upBounce.style}>
                     <Touchable
                       style={[
                         styles.feedVoteButton,
@@ -702,7 +537,6 @@ export default function PostComponent({
                       ]}
                       hitSlop={{ top: 3, bottom: 3, left: 3, right: 3 }}
                       onPress={() => {
-                        animateVote(VoteOption.UpVote);
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                         voteOnPost(VoteOption.UpVote);
                       }}
@@ -727,7 +561,8 @@ export default function PostComponent({
                       />
                     </Touchable>
                   </Animated.View>
-                  <Animated.View style={downvoteAnimatedStyle}>
+
+                  <Animated.View style={downBounce.style}>
                     <Touchable
                       style={[
                         styles.feedVoteButton,
@@ -738,7 +573,6 @@ export default function PostComponent({
                       ]}
                       hitSlop={{ top: 3, bottom: 3, left: 3, right: 3 }}
                       onPress={() => {
-                        animateVote(VoteOption.DownVote);
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                         voteOnPost(VoteOption.DownVote);
                       }}

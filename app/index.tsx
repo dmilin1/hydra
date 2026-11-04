@@ -10,7 +10,7 @@ import { registerRootComponent } from "expo";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useState } from "react";
-import { AppState, LogBox } from "react-native";
+import { AppState, LogBox, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { enableFreeze } from "react-native-screens";
@@ -18,6 +18,8 @@ import * as ExpoOrientation from "expo-screen-orientation";
 
 import Tabs from "./tabs";
 import SubscribeToHydra from "../components/Modals/SubscribeToHydra";
+import AccountRestrictionNotice from "../components/Other/AccountRestrictionNotice";
+import { PostVoteProvider } from "../contexts/PostVoteContext";
 import { AccountProvider } from "../contexts/AccountContext";
 import { InboxProvider } from "../contexts/InboxContext";
 import { MediaViewerProvider } from "../contexts/MediaViewerContext";
@@ -37,7 +39,6 @@ import { TabScrollProvider } from "../contexts/TabScrollContext";
 import { StartupModalProvider } from "../contexts/StartupModalContext";
 import { ToastProvider } from "../contexts/ToastProvider";
 import { modifyStat, Stat } from "../db/functions/Stats";
-import { ActionSheetBgProvider } from "../contexts/ActionSheetBgProvider";
 import VideoCache from "../utils/VideoCache";
 
 LogBox.ignoreLogs([
@@ -69,7 +70,10 @@ SplashScreen.preventAutoHideAsync();
 // Tells non visble tabs and screens to not rerender in the background
 enableFreeze(true);
 
-ExpoOrientation.lockAsync(ExpoOrientation.OrientationLock.PORTRAIT_UP);
+// iOS gets portrait from initialOrientation in app.config.ts instead
+if (Platform.OS === "android") {
+  ExpoOrientation.lockAsync(ExpoOrientation.OrientationLock.PORTRAIT_UP);
+}
 
 function RootLayout() {
   const { success: migrationsComplete, error } = useMigrations(db, migrations);
@@ -120,26 +124,27 @@ function RootLayout() {
             <SubscriptionsProvider>
               <SettingsProvider>
                 <ToastProvider>
-                  <TabScrollProvider>
-                    <NavigationProvider>
-                      <ActionSheetProvider>
-                        <ActionSheetBgProvider>
+                  <PostVoteProvider>
+                    <TabScrollProvider>
+                      <NavigationProvider>
+                        <ActionSheetProvider>
                           <InboxProvider>
                             <ModalProvider>
                               <MediaViewerProvider>
                                 <SubredditProvider>
                                   <StartupModalProvider>
                                     <SubscribeToHydra />
+                                    <AccountRestrictionNotice />
                                     <Tabs />
                                   </StartupModalProvider>
                                 </SubredditProvider>
                               </MediaViewerProvider>
                             </ModalProvider>
                           </InboxProvider>
-                        </ActionSheetBgProvider>
-                      </ActionSheetProvider>
-                    </NavigationProvider>
-                  </TabScrollProvider>
+                        </ActionSheetProvider>
+                      </NavigationProvider>
+                    </TabScrollProvider>
+                  </PostVoteProvider>
                 </ToastProvider>
               </SettingsProvider>
             </SubscriptionsProvider>

@@ -16,6 +16,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { useVerticalBarEdgeIOS } from "expo-status-bar";
 import { Animated, Dimensions } from "react-native";
 
 import { StackParamsList } from "../app/stack";
@@ -47,7 +48,12 @@ export function StackFutureProvider({
   const windowWidth = useRef(Dimensions.get("window").width);
   const gestureStart = useRef<{ x: number; y: number } | null>(null);
 
-  const handleBeforeRemove: HandleBeforeRemoveType = () => {
+  const handleBeforeRemove: HandleBeforeRemoveType = (e) => {
+    // A reset replaces the stack, so its removed routes aren't somewhere to go forward to
+    if (e.data.action.type === "RESET") {
+      futureRoutes.current = [];
+      return;
+    }
     const popped = navigation.getState().routes.slice(-1)[0];
     futureRoutes.current.push(popped);
   };
@@ -59,10 +65,44 @@ export function StackFutureProvider({
     };
   }, [navigation]);
 
+  const goForward = () => {
+    const popped = futureRoutes.current.pop();
+    if (!popped) return false;
+    navigation.push(popped.name as any, popped.params as any);
+    return true;
+  };
+
+  /**
+   * The iPhone Duo's vertical bar covers the screen edge the forward swipe
+   * starts from, but it does host native header items next to the back button.
+   */
+  const verticalBarEdge = useVerticalBarEdgeIOS();
+  useEffect(() => {
+    const updateForwardButton = () => {
+      const showForward = !!verticalBarEdge && futureRoutes.current.length > 0;
+      navigation.setOptions({
+        headerBackVisible: showForward || undefined,
+        unstable_headerLeftItems: showForward
+          ? () => [
+              {
+                type: "button",
+                label: "Forward",
+                icon: { type: "sfSymbol", name: "chevron.forward" },
+                onPress: goForward,
+              },
+            ]
+          : undefined,
+      });
+    };
+    updateForwardButton();
+    return navigation.addListener("focus", updateForwardButton);
+  }, [navigation, verticalBarEdge]);
+
   useEffect(() => {
     const subscription = Dimensions.addEventListener(
       "change",
-      (event) => (windowWidth.current = event.window.width),
+      // We shouldn't have to type this as any. For some reason, the React Native library removed the types for this event
+      (event: any) => (windowWidth.current = event.window.width),
     );
     return () => subscription.remove();
   }, []);
@@ -102,9 +142,7 @@ export function StackFutureProvider({
             return false;
           }
           if (deltaX > 15 && angleDegrees < 15) {
-            const popped = futureRoutes.current.pop();
-            if (!popped) return false;
-            navigation.push(popped.name as any, popped.params as any);
+            if (!goForward()) return false;
             gestureStart.current = null;
             return true;
           }

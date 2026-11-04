@@ -1,0 +1,96 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import"],
+  "env": { "browser": true, "node": true, "es2024": true },
+  "globals": { "__DEV__": "readonly" },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    ".expo/**",
+    "**/external/**",
+    "app.config.ts",
+    "babel.config.js",
+    "**/constants/documentation.ts"
+  ],
+  "rules": {
+    "typescript/ban-ts-comment": "error",
+    "typescript/no-array-constructor": "error",
+    "typescript/no-duplicate-enum-values": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-extra-non-null-assertion": "error",
+    "typescript/no-misused-new": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-non-null-asserted-optional-chain": "error",
+    "typescript/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$"
+        ]
+      }
+    ],
+    "typescript/no-this-alias": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/no-unsafe-declaration-merging": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-wrapper-object-types": "error",
+    "typescript/prefer-as-const": "error",
+    "typescript/prefer-namespace-keyword": "error",
+    "typescript/triple-slash-reference": "error",
+    "typescript/array-type": "warn",
+    "typescript/consistent-type-assertions": "warn",
+    "no-unused-expressions": "warn",
+    "no-dupe-class-members": "warn",
+    "no-useless-constructor": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+
+    "import/namespace": "error",
+    "import/export": "error",
+    "import/no-duplicates": "warn",
+    "import/first": "warn",
+
+    "react/jsx-key": "error",
+    "react/jsx-no-comment-textnodes": "warn",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-children-prop": "error",
+    "react/no-danger-with-children": "error",
+    "react/no-direct-mutation-state": "error",
+    "react/no-find-dom-node": "error",
+    "react/no-is-mounted": "error",
+    "react/no-render-return-value": "error",
+    "react/no-string-refs": "error",
+    "react/no-unknown-property": "error",
+    "react/require-render-return": "error",
+    "react/no-this-in-sfc": "error",
+    "react/rules-of-hooks": "error",
+
+    "no-new": "off",
+    "react/exhaustive-deps": "off",
+    "react/refs": "off",
+    "react/set-state-in-effect": "off",
+    "react/immutability": "off",
+    "react/no-unescaped-entities": "off",
+    "react/display-name": "off",
+    "typescript/no-explicit-any": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.js"],
+      "rules": { "typescript/no-require-imports": "off" }
+    }
+  ]
+}

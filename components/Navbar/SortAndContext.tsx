@@ -7,7 +7,13 @@ import FontAwesome from "@react-native-vector-icons/fontawesome";
 import Ionicons from "@react-native-vector-icons/ionicons";
 import { RouteProp } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
-import { StyleSheet, View, Alert, findNodeHandle } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Alert,
+  findNodeHandle,
+  ViewInstance,
+} from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 
 import { PostDetail } from "../../api/PostDetail";
@@ -111,8 +117,8 @@ export default function SortAndContext({
 
   const showContextMenu = useContextMenu();
 
-  const sortButtonRef = useRef<View>(null);
-  const contextButtonRef = useRef<View>(null);
+  const sortButtonRef = useRef<ViewInstance>(null);
+  const contextButtonRef = useRef<ViewInstance>(null);
 
   const currentPath = typeof route === "string" ? route : route.params.url;
   const pageType = new RedditURL(currentPath).getPageType();
@@ -338,9 +344,13 @@ export default function SortAndContext({
               });
               const selectedMulti = multis.find((m) => m.name === multi);
               if (selectedMulti) {
+                const url = new RedditURL(currentPath);
+                // Users go in as their profile subreddit, u_<name>.
                 addSubToMulti(
                   selectedMulti,
-                  new RedditURL(currentPath).getSubreddit(),
+                  url.getPageType() === PageType.USER
+                    ? `u_${url.getPageName()}`
+                    : url.getSubreddit(),
                 );
               }
             } else if (result === "Edit" && pageData?.type === "postDetail") {

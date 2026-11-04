@@ -1,4 +1,4 @@
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { NativeBottomTabNavigationProp } from "@react-navigation/bottom-tabs/unstable";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -7,7 +7,7 @@ import { TabParamsList } from "../app/tabs";
 
 // Define the composite navigation type for the application
 export type AppNavigationProp = CompositeNavigationProp<
-  BottomTabNavigationProp<TabParamsList>,
+  NativeBottomTabNavigationProp<TabParamsList>,
   NativeStackNavigationProp<StackParamsList>
 >;
 

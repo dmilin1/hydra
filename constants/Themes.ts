@@ -1,6 +1,8 @@
 import { StatusBarStyle } from "expo-status-bar";
 import { ColorValue } from "react-native";
 
+type NonNullColorValue = NonNullable<ColorValue>;
+
 const rainbow = [
   "#e40303",
   "#ff8c00",
@@ -45,27 +47,27 @@ export type Theme = {
   systemModeStyle: "light" | "dark";
   statusBar: StatusBarStyle;
   isPro: boolean;
-  text: ColorValue;
-  iconOrTextButton: ColorValue;
-  buttonBg: ColorValue;
-  buttonText: ColorValue;
-  subtleText: ColorValue;
-  verySubtleText: ColorValue;
-  background: ColorValue;
-  tint: ColorValue;
-  iconPrimary: ColorValue;
-  iconSecondary: ColorValue;
-  divider: ColorValue;
+  text: NonNullColorValue;
+  iconOrTextButton: NonNullColorValue;
+  buttonBg: NonNullColorValue;
+  buttonText: NonNullColorValue;
+  subtleText: NonNullColorValue;
+  verySubtleText: NonNullColorValue;
+  background: NonNullColorValue;
+  tint: NonNullColorValue;
+  iconPrimary: NonNullColorValue;
+  iconSecondary: NonNullColorValue;
+  divider: NonNullColorValue;
   commentDepthColors: string[];
-  upvote: ColorValue;
-  downvote: ColorValue;
-  delete: ColorValue;
-  showHide: ColorValue;
-  reply: ColorValue;
-  bookmark: ColorValue;
-  share: ColorValue;
-  collapse: ColorValue;
-  moderator: ColorValue;
+  upvote: NonNullColorValue;
+  downvote: NonNullColorValue;
+  delete: NonNullColorValue;
+  showHide: NonNullColorValue;
+  reply: NonNullColorValue;
+  bookmark: NonNullColorValue;
+  share: NonNullColorValue;
+  collapse: NonNullColorValue;
+  moderator: NonNullColorValue;
 };
 
 type Themes = {

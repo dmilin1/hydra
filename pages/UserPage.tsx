@@ -15,7 +15,6 @@ import UserDetailsComponent, {
 } from "../components/RedditDataRepresentations/User/UserDetailsComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import { AccountContext } from "../contexts/AccountContext";
-import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import RedditURL from "../utils/RedditURL";
 import { useURLNavigation } from "../utils/navigation";
 import useRedditDataState from "../utils/useRedditDataState";
@@ -30,7 +29,6 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
 
   const { userName, section, savedType } = parseUserURL(url);
 
-  const { theme } = useContext(ThemeContext);
   const { currentUser } = useContext(AccountContext);
   const { subreddits, isSubscribed } = useContext(SubredditContext);
 
@@ -49,6 +47,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
     hitFilterLimit,
     accessFailure,
   } = useRedditDataState<UserContent>({
+    syncPostVotes: true,
     loadData: async (after) =>
       await getUserContent(url, { after, type: contentType }),
     refreshDependencies: [sort, sortTime, contentType],
@@ -79,7 +78,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
   }, [currentUser?.userName]);
 
   useEffect(() => {
-    const contextOptions: ContextTypes[] = ["Share"];
+    const contextOptions: ContextTypes[] = ["Add to Multireddit", "Share"];
     if (currentUser?.userName !== user?.userName) {
       contextOptions.unshift("Block");
       const isFollowing = isSubscribed(`u_${user?.userName}`);
@@ -108,14 +107,7 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
   }, [sort, sortTime, user, supportsGalleryMode, subreddits.subscriber.length]);
 
   return (
-    <View
-      style={[
-        styles.userContainer,
-        {
-          backgroundColor: theme.background,
-        },
-      ]}
-    >
+    <View style={styles.userContainer}>
       <AccessFailureComponent
         accessFailure={accessFailure}
         contentName={userName || "User"}
@@ -145,9 +137,9 @@ export default function UserPage({ route }: StackPageProps<"UserPage">) {
               return (
                 <PostComponent
                   post={content}
-                  updatePost={(update) =>
+                  updatePost={(change) =>
                     updateData(content, (current) =>
-                      current.type === "post" ? update(current) : current,
+                      current.type === "post" ? change(current) : current,
                     )
                   }
                 />

@@ -18,13 +18,13 @@ export function useSetTheme() {
       ? systemColorScheme
       : undefined,
   ) => {
-    setCurrentTheme(themeKey, colorScheme);
+    const grantedTrial = setCurrentTheme(themeKey, colorScheme);
 
     if (!cantUseTheme(themeKey)) return;
 
     Alert.alert(
       "Hydra Pro Theme",
-      colorScheme === systemColorScheme
+      grantedTrial
         ? "You can use this theme for 5 minutes to try it out. Upgrade to Hydra Pro to keep using it."
         : `Upgrade to Hydra Pro to use this theme in ${colorScheme} mode.`,
       [

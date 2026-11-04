@@ -16,7 +16,8 @@ const initialThemeContext = {
   lightTheme: DEFAULT_THEME.key,
   darkTheme: DEFAULT_THEME.key,
   currentTheme: DEFAULT_THEME.key,
-  setCurrentTheme: (_: string, _colorScheme: "light" | "dark" = "light") => {},
+  setCurrentTheme: (_: string, _colorScheme: "light" | "dark" = "light") =>
+    false,
   useDifferentDarkTheme: false,
   setUseDifferentDarkTheme: (_: boolean) => {},
   theme: DEFAULT_THEME,
@@ -31,8 +32,7 @@ export const ThemeContext = createContext(initialThemeContext);
 export function ThemeProvider({ children }: React.PropsWithChildren) {
   const { isPro, purchasesInitialized } = useContext(SubscriptionsContext);
 
-  const scheme = useColorScheme();
-  const systemColorScheme = scheme === "unspecified" ? "light" : scheme;
+  const systemColorScheme = useColorScheme() ?? "light";
 
   const [storedCurrentTheme, setStoredTheme] = useMMKVString("theme");
   const [storedDarkTheme, setStoredDarkTheme] = useMMKVString("darkTheme");
@@ -88,22 +88,22 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
 
   const setCurrentTheme = (
     themeKey: string,
-    colorScheme: ColorSchemeName | undefined = useDifferentDarkTheme
+    colorScheme: ColorSchemeName | undefined | null = useDifferentDarkTheme
       ? systemColorScheme
-      : "unspecified",
+      : null,
   ) => {
     clearTemporaryTheme();
     if (cantUseTheme(themeKey)) {
-      if (colorScheme === "unspecified" || colorScheme === systemColorScheme) {
+      if (colorScheme === null || colorScheme === systemColorScheme) {
         grantThemeTemporarily(themeKey);
+        return true;
       }
+    } else if (colorScheme === null || colorScheme === "light") {
+      setStoredTheme(themeKey);
     } else {
-      if (colorScheme === "unspecified" || colorScheme === "light") {
-        setStoredTheme(themeKey);
-      } else {
-        setStoredDarkTheme(themeKey);
-      }
+      setStoredDarkTheme(themeKey);
     }
+    return false;
   };
 
   let theme = DEFAULT_THEME;

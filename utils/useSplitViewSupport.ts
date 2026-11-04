@@ -1,31 +1,17 @@
-import { Dimensions } from "react-native";
-import { useEffect, useState } from "react";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { useMMKVBoolean } from "react-native-mmkv";
 
-const MIN_WIDTH = 768;
-export const deviceSupportsSplitView =
-  Dimensions.get("screen").width >= MIN_WIDTH;
+export const SPLIT_VIEW_MIN_WIDTH = 768;
 
 export function useSplitViewSupport() {
   const [storedSplitViewEnabled, setSplitViewEnabled] =
     useMMKVBoolean("splitViewEnabled");
-  const [windowSupportsSplitView, setWindowSupportsSplitView] = useState(
-    Dimensions.get("window").width >= MIN_WIDTH,
-  );
+  // Follows window resizes (iPad multitasking, iPhone Duo fold)
+  const windowSupportsSplitView =
+    useSafeAreaFrame().width >= SPLIT_VIEW_MIN_WIDTH;
 
-  const splitViewEnabled = storedSplitViewEnabled ?? deviceSupportsSplitView;
-
-  useEffect(() => {
-    const subscription = Dimensions.addEventListener("change", (event) => {
-      const newWindowSupportsSplitView = event.window.width >= MIN_WIDTH;
-      if (newWindowSupportsSplitView !== windowSupportsSplitView) {
-        setWindowSupportsSplitView(newWindowSupportsSplitView);
-      }
-    });
-    return () => subscription.remove();
-  }, [windowSupportsSplitView]);
+  const splitViewEnabled = storedSplitViewEnabled ?? true;
   return {
-    deviceSupportsSplitView,
     windowSupportsSplitView,
     splitViewEnabled,
     setSplitViewEnabled,

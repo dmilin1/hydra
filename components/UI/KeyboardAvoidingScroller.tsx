@@ -3,17 +3,19 @@ import {
   Dimensions,
   Keyboard,
   Platform,
-  ScrollView,
+  ScrollViewInstance,
   ScrollViewProps,
-  TextInput,
+  TextInputInstance,
 } from "react-native";
+
+import { TabBarScrollView } from "../../contexts/TabBarInsetsContext";
 
 type KeyboardAvoidingScrollerProps = ScrollViewProps;
 
 type KeyboardAvoidingScrollerContextType = {
-  scrollViewRef: React.RefObject<ScrollView | null>;
-  currentInput: TextInput | null;
-  setCurrentInput: (input: TextInput) => void;
+  scrollViewRef: React.RefObject<ScrollViewInstance | null>;
+  currentInput: TextInputInstance | null;
+  setCurrentInput: (input: TextInputInstance) => void;
 };
 
 const measureAsync = (elem: any) => {
@@ -52,8 +54,10 @@ const SCROLL_OFFSET = 100;
 export default function KeyboardAvoidingScroller(
   props: KeyboardAvoidingScrollerProps,
 ) {
-  const scrollViewRef = useRef<ScrollView>(null);
-  const [currentInput, setCurrentInput] = useState<TextInput | null>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
+  const [currentInput, setCurrentInput] = useState<TextInputInstance | null>(
+    null,
+  );
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const focusInput = async () => {
@@ -100,7 +104,7 @@ export default function KeyboardAvoidingScroller(
         setCurrentInput,
       }}
     >
-      <ScrollView
+      <TabBarScrollView
         ref={scrollViewRef}
         automaticallyAdjustKeyboardInsets
         {...props}
