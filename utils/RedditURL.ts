@@ -129,7 +129,7 @@ export default class RedditURL extends URL {
       }
     } else if (pageType === PageType.SUBREDDIT_SEARCH) {
       return [this.getQueryParam("sort"), null];
-    } else if (pageType === PageType.POST_DETAILS) {
+    } else if ([PageType.POST_DETAILS, PageType.SEARCH].includes(pageType)) {
       return [this.getQueryParam("sort"), this.getQueryParam("t")];
     } else if (pageType === PageType.USER) {
       return [this.getQueryParam("sort") ?? "new", this.getQueryParam("t")];
@@ -151,7 +151,10 @@ export default class RedditURL extends URL {
       this.url = `https://www.reddit.com/${sort.toLowerCase()}/?${urlParams}`;
     } else if (pageType === PageType.SUBREDDIT) {
       this.url = `https://www.reddit.com/r/${subreddit}/${sort.toLowerCase()}/?${urlParams}`;
-    } else if (pageType === PageType.SUBREDDIT_SEARCH) {
+    } else if (
+      pageType === PageType.SUBREDDIT_SEARCH ||
+      pageType === PageType.SEARCH
+    ) {
       this.changeQueryParam("sort", sort.toLowerCase());
     } else if (pageType === PageType.POST_DETAILS) {
       this.changeQueryParam("sort", sort.toLowerCase());

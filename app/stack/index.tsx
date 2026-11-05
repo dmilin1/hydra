@@ -14,6 +14,7 @@ import MultiredditScreen from "./MultiredditScreen";
 import PostDetailsScreen from "./PostDetailsScreen";
 import PostsScreen from "./PostsScreen";
 import SearchScreen from "./SearchScreen";
+import SearchResultsScreen from "./SearchResultsScreen";
 import SettingsScreen from "./SettingsScreen";
 import SubredditsScreen from "./SubredditsScreen";
 import UserScreen from "./UserScreen";
@@ -71,6 +72,9 @@ export type StackParamsList = {
     url: string;
   };
   SearchPage: undefined;
+  SearchResultsPage: {
+    url: string;
+  };
   WebviewPage: {
     url: string;
   };
@@ -87,6 +91,7 @@ export type URLRoutes =
   | "PostsPage"
   | "PostDetailsPage"
   | "SubredditSearchPage"
+  | "SearchResultsPage"
   | "MultiredditPage"
   | "UserPage"
   | "Accounts"
@@ -114,6 +119,7 @@ const SHOWS_BENEATH_TABS: Record<keyof StackParamsList, boolean> = {
   SidebarPage: USES_NATIVE_TAB_BAR_MINIMIZE,
   SettingsPage: USES_NATIVE_TAB_BAR_MINIMIZE,
   SearchPage: true,
+  SearchResultsPage: true,
   WebviewPage: false,
   ErrorPage: false,
 };
@@ -125,6 +131,7 @@ const GLASS_HEADER_ROUTES = new Set<keyof StackParamsList>([
   "InboxPage",
   "PostsPage",
   "SubredditSearchPage",
+  "SearchResultsPage",
   "PostDetailsPage",
   "MultiredditPage",
   "UserPage",
@@ -163,6 +170,7 @@ export default function Stack() {
     GalleryScreen,
     SettingsScreen,
     SearchScreen,
+    SearchResultsScreen,
     WebviewScreen,
     ErrorScreen,
   ].map((screen) => (

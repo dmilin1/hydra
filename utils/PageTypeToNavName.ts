@@ -8,7 +8,7 @@ export const PageTypeToNavName: Record<PageType, keyof StackParamsList> = {
   [PageType.SUBREDDIT_SEARCH]: "SubredditSearchPage",
   [PageType.MULTIREDDIT]: "MultiredditPage",
   [PageType.USER]: "UserPage",
-  [PageType.SEARCH]: "SearchPage",
+  [PageType.SEARCH]: "SearchResultsPage",
   [PageType.INBOX]: "InboxPage",
   [PageType.ACCOUNTS]: "Accounts",
   [PageType.SIDEBAR]: "SidebarPage",

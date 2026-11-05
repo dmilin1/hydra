@@ -9,6 +9,15 @@ import {
 export const IS_LIQUID_GLASS =
   Platform.OS === "ios" && parseInt(String(Platform.Version), 10) >= 26;
 
+const [IOS_MAJOR, IOS_MINOR = 0] = String(Platform.Version)
+  .split(".")
+  .map(Number);
+
+// The system search tab: a separate glass button that turns into a search field
+export const HAS_SEARCH_TAB_ROLE =
+  Platform.OS === "ios" &&
+  (IOS_MAJOR > 26 || (IOS_MAJOR === 26 && IOS_MINOR >= 1));
+
 const GlassHeaderInsetContext = createContext(0);
 
 /**

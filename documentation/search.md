@@ -5,17 +5,27 @@ description: Searching Reddit, subreddit search, search filters, and finding con
 
 # Searching Reddit
 
-Hydra lets you search for posts, subreddits, and users across Reddit from the **Search** tab.
+Tap the **Search** tab from anywhere to start searching. Search opens over the tab you were on, and whatever you pick opens on that tab, so going back returns you to where you were. On iOS 26.1 and later, Search is the separate button beside the tab bar, and the tab bar turns into the search field when you tap it.
 
-## Search Types
+## Before You Type
 
-At the top of the Search page, three tabs let you switch between result types: **Posts**, **Subreddits**, and **Users**. Type your query into the search bar, and results will appear below. Tap any result to open it.
+With an empty search field, Search lists your recent searches, your favorite subreddits for one-tap access, and subreddits to discover. Discover suggestions are drawn from Reddit's recommendations for you, curated picks, popular communities and topics. Subreddits you're already subscribed to are left out, so it's a good way to find new communities.
 
-All three support infinite scrolling to load more results.
+## As You Type
 
-## Discover Subreddits
+Suggestions update while you type:
 
-When you haven't entered a search query, the Search page shows a list of subreddits to discover, drawn from Reddit's recommendations for you, curated picks, popular communities and topics. Subreddits you're already subscribed to are left out, so it's a good way to find new communities.
+- **Search for "..."** - Searches posts across Reddit
+- **Search r/... for "..."** - Searches only the subreddit you opened Search from
+- **Go to r/... or u/...** - Type r/name or u/name, or paste a Reddit link, to jump straight to it
+- **Your Subreddits** - Matching subreddits you're subscribed to
+- **Subreddits** - Matches from across Reddit
+
+To find users, search and switch to the **Users** tab of the results.
+
+## Search Results
+
+Press search on the keyboard to see full results. Three tabs at the top switch between **Posts**, **Subreddits**, and **Users**, and the search bar above them lets you change your query. Post results can be sorted from the header. All three support infinite scrolling to load more results.
 
 ## Searching Within a Subreddit
 
@@ -28,10 +38,6 @@ Subreddit search includes sort options accessible from the header:
 - **New** - Most recently posted
 - **Top** - Highest voted posts
 - **Comment Count** - Most commented posts
-
-## Quick Subreddit Search
-
-Tapping the **Search** tab while you are already at the top of it opens a quick search overlay. Before you type anything, your favorite and subscribed subreddits are listed for one-tap access. Type a subreddit name to search all of Reddit, then tap a result to jump directly to it. Tap outside the overlay to dismiss it.
 
 ## Search Operators
 

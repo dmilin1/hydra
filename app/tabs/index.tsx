@@ -27,8 +27,8 @@ import useTabIcons from "../../utils/useTabIcons";
 import { expoDb } from "../../db";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import QuickAccountSwap from "../../components/Modals/QuickAccountSwap";
-import QuickSubredditSearch from "../../components/Modals/QuickSubredditSearch";
-import { oneTimeAlert } from "../../utils/oneTimeAlert";
+import { HAS_SEARCH_TAB_ROLE } from "../../utils/liquidGlass";
+import { setSearchOrigin } from "../../utils/searchOrigin";
 
 export type TabParamsList = {
   Posts: undefined;
@@ -66,7 +66,6 @@ export default function Tabs() {
   const { showTabBar } = useContext(TabScrollContext);
   const tabIcons = useTabIcons();
 
-  const [showSubredditSearch, setShowSubredditSearch] = useState(false);
   const [showAccountSwap, setShowAccountSwap] = useState(false);
 
   useHandleIncomingURLs();
@@ -79,10 +78,6 @@ export default function Tabs() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <QuickSubredditSearch
-        show={showSubredditSearch}
-        onExit={() => setShowSubredditSearch(false)}
-      />
       <QuickAccountSwap
         show={showAccountSwap}
         onExit={() => setShowAccountSwap(false)}
@@ -116,32 +111,22 @@ export default function Tabs() {
           screenLayout={({ children }) => (
             <TabBarInsetsProvider>{children}</TabBarInsetsProvider>
           )}
-          screenListeners={() => ({
-            // A hidden bar would otherwise stay hidden on a tab it was never scrolled away on
-            focus: showTabBar,
+          screenListeners={({ route }) => ({
+            focus: () => {
+              // A hidden bar would otherwise stay hidden on a tab it was never scrolled away on
+              showTabBar();
+              setSearchOrigin(route.name);
+            },
             tabPress: (e) => {
               // Fires before the switch, so state still holds the previous tab
               const state = navigation.getState();
               const stackItem = state.routes[state.index];
-              if (stackItem.key !== e.target) {
-                if (e.target?.startsWith("Search")) {
-                  oneTimeAlert(
-                    "quickSearchRetapGuideAlert",
-                    "Did you know?",
-                    "You can quick search for subreddits by tapping the search tab again.",
-                  );
-                }
-                return;
-              }
+              if (stackItem.key !== e.target) return;
               if ((stackItem.state?.index ?? 0) > 0) {
                 navigation.dispatch(StackActions.pop());
                 return;
               }
               // Native tabs have no long press, so re-tapping a tab at its root opens its shortcut
-              if (e.target?.startsWith("Search")) {
-                setShowSubredditSearch(true);
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }
               if (e.target?.startsWith("Account") && accounts.length > 0) {
                 setShowAccountSwap(true);
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -185,6 +170,11 @@ export default function Tabs() {
               title: "Search",
               tabBarIcon: tabIcons.Search,
               tabBarLabel: "Search",
+              // Sits apart from the other tabs and becomes the search field when tapped
+              ...(HAS_SEARCH_TAB_ROLE && {
+                tabBarRole: "search",
+                tabBarSearchAutoFocus: true,
+              }),
             }}
             component={Stack}
           />

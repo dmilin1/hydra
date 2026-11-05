@@ -14,3 +14,21 @@ export type SearchResults<T extends SearchType> =
       : T extends "subreddits"
         ? Subreddit[]
         : User[]);
+
+// reddit.com/search's ?type= values, plus the newer site's names
+const URL_TYPES: Record<SearchType, string[]> = {
+  posts: ["link", "posts"],
+  subreddits: ["sr", "communities"],
+  users: ["user", "people"],
+};
+
+export function makeSearchURL(query: string, type: SearchType = "posts") {
+  return `https://www.reddit.com/search/?q=${encodeURIComponent(query)}&type=${URL_TYPES[type][0]}`;
+}
+
+export function getSearchType(urlType: string | null): SearchType {
+  return (
+    SearchTypes.find((type) => URL_TYPES[type].includes(urlType ?? "")) ??
+    "posts"
+  );
+}
