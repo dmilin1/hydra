@@ -1,10 +1,7 @@
 import { useHeaderHeight } from "@react-navigation/elements";
 import { createContext, PropsWithChildren, useContext, useRef } from "react";
 import { Platform, View } from "react-native";
-import {
-  useSafeAreaFrame,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 export const IS_LIQUID_GLASS =
   Platform.OS === "ios" && parseInt(String(Platform.Version), 10) >= 26;
@@ -53,17 +50,25 @@ export function GlassHeaderInsetProvider({ children }: PropsWithChildren) {
 export const useGlassHeaderInset = () => useContext(GlassHeaderInsetContext);
 
 /**
- * Once a glass header minimizes, a status bar tap reaches the post under it,
+ * Glass headers let taps on their empty areas through to the post under them,
  * and the post's RNGH tap beats UIKit's scroll-to-top. A plain view there takes
- * the touch without handling it, so scroll-to-top wins again.
+ * the touch without handling it, so scroll-to-top wins again. Sized to the
+ * live header, not the status bar: a folded iPhone Duo has no top inset but
+ * still leaves an empty strip above the header's buttons.
  */
 export function StatusBarTapShield() {
-  const { top } = useSafeAreaInsets();
+  const headerHeight = useHeaderHeight();
   return (
     <View
       // Layout-only views get flattened away and can't receive touches
       collapsable={false}
-      style={{ position: "absolute", top: 0, left: 0, right: 0, height: top }}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: headerHeight,
+      }}
     />
   );
 }
