@@ -118,6 +118,12 @@ export default function ThemeList({
           ))}
         </View>
       )}
+      {showCustomOnly && customThemes.length === 0 && (
+        <Text style={[styles.emptyText, { color: theme.subtleText }]}>
+          You haven't made any custom themes yet. You can create one in Settings
+          → Theme.
+        </Text>
+      )}
     </View>
   );
 }
@@ -131,5 +137,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     paddingHorizontal: 15,
     paddingVertical: 5,
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 30,
   },
 });

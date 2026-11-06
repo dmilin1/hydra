@@ -19,7 +19,7 @@ import {
   ScrollView,
   Text,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import {
@@ -71,6 +71,7 @@ export default function MarkdownEditor({
 }: MarkdownEditorProps) {
   const { theme, currentTheme } = useContext(ThemeContext);
   const [showThemeModal, setShowThemeModal] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const selection = useRef<
     TextInputSelectionChangeEvent["nativeEvent"]["selection"]
@@ -256,7 +257,15 @@ export default function MarkdownEditor({
         onRequestClose={() => setShowThemeModal(false)}
       >
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1 }}>
+          {/* The native SafeAreaView doesn't pick up insets inside a Modal */}
+          <View
+            style={{
+              flex: 1,
+              paddingTop: insets.top,
+              paddingLeft: insets.left,
+              paddingRight: insets.right,
+            }}
+          >
             <View
               style={[
                 styles.modalContainer,
@@ -284,7 +293,9 @@ export default function MarkdownEditor({
                 </Touchable>
               </View>
 
-              <ScrollView>
+              <ScrollView
+                contentContainerStyle={{ paddingBottom: insets.bottom }}
+              >
                 <ThemeList
                   currentTheme={currentTheme}
                   onSelect={(_key, customTheme) =>
@@ -294,7 +305,7 @@ export default function MarkdownEditor({
                 />
               </ScrollView>
             </View>
-          </SafeAreaView>
+          </View>
         </GestureHandlerRootView>
       </Modal>
     </View>
