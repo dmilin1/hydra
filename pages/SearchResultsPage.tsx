@@ -1,12 +1,11 @@
-import React, { useContext, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Touchable } from "react-native-gesture-handler";
+import React, { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
 
 import {
   getSearchType,
   makeSearchURL,
+  SearchOptions,
   SearchResult,
-  SearchTypes,
 } from "../api/Search";
 import { getSearchResults } from "../api/gql/Search";
 import { StackPageProps } from "../app/stack";
@@ -16,7 +15,7 @@ import SubredditComponent from "../components/RedditDataRepresentations/Subreddi
 import UserComponent from "../components/RedditDataRepresentations/User/UserComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
-import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
+import SegmentedPicker from "../components/UI/SegmentedPicker";
 import { useURLNavigation } from "../utils/navigation";
 import RedditURL from "../utils/RedditURL";
 import useRedditDataState from "../utils/useRedditDataState";
@@ -26,7 +25,6 @@ export default function SearchResultsPage({
 }: StackPageProps<"SearchResultsPage">) {
   const { url } = route.params;
   const navigation = useURLNavigation<"SearchResultsPage">();
-  const { theme } = useContext(ThemeContext);
 
   const redditURL = new RedditURL(url);
   const query = redditURL.getQueryParam("q") ?? "";
@@ -81,29 +79,13 @@ export default function SearchResultsPage({
                 navigation.setParams({ url: newURL.toString() });
               }}
             />
-            <View style={styles.searchTypesContainer}>
-              {SearchTypes.map((type) => (
-                <Touchable
-                  key={type}
-                  style={[
-                    styles.searchType,
-                    {
-                      backgroundColor:
-                        searchType === type ? theme.tint : "transparent",
-                    },
-                  ]}
-                  activeOpacity={0.8}
-                  animationDuration={{ in: 0, out: 150 }}
-                  onPress={() =>
-                    navigation.setParams({ url: makeSearchURL(query, type) })
-                  }
-                >
-                  <Text style={{ color: theme.text }}>
-                    {type.toUpperCase()}
-                  </Text>
-                </Touchable>
-              ))}
-            </View>
+            <SegmentedPicker
+              options={SearchOptions}
+              value={searchType}
+              onChange={(type) =>
+                navigation.setParams({ url: makeSearchURL(query, type) })
+              }
+            />
           </>
         }
         loadMore={loadMoreSearchResults}
@@ -133,15 +115,5 @@ const styles = StyleSheet.create({
   resultsContainer: {
     flex: 1,
     justifyContent: "center",
-  },
-  searchTypesContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 5,
-  },
-  searchType: {
-    padding: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
   },
 });

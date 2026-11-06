@@ -2,8 +2,12 @@ import { Post } from "./Posts";
 import { Subreddit } from "./Subreddits";
 import { User } from "./User";
 
-export const SearchTypes = ["posts", "subreddits", "users"] as const;
-export type SearchType = (typeof SearchTypes)[number];
+export const SearchOptions = [
+  { value: "posts", label: "Posts" },
+  { value: "subreddits", label: "Subreddits" },
+  { value: "users", label: "Users" },
+] as const;
+export type SearchType = (typeof SearchOptions)[number]["value"];
 
 export type SearchResult = Post | Subreddit | User;
 
@@ -28,7 +32,8 @@ export function makeSearchURL(query: string, type: SearchType = "posts") {
 
 export function getSearchType(urlType: string | null): SearchType {
   return (
-    SearchTypes.find((type) => URL_TYPES[type].includes(urlType ?? "")) ??
-    "posts"
+    SearchOptions.find((option) =>
+      URL_TYPES[option.value].includes(urlType ?? ""),
+    )?.value ?? "posts"
   );
 }

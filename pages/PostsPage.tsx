@@ -6,6 +6,7 @@ import { StackPageProps } from "../app/stack";
 import PostComponent from "../components/RedditDataRepresentations/Post/PostComponent";
 import RedditDataScroller from "../components/UI/RedditDataScroller";
 import SearchBar from "../components/UI/SearchBar";
+import SegmentedPicker from "../components/UI/SegmentedPicker";
 import { FiltersContext } from "../contexts/SettingsContexts/FiltersContext";
 import { ThemeContext } from "../contexts/SettingsContexts/ThemeContext";
 import { markPostSeen } from "../db/functions/SeenPosts";
@@ -25,6 +26,8 @@ import PostDetails from "./PostDetails";
 import SplitViewOptions from "../components/UI/SplitViewOptions";
 import { useSplitViewSupport } from "../utils/useSplitViewSupport";
 import { getPosts } from "../api/gql/Posts";
+import KeyStore from "../utils/KeyStore";
+import { LAST_HOME_FEED_KEY } from "../constants/SettingsKeys";
 
 export default function PostsPage({
   route,
@@ -39,6 +42,7 @@ export default function PostsPage({
   const subreddit = redditURL.getSubreddit();
   const [sort, sortTime] = redditURL.getSort();
   const searchText = redditURL.getQueryParam("q");
+  const homeFeed = redditURL.getHomeFeed();
 
   const isCombinedSubredditFeed = redditURL.isCombinedSubredditFeed();
 
@@ -82,7 +86,7 @@ export default function PostsPage({
     // Reddit's feed pages are small (6 posts, then 24), so filters that remove
     // whole pages need a few more tries to find something to show.
     filterRetries: 8,
-    refreshDependencies: [searchText, sort, sortTime],
+    refreshDependencies: [searchText, sort, sortTime, homeFeed],
   });
 
   useOfferGalleryMode({ url, posts });
@@ -160,6 +164,20 @@ export default function PostsPage({
                   newURL.changeQueryParam("q", text);
                   newURL.changeQueryParam("restrict_sr", "true");
                   navigation.pushURL(newURL.toString());
+                }}
+              />
+            ) : route.name === "Home" ? (
+              <SegmentedPicker
+                options={[
+                  { value: "FOLLOWING", label: "Following" },
+                  { value: "FOR_YOU", label: "For You" },
+                ]}
+                value={homeFeed}
+                onChange={(feed) => {
+                  KeyStore.set(LAST_HOME_FEED_KEY, feed);
+                  navigation.setParams({
+                    url: redditURL.changeQueryParam("feed", feed).toString(),
+                  });
                 }}
               />
             ) : null

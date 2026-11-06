@@ -430,9 +430,9 @@ function getFeedQuery(redditURL: RedditURL): FeedQuery {
         operation: HomeFeedSdui,
         variables: {
           ...sortVariables("best"),
-          // Accounts in Reddit's For You / Following split otherwise get For
-          // You, which mixes in subreddits the user isn't subscribed to.
-          feedContextInput: { homeVariant: "FOLLOWING" },
+          // Sent even for Following, since accounts in Reddit's For You /
+          // Following split otherwise get For You.
+          feedContextInput: { homeVariant: redditURL.getHomeFeed() },
         },
       };
     case PageType.SUBREDDIT: {

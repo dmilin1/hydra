@@ -14,6 +14,7 @@ import { useSetTheme } from "../../utils/useSetTheme";
 import ThemeList from "../../components/UI/Themes/ThemeList";
 import { SubscriptionsContext } from "../../contexts/SubscriptionsContext";
 import List from "../../components/UI/List";
+import SegmentedPicker from "../../components/UI/SegmentedPicker";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 
 export default function Theme() {
@@ -99,37 +100,15 @@ export default function Theme() {
       />
 
       {useDifferentDarkTheme && (
-        <View style={styles.timeModeContainer}>
-          {[
-            {
-              key: "light",
-              text: "Light",
-              onPress: () => setColorScheme("light"),
-            },
-            {
-              key: "dark",
-              text: "Dark",
-              onPress: () => setColorScheme("dark"),
-            },
-          ].map((item) => (
-            <Touchable
-              key={item.key}
-              onPress={item.onPress}
-              activeOpacity={0.2}
-              animationDuration={{ in: 0, out: 150 }}
-              style={[
-                styles.timeModeButton,
-                colorScheme === item.key && {
-                  borderColor: theme.iconOrTextButton,
-                },
-              ]}
-            >
-              <Text style={[styles.timeModeText, { color: theme.subtleText }]}>
-                {item.text}
-              </Text>
-            </Touchable>
-          ))}
-        </View>
+        <SegmentedPicker
+          options={[
+            { value: "light", label: "Light" },
+            { value: "dark", label: "Dark" },
+          ]}
+          value={colorScheme}
+          onChange={setColorScheme}
+          style={styles.colorSchemePicker}
+        />
       )}
 
       <ThemeList
@@ -195,24 +174,9 @@ const styles = StyleSheet.create({
   exploreText: {
     fontSize: 18,
   },
-  timeModeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  colorSchemePicker: {
+    marginTop: 0,
     marginBottom: 15,
-    marginHorizontal: 15,
-    gap: 10,
-  },
-  timeModeButton: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: "transparent",
-  },
-  timeModeText: {
-    fontSize: 16,
-    fontWeight: "600",
+    marginHorizontal: 10,
   },
 });

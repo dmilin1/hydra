@@ -27,6 +27,7 @@ import { useDraftState } from "../../db/functions/Drafts";
 import * as Snudown from "../../external/snudown";
 import RenderHtml from "../HTML/RenderHTML";
 import MarkdownEditor from "../UI/MarkdownEditor";
+import SegmentedPicker from "../UI/SegmentedPicker";
 import RedditURL from "../../utils/RedditURL";
 import { PostFlair } from "../../api/PostFlair";
 import { useAllowedPostFlairs } from "../../api/gql/PostFlair";
@@ -277,31 +278,15 @@ export default function NewPostEditor({
               contentContainerStyle={{ flexGrow: 1 }}
               keyboardShouldPersistTaps="handled"
             >
-              <View style={styles.postTypeContainer}>
-                {(["self", "link", "image"] as PostType[]).map((btnKind) => (
-                  <Touchable
-                    key={btnKind}
-                    activeOpacity={0.2}
-                    animationDuration={{ in: 0, out: 150 }}
-                    style={[
-                      styles.postTypeBtn,
-                      {
-                        backgroundColor:
-                          btnKind === kind ? theme.tint : theme.background,
-                      },
-                    ]}
-                    onPress={() => setKind(btnKind)}
-                  >
-                    <Text style={{ color: theme.text, textAlign: "center" }}>
-                      {btnKind === "self"
-                        ? "Text Post"
-                        : btnKind === "link"
-                          ? "Link Post"
-                          : "Image Post"}
-                    </Text>
-                  </Touchable>
-                ))}
-              </View>
+              <SegmentedPicker<PostType>
+                options={[
+                  { value: "self", label: "Text Post" },
+                  { value: "link", label: "Link Post" },
+                  { value: "image", label: "Image Post" },
+                ]}
+                value={kind}
+                onChange={setKind}
+              />
               <View
                 style={[
                   styles.titleContainer,
@@ -520,17 +505,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 15,
     paddingHorizontal: 20,
-  },
-  postTypeContainer: {
-    flexDirection: "row",
-    marginHorizontal: 5,
-    marginVertical: 10,
-  },
-  postTypeBtn: {
-    flexGrow: 1,
-    width: 0,
-    padding: 10,
-    borderRadius: 15,
   },
   flairBtn: {
     padding: 10,

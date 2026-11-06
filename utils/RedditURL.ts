@@ -6,6 +6,7 @@ import {
   DEFAULT_MULTIREDDIT_SORT_TOP_KEY,
   DEFAULT_POST_SORT_KEY,
   DEFAULT_POST_SORT_TOP_KEY,
+  LAST_HOME_FEED_KEY,
   makeCommentSubredditSortKey,
   makePostMultiredditSortKey,
   makePostMultiredditSortTopKey,
@@ -17,6 +18,8 @@ import {
   SORT_HOME_PAGE,
 } from "../constants/SettingsKeys";
 import { USER_AGENT } from "../api/UserAgent";
+
+export type HomeFeed = "FOLLOWING" | "FOR_YOU";
 
 export enum PageType {
   HOME,
@@ -171,6 +174,12 @@ export default class RedditURL extends URL {
     return this;
   }
 
+  getHomeFeed(): HomeFeed {
+    return this.getQueryParam("feed")?.toUpperCase() === "FOR_YOU"
+      ? "FOR_YOU"
+      : "FOLLOWING";
+  }
+
   getBasePage(): string {
     const pageType = this.getPageType();
     if (pageType === PageType.HOME) {
@@ -316,6 +325,12 @@ export default class RedditURL extends URL {
   applyPreferredSorts(): RedditURL {
     const pageType = this.getPageType();
     const [sort, _sortTime] = this.getSort();
+
+    if (pageType === PageType.HOME && !this.getQueryParam("feed")) {
+      const lastHomeFeed = KeyStore.getString(LAST_HOME_FEED_KEY);
+      if (lastHomeFeed) this.changeQueryParam("feed", lastHomeFeed);
+    }
+
     if (sort) return this;
 
     const shouldApplySortToHomePage = KeyStore.getBoolean(SORT_HOME_PAGE);
