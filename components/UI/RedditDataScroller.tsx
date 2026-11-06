@@ -11,10 +11,6 @@ import {
 } from "react-native";
 
 import { RedditDataObject } from "../../api/RedditData";
-import {
-  ScrollerContext,
-  ScrollerProvider,
-} from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
 import {
@@ -52,11 +48,10 @@ type RedditDataScrollerProps<T> = OverridableFlashListProps<T> & {
   noDataFoundMessage?: string;
 };
 
-function RedditDataScroller<T extends RedditDataObject>(
+export default function RedditDataScroller<T extends RedditDataObject>(
   props: RedditDataScrollerProps<T>,
 ) {
   const { theme } = useContext(ThemeContext);
-  const { scrollDisabled } = useContext(ScrollerContext);
   const { handleScrollForTabBar } = useContext(TabScrollContext);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -101,7 +96,6 @@ function RedditDataScroller<T extends RedditDataObject>(
         minHeight: "100%",
         ...props.contentContainerStyle,
       }}
-      scrollEnabled={!scrollDisabled}
       indicatorStyle={theme.systemModeStyle === "dark" ? "white" : "black"}
       refreshControl={
         <RefreshControl
@@ -179,16 +173,6 @@ function RedditDataScroller<T extends RedditDataObject>(
         </>
       }
     />
-  );
-}
-
-export default function WrappedScroller<T extends RedditDataObject>(
-  props: RedditDataScrollerProps<T>,
-) {
-  return (
-    <ScrollerProvider>
-      <RedditDataScroller<T> {...props} />
-    </ScrollerProvider>
   );
 }
 

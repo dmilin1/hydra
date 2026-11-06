@@ -13,10 +13,6 @@ import usePostDetail from "./usePostDetail";
 import { StackPageProps } from "../../app/stack";
 import PostDetailsComponent from "../../components/RedditDataRepresentations/Post/PostDetailsComponent";
 import Comments from "../../components/RedditDataRepresentations/Post/PostParts/Comments";
-import {
-  ScrollerContext,
-  ScrollerProvider,
-} from "../../contexts/ScrollerContext";
 import ScrollToNextButtonProvider from "../../contexts/ScrollToNextButtonProvider";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { TabScrollContext } from "../../contexts/TabScrollContext";
@@ -39,7 +35,6 @@ function PostDetails(props: PostDetailsProps) {
   const isSplitView = "splitViewURL" in props && !!props.splitViewURL;
 
   const { theme } = useContext(ThemeContext);
-  const { scrollDisabled } = useContext(ScrollerContext);
   const { handleScrollForTabBar } = useContext(TabScrollContext);
 
   const {
@@ -89,7 +84,6 @@ function PostDetails(props: PostDetailsProps) {
               onRefresh={() => loadPostDetails()}
             />
           }
-          scrollEnabled={!scrollDisabled}
           onScroll={(e) => handleScrollForTabBar(e)}
           contentContainerStyle={{
             // Room for the scroll-to-next button; TabBarSpacer clears the tab bar
@@ -150,9 +144,7 @@ function PostDetails(props: PostDetailsProps) {
 export default function PostDetailsPage(props: PostDetailsProps) {
   return (
     <ScrollToNextButtonProvider>
-      <ScrollerProvider>
-        <PostDetails {...props} />
-      </ScrollerProvider>
+      <PostDetails {...props} />
     </ScrollToNextButtonProvider>
   );
 }

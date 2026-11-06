@@ -16,7 +16,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
 
-import { ScrollerContext } from "../../contexts/ScrollerContext";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
 import { GesturesContext } from "../../contexts/SettingsContexts/GesturesContext";
 import type { IconProps } from "@react-native-vector-icons/common";
@@ -70,7 +69,6 @@ export default function Slideable<SlideName extends string>({
   xScrollToEngage,
 }: PropsWithChildren<SlideableProps<SlideName>>) {
   const { theme } = useContext(ThemeContext);
-  const { setScrollDisabled } = useContext(ScrollerContext);
   const { swipeAnywhereToNavigate } = useContext(GesturesContext);
 
   const [slideItem, setSlideItem] = useState<
@@ -179,7 +177,6 @@ export default function Slideable<SlideName extends string>({
       isSliding.value = true;
       startX.value = e.translationX;
       prevLevel.value = 0;
-      runOnJS(setScrollDisabled)(true);
     },
     onUpdate: (e) => {
       "worklet";
@@ -206,7 +203,6 @@ export default function Slideable<SlideName extends string>({
       translateX.value = withSpring(0, SPRING_CONFIG, (finished) => {
         if (finished) runOnJS(resetSlideItem)();
       });
-      runOnJS(setScrollDisabled)(false);
     },
   });
 

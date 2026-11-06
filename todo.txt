@@ -26,6 +26,8 @@
 
 - 🚀 Add favorited subreddit reordering
 
+- 🚀 Find a way to make compact mode toggleable quickly
+
 - 🐛 Figure out why Google sign in is missing in the login screen
 
 ### Easy
