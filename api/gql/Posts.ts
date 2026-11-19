@@ -4,6 +4,7 @@ import { defineOperation, gql, GqlOperation } from "./GqlApi";
 import { checkSubredditAccess } from "./SubredditAccess";
 import { contentToHtml } from "./RichText";
 import { Flair } from "../Flair";
+import { getOldRedditPostIds } from "../OldReddit";
 import { Poll, Post, VoteOption } from "../Posts";
 import { PostFlair } from "../PostFlair";
 import Redgifs from "../../utils/RedGifs";
@@ -15,7 +16,8 @@ import URL, { OpenGraphData } from "../../utils/URL";
  * Post feeds load like they do in Reddit's app: a feed query returns the
  * page's post ids (as server-driven UI cells we otherwise ignore), then
  * PostsByIds fetches the full posts. Every feed shares that second step, so
- * all of them produce the same Post shape.
+ * all of them produce the same Post shape, including feeds whose ids come from
+ * old Reddit.
  */
 
 const HomeFeedSdui = defineOperation(
@@ -26,11 +28,6 @@ const HomeFeedSdui = defineOperation(
 const PopularFeedSdui = defineOperation(
   "PopularFeedSdui",
   "effee8db2d66287bea4e08a3ccf3a5fcb2db245c363be6fe50a3ba01e9962a24",
-);
-
-const AllFeedSdui = defineOperation(
-  "AllFeedSdui",
-  "dea8ebf08bd9127a580fd664b9c312e590a195690f5c04c32d60b9370d876fb0",
 );
 
 const SubredditFeedSdui = defineOperation(
@@ -407,10 +404,10 @@ export async function formatPost(post: any): Promise<Post> {
   };
 }
 
-type FeedQuery = {
-  operation: GqlOperation;
-  variables: Record<string, any>;
-};
+type FeedQuery =
+  | { operation: GqlOperation; variables: Record<string, any> }
+  // A listing page on old Reddit, for feeds Reddit's app no longer has.
+  | { oldRedditPath: string };
 
 /**
  * Picks the app's feed query for a feed URL. Combined subreddits
@@ -440,8 +437,11 @@ function getFeedQuery(redditURL: RedditURL): FeedQuery {
       if (subreddit.toLowerCase() === "popular") {
         return { operation: PopularFeedSdui, variables: sortVariables("hot") };
       }
+      // Reddit removed r/all from its app and site in 2026.
       if (subreddit.toLowerCase() === "all") {
-        return { operation: AllFeedSdui, variables: sortVariables("hot") };
+        return {
+          oldRedditPath: `/r/all/${sort ?? "hot"}/${time ? `?t=${time}` : ""}`,
+        };
       }
       return {
         operation: SubredditFeedSdui,
@@ -468,6 +468,9 @@ async function getFeedPostIds(
   query: FeedQuery,
   after?: string,
 ): Promise<string[]> {
+  if ("oldRedditPath" in query) {
+    return await getOldRedditPostIds(query.oldRedditPath, after);
+  }
   const data = await gql(query.operation, {
     ...query.variables,
     // Feed cursors are base64 encoded post fullnames.
@@ -503,7 +506,11 @@ export async function getPosts(
   const query = getFeedQuery(redditURL);
 
   let ids: string[];
-  if (query.operation === SubredditFeedSdui && !options.after) {
+  if (
+    "operation" in query &&
+    query.operation === SubredditFeedSdui &&
+    !options.after
+  ) {
     // Check the subreddit's status alongside its first page, like Reddit's
     // app does when it opens a subreddit.
     const [firstPageIds, access] = await Promise.all([
