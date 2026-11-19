@@ -19,7 +19,8 @@ import {
 } from "../constants/SettingsKeys";
 import { USER_AGENT } from "../api/UserAgent";
 
-export type HomeFeed = "FOLLOWING" | "FOR_YOU";
+// CLASSIC is old Reddit's front page.
+export type HomeFeed = "FOLLOWING" | "FOR_YOU" | "CLASSIC";
 
 export enum PageType {
   HOME,
@@ -175,9 +176,8 @@ export default class RedditURL extends URL {
   }
 
   getHomeFeed(): HomeFeed {
-    return this.getQueryParam("feed")?.toUpperCase() === "FOR_YOU"
-      ? "FOR_YOU"
-      : "FOLLOWING";
+    const feed = this.getQueryParam("feed")?.toUpperCase();
+    return feed === "FOR_YOU" || feed === "CLASSIC" ? feed : "FOLLOWING";
   }
 
   getBasePage(): string {

@@ -420,18 +420,24 @@ function getFeedQuery(redditURL: RedditURL): FeedQuery {
     sort: (sort ?? defaultSort).toUpperCase(),
     ...(time ? { time: time.toUpperCase() } : {}),
   });
+  const oldRedditListing = (base: string, defaultSort: string) => ({
+    oldRedditPath: `${base}/${sort ?? defaultSort}/${time ? `?t=${time}` : ""}`,
+  });
 
   switch (redditURL.getPageType()) {
-    case PageType.HOME:
+    case PageType.HOME: {
+      const homeFeed = redditURL.getHomeFeed();
+      if (homeFeed === "CLASSIC") return oldRedditListing("", "best");
       return {
         operation: HomeFeedSdui,
         variables: {
           ...sortVariables("best"),
           // Sent even for Following, since accounts in Reddit's For You /
           // Following split otherwise get For You.
-          feedContextInput: { homeVariant: redditURL.getHomeFeed() },
+          feedContextInput: { homeVariant: homeFeed },
         },
       };
+    }
     case PageType.SUBREDDIT: {
       const subreddit = redditURL.getSubreddit();
       if (subreddit.toLowerCase() === "popular") {
@@ -439,9 +445,7 @@ function getFeedQuery(redditURL: RedditURL): FeedQuery {
       }
       // Reddit removed r/all from its app and site in 2026.
       if (subreddit.toLowerCase() === "all") {
-        return {
-          oldRedditPath: `/r/all/${sort ?? "hot"}/${time ? `?t=${time}` : ""}`,
-        };
+        return oldRedditListing("/r/all", "hot");
       }
       return {
         operation: SubredditFeedSdui,

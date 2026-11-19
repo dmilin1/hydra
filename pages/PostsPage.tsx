@@ -171,6 +171,7 @@ export default function PostsPage({
                 options={[
                   { value: "FOLLOWING", label: "Following" },
                   { value: "FOR_YOU", label: "For You" },
+                  { value: "CLASSIC", label: "Classic" },
                 ]}
                 value={homeFeed}
                 onChange={(feed) => {
