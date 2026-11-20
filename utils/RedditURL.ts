@@ -19,6 +19,9 @@ import {
 } from "../constants/SettingsKeys";
 import { USER_AGENT } from "../api/UserAgent";
 
+// Reddit serves some accounts Cloudflare hosts (cf.preview.redd.it) for the same images.
+const IMAGE_HOST = /^https:\/\/(cf\.)?(i|preview)\.redd\.it\//;
+
 // CLASSIC is old Reddit's front page.
 export type HomeFeed = "FOLLOWING" | "FOR_YOU" | "CLASSIC";
 
@@ -86,10 +89,9 @@ export default class RedditURL extends URL {
     if (
       !this.url.startsWith("hydra://") &&
       !this.url.startsWith("https://www.reddit.com") &&
-      !this.url.startsWith("https://i.redd.it") &&
       !this.url.startsWith("https://v.redd.it") &&
-      !this.url.startsWith("https://preview.redd.it") &&
-      !this.url.startsWith("https://redd.it")
+      !this.url.startsWith("https://redd.it") &&
+      !IMAGE_HOST.test(this.url)
     ) {
       throw new Error("Not a reddit URL");
     }
@@ -252,9 +254,7 @@ export default class RedditURL extends URL {
       return PageType.USER;
     } else if (relativePath.startsWith("/search")) {
       return PageType.SEARCH;
-    } else if (this.url.startsWith("https://i.redd.it")) {
-      return PageType.IMAGE;
-    } else if (this.url.startsWith("https://preview.redd.it")) {
+    } else if (IMAGE_HOST.test(this.url)) {
       return PageType.IMAGE;
     } else {
       return PageType.UNKNOWN;

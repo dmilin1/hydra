@@ -37,7 +37,7 @@ export const TabIndices = {
 };
 
 let startupURL =
-  KeyStore.getString(STARTUP_URL_STORAGE_KEY) ?? STARTUP_URL_DEFAULT;
+  KeyStore.getString(STARTUP_URL_STORAGE_KEY) || STARTUP_URL_DEFAULT;
 let navName = "Home";
 try {
   const redditURL = new RedditURL(startupURL);
