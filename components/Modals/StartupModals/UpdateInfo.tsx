@@ -14,58 +14,80 @@ import { StackActions } from "@react-navigation/native";
 export const LAST_SEEN_UPDATE_KEY = "lastSeenUpdate";
 
 export const updateInfo = {
-  updateKey: "v4.5.0",
+  updateKey: "v4.6.0",
   title: "Update",
   subtitle: "Here's what's new in this update",
-  proFeatures: [] as { title: string; description: string }[],
+  proFeatures: [
+    {
+      title: "Improved Smart Post Filters",
+      description:
+        "Smart filters use a much faster and smarter model for filtering posts. This should significantly improve page load times and filtering accuracy. You can enable smart post filtering in Settings => General => Filters => Smart Post Filters.",
+    },
+    {
+      title: "Multi Device Notifications",
+      description:
+        "If you have multiple devices under the same Apple App Store account or Google Play Store account, Hydra will now send push notifications to all of them.",
+    },
+  ] as { title: string; description: string }[],
   features: [
     {
-      title: "Liquid Glass Tab Bar",
+      title: "Home Feed Picker",
       description:
-        "On iOS 26+, the tab bar now uses Liquid Glass. Hide on Infinite Scroll is now called Minimize on Scroll and shrinks the tab bar down instead of hiding it. You can enable this in Settings => Appearance => Tabs => Minimize on Scroll.",
+        "The home page now lets you switch between the Following feed, the For You feed, and a Classic feed that shows the old Reddit front page. Hydra remembers whichever one you used last. The classic feed may be a bit slower to load than the other feeds.",
     },
     {
-      title: "iPhone Duo Support",
+      title: "Redesigned Search",
       description:
-        "Hydra now supports the iPhone Duo and adjusts its layout as you fold and unfold it. Since the Duo's side bar covers the edge you'd swipe from to go forward, a forward button now shows next to the back button when there's a page to go forward to.",
+        "Search has been rebuilt. Tap the Search tab from anywhere and it opens over the tab you were on. Before you type, it shows your recent searches, favorite subreddits, and subreddits to discover. As you type, it suggests your subreddits, subreddits across Reddit, a search within the subreddit you came from, and a shortcut to jump straight to any r/ or u/ you type or Reddit link you paste. On iOS 26.1+, Search is the separate button beside the tab bar. This replaces quick subreddit search.",
     },
     {
-      title: "Split View Follows Window Size",
+      title: "Account Restriction Notices",
       description:
-        "Split view now turns on and off as Hydra's window changes size, like when unfolding an iPhone Duo or resizing Hydra with iPad multitasking.",
+        'Hydra now lets you know when your account has been flagged for a password reset or has been suspended, instead of Reddit just saying "Permission denied" when you try to do something.',
     },
     {
-      title: "Quick Search & Account Swap",
+      title: "Updated Segmented Pickers",
       description:
-        "The new tab bar doesn't support long presses, so these have moved. Tap the Search tab while you're already at the top of it to open quick subreddit search, and tap the Account tab while on your profile to quick swap accounts. I'll be working on a better way to trigger these shortcuts in a future update.",
-    },
-    {
-      title: "Add Users to Multireddits",
-      description:
-        'User profiles can now be added to a multireddit with the "Add to Multireddit" option in the ... menu on their page.',
+        "The pickers used to switch between options across the app, like in search results, new posts, and theme settings, have a cleaner, consistent look.",
     },
   ] as { title: string; description: string }[],
   bugfixes: [
     {
-      description:
-        "The home feed could show posts from subreddits you aren't subscribed to.",
+      description: "Hydra would crash at startup on iOS 16 and iOS 17.",
     },
     {
-      description: "RedGifs videos would load without sound.",
-    },
-    {
-      description: "Sign in with Apple wouldn't work on the login page.",
-    },
-    {
-      description: "Blurred spoiler media would sometimes not blur properly.",
+      description: "/r/all stopped working due to Reddit API changes.",
     },
     {
       description:
-        "Text would sometimes overflow its container, especially after changing device orientation.",
+        "Images in comments hosted through CloudFlare would show as links instead of images.",
     },
     {
       description:
-        "Links with bold, italic, or other formatting could render incorrectly in posts, comments, and message previews.",
+        "Hydra could keep using a custom server after the setting was turned off.",
+    },
+    {
+      description: "Action sheet menus were slow to close.",
+    },
+    {
+      description:
+        "Swiping on a comment could cause the page to shift slightly.",
+    },
+    {
+      description:
+        "The theme picker in the markdown editor didn't respect safe areas, making the exit button unclickable on some devices.",
+    },
+    {
+      description:
+        "On the iPhone Duo, tapping certain parts of the navbar would fail to scroll to the top when folded.",
+    },
+    {
+      description:
+        "On the iPhone Duo, the accounts button would disappear from the user tab after swapping accounts.",
+    },
+    {
+      description:
+        "On the iPhone Duo, the update info popup would overflow the sidebar.",
     },
   ] as { description: string }[],
   notes: [] as string[],
