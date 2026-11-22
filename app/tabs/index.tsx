@@ -1,7 +1,7 @@
 import { createNativeBottomTabNavigator } from "@react-navigation/bottom-tabs/unstable";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useContext, useEffect, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import {
   NavigationContainerRef,
   StackActions,
@@ -95,6 +95,11 @@ export default function Tabs() {
               backgroundColor: theme.background,
               display: tabBarHidden ? "none" : "flex",
             },
+            ...(Platform.OS === "ios" &&
+              Platform.isPad && {
+                tabBarControllerMode: "tabSidebar",
+                tabBarSidebarPreferredPlacement: "tabBar",
+              }),
             tabBarMinimizeBehavior: USES_NATIVE_TAB_BAR_MINIMIZE
               ? hideTabsOnScroll
                 ? "onScrollDown"
