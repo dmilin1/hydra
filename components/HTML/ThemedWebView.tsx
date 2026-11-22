@@ -1,7 +1,7 @@
 import { WebView } from "react-native-webview";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import RedditURL, { PageType } from "../../utils/RedditURL";
 import { useURLNavigation } from "../../utils/navigation";
 import { openExternalLink } from "../../utils/openExternalLink";
@@ -11,6 +11,7 @@ export default function ThemedWebView({ url }: { url: string }) {
   const { theme } = useContext(ThemeContext);
 
   const { pushURL } = useURLNavigation();
+  const hasLoaded = useRef(false);
 
   const bg = String(theme.background);
   const tint = String(theme.tint);
@@ -115,8 +116,13 @@ export default function ThemedWebView({ url }: { url: string }) {
       style={{ backgroundColor: theme.background }}
       // Injected js doesn't run unless you pass a function here even if it doesn't do anything. No idea why.
       onMessage={() => {}}
+      onLoadEnd={() => {
+        hasLoaded.current = true;
+      }}
       onShouldStartLoadWithRequest={(e) => {
-        if (!e.isTopFrame) return true;
+        // Before the first load ends, top-frame navigations are server redirects, not taps.
+        // Pushing them loops forever, e.g. old-Reddit accounts get www -> old, which RedditURL maps back to www.
+        if (!e.isTopFrame || !hasLoaded.current) return true;
         let currentURL = new URL(e.url).getBasePath().toString();
         let targetURL = new URL(url).getBasePath().toString();
         if (!currentURL.endsWith("/")) {
