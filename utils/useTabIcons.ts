@@ -19,7 +19,7 @@ const sfSymbol =
   ({ focused }) => ({ type: "sfSymbol", name: focused ? selectedName : name });
 
 const IOS_ICONS: TabIcons = {
-  Posts: sfSymbol("text.below.photo", "text.below.photo.fill"),
+  Posts: sfSymbol("newspaper", "newspaper.fill"),
   Inbox: sfSymbol("envelope", "envelope.fill"),
   Account: sfSymbol("person.crop.circle", "person.crop.circle.fill"),
   Search: sfSymbol("magnifyingglass"),
