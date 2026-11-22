@@ -57,6 +57,7 @@ function PostDetails(props: PostDetailsProps) {
     commentsHandle,
     scrollChange,
     collapseThread,
+    scrollToTop,
   } = useCommentScrolling(postDetail, changeComment);
 
   /**
@@ -96,6 +97,7 @@ function PostDetails(props: PostDetailsProps) {
             postDetail={postDetail}
             loadPostDetails={loadPostDetails}
             setPostDetail={setPostDetail}
+            onCollapse={scrollToTop}
           />
           {deferredPostDetail && deferredPostDetail.comments.length > 0 ? (
             <Comments

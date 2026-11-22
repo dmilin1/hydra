@@ -40,12 +40,14 @@ type PostDetailsComponentProps = {
   postDetail: PostDetail;
   loadPostDetails: () => Promise<void>;
   setPostDetail: Dispatch<SetStateAction<PostDetail | undefined>>;
+  onCollapse: () => void;
 };
 
 export default function PostDetailsComponent({
   postDetail,
   loadPostDetails,
   setPostDetail,
+  onCollapse,
 }: PostDetailsComponentProps) {
   const { params } = useRoute<"PostDetailsPage">();
   const url = params.url;
@@ -78,9 +80,11 @@ export default function PostDetailsComponent({
   return (
     <View>
       <Touchable
-        onPress={() =>
-          tapToCollapsePost ? setMediaCollapsed(!mediaCollapsed) : null
-        }
+        onPress={() => {
+          if (!tapToCollapsePost) return;
+          if (!mediaCollapsed) onCollapse();
+          setMediaCollapsed(!mediaCollapsed);
+        }}
       >
         <View style={styles.postDetailsContainer}>
           <Text

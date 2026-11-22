@@ -143,6 +143,9 @@ export default function useCommentScrolling(
     changeComment({ ...topOfThread, collapsed: true });
   };
 
+  const scrollToTop = () =>
+    scrollView.current?.scrollTo({ y: 0, animated: true });
+
   // Registered once: the closures only read refs, which stay current.
   useEffect(() => {
     setScrollToNext(() => scrollToNextComment());
@@ -155,5 +158,6 @@ export default function useCommentScrolling(
     commentsHandle,
     scrollChange,
     collapseThread,
+    scrollToTop,
   };
 }
