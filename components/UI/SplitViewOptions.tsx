@@ -1,7 +1,9 @@
 import { StyleSheet, View } from "react-native";
 import { Touchable } from "react-native-gesture-handler";
 import { ThemeContext } from "../../contexts/SettingsContexts/ThemeContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { useVerticalBarEdgeIOS } from "expo-status-bar";
+import { StackFutureContext } from "../../contexts/StackFutureContext";
 import { useURLNavigation } from "../../utils/navigation";
 import { useTabBarInsets } from "../../contexts/TabBarInsetsContext";
 import AntDesign from "@react-native-vector-icons/ant-design";
@@ -19,8 +21,38 @@ export default function SplitViewOptions({
   const tabBarInsets = useTabBarInsets();
 
   const navigation = useURLNavigation();
+  const { clearFuture, setVerticalBarItems } = useContext(StackFutureContext);
+  // On the iPhone Duo the buttons sit in the vertical bar instead of over the post
+  const inVerticalBar = !!useVerticalBarEdgeIOS();
 
-  return (
+  useEffect(() => {
+    // Opening a post is a step forward, so the old forward history no longer applies
+    clearFuture();
+    setVerticalBarItems(
+      inVerticalBar
+        ? [
+            {
+              type: "button",
+              label: "Close",
+              icon: { type: "sfSymbol", name: "xmark" },
+              onPress: () => setSplitViewURL(null),
+            },
+            {
+              type: "button",
+              label: "Fullscreen",
+              icon: {
+                type: "sfSymbol",
+                name: "arrow.up.left.and.arrow.down.right",
+              },
+              onPress: () => navigation.pushURL(splitViewURL),
+            },
+          ]
+        : null,
+    );
+    return () => setVerticalBarItems(null);
+  }, [splitViewURL, inVerticalBar]);
+
+  return inVerticalBar ? null : (
     <View
       style={[
         styles.splitViewOptionsContainer,

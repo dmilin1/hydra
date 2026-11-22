@@ -6,6 +6,7 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import {
+  NativeStackHeaderItem,
   NativeStackNavigationEventMap,
   NativeStackNavigationProp,
 } from "@react-navigation/native-stack";
@@ -36,6 +37,7 @@ type StackFutureProviderProps = PropsWithChildren<{
 
 export const StackFutureContext = createContext({
   clearFuture: () => {},
+  setVerticalBarItems: (_items: NativeStackHeaderItem[] | null) => {},
 });
 
 export function StackFutureProvider({
@@ -77,25 +79,30 @@ export function StackFutureProvider({
    * starts from, but it does host native header items next to the back button.
    */
   const verticalBarEdge = useVerticalBarEdgeIOS();
+  // Items a page puts in the vertical bar (e.g. split view's) replace the forward button
+  const pageItems = useRef<NativeStackHeaderItem[] | null>(null);
+  const updateHeaderLeftItems = () => {
+    const showForward = !!verticalBarEdge && futureRoutes.current.length > 0;
+    const items =
+      pageItems.current ??
+      (showForward
+        ? [
+            {
+              type: "button" as const,
+              label: "Forward",
+              icon: { type: "sfSymbol" as const, name: "chevron.forward" },
+              onPress: goForward,
+            },
+          ]
+        : null);
+    navigation.setOptions({
+      headerBackVisible: items ? true : undefined,
+      unstable_headerLeftItems: items ? () => items : undefined,
+    });
+  };
   useEffect(() => {
-    const updateForwardButton = () => {
-      const showForward = !!verticalBarEdge && futureRoutes.current.length > 0;
-      navigation.setOptions({
-        headerBackVisible: showForward || undefined,
-        unstable_headerLeftItems: showForward
-          ? () => [
-              {
-                type: "button",
-                label: "Forward",
-                icon: { type: "sfSymbol", name: "chevron.forward" },
-                onPress: goForward,
-              },
-            ]
-          : undefined,
-      });
-    };
-    updateForwardButton();
-    return navigation.addListener("focus", updateForwardButton);
+    updateHeaderLeftItems();
+    return navigation.addListener("focus", updateHeaderLeftItems);
   }, [navigation, verticalBarEdge]);
 
   useEffect(() => {
@@ -111,6 +118,10 @@ export function StackFutureProvider({
     <StackFutureContext.Provider
       value={{
         clearFuture: () => (futureRoutes.current = []),
+        setVerticalBarItems: (items) => {
+          pageItems.current = items;
+          updateHeaderLeftItems();
+        },
       }}
     >
       <Animated.View
