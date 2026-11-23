@@ -154,7 +154,7 @@ export default function useCommentActions({
       "Reply",
       ...(comment.saved ? ["Unsave"] : ["Save"]),
       ...(currentUser?.userName === comment.author ? ["Edit", "Delete"] : []),
-      "Share as Image",
+      ...(displayInList ? [] : ["Share as Image"]),
       "Share",
     ];
     const result = await showContextMenu({ options });

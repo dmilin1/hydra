@@ -8,6 +8,9 @@ import {
   View,
 } from "react-native";
 
+import CommentSearchResults, {
+  MIN_COMMENT_SEARCH_LENGTH,
+} from "./CommentSearchResults";
 import useCommentScrolling from "./useCommentScrolling";
 import usePostDetail from "./usePostDetail";
 import { StackPageProps } from "../../app/stack";
@@ -21,6 +24,7 @@ import {
   TabBarSpacer,
 } from "../../contexts/TabBarInsetsContext";
 import AccessFailureComponent from "../../components/UI/AccessFailureComponent";
+import SearchBar from "../../components/UI/SearchBar";
 import RedditURL from "../../utils/RedditURL";
 
 type PostDetailsProps =
@@ -60,6 +64,12 @@ function PostDetails(props: PostDetailsProps) {
     scrollToTop,
   } = useCommentScrolling(postDetail, changeComment);
 
+  const [commentSearch, setCommentSearch] = useState("");
+  // Split view reuses this page for the next post.
+  useEffect(() => setCommentSearch(""), [url]);
+  const trimmedSearch = commentSearch.trim();
+  const isSearching = trimmedSearch.length >= MIN_COMMENT_SEARCH_LENGTH;
+
   /**
    * The tintColor prop on the RefreshControl component is broken in React
    * Native 0.81.5. This is a workaround to fix the bug. Same fix is used in
@@ -86,48 +96,71 @@ function PostDetails(props: PostDetailsProps) {
             />
           }
           onScroll={(e) => handleScrollForTabBar(e)}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           contentContainerStyle={{
             // Room for the scroll-to-next button; TabBarSpacer clears the tab bar
             paddingBottom: 60,
           }}
         >
           <View ref={topOfScroll} />
-          <PostDetailsComponent
-            key={postDetail.id}
-            postDetail={postDetail}
-            loadPostDetails={loadPostDetails}
-            setPostDetail={setPostDetail}
-            onCollapse={scrollToTop}
-          />
-          {deferredPostDetail && deferredPostDetail.comments.length > 0 ? (
-            <Comments
-              key={`${deferredPostDetail.id}-comments`}
-              ref={commentsHandle}
-              loadMoreComments={loadMoreComments}
-              postDetail={deferredPostDetail}
-              scrollChange={scrollChange}
-              changeComment={changeComment}
-              deleteComment={deleteComment}
-              collapseThread={collapseThread}
-              interactionDisabledStatus={postDetail.interactionDisabledStatus}
+          {postDetail.commentCount > 0 && (
+            <SearchBar
+              key={url}
+              placeholder="Search comments"
+              searchOnBlur={false}
+              onSearch={setCommentSearch}
             />
-          ) : postDetail !== deferredPostDetail ? (
-            <View key="loading-comments" style={styles.commentsPlaceholder}>
-              <ActivityIndicator size="small" />
-            </View>
+          )}
+          {isSearching ? (
+            <CommentSearchResults
+              // A new search starts over.
+              key={`${postDetail.id}:${trimmedSearch}`}
+              postDetail={postDetail}
+              query={trimmedSearch}
+            />
           ) : (
-            <View key="no-comments" style={styles.commentsPlaceholder}>
-              <Text
-                style={[
-                  styles.noCommentsText,
-                  {
-                    color: theme.text,
-                  },
-                ]}
-              >
-                No comments
-              </Text>
-            </View>
+            <>
+              <PostDetailsComponent
+                key={postDetail.id}
+                postDetail={postDetail}
+                loadPostDetails={loadPostDetails}
+                setPostDetail={setPostDetail}
+                onCollapse={scrollToTop}
+              />
+              {deferredPostDetail && deferredPostDetail.comments.length > 0 ? (
+                <Comments
+                  key={`${deferredPostDetail.id}-comments`}
+                  ref={commentsHandle}
+                  loadMoreComments={loadMoreComments}
+                  postDetail={deferredPostDetail}
+                  scrollChange={scrollChange}
+                  changeComment={changeComment}
+                  deleteComment={deleteComment}
+                  collapseThread={collapseThread}
+                  interactionDisabledStatus={
+                    postDetail.interactionDisabledStatus
+                  }
+                />
+              ) : postDetail !== deferredPostDetail ? (
+                <View key="loading-comments" style={styles.commentsPlaceholder}>
+                  <ActivityIndicator size="small" />
+                </View>
+              ) : (
+                <View key="no-comments" style={styles.commentsPlaceholder}>
+                  <Text
+                    style={[
+                      styles.noCommentsText,
+                      {
+                        color: theme.text,
+                      },
+                    ]}
+                  >
+                    No comments
+                  </Text>
+                </View>
+              )}
+            </>
           )}
           <TabBarSpacer />
         </TabBarScrollView>

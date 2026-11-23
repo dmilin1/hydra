@@ -1,7 +1,9 @@
 import { defineOperation, gql } from "./GqlApi";
 import { loadPage } from "./Paging";
+import { formatStandaloneComment, getCommentsByIds } from "./PostDetail";
 import { formatSubredditBase } from "./Subreddits";
 import { formatPosts, parseTime, POST_FRAGMENT_VARIABLES } from "./Posts";
+import { Comment, PostDetail } from "../PostDetail";
 import { Post } from "../Posts";
 import { SearchResults, SearchType } from "../Search";
 import { Subreddit } from "../Subreddits";
@@ -24,6 +26,11 @@ const SearchPeople = defineOperation(
 const CommunityPickerSearchPaginated = defineOperation(
   "CommunityPickerSearchPaginated",
   "b58025ad0c98bdb93e9dc1db909accf440573bd7d3a48d2c73a02e96d33f1943",
+);
+
+const SearchComments = defineOperation(
+  "SearchComments",
+  "168fc25b93376ff2f4f2087770b6b26ee8ce2ea1c404c2ca0e8a7596ccc735ce",
 );
 
 const ExploreFeedSdui = defineOperation(
@@ -241,4 +248,45 @@ export async function getDiscoverSubreddits(): Promise<Subreddit[]> {
     }
   }
   return [...subreddits.values()];
+}
+
+/**
+ * A post's comments matching `text`, searched by Reddit across the whole
+ * thread, so it finds comments that aren't loaded yet (the official app's
+ * in-post search). Reddit stops at about 250 results. Search results lack the
+ * permalink and vote state, so the full comments come from getCommentsByIds.
+ * `cursor` is undefined on the last page.
+ */
+export async function searchPostComments(
+  post: PostDetail,
+  text: string,
+  cursor?: string,
+): Promise<{ comments: Comment[]; cursor?: string }> {
+  const data = await gql(SearchComments, {
+    query: text,
+    productSurface: PRODUCT_SURFACE,
+    pageSize: PAGE_SIZE,
+    // post_ids needs the t3_ prefix. Hydra turns NSFW on for every account.
+    filters: [
+      { key: "post_ids", value: post.name },
+      { key: "nsfw", value: "1" },
+    ],
+    ...(cursor ? { afterCursor: cursor } : {}),
+  });
+  const list = data.search?.general?.comments;
+  const ids: string[] = (list?.edges ?? [])
+    .map((edge: any) => edge?.node?.id)
+    .filter(Boolean);
+  const comments = await getCommentsByIds(ids);
+  return {
+    comments: ids.flatMap((id, index) => {
+      const comment = comments.get(id);
+      return comment
+        ? [formatStandaloneComment(comment, index, post.title)]
+        : [];
+    }),
+    cursor: list?.pageInfo?.hasNextPage
+      ? (list.pageInfo.endCursor ?? undefined)
+      : undefined,
+  };
 }

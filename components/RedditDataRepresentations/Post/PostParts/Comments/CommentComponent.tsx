@@ -28,6 +28,7 @@ type CommentProps = {
   changeComment: (comment: Comment) => void;
   deleteComment: (comment: Comment) => void;
   displayInList?: boolean; // Render style for standalone lists like a user's comment history
+  hidePostLink?: boolean; // Hides the post link. Does nothing if displayInList is false.
   loadMoreComments?: LoadMoreCommentsFunc;
   scrollChange?: (y: number) => void;
   collapseThread?: (comment: Comment) => void;
@@ -45,6 +46,7 @@ export default function CommentComponent({
   changeComment,
   deleteComment,
   displayInList,
+  hidePostLink,
   loadMoreComments,
   scrollChange,
   collapseThread,
@@ -190,7 +192,7 @@ export default function CommentComponent({
                       <RenderHtml html={comment.html} />
                     </View>
                   )}
-                  {displayInList && (
+                  {displayInList && !hidePostLink && (
                     <Touchable
                       style={[
                         styles.sourceContainer,
