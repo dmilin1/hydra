@@ -1,6 +1,6 @@
 ===METADATA===
 title: General Settings
-description: Startup settings (initial tab, startup URL), Open in Hydra (shortcut setup, clipboard detection), External Links (browser selection, Modify Links custom link scripts), Gestures, Sorting, Filters
+description: Startup settings (initial tab, startup URL), Open in Hydra (shortcut setup, clipboard detection), External Links (browser selection, Modify Links custom link scripts), Translation (translate posts and comments into your language), Gestures, Sorting, Filters
 ===END METADATA===
 
 # General Settings
@@ -32,6 +32,12 @@ Legal documents can be found on the main Settings page. Access Privacy Policy an
 **Modify Links**: Write your own JavaScript to change how Hydra opens web links. Tap **"Modify Links"** in [External Links settings](hydra://settings/general/externalLinks) to write a script, add ready-made examples (like removing tracking parameters or always using HTTPS), and test it on a link before enabling it. Links that open inside Hydra, like Reddit posts and subreddits, are left alone. If your script has an error, the original link opens instead.
 
 Learn more in the [External Links guide](hydra://settings/guide/?doc=external_links).
+
+## Translation
+
+**Translation**: Have Reddit machine translate posts and comments written in other languages into the language you choose. For example, choose English to read German or Japanese posts and comments in English. Choose a language in [Translation settings](hydra://settings/general/translation), or Don't Translate (default). Available languages: English, German, Spanish (Latin American), Filipino, French, Italian, Dutch, Polish, Portuguese (Brazil), Swedish, Hindi, Thai, Japanese, and Chinese (Simplified and Traditional); these are the languages Reddit can translate into. Titles, post text and comments are translated everywhere, including feeds, post pages, search, profiles and the inbox. Content already in your language is left as is.
+
+Reddit translates comments on a thread the first time someone reads it in your language, which usually takes less than 10 seconds. If most of a thread's comments aren't translated yet, Hydra shows them in their original language instead, so no comments are missing. Pull down to refresh the post after a few seconds to see them translated. Your own new replies and edits also show in the language you wrote them in.
 
 ## Other General Settings
 

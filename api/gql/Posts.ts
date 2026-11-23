@@ -558,7 +558,11 @@ export async function getRawPostsByIds(ids: string[]): Promise<any[]> {
 /** PostsByIds' results as Reddit returns them, unavailable posts included. */
 export async function getPostInfosByIds(ids: string[]): Promise<any[]> {
   if (!ids.length) return [];
-  const data = await gql(PostsByIds, { ...POSTS_BY_IDS_VARIABLES, ids });
+  const data = await gql(
+    PostsByIds,
+    { ...POSTS_BY_IDS_VARIABLES, ids },
+    { translate: true },
+  );
   return data.postsInfoByIds ?? [];
 }
 

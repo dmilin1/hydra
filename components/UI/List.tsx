@@ -60,12 +60,15 @@ export default function List({ items, title, containerStyle }: ListProps) {
                   item.renderCustomItem(item)
                 ) : (
                   <>
-                    <View style={styles.iconMargin}>{item.icon}</View>
+                    {item.icon ? (
+                      <View style={styles.iconMargin}>{item.icon}</View>
+                    ) : null}
                     <Text
                       style={[
                         styles.itemButtonText,
                         {
                           color: theme.text,
+                          marginLeft: item.icon ? 10 : 0,
                         },
                       ]}
                     >
@@ -113,7 +116,6 @@ const styles = StyleSheet.create({
   itemButtonText: {
     fontSize: 17,
     flex: 1,
-    marginLeft: 10,
   },
   iconMargin: {
     marginVertical: -100,

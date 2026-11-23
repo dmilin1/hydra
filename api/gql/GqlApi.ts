@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/react-native";
 
 import { USER_AGENT } from "../UserAgent";
 import safeFetch from "../../utils/safeFetch";
+import { getTranslationLanguage } from "./Translation";
 import {
   getWebToken,
   RecentTokenRejectedError,
@@ -50,11 +51,22 @@ type GqlResponse = {
   errors?: GqlErrorItem[];
 };
 
+type GqlOptions = {
+  /**
+   * Have Reddit translate the response into the user's translation language,
+   * if one is set. Only for queries that return posts or comments themselves:
+   * with it, feed queries like SubredditFeedSdui can come back empty.
+   */
+  translate?: boolean;
+};
+
 async function send(
   operation: GqlOperation,
   variables: Record<string, any>,
   token: string,
+  options: GqlOptions,
 ) {
+  const language = options.translate ? getTranslationLanguage() : undefined;
   return await safeFetch(GQL_URL, {
     method: "POST",
     cache: "no-store",
@@ -63,6 +75,9 @@ async function send(
       "Content-Type": "application/json",
       Accept: "application/json",
       "User-Agent": USER_AGENT,
+      ...(language
+        ? { "X-Reddit-Translations": `enabled, seo, ${language}` }
+        : {}),
     },
     body: JSON.stringify({
       operationName: operation.name,
@@ -84,9 +99,10 @@ async function send(
 export async function gql(
   operation: GqlOperation,
   variables: Record<string, any> = {},
+  options: GqlOptions = {},
 ): Promise<any> {
   const token = await getWebToken();
-  let res = await send(operation, variables, token);
+  let res = await send(operation, variables, token, options);
   if (res.status === 401 || res.status === 403) {
     // Reddit's edge rejects invalid or revoked tokens with a 403 HTML page
     // (401 means no token at all). Retry once with a new token, unless this
@@ -96,7 +112,7 @@ export async function gql(
       if (e instanceof RecentTokenRejectedError) return null;
       throw e;
     });
-    if (newToken) res = await send(operation, variables, newToken);
+    if (newToken) res = await send(operation, variables, newToken, options);
   }
 
   let json: GqlResponse;

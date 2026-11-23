@@ -9,6 +9,7 @@ import {
 } from "./Posts";
 import { contentToHtml } from "./RichText";
 import { checkSubredditAccess } from "./SubredditAccess";
+import { getTranslationLanguage } from "./Translation";
 import { Comment, PostDetail } from "../PostDetail";
 import KeyStore from "../../utils/KeyStore";
 import RedditURL from "../../utils/RedditURL";
@@ -179,10 +180,11 @@ export async function getCommentsByIds(
   ids: string[],
 ): Promise<Map<string, any>> {
   if (!ids.length) return new Map();
-  const data = await gql(LiveCommentsByIds, {
-    ...COMMENT_FRAGMENT_VARIABLES,
-    ids,
-  });
+  const data = await gql(
+    LiveCommentsByIds,
+    { ...COMMENT_FRAGMENT_VARIABLES, ids },
+    { translate: true },
+  );
   return new Map(
     (data.commentsByIds ?? [])
       .filter((comment: any) => comment?.__typename === "Comment")
@@ -285,12 +287,49 @@ function buildCommentTree(
   }
 }
 
-async function getCommentForest(variables: Record<string, any>) {
-  const data = await gql(PostComments, {
-    ...POST_COMMENTS_VARIABLES,
-    ...variables,
-  });
+async function getCommentForest(
+  variables: Record<string, any>,
+  translate = true,
+) {
+  const data = await gql(
+    PostComments,
+    { ...POST_COMMENTS_VARIABLES, ...variables },
+    { translate },
+  );
   return data.postInfoById?.commentForest ?? null;
+}
+
+/**
+ * Whether a translated comment page has enough comments to show. Reddit
+ * translates comments in the background and leaves out the ones it hasn't
+ * translated yet, so the first translated request for a thread can come back
+ * with few or no comments. Missing comments matter on small threads but not on
+ * a page that already looks full.
+ */
+function hasEnoughComments(
+  shown: number,
+  expected: number,
+  available: number,
+): boolean {
+  // Removed comments make Reddit's counts drift by a comment or two.
+  const tolerance = expected < 10 ? 1 : Math.max(2, expected * 0.1);
+  return shown >= 15 || expected - available <= tolerance;
+}
+
+const countComments = (forest: any): number =>
+  (forest?.trees ?? []).filter((tree: any) => tree.node).length;
+
+/**
+ * Loads a comment page translated, or untranslated if too much of it is still
+ * missing. `isEnough` judges the translated forest.
+ */
+async function getTranslatedCommentForest(
+  variables: Record<string, any>,
+  isEnough: (forest: any) => boolean | Promise<boolean>,
+) {
+  const forest = await getCommentForest(variables);
+  if (!getTranslationLanguage() || (await isEnough(forest))) return forest;
+  return await getCommentForest(variables, false);
 }
 
 /**
@@ -319,9 +358,22 @@ export async function getPostsDetail(
       : {}),
   };
   const load = async () => {
+    const postRequest = getPostInfosByIds([name]);
     const [posts, forest] = await Promise.all([
-      getPostInfosByIds([name]),
-      getCommentForest(commentVariables),
+      postRequest,
+      getTranslatedCommentForest(commentVariables, async (forest) =>
+        // A comment link needs that comment. Otherwise compare with the
+        // post's comment count, which arrives with the post.
+        commentId
+          ? (forest?.trees ?? []).some(
+              (tree: any) => tree.node?.id === `t1_${commentId}`,
+            )
+          : hasEnoughComments(
+              countComments(forest),
+              (await postRequest)[0]?.commentCount ?? 0,
+              forest?.pageInfo?.commentCount ?? 0,
+            ),
+      ),
     ]);
     return [posts[0], forest] as const;
   };
@@ -386,11 +438,18 @@ export async function loadMoreComments(
   cursor: string,
   sortType?: string,
 ): Promise<{ comments: Comment[]; loadMore: Comment["loadMore"] }> {
-  const forest = await getCommentForest({
-    id: postDetail.name,
-    after: cursor,
-    ...(sortType ? { sortType } : {}),
-  });
+  const expected = parent.loadMore?.count ?? 0;
+  const forest = await getTranslatedCommentForest(
+    {
+      id: postDetail.name,
+      after: cursor,
+      ...(sortType ? { sortType } : {}),
+    },
+    (forest) => {
+      const shown = countComments(forest);
+      return hasEnoughComments(shown, expected, shown);
+    },
+  );
   const container: CommentParent = {
     name: parent.name,
     depth: parent.depth,
@@ -413,15 +472,20 @@ export async function loadMoreComments(
  */
 export async function reloadComment(comment: Comment): Promise<Comment> {
   const { postId } = parsePostURL(comment.link);
-  const forest = await getCommentForest({
-    id: `t3_${postId}`,
-    focusedCommentContext: {
-      commentId: comment.name,
-      isFocusedThreadOnly: true,
-      minDeepCommentParents: 0,
+  // Untranslated: Reddit leaves out comments it hasn't translated yet, which
+  // would include a reply the user just wrote.
+  const forest = await getCommentForest(
+    {
+      id: `t3_${postId}`,
+      focusedCommentContext: {
+        commentId: comment.name,
+        isFocusedThreadOnly: true,
+        minDeepCommentParents: 0,
+      },
+      numParents: 0,
     },
-    numParents: 0,
-  });
+    false,
+  );
   const parent: CommentParent = {
     name: "",
     depth: comment.depth - 1,

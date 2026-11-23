@@ -103,15 +103,19 @@ async function searchPosts(
   ];
   const listKey = `posts:${text}:${sort}:${options.time}:${options.subreddit}`;
   return await loadPage<Post>(listKey, options.after, async (cursor) => {
-    const data = await gql(SearchPosts, {
-      ...POST_FRAGMENT_VARIABLES,
-      query: text,
-      productSurface: PRODUCT_SURFACE,
-      pageSize: options.limit ?? PAGE_SIZE,
-      ...(cursor ? { afterCursor: cursor } : {}),
-      ...(sort ? { sort } : {}),
-      ...(filters.length ? { filters } : {}),
-    });
+    const data = await gql(
+      SearchPosts,
+      {
+        ...POST_FRAGMENT_VARIABLES,
+        query: text,
+        productSurface: PRODUCT_SURFACE,
+        pageSize: options.limit ?? PAGE_SIZE,
+        ...(cursor ? { afterCursor: cursor } : {}),
+        ...(sort ? { sort } : {}),
+        ...(filters.length ? { filters } : {}),
+      },
+      { translate: true },
+    );
     const list = data.search?.general?.posts;
     return {
       items: await formatPosts(

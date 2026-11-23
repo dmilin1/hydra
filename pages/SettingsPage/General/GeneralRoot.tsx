@@ -2,6 +2,7 @@ import AntDesign from "@react-native-vector-icons/ant-design";
 import Feather from "@react-native-vector-icons/feather";
 import FontAwesome from "@react-native-vector-icons/fontawesome";
 import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
+import MaterialIcons from "@react-native-vector-icons/material-icons";
 import React, { useContext } from "react";
 
 import List from "../../../components/UI/List";
@@ -58,6 +59,14 @@ export default function GeneralRoot() {
             icon: <Feather name="link" size={22} color={theme.text} />,
             text: "External Links",
             onPress: () => pushURL("hydra://settings/general/externalLinks"),
+          },
+          {
+            key: "translation",
+            icon: (
+              <MaterialIcons name="translate" size={24} color={theme.text} />
+            ),
+            text: "Translation",
+            onPress: () => pushURL("hydra://settings/general/translation"),
           },
         ]}
       />

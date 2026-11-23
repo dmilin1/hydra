@@ -19,6 +19,7 @@ import Privacy from "./Privacy";
 import Root from "./Root";
 import Sorting from "./General/Sorting";
 import Startup from "./General/Startup";
+import Translation from "./General/Translation";
 import Theme from "./Theme";
 import ThemeMaker from "./ThemeMaker";
 import TipJar from "./TipJar";
@@ -65,6 +66,7 @@ export default function SettingsPage({
         {relativePath === "settings/general/legal" && <Legal />}
         {relativePath === "settings/general/externalLinks" && <ExternalLinks />}
         {relativePath === "settings/general/modifyLinks" && <ModifyLinks />}
+        {relativePath === "settings/general/translation" && <Translation />}
 
         {relativePath === "settings/theme" && <Theme />}
         {relativePath === "settings/themeMaker" && <ThemeMaker />}
