@@ -363,6 +363,7 @@ export async function formatPost(post: any): Promise<Post> {
     title: post.postTitle ?? post.title ?? "",
     author: post.authorInfo?.name ?? "[deleted]",
     upvotes: post.score ?? 0,
+    upvoteRatio: post.upvoteRatio ?? undefined,
     saved: post.isSaved ?? false,
     userVote: formatVote(post.voteState),
     flair: formatAuthorFlair(post.authorFlair),

@@ -21,6 +21,7 @@ export type Post = {
   title: string;
   author: string;
   upvotes: number;
+  upvoteRatio?: number;
   saved: boolean;
   userVote: VoteOption;
   flair: Flair | null;

@@ -172,6 +172,8 @@ export default function PostDetailsComponent({
                 ]}
               >
                 {postDetail.upvotes}
+                {postDetail.upvoteRatio !== undefined &&
+                  ` (${Math.round(postDetail.upvoteRatio * 100)}%)`}
               </Text>
               <Feather
                 name="message-square"
