@@ -8,7 +8,7 @@ import { changeSessionCookies } from "../api/gql/WebToken";
 import KeyStore from "../utils/KeyStore";
 import RedditCookies from "../utils/RedditCookies";
 import { Alert } from "react-native";
-import { fixIncompatibleAccountSettings } from "../api/gql/AccountSettings";
+import { applyDefaultAccountSettings } from "../api/gql/AccountSettings";
 
 type AccountContextType = {
   loginInitialized: boolean;
@@ -73,7 +73,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
       await RedditCookies.saveSessionCookies(user.userName);
       await addUser(user.userName);
       // Best effort: a failure here shouldn't log the user out.
-      fixIncompatibleAccountSettings().catch((e) => Sentry.captureException(e));
+      applyDefaultAccountSettings().catch((e) => Sentry.captureException(e));
       return true;
     } catch (e) {
       if (attempt !== sessionAttempt.current) return null;
