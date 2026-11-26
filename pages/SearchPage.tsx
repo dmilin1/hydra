@@ -1,9 +1,5 @@
 import Feather from "@react-native-vector-icons/feather";
-import {
-  StackActions,
-  TabActions,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import React, {
   useCallback,
   useContext,
@@ -35,7 +31,7 @@ import KeyStore from "../utils/KeyStore";
 import { HAS_SEARCH_TAB_ROLE } from "../utils/liquidGlass";
 import { PageTypeToNavName } from "../utils/PageTypeToNavName";
 import RedditURL, { PageType } from "../utils/RedditURL";
-import { getSearchOrigin } from "../utils/searchOrigin";
+import { getOriginStack, pushOnOriginTab } from "../utils/searchOrigin";
 
 const RECENT_SEARCHES_KEY = "recentSearches";
 const MAX_RECENT_SEARCHES = 8;
@@ -43,7 +39,8 @@ const MAX_YOUR_SUBREDDIT_MATCHES = 5;
 
 /**
  * Search acts like a modal over the tab it was opened from: whatever is picked
- * opens on that tab's stack, and the Search tab never goes deeper than this.
+ * opens on that tab's stack, except full search results, which stay on the Search tab
+ * and send what's picked from them to that tab too (see useURLNavigation).
  */
 export default function SearchPage({
   navigation,
@@ -66,12 +63,7 @@ export default function SearchPage({
   const lowerQuery = trimmedQuery.toLowerCase();
   const recentSearches: string[] = JSON.parse(recentSearchesJSON ?? "[]");
 
-  const tabs = navigation.getParent();
-  // Looked up on use, as the header search bar holds an older closure
-  const getOriginStack = () =>
-    tabs?.getState().routes.find((route) => route.name === getSearchOrigin())
-      ?.state;
-  const originStack = getOriginStack();
+  const originStack = getOriginStack()?.getState();
 
   const openURL = async (link: string) => {
     const redditURL = (
@@ -86,16 +78,9 @@ export default function SearchPage({
       return;
     }
     const screen = PageTypeToNavName[pageType] as URLRoutes;
-    const targetStack = getOriginStack();
-    if (!tabs || !targetStack?.key) {
+    if (screen === "SearchResultsPage" || !pushOnOriginTab(screen, url)) {
       navigation.push(screen, { url });
-      return;
     }
-    tabs.dispatch(TabActions.jumpTo(getSearchOrigin()));
-    tabs.dispatch({
-      ...StackActions.push(screen, { url }),
-      target: targetStack.key,
-    });
   };
 
   const search = (text: string) => {

@@ -1,4 +1,5 @@
 import {
+  NavigationRouteContext,
   RouteProp,
   useNavigation,
   useRoute as useRouteUntyped,
@@ -11,6 +12,7 @@ import { MediaViewerContext } from "../contexts/MediaViewerContext";
 import { StackFutureContext } from "../contexts/StackFutureContext";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { PageTypeToNavName } from "./PageTypeToNavName";
+import { pushOnOriginTab } from "./searchOrigin";
 
 export function useRoute<
   Pages extends keyof StackParamsList = keyof StackParamsList,
@@ -27,6 +29,8 @@ export function useURLNavigation<
     useNavigation<NativeStackNavigationProp<StackParamsList, Pages>>();
   const { clearFuture } = useContext(StackFutureContext);
   const { displayMedia } = useContext(MediaViewerContext);
+  // Context rather than useRoute, which throws when used outside a screen
+  const route = useContext(NavigationRouteContext);
 
   const doNavigationAction = async (
     link: string,
@@ -43,7 +47,13 @@ export function useURLNavigation<
       displayMedia({
         media: [[{ source: url, type: "image" }]],
       });
-    } else {
+    } else if (
+      !(
+        func === "push" &&
+        route?.name === "SearchResultsPage" &&
+        pushOnOriginTab(navName as URLRoutes, url)
+      )
+    ) {
       navigation[func](navName as URLRoutes, { url });
     }
     clearFuture();

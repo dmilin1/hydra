@@ -1,4 +1,4 @@
-import { NavigationRoute } from "@react-navigation/native";
+import { NavigationRoute, useRoute } from "@react-navigation/native";
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
@@ -34,6 +34,8 @@ import {
 } from "../../utils/liquidGlass";
 import GalleryScreen from "./GalleryScreen";
 import ChatScreen from "./ChatScreen";
+import type { TabParamsList } from "../tabs";
+import { registerTabStack } from "../../utils/searchOrigin";
 
 export type StackParamsList = {
   Subreddits: undefined;
@@ -149,6 +151,7 @@ export default function Stack() {
   const { swipeAnywhereToNavigate } = useContext(GesturesContext);
 
   const tabBarInsets = useTabBarInsets();
+  const tabName = useRoute().name as keyof TabParamsList;
 
   const futureRoutes = useRef<
     NavigationRoute<StackParamsList, keyof StackParamsList>[]
@@ -205,6 +208,10 @@ export default function Stack() {
             backgroundColor: theme.background,
           },
         })}
+        layout={({ navigation, children }) => {
+          registerTabStack(tabName, navigation);
+          return <>{children}</>;
+        }}
         screenLayout={({ route, children }) => (
           <StackFutureProvider futureRoutes={futureRoutes}>
             <GlassHeaderInsetProvider>
