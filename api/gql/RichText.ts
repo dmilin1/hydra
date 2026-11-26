@@ -145,9 +145,9 @@ function renderInline(
           );
         case "r/":
         case "u/": {
+          // Like reddit.com, shown without the leading slash even when typed (node.l).
           const name = `${node.e}${node.t ?? ""}`;
-          const text = node.l ? `/${name}` : name;
-          return `<a href="/${escape(name)}">${escape(text)}</a>`;
+          return `<a href="/${escape(name)}">${escape(name)}</a>`;
         }
         case "spoilertext":
           return `<span class="md-spoiler-text">${renderInline(node.c, ctx)}</span>`;
@@ -279,11 +279,9 @@ export function contentToHtml(
     body = "";
   }
   if (!body && content.markdown) body = markdownToPlainHtml(content.markdown);
-  // Merge adjacent identical tags:
-  //  - richtext splits a formatted run around links into separate runs, e.g.
-  //    **Please [read](...) this** -> <strong>Please </strong><strong><a>...
-  //  - quotes separated by a blank line (">a\n\n>b") are separate blocks in
-  //    richtext, but one quote in Reddit's HTML.
-  body = body.replace(/<\/(strong|em|del|sup|code|blockquote)><\1>/g, "");
+  // Richtext splits a formatted run around links into separate runs, e.g.
+  // **Please [read](...) this** -> <strong>Please </strong><strong><a>...
+  // Quotes are not merged: ">a\n\n>b" is two quotes on reddit.com.
+  body = body.replace(/<\/(strong|em|del|sup|code)><\1>/g, "");
   return body ? `<div class="md">${body}</div>` : "";
 }
