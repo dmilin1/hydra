@@ -140,6 +140,11 @@ export default function Advanced() {
               </Text>
             )}
           </View>
+          <Text style={[styles.customServerWarning, { color: theme.text }]}>
+            Using an improperly configured custom server could result in your
+            Reddit account being compromised. Only use a custom server if you
+            know what you're doing. Never connect to a server you don't own.
+          </Text>
         </>
       )}
       {customerId && (
@@ -178,6 +183,12 @@ const styles = StyleSheet.create({
   },
   hydraServerUrlStatusText: {
     fontSize: 14,
+  },
+  customServerWarning: {
+    fontWeight: "bold",
+    fontSize: 14,
+    marginHorizontal: 10,
+    marginTop: 10,
   },
   customerIdText: {
     fontSize: 14,
