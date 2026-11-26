@@ -84,6 +84,12 @@ export default function CommentComponent({
     !displayInList &&
     !doesCommentPassTextFilter(comment);
 
+  // Collapsing children only would do nothing to a comment without replies
+  // (e.g. an auto-collapsed AutoModerator comment), so hide its body instead.
+  const bodyHidden =
+    comment.collapsed &&
+    (!collapseChildrenOnly || comment.comments.length === 0);
+
   const onPressComment = () => {
     if (displayInList) {
       if (comment.type === "comment") {
@@ -180,14 +186,14 @@ export default function CommentComponent({
                     comment={comment}
                     theme={theme}
                     showFlair={commentFlairs}
-                    bodyHidden={comment.collapsed && !collapseChildrenOnly}
+                    bodyHidden={bodyHidden}
                     hideUsername={!!displayForImageShareSettings?.hideUsernames}
                     onPressAuthor={() => pushURL(`/user/${comment.author}`)}
                     onPressUpvote={() =>
                       actions.voteOnComment(VoteOption.UpVote)
                     }
                   />
-                  {(collapseChildrenOnly || !comment.collapsed) && (
+                  {!bodyHidden && (
                     <View style={styles.textContainer}>
                       <RenderHtml html={comment.html} />
                     </View>
@@ -299,6 +305,7 @@ export default function CommentComponent({
       voteIndicator,
       tapToCollapseComment,
       collapseChildrenOnly,
+      bodyHidden,
       commentSwipeOptions.left,
       commentSwipeOptions.right,
       commentSwipeOptions.farLeft,
