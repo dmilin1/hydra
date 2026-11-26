@@ -1,7 +1,6 @@
 import Feather from "@react-native-vector-icons/feather";
 import { useFocusEffect } from "@react-navigation/native";
 import React, {
-  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -28,7 +27,6 @@ import {
 } from "../contexts/TabBarInsetsContext";
 import { useDebouncedEffect } from "../utils/debounce";
 import KeyStore from "../utils/KeyStore";
-import { HAS_SEARCH_TAB_ROLE } from "../utils/liquidGlass";
 import { PageTypeToNavName } from "../utils/PageTypeToNavName";
 import RedditURL, { PageType } from "../utils/RedditURL";
 import { getOriginStack, pushOnOriginTab } from "../utils/searchOrigin";
@@ -119,13 +117,16 @@ export default function SearchPage({
     });
   }, [theme]);
 
-  // The system search tab focuses the field itself
-  useFocusEffect(
-    useCallback(() => {
-      if (HAS_SEARCH_TAB_ROLE) return;
+  useFocusEffect(() => {
+    /**
+     * The search tab is lazy loaded, so the search bar doesn't exist
+     * until after the first render. Using requestAnimationFrame
+     * waits until the search bar has been mounted.
+     */
+    requestAnimationFrame(() => {
       searchBarRef.current?.focus();
-    }, []),
-  );
+    });
+  });
 
   // Recommendations are personal, so reload them for each account.
   useEffect(() => {
