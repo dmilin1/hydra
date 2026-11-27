@@ -1,8 +1,15 @@
+import { existsSync } from "fs";
+
 import { APP_ICON_PLUGIN_ICONS } from "./constants/appIcons";
 import packageJson from "./package.json";
 
 const projectId = "7e403d7f-7747-4daa-a3c9-4acb948f7a60";
 const IS_DEV = process.env.APP_VARIANT === "development";
+
+// EAS builds get this as a file secret; local and fork builds without it skip FCM
+const GOOGLE_SERVICES_FILE =
+  process.env.GOOGLE_SERVICES_JSON ??
+  (existsSync("./google-services.json") ? "./google-services.json" : undefined);
 
 const REDDIT_DEEP_LINK_HOSTS = [
   "reddit.com",
@@ -36,6 +43,7 @@ module.exports = {
     },
     android: {
       package: "com.dmilin.hydra",
+      googleServicesFile: GOOGLE_SERVICES_FILE,
       adaptiveIcon: {
         foregroundImage: "./assets/images/icon_android.png",
         backgroundColor: "#000000",

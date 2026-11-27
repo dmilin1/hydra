@@ -81,7 +81,7 @@ export function NotificationsProvider({ children }: React.PropsWithChildren) {
     if (isPro && notificationsEnabled) {
       registerForPushNotifications();
     }
-  }, [isPro, notificationsEnabled, accounts]);
+  }, [isPro, notificationsEnabled, accounts, customerId]);
 
   return (
     <NotificationsContext.Provider
