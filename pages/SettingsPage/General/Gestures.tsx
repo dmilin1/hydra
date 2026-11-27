@@ -1,6 +1,6 @@
 import MaterialCommunityIcons from "@react-native-vector-icons/material-design-icons";
 import React, { useContext } from "react";
-import { Switch } from "react-native";
+import { Alert, Switch } from "react-native";
 
 import List from "../../../components/UI/List";
 import { ThemeContext } from "../../../contexts/SettingsContexts/ThemeContext";
@@ -20,6 +20,7 @@ export default function Gestures() {
     setPostSwipeOption,
     commentSwipeOptions,
     setCommentSwipeOption,
+    resetGestures,
   } = useContext(GesturesContext);
 
   const postSwipeOptionsItems = [...POST_SWIPE_OPTIONS];
@@ -240,6 +241,35 @@ export default function Gestures() {
             rightIcon: rightIconCommentSwipeShortLeft,
             text: "Short Left Swipe",
             onPress: () => openCommentSwipeShortLeftPicker(),
+          },
+        ]}
+      />
+      <List
+        title="Reset"
+        items={[
+          {
+            key: "restoreDefaults",
+            icon: (
+              <MaterialCommunityIcons
+                name="restore"
+                size={24}
+                color={theme.text}
+              />
+            ),
+            text: "Restore Defaults",
+            onPress: () =>
+              Alert.alert(
+                "Restore Defaults?",
+                "All gesture settings will be reset to their defaults.",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Restore",
+                    style: "destructive",
+                    onPress: resetGestures,
+                  },
+                ],
+              ),
           },
         ]}
       />

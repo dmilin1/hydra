@@ -28,6 +28,7 @@ const initialGesturesContext = {
     _option: keyof CommentSwipeOptions,
     _value: CommentSwipeOption,
   ) => {},
+  resetGestures: () => {},
 };
 
 export const GesturesContext = createContext(initialGesturesContext);
@@ -197,6 +198,12 @@ export function GesturesProvider({ children }: React.PropsWithChildren) {
         setPostSwipeOption,
         commentSwipeOptions,
         setCommentSwipeOption,
+        // Deleting the keys (rather than writing defaults) keeps users on future default changes
+        resetGestures: () => {
+          setSwipeAnywhereToNavigate(undefined);
+          setPostSwipeOptions(undefined);
+          setCommentSwipeOptions(undefined);
+        },
       }}
     >
       {children}
