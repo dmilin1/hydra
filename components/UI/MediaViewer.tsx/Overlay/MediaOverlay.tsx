@@ -190,7 +190,10 @@ const MediaOverlay = forwardRef<MediaOverlayHandle, MediaOverlayProps>(
                     onStep={onAlbumStep}
                   />
                 ) : null}
-                <View style={styles.videoActionsContainer}>
+                <View
+                  key={videoItem.source.source}
+                  style={styles.videoActionsContainer}
+                >
                   <OverlayIsland style={styles.videoActionsRow}>
                     <MuteButton player={player} hasAudio={hasAudio} />
                     <PlaybackRateButton player={player} />
