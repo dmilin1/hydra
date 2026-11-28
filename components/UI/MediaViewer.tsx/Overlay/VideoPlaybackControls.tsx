@@ -153,7 +153,8 @@ export function MuteButton({
 }) {
   const { bumpAutoHide } = useOverlayInteraction();
 
-  const muted = useEvent(player, "mutedChange", player).muted;
+  // The initial event can outlive the player. Keep only its boolean value.
+  const { muted } = useEvent(player, "mutedChange", { muted: player.muted });
 
   return (
     <Touchable
